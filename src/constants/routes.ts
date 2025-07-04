@@ -1,0 +1,18 @@
+export const ROUTES = {
+  DASHBOARD: "/dashboard",
+  SEND_REMITTANCE: "/send-remittance",
+  CUSTOMERS: "/customers",
+  RECIPIENTS: "/recipients",
+  PAYOUT_LOCATIONS: "/payout-locations",
+  TRANSFERS: "/transfers",
+  COMMISSION_EARNED: "/commission-earned",
+  MONEY_WITHDRAWALS: "/money-withdrawals",
+  ADD_MONEY: "/add-money",
+  ACCOUNT_STATEMENTS: "/account-statements",
+  MY_WALLET: "/my-wallet",
+  REMITTANCE_CART: "/remittance-cart",
+  CUSTOMER_FORMS: "/customer-forms",
+  PAYMENT_LINKS: "/payment-links",
+  SUPPORT: "/support",
+  HELP: "/help",
+}; 

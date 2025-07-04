@@ -1,7 +1,16 @@
-import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+
+import { DashboardLayout } from "./layouts/DashboardLayout";
+import { AppRoutes } from "./routes";
 
 function App() {
-  return <div>agent app</div>;
+  return (
+    <Router>
+      <DashboardLayout>
+        <AppRoutes />
+      </DashboardLayout>
+    </Router>
+  );
 }
 
 export default App;

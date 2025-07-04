@@ -1,0 +1,44 @@
+import React, { Suspense, lazy } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { ROUTES } from "../constants/routes";
+
+const DashboardPage = lazy(() => import("../pages/DashboardPage"));
+const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
+const CustomersPage = lazy(() => import("../pages/CustomersPage"));
+const RecipientsPage = lazy(() => import("../pages/RecipientsPage"));
+const PayoutLocationsPage = lazy(() => import("../pages/PayoutLocationsPage"));
+const TransfersPage = lazy(() => import("../pages/TransfersPage"));
+const CommissionEarnedPage = lazy(() => import("../pages/CommissionEarnedPage"));
+const MoneyWithdrawalsPage = lazy(() => import("../pages/MoneyWithdrawalsPage"));
+const AddMoneyPage = lazy(() => import("../pages/AddMoneyPage"));
+const AccountStatementsPage = lazy(() => import("../pages/AccountStatementsPage"));
+const MyWalletPage = lazy(() => import("../pages/MyWalletPage"));
+const RemittanceCartPage = lazy(() => import("../pages/RemittanceCartPage"));
+const CustomerFormsPage = lazy(() => import("../pages/CustomerFormsPage"));
+const PaymentLinksPage = lazy(() => import("../pages/PaymentLinksPage"));
+const SupportPage = lazy(() => import("../pages/SupportPage"));
+const HelpPage = lazy(() => import("../pages/HelpPage"));
+
+export const AppRoutes = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Routes>
+      <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+      <Route path={ROUTES.SEND_REMITTANCE} element={<SendRemittancePage />} />
+      <Route path={ROUTES.CUSTOMERS} element={<CustomersPage />} />
+      <Route path={ROUTES.RECIPIENTS} element={<RecipientsPage />} />
+      <Route path={ROUTES.PAYOUT_LOCATIONS} element={<PayoutLocationsPage />} />
+      <Route path={ROUTES.TRANSFERS} element={<TransfersPage />} />
+      <Route path={ROUTES.COMMISSION_EARNED} element={<CommissionEarnedPage />} />
+      <Route path={ROUTES.MONEY_WITHDRAWALS} element={<MoneyWithdrawalsPage />} />
+      <Route path={ROUTES.ADD_MONEY} element={<AddMoneyPage />} />
+      <Route path={ROUTES.ACCOUNT_STATEMENTS} element={<AccountStatementsPage />} />
+      <Route path={ROUTES.MY_WALLET} element={<MyWalletPage />} />
+      <Route path={ROUTES.REMITTANCE_CART} element={<RemittanceCartPage />} />
+      <Route path={ROUTES.CUSTOMER_FORMS} element={<CustomerFormsPage />} />
+      <Route path={ROUTES.PAYMENT_LINKS} element={<PaymentLinksPage />} />
+      <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
+      <Route path={ROUTES.HELP} element={<HelpPage />} />
+      <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+    </Routes>
+  </Suspense>
+); 
