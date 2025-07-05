@@ -1,23 +1,60 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { ROUTES } from "../../constants/routes";
+import DashboardIcon from "../../assets/icons/dashboard.svg?react";
+import SendRemittanceIcon from "../../assets/icons/send-remittance.svg?react";
+import CustomersIcon from "../../assets/icons/customers.svg?react";
+import RecipientsIcon from "../../assets/icons/recipients.svg?react";
+import PayoutLocationsIcon from "../../assets/icons/payout-locations.svg?react";
+import TransfersIcon from "../../assets/icons/transfers.svg?react";
+import CustomerFormsIcon from "../../assets/icons/customer-forms.svg?react";
+import RemittanceCartIcon from "../../assets/icons/remittance-cart.svg?react";
+import MyWalletIcon from "../../assets/icons/my-wallet.svg?react";
+import AccountStatementsIcon from "../../assets/icons/account-statements.svg?react";
+import AddMoneyIcon from "../../assets/icons/add-money.svg?react";
+import MoneyWithdrawalsIcon from "../../assets/icons/money-withdrawals.svg?react";
+import CommissionEarnedIcon from "../../assets/icons/commission-earned.svg?react";
+import PaymentLinksIcon from "../../assets/icons/payment-links.svg?react";
+import HelpIcon from "../../assets/icons/help.svg?react";
+import SupportIcon from "../../assets/icons/support.svg?react";
 
 const navLinks = [
-  { label: "Dashboard", to: "/dashboard" },
-  { label: "Send Remittance", to: "/send-remittance" },
-  { label: "Customers", to: "/customers" },
-  { label: "Recipients", to: "/recipients" },
-  { label: "Payout Locations", to: "/payout-locations" },
-  { label: "Transfers", to: "/transfers" },
-  { label: "Commission Earned", to: "/commission-earned" },
-  { label: "Money Withdrawals", to: "/money-withdrawals" },
-  { label: "Add Money", to: "/add-money" },
-  { label: "Account Statements", to: "/account-statements" },
-  { label: "My Wallet", to: "/my-wallet" },
-  { label: "Remittance Cart", to: "/remittance-cart" },
-  { label: "Customer Forms", to: "/customer-forms" },
-  { label: "Payment Links", to: "/payment-links" },
-  { label: "Support", to: "/support" },
-  { label: "Help", to: "/help" },
+  {
+    label: "Dashboard",
+    to: ROUTES.DASHBOARD,
+    icon: <DashboardIcon color="inherit" />,
+  },
+  { 
+    label: "Send Remittance", 
+    to: ROUTES.SEND_REMITTANCE,
+    icon: <SendRemittanceIcon color="inherit" />,
+  },
+  { 
+    label: "Customers", 
+    to: ROUTES.CUSTOMERS,
+    icon: <CustomersIcon color="inherit" />,
+  },
+  { 
+    label: "Recipients", 
+    to: ROUTES.RECIPIENTS,
+    icon: <RecipientsIcon color="inherit" />,
+  },
+  { 
+    label: "Payout Locations", 
+    to: ROUTES.PAYOUT_LOCATIONS,
+    icon: <PayoutLocationsIcon color="inherit" />,
+  },
+  { label: "Transfers", to: ROUTES.TRANSFERS, icon: <TransfersIcon color="inherit" /> },
+  { label: "Commission Earned", to: ROUTES.COMMISSION_EARNED, icon: <CommissionEarnedIcon color="inherit" /> },
+  { label: "Money Withdrawals", to: ROUTES.MONEY_WITHDRAWALS, icon: <MoneyWithdrawalsIcon color="inherit" /> },
+  { label: "Add Money", to: ROUTES.ADD_MONEY, icon: <AddMoneyIcon color="inherit" /> },
+  { label: "Account Statements", to: ROUTES.ACCOUNT_STATEMENTS, icon: <AccountStatementsIcon color="inherit" /> },
+  { label: "My Wallet", to: ROUTES.MY_WALLET, icon: <MyWalletIcon color="inherit" /> },
+  { label: "Remittance Cart", to: ROUTES.REMITTANCE_CART, icon: <RemittanceCartIcon color="inherit" /> },
+  { label: "Customer Forms", to: ROUTES.CUSTOMER_FORMS, icon: <CustomerFormsIcon color="inherit" /> },
+  { label: "Payment Links", to: ROUTES.PAYMENT_LINKS, icon: <PaymentLinksIcon color="inherit" /> },
+  { label: "Help", to: ROUTES.HELP, icon: <HelpIcon color="inherit" /> },
+  { label: "Support", to: ROUTES.SUPPORT, icon: <SupportIcon color="inherit" /> },
 ];
 
 export const Sidebar: React.FC<{
@@ -29,18 +66,19 @@ export const Sidebar: React.FC<{
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 h-full bg-white border-r shadow-sm z-20">
         <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 p-5 flex flex-col gap-2">
+          <ul className="space-y-1 p-5 flex flex-col gap-1">
             {navLinks.map((link) => (
               <li key={link.to}>
                 <NavLink
                   to={link.to}
                   className={({ isActive }) =>
-                    `block px-5 py-1 rounded-md transition-colors duration-150 font-medium ${
+                    `flex items-center justify-start gap-2 px-3 py-2 rounded-md transition-colors duration-150 font-medium ${
                       isActive ? "bg-primary text-white" : "hover:bg-muted"
                     }`
                   }
                   end
                 >
+                  {link?.icon}
                   {link.label}
                 </NavLink>
               </li>
