@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import { Sidebar } from "../components/sidebar/Sidebar";
 import { Topbar } from "../components/topbar/Topbar";
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-}
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+export const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className="flex h-screen w-full flex-col">
@@ -14,7 +12,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       <div className="flex flex-1 overflow-hidden">
         <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="flex-1 overflow-auto bg-muted p-4">
-          {children}
+        <Outlet />
         </main>
       </div>
     </div>

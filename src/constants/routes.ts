@@ -15,4 +15,8 @@ export const ROUTES = {
   PAYMENT_LINKS: "/payment-links",
   SUPPORT: "/support",
   HELP: "/help",
+  AUTH:{
+    LOGIN: "/auth/login",
+    REGISTER: "/auth/register",
+  } 
 }; 
