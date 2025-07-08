@@ -27,7 +27,7 @@ const TwoFactorForm: React.FC<{
 }> = ({ onVerify, phoneOrEmail }) => {
   const [timer, setTimer] = useState(RESEND_TIME);
   const [resending, setResending] = useState(false);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
   // const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<OtpInputs>({

@@ -13,8 +13,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -55,6 +53,7 @@ const UserMenu = () => {
       icon: <LogoutIcon />,
       onClick: handleLogout,
       link: "",
+      isLoading: status === "pending",
     },
   ];
   return (
@@ -83,6 +82,7 @@ const UserMenu = () => {
           <DropdownMenuItem
             className="h-[35px] hover:bg-primary/10"
             onClick={menuItem.onClick}
+            disabled={menuItem.isLoading}
           >
             {menuItem?.link ? (
               <NavLink to={menuItem.link}>

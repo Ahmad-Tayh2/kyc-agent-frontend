@@ -1,7 +1,6 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { ROUTES } from "../../constants/routes";
-import { useLogout } from "@/hooks/useAuth";
 import DashboardIcon from "../../assets/icons/dashboard.svg?react";
 import SendRemittanceIcon from "../../assets/icons/send-remittance.svg?react";
 import CustomersIcon from "../../assets/icons/customers.svg?react";

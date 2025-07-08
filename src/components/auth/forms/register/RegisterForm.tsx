@@ -27,12 +27,6 @@ function formatDate(date: Date | undefined) {
     year: "numeric",
   });
 }
-function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false;
-  }
-  return !isNaN(date.getTime());
-}
 
 const schema = z.object({
   firstName: z.string().min(1, "Required"),
@@ -96,9 +90,9 @@ const FormField: React.FC<FormFieldProps> = ({
 
 const RegisterForm: React.FC<{
   onBack: () => void;
-  onSubmit: (data: FormInputs) => void;
+  onSubmit?: (data: FormInputs) => void;
   step: "partner" | "sales";
-}> = ({ onBack, onSubmit, step }) => {
+}> = ({ onBack, /*onSubmit,*/ step }) => {
   const {
     register,
     handleSubmit,
@@ -107,36 +101,26 @@ const RegisterForm: React.FC<{
     // resolver: zodResolver(schema),
     defaultValues: { gender: "male" },
   });
-  const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(
-    new Date("2025-06-01")
-  );
-  const [month, setMonth] = React.useState<Date | undefined>(date);
-  const [value, setValue] = React.useState(formatDate(date));
 
   const [selectedGender, setSelectedGender] = React.useState<any>(null);
 
-  const options = [
-    { label: "male", value: "male" },
-    { label: "female", value: "female" },
+  const genderOptions = [
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" },
   ];
-
-  const handleChange = (value: any) => {
-    setSelectedGender(value);
-  };
 
   const fileRef = React.useRef<HTMLInputElement | null>(null);
 
-  const handleClick = () => {
-    fileRef.current?.click();
-  };
+  // const handleClick = () => {
+  //   fileRef.current?.click();
+  // };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    // handle files
-    const files = e.dataTransfer.files;
-    // manually trigger input change if needed
-  };
+  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  //   e.preventDefault();
+  //   // handle files
+  //   const files = e.dataTransfer.files;
+  //   // manually trigger input change if needed
+  // };
 
   const { mutateAsync: registerAsync, status, error } = useRegister();
   const navigate = useNavigate();
@@ -279,34 +263,25 @@ const RegisterForm: React.FC<{
         <div className="md:col-span-2 flex flex-col gap-2">
           <Label>Gender</Label>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className={cn(
-                "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-                "border-gray-200 bg-white"
-              )}
-              onClick={() => {
-                setSelectedGender("male");
-              }}
-            >
-              {selectedGender === "male" ? <CheckedIcon /> : <UncheckedIcon />}
-              Male
-            </button>
-            <button
-              type="button"
-              className={cn(
-                "w-full flex items-center gap-1 border rounded-lg px-4 py-3 text-[14px] text-left transition",
-                "border-gray-200 bg-white"
-              )}
-              onClick={() => setSelectedGender("female")}
-            >
-              {selectedGender === "female" ? (
-                <CheckedIcon />
-              ) : (
-                <UncheckedIcon />
-              )}
-              Female
-            </button>
+            {genderOptions?.map((genderOption: any) => (
+              <button
+                type="button"
+                className={cn(
+                  "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
+                  "border-gray-200 bg-white"
+                )}
+                onClick={() => {
+                  setSelectedGender(genderOption.value);
+                }}
+              >
+                {selectedGender === genderOption.value ? (
+                  <CheckedIcon />
+                ) : (
+                  <UncheckedIcon />
+                )}
+                {genderOption.label}
+              </button>
+            ))}
           </div>
           {/* <div className="flex gap-6 mt-2">
             <label className="flex items-center gap-2">

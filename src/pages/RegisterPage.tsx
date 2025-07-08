@@ -25,10 +25,10 @@ const RegisterPage = () => {
     console.log("Sales Person Registration:", data);
   };
 
-  const handlePartnerSubmit = (data: any) => {
-    // Handle partner registration submit
-    console.log("Partner Registration:", data, "Roles:", partnerRoles);
-  };
+  // const handlePartnerSubmit = (data: any) => {
+  //   // Handle partner registration submit
+  //   console.log("Partner Registration:", data, "Roles:", partnerRoles);
+  // };
 
   return (
     <AuthLayout>
