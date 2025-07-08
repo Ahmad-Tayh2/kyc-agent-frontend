@@ -1,6 +1,7 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes";
+import { useLogout } from "@/hooks/useAuth";
 import DashboardIcon from "../../assets/icons/dashboard.svg?react";
 import SendRemittanceIcon from "../../assets/icons/send-remittance.svg?react";
 import CustomersIcon from "../../assets/icons/customers.svg?react";
@@ -24,37 +25,77 @@ const navLinks = [
     to: ROUTES.DASHBOARD,
     icon: <DashboardIcon color="inherit" />,
   },
-  { 
-    label: "Send Remittance", 
+  {
+    label: "Send Remittance",
     to: ROUTES.SEND_REMITTANCE,
     icon: <SendRemittanceIcon color="inherit" />,
   },
-  { 
-    label: "Customers", 
+  {
+    label: "Customers",
     to: ROUTES.CUSTOMERS,
     icon: <CustomersIcon color="inherit" />,
   },
-  { 
-    label: "Recipients", 
+  {
+    label: "Recipients",
     to: ROUTES.RECIPIENTS,
     icon: <RecipientsIcon color="inherit" />,
   },
-  { 
-    label: "Payout Locations", 
+  {
+    label: "Payout Locations",
     to: ROUTES.PAYOUT_LOCATIONS,
     icon: <PayoutLocationsIcon color="inherit" />,
   },
-  { label: "Transfers", to: ROUTES.TRANSFERS, icon: <TransfersIcon color="inherit" /> },
-  { label: "Commission Earned", to: ROUTES.COMMISSION_EARNED, icon: <CommissionEarnedIcon color="inherit" /> },
-  { label: "Money Withdrawals", to: ROUTES.MONEY_WITHDRAWALS, icon: <MoneyWithdrawalsIcon color="inherit" /> },
-  { label: "Add Money", to: ROUTES.ADD_MONEY, icon: <AddMoneyIcon color="inherit" /> },
-  { label: "Account Statements", to: ROUTES.ACCOUNT_STATEMENTS, icon: <AccountStatementsIcon color="inherit" /> },
-  { label: "My Wallet", to: ROUTES.MY_WALLET, icon: <MyWalletIcon color="inherit" /> },
-  { label: "Remittance Cart", to: ROUTES.REMITTANCE_CART, icon: <RemittanceCartIcon color="inherit" /> },
-  { label: "Customer Forms", to: ROUTES.CUSTOMER_FORMS, icon: <CustomerFormsIcon color="inherit" /> },
-  { label: "Payment Links", to: ROUTES.PAYMENT_LINKS, icon: <PaymentLinksIcon color="inherit" /> },
+  {
+    label: "Transfers",
+    to: ROUTES.TRANSFERS,
+    icon: <TransfersIcon color="inherit" />,
+  },
+  {
+    label: "Commission Earned",
+    to: ROUTES.COMMISSION_EARNED,
+    icon: <CommissionEarnedIcon color="inherit" />,
+  },
+  {
+    label: "Money Withdrawals",
+    to: ROUTES.MONEY_WITHDRAWALS,
+    icon: <MoneyWithdrawalsIcon color="inherit" />,
+  },
+  {
+    label: "Add Money",
+    to: ROUTES.ADD_MONEY,
+    icon: <AddMoneyIcon color="inherit" />,
+  },
+  {
+    label: "Account Statements",
+    to: ROUTES.ACCOUNT_STATEMENTS,
+    icon: <AccountStatementsIcon color="inherit" />,
+  },
+  {
+    label: "My Wallet",
+    to: ROUTES.MY_WALLET,
+    icon: <MyWalletIcon color="inherit" />,
+  },
+  {
+    label: "Remittance Cart",
+    to: ROUTES.REMITTANCE_CART,
+    icon: <RemittanceCartIcon color="inherit" />,
+  },
+  {
+    label: "Customer Forms",
+    to: ROUTES.CUSTOMER_FORMS,
+    icon: <CustomerFormsIcon color="inherit" />,
+  },
+  {
+    label: "Payment Links",
+    to: ROUTES.PAYMENT_LINKS,
+    icon: <PaymentLinksIcon color="inherit" />,
+  },
   { label: "Help", to: ROUTES.HELP, icon: <HelpIcon color="inherit" /> },
-  { label: "Support", to: ROUTES.SUPPORT, icon: <SupportIcon color="inherit" /> },
+  {
+    label: "Support",
+    to: ROUTES.SUPPORT,
+    icon: <SupportIcon color="inherit" />,
+  },
 ];
 
 export const Sidebar: React.FC<{

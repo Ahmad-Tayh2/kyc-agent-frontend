@@ -2,7 +2,6 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import React, { useState } from "react";
 import BusinessTypeStep from "@/components/auth/forms/register/BusinessTypeStep";
 import RegisterForm from "@/components/auth/forms/register/RegisterForm";
-import PartnerRegisterForm from "@/components/auth/forms/register/PartnerRegisterForm";
 
 const RegisterPage = () => {
   const [step, setStep] = useState<"type" | "sales" | "partner">("type");
@@ -42,7 +41,6 @@ const RegisterPage = () => {
           step={step}
         />
       )}
-      {/* {step === 'partner' && <PartnerRegisterForm onBack={handleBack} onSubmit={handlePartnerSubmit} />} */}
     </AuthLayout>
   );
 };

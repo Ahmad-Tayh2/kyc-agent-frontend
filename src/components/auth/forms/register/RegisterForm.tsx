@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useRegister } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
@@ -13,6 +15,7 @@ import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UploadIcon from "@/assets/icons/upload-icon.svg?react";
 import DatePicker from "@/components/ui/DatePicker";
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/constants/routes";
 
 function formatDate(date: Date | undefined) {
   if (!date) {
@@ -135,9 +138,21 @@ const RegisterForm: React.FC<{
     // manually trigger input change if needed
   };
 
+  const { mutateAsync: registerAsync, status, error } = useRegister();
+  const navigate = useNavigate();
+
+  const onFormSubmit = async (data: FormInputs) => {
+    try {
+      await registerAsync(data);
+      navigate(ROUTES.DASHBOARD);
+    } catch (err) {
+      // error is handled by React Query's error state
+    }
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onFormSubmit)}
       className={cn("mx-auto relative", step === "sales" && "my-20")}
     >
       <button
@@ -413,8 +428,15 @@ const RegisterForm: React.FC<{
         <Button type="button" variant="outline" onClick={onBack}>
           CANCEL
         </Button>
-        <Button type="submit">REGISTER</Button>
+        <Button type="submit" disabled={status === "pending"}>
+          REGISTER
+        </Button>
       </div>
+      {error && (
+        <div className="text-destructive text-sm mt-2">
+          {(error as Error).message}
+        </div>
+      )}
     </form>
   );
 };
