@@ -17,6 +17,7 @@ import UploadIcon from "@/assets/icons/upload-icon.svg?react";
 import FileIcon from "@/assets/icons/file-icon.svg?react";
 import DatePicker from "@/components/DatePicker";
 import SearchableSelect from "@/components/ui/searchable-select";
+import PhoneInput from "@/components/ui/phone-input";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { X } from "lucide-react";
@@ -77,6 +78,7 @@ const RegisterForm: React.FC<{
     country: "",
     state: "",
     phone: "",
+    countryCode: "",
     gender: "male",
     businessName: "",
     businessAddress: "",
@@ -100,6 +102,84 @@ const RegisterForm: React.FC<{
       value: city.id.toString(),
       label: city.name,
     })) || [];
+
+  // Country phone code options
+  const countryPhoneOptions = countries?.map((country:any) => {
+  return {  value: country.phone_code,
+    label: country.name,
+    code: country.phone_code,
+    countryCode: country.iso2,
+    // flag: country.flag,
+  }
+  
+  });
+  // const countryPhoneOptions = [
+  //   { value: "+1", label: "United States", code: "+1", flag: "🇺🇸" },
+  //   { value: "+44", label: "United Kingdom", code: "+44", flag: "🇬🇧" },
+  //   { value: "+33", label: "France", code: "+33", flag: "🇫🇷" },
+  //   { value: "+49", label: "Germany", code: "+49", flag: "🇩🇪" },
+  //   { value: "+39", label: "Italy", code: "+39", flag: "🇮🇹" },
+  //   { value: "+34", label: "Spain", code: "+34", flag: "🇪🇸" },
+  //   { value: "+31", label: "Netherlands", code: "+31", flag: "🇳🇱" },
+  //   { value: "+32", label: "Belgium", code: "+32", flag: "🇧🇪" },
+  //   { value: "+41", label: "Switzerland", code: "+41", flag: "🇨🇭" },
+  //   { value: "+43", label: "Austria", code: "+43", flag: "🇦🇹" },
+  //   { value: "+46", label: "Sweden", code: "+46", flag: "🇸🇪" },
+  //   { value: "+47", label: "Norway", code: "+47", flag: "🇳🇴" },
+  //   { value: "+45", label: "Denmark", code: "+45", flag: "🇩🇰" },
+  //   { value: "+358", label: "Finland", code: "+358", flag: "🇫🇮" },
+  //   { value: "+48", label: "Poland", code: "+48", flag: "🇵🇱" },
+  //   { value: "+420", label: "Czech Republic", code: "+420", flag: "🇨🇿" },
+  //   { value: "+36", label: "Hungary", code: "+36", flag: "🇭🇺" },
+  //   { value: "+421", label: "Slovakia", code: "+421", flag: "🇸🇰" },
+  //   { value: "+385", label: "Croatia", code: "+385", flag: "🇭🇷" },
+  //   { value: "+386", label: "Slovenia", code: "+386", flag: "🇸🇮" },
+  //   { value: "+371", label: "Latvia", code: "+371", flag: "🇱🇻" },
+  //   { value: "+372", label: "Estonia", code: "+372", flag: "🇪🇪" },
+  //   { value: "+370", label: "Lithuania", code: "+370", flag: "🇱🇹" },
+  //   { value: "+7", label: "Russia", code: "+7", flag: "🇷🇺" },
+  //   { value: "+380", label: "Ukraine", code: "+380", flag: "🇺🇦" },
+  //   { value: "+375", label: "Belarus", code: "+375", flag: "🇧🇾" },
+  //   { value: "+81", label: "Japan", code: "+81", flag: "🇯🇵" },
+  //   { value: "+82", label: "South Korea", code: "+82", flag: "🇰🇷" },
+  //   { value: "+86", label: "China", code: "+86", flag: "🇨🇳" },
+  //   { value: "+91", label: "India", code: "+91", flag: "🇮🇳" },
+  //   { value: "+971", label: "United Arab Emirates", code: "+971", flag: "🇦🇪" },
+  //   { value: "+966", label: "Saudi Arabia", code: "+966", flag: "🇸🇦" },
+  //   { value: "+965", label: "Kuwait", code: "+965", flag: "🇰🇼" },
+  //   { value: "+973", label: "Bahrain", code: "+973", flag: "🇧🇭" },
+  //   { value: "+974", label: "Qatar", code: "+974", flag: "🇶🇦" },
+  //   { value: "+968", label: "Oman", code: "+968", flag: "🇴🇲" },
+  //   { value: "+962", label: "Jordan", code: "+962", flag: "🇯🇴" },
+  //   { value: "+961", label: "Lebanon", code: "+961", flag: "🇱🇧" },
+  //   { value: "+963", label: "Syria", code: "+963", flag: "🇸🇾" },
+  //   { value: "+964", label: "Iraq", code: "+964", flag: "🇮🇶" },
+  //   { value: "+98", label: "Iran", code: "+98", flag: "🇮🇷" },
+  //   { value: "+90", label: "Turkey", code: "+90", flag: "🇹🇷" },
+  //   { value: "+972", label: "Israel", code: "+972", flag: "🇮🇱" },
+  //   { value: "+20", label: "Egypt", code: "+20", flag: "🇪🇬" },
+  //   { value: "+212", label: "Morocco", code: "+212", flag: "🇲🇦" },
+  //   { value: "+216", label: "Tunisia", code: "+216", flag: "🇹🇳" },
+  //   { value: "+213", label: "Algeria", code: "+213", flag: "🇩🇿" },
+  //   { value: "+218", label: "Libya", code: "+218", flag: "🇱🇾" },
+  //   { value: "+249", label: "Sudan", code: "+249", flag: "🇸🇩" },
+  //   { value: "+251", label: "Ethiopia", code: "+251", flag: "🇪🇹" },
+  //   { value: "+254", label: "Kenya", code: "+254", flag: "🇰🇪" },
+  //   { value: "+234", label: "Nigeria", code: "+234", flag: "🇳🇬" },
+  //   { value: "+27", label: "South Africa", code: "+27", flag: "🇿🇦" },
+  //   { value: "+52", label: "Mexico", code: "+52", flag: "🇲🇽" },
+  //   { value: "+55", label: "Brazil", code: "+55", flag: "🇧🇷" },
+  //   { value: "+54", label: "Argentina", code: "+54", flag: "🇦🇷" },
+  //   { value: "+56", label: "Chile", code: "+56", flag: "🇨🇱" },
+  //   { value: "+57", label: "Colombia", code: "+57", flag: "🇨🇴" },
+  //   { value: "+58", label: "Venezuela", code: "+58", flag: "🇻🇪" },
+  //   { value: "+51", label: "Peru", code: "+51", flag: "🇵🇪" },
+  //   { value: "+593", label: "Ecuador", code: "+593", flag: "🇪🇨" },
+  //   { value: "+595", label: "Paraguay", code: "+595", flag: "🇵🇾" },
+  //   { value: "+598", label: "Uruguay", code: "+598", flag: "🇺🇾" },
+  //   { value: "+591", label: "Bolivia", code: "+591", flag: "🇧🇴" },
+  //   { value: "+970", label: "Palestine", code: "+970", flag: "🇵🇸" },
+  // ];
 
   React.useEffect(() => {
     console.log(" formData = = ", formData);
@@ -197,7 +277,8 @@ const RegisterForm: React.FC<{
       newErrors.houseNumber = "House number is required";
     if (!formData.city) newErrors.city = "City is required";
     if (!formData.country) newErrors.country = "Country is required";
-    if (!formData.phone) newErrors.phone = "Phone is required";
+    if (!formData.countryCode) newErrors.countryCode = "Country code is required";
+    if (!formData.phone) newErrors.phone = "Phone number is required";
 
     if (step === "partner") {
       if (!formData.businessName)
@@ -222,7 +303,7 @@ const RegisterForm: React.FC<{
         email: formData.email,
         password: formData.password,
         date_of_birth: formData.dob,
-        // country_phone_code: formData.countryCode,
+        country_phone_code: formData.countryCode,
         phone_number: formData.phone,
         address: {
           street_name: formData.streetName,
@@ -449,19 +530,21 @@ const RegisterForm: React.FC<{
             placeholder="Select your state"
           />
         </div>
-        <div className="flex flex-col gap-1">
-          <Label>
-            Phone Number<span className="text-red-500">*</span>
-          </Label>
-          <Input
-            value={formData.phone}
-            onChange={(e) => handleInputChange("phone", e.target.value)}
-            placeholder="+970"
-          />
-          {errors.phone && (
-            <span className="text-destructive text-xs">{errors.phone}</span>
-          )}
-        </div>
+        <PhoneInput
+          label="Phone Number"
+          placeholder="Enter phone number"
+          countryOptions={countryPhoneOptions || []}
+          selectedCountry={formData.countryCode}
+          phoneNumber={formData.phone}
+          onCountryChange={(countryCode) => {
+            handleInputChange("countryCode", countryCode);
+            // Clear the phone number when country changes to let the PhoneInput component handle it
+            handleInputChange("phone", "");
+          }}
+          onPhoneChange={(phoneNumber) => handleInputChange("phone", phoneNumber)}
+          error={errors.countryCode || errors.phone}
+          required
+        />
         <div className="md:col-span-2 flex flex-col gap-2">
           <Label>Gender</Label>
           <div className="flex items-center gap-2">
