@@ -9,7 +9,15 @@ export function useLogin() {
 
 export function useRegister() {
   return useMutation({
-    mutationFn: authService.register,
+    mutationFn: ({
+      payload,
+      type,
+      partnerRoles,
+    }: {
+      payload: any;
+      type: "business" | "sales";
+      partnerRoles?: string[];
+    }) => authService.register(payload, type, partnerRoles),
   });
 }
 

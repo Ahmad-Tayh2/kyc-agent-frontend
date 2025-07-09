@@ -83,6 +83,7 @@ const UserMenu = () => {
             className="h-[35px] hover:bg-primary/10"
             onClick={menuItem.onClick}
             disabled={menuItem.isLoading}
+            key={menuItem.label}
           >
             {menuItem?.link ? (
               <NavLink to={menuItem.link}>

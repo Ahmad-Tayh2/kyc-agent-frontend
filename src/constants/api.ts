@@ -9,4 +9,9 @@ export const API_URLS = {
   otp: {
     verify: `${baseUrl}/auth/otp/verify`,
   },
+  address: {
+    countries: `${baseUrl}/countries`,
+    citiesByCountry: (countryId: string | number) =>
+      `${baseUrl}/countries/${countryId}/cities`,
+  },
 };

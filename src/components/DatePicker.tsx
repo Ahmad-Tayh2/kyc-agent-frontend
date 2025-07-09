@@ -1,8 +1,6 @@
-"use client";
-
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
-
+import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -11,6 +9,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+interface DatePickerProps {
+  value: string;
+  onChange: any;
+}
 
 function formatDate(date: Date | undefined) {
   if (!date) {
@@ -31,27 +34,54 @@ function isValidDate(date: Date | undefined) {
   return !isNaN(date.getTime());
 }
 
-export default function DatePicker() {
+export default function DatePicker({ value, onChange }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(
-    new Date("2025-06-01")
+
+  // Initialize date state from value prop (ISO string)
+  const initialDate = value ? new Date(value) : undefined;
+  const [date, setDate] = React.useState<Date | undefined>(initialDate);
+  const [month, setMonth] = React.useState<Date | undefined>(initialDate);
+  const [displayValue, setDisplayValue] = React.useState<string>(
+    formatDate(initialDate)
   );
-  const [month, setMonth] = React.useState<Date | undefined>(date);
-  const [value, setValue] = React.useState(formatDate(date));
+
+  // When value prop changes, update internal state
+  React.useEffect(() => {
+    const newDate = value ? new Date(value) : undefined;
+    setDate(newDate);
+    setMonth(newDate);
+    setDisplayValue(formatDate(newDate));
+  }, [value]);
+
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      setDate(selectedDate);
+      setMonth(selectedDate);
+      setDisplayValue(formatDate(selectedDate));
+      // Pass the ISO string back to parent
+      // Convert JS Date to Luxon DateTime, then to 'YYYY-MM-DD' string
+      onChange(DateTime.fromJSDate(selectedDate).toISODate());
+      setOpen(false);
+    }
+  };
 
   return (
     <div className="relative flex gap-2">
       <Input
         id="date"
-        value={value}
+        value={displayValue}
         placeholder="June 01, 2025"
         className="bg-background pr-10"
         onChange={(e) => {
-          const date = new Date(e.target.value);
-          setValue(e.target.value);
-          if (isValidDate(date)) {
-            setDate(date);
-            setMonth(date);
+          console.log(" value ", e.target.value);
+          const newValue = e.target.value;
+          setDisplayValue(newValue);
+          // Try to parse date from input (optional: you can enhance parsing)
+          const parsedDate = new Date(newValue);
+          if (isValidDate(parsedDate)) {
+            setDate(parsedDate);
+            setMonth(parsedDate);
+            onChange(DateTime.fromJSDate(parsedDate).toISODate());
           }
         }}
         onKeyDown={(e) => {
@@ -84,11 +114,7 @@ export default function DatePicker() {
             captionLayout="dropdown"
             month={month}
             onMonthChange={setMonth}
-            onSelect={(date) => {
-              setDate(date);
-              setValue(formatDate(date));
-              setOpen(false);
-            }}
+            onSelect={handleDateSelect}
           />
         </PopoverContent>
       </Popover>

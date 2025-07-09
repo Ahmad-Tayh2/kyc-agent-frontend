@@ -1,5 +1,5 @@
 import AuthLayout from "@/components/auth/AuthLayout";
-import React, { useState } from "react";
+import { useState } from "react";
 import BusinessTypeStep from "@/components/auth/forms/register/BusinessTypeStep";
 import RegisterForm from "@/components/auth/forms/register/RegisterForm";
 
@@ -20,16 +20,6 @@ const RegisterPage = () => {
     setStep("type");
   };
 
-  const handleSalesSubmit = (data: any) => {
-    // Handle sales person registration submit
-    console.log("Sales Person Registration:", data);
-  };
-
-  // const handlePartnerSubmit = (data: any) => {
-  //   // Handle partner registration submit
-  //   console.log("Partner Registration:", data, "Roles:", partnerRoles);
-  // };
-
   return (
     <AuthLayout>
       {step === "type" ? (
@@ -37,8 +27,8 @@ const RegisterPage = () => {
       ) : (
         <RegisterForm
           onBack={handleBack}
-          onSubmit={handleSalesSubmit}
           step={step}
+          // partnerRoles={partnerRoles}
         />
       )}
     </AuthLayout>

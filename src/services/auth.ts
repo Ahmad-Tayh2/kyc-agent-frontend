@@ -11,6 +11,38 @@ export interface RegisterPayload {
   [key: string]: any;
 }
 
+export interface BusinessPartnerPayload {
+  firstName: string;
+  lastName: string;
+  dob: string;
+  email: string;
+  address: string;
+  city: string;
+  country: string;
+  state?: string;
+  phone: string;
+  gender: string;
+  businessName: string;
+  businessAddress: string;
+  businessCity: string;
+  businessCountry: string;
+  partnerRoles: string[];
+}
+
+export interface SalesPersonPayload {
+  firstName: string;
+  lastName: string;
+  dob: string;
+  email: string;
+  address: string;
+  city: string;
+  country: string;
+  state?: string;
+  phone: string;
+  gender: string;
+  identity: FileList;
+}
+
 export interface OtpPayload {
   code: string;
   email?: string;
@@ -18,25 +50,66 @@ export interface OtpPayload {
 }
 
 export async function login(payload: LoginPayload) {
-  console.log(" test 3");
-  console.log(" url to fetch = ", API_URLS.auth.login);
   const res = await fetch(API_URLS.auth.login, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Login failed");
-  return res.json();
+
+  const response = await res.json();
+
+  if (!res.ok) {
+    const errorMessage = response.message || "Login failed";
+    throw new Error(errorMessage);
+  }
+
+  return response;
 }
 
-export async function register(payload: RegisterPayload) {
+export async function register(
+  payload: RegisterPayload,
+  type: "business" | "sales",
+  partnerRoles?: string[]
+) {
+  console.log(" payload = ", payload);
+  console.log(" type = ", type);
+  console.log(" partnerRoles = ", partnerRoles);
+  // const businessPayload = {
+  //   ...payload,
+  //   partnerRoles: partnerRoles || [],
+  // };
+  // Sales person registration - send as FormData for file upload
+  const formData = new FormData();
+
+  // Add all text fields
+  Object.keys(payload).forEach((key) => {
+    if (key !== "identity") {
+      formData.append(key, payload[key]);
+    }
+  });
+
+  // Add files
+  if (payload.identity && payload.identity.length > 0) {
+    for (let i = 0; i < payload.identity.length; i++) {
+      formData.append("identity", payload.identity[i]);
+    }
+  }
+  // console.log(" partnerRoles = ", partnerRoles);
+
+  console.log(" just before send = =  =", formData);
   const res = await fetch(API_URLS.auth.register, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: formData, // Don't set Content-Type header for FormData
   });
-  if (!res.ok) throw new Error("Registration failed");
-  return res.json();
+
+  const response = await res.json();
+
+  if (!res.ok) {
+    const errorMessage = response.message || "Registration failed";
+    throw new Error(errorMessage);
+  }
+
+  return response;
 }
 
 export async function verifyOtp(payload: OtpPayload) {
@@ -45,8 +118,15 @@ export async function verifyOtp(payload: OtpPayload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("OTP verification failed");
-  return res.json();
+
+  const response = await res.json();
+
+  if (!res.ok) {
+    const errorMessage = response.message || "OTP verification failed";
+    throw new Error(errorMessage);
+  }
+
+  return response;
 }
 
 export async function logout() {
@@ -62,14 +142,20 @@ export async function logout() {
         },
       });
 
-      if (!res.ok) throw new Error("Logout failed");
-
       const response = await res.json();
+
+      if (!res.ok) {
+        const errorMessage = response.message || "Logout failed";
+        throw new Error(errorMessage);
+      }
+
       if (response.status === true) {
         localStorage.removeItem("token");
         return { success: true };
       } else {
-        throw new Error("Logout failed: Invalid response status");
+        const errorMessage =
+          response.message || "Logout failed: Invalid response status";
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Logout API call failed:", error);

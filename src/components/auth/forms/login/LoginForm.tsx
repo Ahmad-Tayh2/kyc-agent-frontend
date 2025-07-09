@@ -42,15 +42,15 @@ const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await loginAsync({ email: data.email, password: data.password, remember: data.remember });
-      console.log("response", response);
-      // Check if response has data with access_token
+      const response = await loginAsync({
+        email: data.email,
+        password: data.password,
+        remember: data.remember,
+      });
       if (response.data && response.data.access_token) {
-        // Store token and redirect to dashboard
-        localStorage.setItem('token', response.data.access_token);
+        localStorage.setItem("token", response.data.access_token);
         navigate(ROUTES.DASHBOARD);
       } else {
-        // Empty response, go to OTP step
         onSuccess(data.email);
       }
     } catch (err) {
@@ -77,7 +77,9 @@ const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
           className="w-full"
           placeholder="Enter your email"
           value={data.email}
-          onChange={(e) => setData(prev => ({ ...prev, email: e.target.value }))}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, email: e.target.value }))
+          }
         />
         {/* {errors.email && (
           <span className="text-destructive text-xs">
@@ -95,7 +97,9 @@ const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
           className="w-full"
           placeholder="••••••••"
           value={data.password}
-          onChange={(e) => setData(prev => ({ ...prev, password: e.target.value }))}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, password: e.target.value }))
+          }
         />
         {/* {errors.password && (
           <span className="text-destructive text-xs">
@@ -106,9 +110,11 @@ const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
       {/* Remember Me & Forgot Password */}
       <div className="flex items-center justify-between">
         <Label className="flex items-center gap-2 text-sm cursor-pointer">
-          <Checkbox 
+          <Checkbox
             checked={data.remember}
-            onCheckedChange={(checked) => setData(prev => ({ ...prev, remember: !!checked }))}
+            onCheckedChange={(checked) =>
+              setData((prev) => ({ ...prev, remember: !!checked }))
+            }
           />
           Remember me
         </Label>

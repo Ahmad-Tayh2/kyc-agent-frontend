@@ -1,6 +1,6 @@
 import AuthLayout from "@/components/auth/AuthLayout";
-import LoginForm from "@/components/auth/forms/LoginForm";
-import TwoFactorForm from "@/components/auth/forms/TwoFactorForm";
+import LoginForm from "@/components/auth/forms/login/LoginForm";
+import TwoFactorForm from "@/components/auth/forms/login/TwoFactorForm";
 import { useState } from "react";
 
 const AuthPage = () => {
