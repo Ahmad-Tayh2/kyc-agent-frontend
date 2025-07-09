@@ -14,10 +14,12 @@ import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UploadIcon from "@/assets/icons/upload-icon.svg?react";
+import FileIcon from "@/assets/icons/file-icon.svg?react";
 import DatePicker from "@/components/DatePicker";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
+import { X } from "lucide-react";
 
 const schema = z
   .object({
@@ -102,12 +104,42 @@ const RegisterForm: React.FC<{
   React.useEffect(() => {
     console.log(" formData = = ", formData);
   }, [formData]);
+  const [identityFiles, setIdentityFiles] = React.useState<File[]>([]);
+  const [fileDragOver, setFileDragOver] = React.useState(false);
 
-  const [identityFiles, setIdentityFiles] = React.useState<FileList | null>(
-    null
-  );
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      if (filesArray.length <= 2) {
+        setIdentityFiles(filesArray);
+      }
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setFileDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setFileDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setFileDragOver(false);
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    if (droppedFiles.length <= 2) {
+      setIdentityFiles(droppedFiles);
+      // Update the file input if needed
+      if (fileRef.current) {
+        fileRef.current.files = e.dataTransfer.files;
+      }
+    }
+  };
+
   const [errors, setErrors] = React.useState<Record<string, string>>({});
-
   const [selectedGender, setSelectedGender] = React.useState<string>("");
 
   const genderOptions = [
@@ -116,17 +148,6 @@ const RegisterForm: React.FC<{
   ];
 
   const fileRef = React.useRef<HTMLInputElement | null>(null);
-
-  // const handleClick = () => {
-  //   fileRef.current?.click();
-  // };
-
-  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-  //   e.preventDefault();
-  //   // handle files
-  //   const files = e.dataTransfer.files;
-  //   // manually trigger input change if needed
-  // };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -148,12 +169,6 @@ const RegisterForm: React.FC<{
         ...prev,
         [field]: "",
       }));
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setIdentityFiles(e.target.files);
     }
   };
 
@@ -492,17 +507,31 @@ const RegisterForm: React.FC<{
           <Label>Identity Attachment [Id/Passport]</Label>
 
           <div
-            className="border cursor-pointer rounded-lg border-gray-300 p-4 flex items-center gap-2 hover:bg-gray-50 transition"
+            className="h-20 border cursor-pointer rounded-lg px-2 hover:bg-gray-50 transition"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
             onClick={() => fileRef.current?.click()}
           >
-            <UploadIcon width={90} />
+            {fileDragOver ? (
+              <div className="bg-primary/8 p-1 border-2 border-primary border-dashed rounded-lg w-full h-full flex flex-col items-center justify-center gap-1">
+                <UploadIcon width={90} />
+                <div className="text-sm font-600 text-primary">
+                  Drop files to upload them
+                </div>
+              </div>
+            ) : (
+              <div className="border-gray-300 rounded-lg w-full h-full flex items-center gap-2 ">
+                <UploadIcon width={90} />
 
-            <span className="text-md text-muted-foreground">
-              <span className="text-primary font-medium">
-                Click to upload attachment
-              </span>{" "}
-              or drag and drop PNG, JPG or PDFs (Maximum 2 images or PDFs)
-            </span>
+                <span className="text-md text-muted-foreground">
+                  <span className="text-primary font-medium">
+                    Click to upload attachment
+                  </span>{" "}
+                  or drag and drop PNG, JPG or PDFs (Maximum 2 images or PDFs)
+                </span>
+              </div>
+            )}
 
             {/* Hidden file input */}
             <Input
@@ -514,6 +543,38 @@ const RegisterForm: React.FC<{
               ref={fileRef}
             />
           </div>
+          {identityFiles?.map((file, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2"
+            >
+              <span>
+                {/* You can use an icon here */}
+                <FileIcon color="var(--primary)" />
+              </span>
+              <div>
+                <div className="font-medium">{file.name}</div>
+                <div className="text-xs text-[#656565]">
+                  {(file.size / 1024).toFixed(0)} KB
+                </div>
+              </div>
+              {/* Optional: Remove button */}
+              <button
+                type="button"
+                className="mb-auto ml-auto text-red-500 cursor-pointer"
+                onClick={() => {
+                  setIdentityFiles((files) =>
+                    files.filter((_, i) => i !== idx)
+                  );
+                  if (fileRef.current) {
+                    fileRef.current.value = "";
+                  }
+                }}
+              >
+                <X width={22} height={22} />
+              </button>
+            </div>
+          ))}
         </div>
       </div>
       {step === "partner" && (
