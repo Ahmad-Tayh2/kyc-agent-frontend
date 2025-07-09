@@ -1,9 +1,6 @@
 import React from "react";
 // import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import "react-phone-input-2/lib/style.css";
-import PhoneInput from "react-phone-input-2";
 // import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,28 +16,8 @@ import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UploadIcon from "@/assets/icons/upload-icon.svg?react";
 import DatePicker from "@/components/DatePicker";
 import SearchableSelect from "@/components/ui/searchable-select";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
-
-function formatDate(date: Date | undefined) {
-  if (!date) {
-    return "";
-  }
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 const schema = z
   .object({
@@ -70,55 +47,6 @@ const schema = z
 
 type FormInputs = z.infer<typeof schema>;
 
-interface FormData {
-  firstName: string;
-  lastName: string;
-  dob: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  streetName: string;
-  houseNumber: string;
-  city: string;
-  country: string;
-}
-
-interface FormFieldProps {
-  label: string;
-  name: keyof FormData;
-  type?: string;
-  placeholder?: string;
-  value: string;
-  onChange: (value: string) => void;
-  error?: string;
-}
-
-const FormField: React.FC<FormFieldProps> = ({
-  label,
-  name,
-  type = "text",
-  placeholder,
-  value,
-  onChange,
-  error,
-}) => (
-  <div className="flex flex-col gap-1 mb-4">
-    <Label className="text-[14px] font-medium">
-      {label}
-      <span className="text-red-500">*</span>
-    </Label>
-    <Input
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
-
-    {error && <span className="text-destructive text-xs">{error}</span>}
-  </div>
-);
-
 const RegisterForm: React.FC<{
   onBack: () => void;
   onSubmit?: (data: FormInputs) => void;
@@ -132,12 +60,6 @@ const RegisterForm: React.FC<{
   //   // resolver: zodResolver(schema),
   //   defaultValues: { gender: "male" },
   // });
-
-  const [phone, setPhone] = React.useState("");
-
-  const handleChange = (value: any) => {
-    setPhone(value);
-  };
 
   // Form state management
   const [formData, setFormData] = React.useState({
