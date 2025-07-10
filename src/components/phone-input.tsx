@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import ReactCountryFlag from "react-country-flag"
-import { Input } from "./input";
-import { Label } from "./label";
+import ReactCountryFlag from "react-country-flag";
+import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon, CheckIcon } from "lucide-react";
 
@@ -13,7 +12,6 @@ interface CountryOption {
 }
 
 interface PhoneInputProps {
-  label: string;
   placeholder?: string;
   countryOptions: CountryOption[];
   selectedCountry: string;
@@ -23,12 +21,10 @@ interface PhoneInputProps {
   error?: string;
   disabled?: boolean;
   loading?: boolean;
-  required?: boolean;
 }
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
-  label,
-  placeholder = "Enter phone number",
+  placeholder = "Choose you phone code",
   countryOptions,
   selectedCountry,
   phoneNumber,
@@ -37,11 +33,12 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   error,
   disabled = false,
   loading = false,
-  required = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedOption, setSelectedOption] = useState<CountryOption | null>(null);
+  const [selectedOption, setSelectedOption] = useState<CountryOption | null>(
+    null
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -75,14 +72,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   const handleCountrySelect = (option: CountryOption) => {
     setSelectedOption(option);
     onCountryChange(option.value);
-    
+
     // Clear the previous phone number and set the new country code
     const newPhoneNumber = `${option.code} `;
     onPhoneChange(newPhoneNumber);
-    
+
     setIsOpen(false);
     setSearchTerm("");
-    
+
     // Auto-focus the input after country selection
     setTimeout(() => {
       if (inputRef.current) {
@@ -106,7 +103,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const cursorPosition = e.target.selectionStart || 0;
-    
+
     if (!selectedOption) {
       onPhoneChange(value);
       return;
@@ -114,17 +111,20 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 
     const phoneCode = selectedOption.code;
     const expectedPrefix = `${phoneCode} `;
-    
+
     // Remove the "+" prefix if user added it manually
-    const cleanValue = value.startsWith('+') ? value.substring(1) : value;
-    
+    const cleanValue = value.startsWith("+") ? value.substring(1) : value;
+
     // If user tries to delete the phone code or space, prevent it
     if (cleanValue.length < expectedPrefix.length) {
       onPhoneChange(expectedPrefix);
       // Reset cursor to end
       setTimeout(() => {
         if (inputRef.current) {
-          inputRef.current.setSelectionRange(expectedPrefix.length, expectedPrefix.length);
+          inputRef.current.setSelectionRange(
+            expectedPrefix.length,
+            expectedPrefix.length
+          );
         }
       }, 0);
       return;
@@ -133,10 +133,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
     // Ensure the phone code and space are always present
     if (!cleanValue.startsWith(expectedPrefix)) {
       // Remove any existing phone codes from the value
-      const cleanedValue = cleanValue.replace(/^\d+\s*/, '');
+      const cleanedValue = cleanValue.replace(/^\d+\s*/, "");
       const newValue = `${expectedPrefix}${cleanedValue}`;
       onPhoneChange(newValue);
-      
+
       // Adjust cursor position
       setTimeout(() => {
         if (inputRef.current) {
@@ -150,60 +150,64 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
     onPhoneChange(cleanValue);
   };
 
-  const handlePhoneInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handlePhoneInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (!selectedOption) return;
-    
+
     const phoneCode = selectedOption.code;
     const expectedPrefix = `${phoneCode} `;
     const cursorPosition = e.currentTarget.selectionStart || 0;
-    
+
     // Account for the "+" prefix in cursor position
     const adjustedCursorPosition = cursorPosition > 0 ? cursorPosition - 1 : 0;
-    
+
     // Prevent backspace/delete if it would remove the phone code or space
-    if ((e.key === 'Backspace' || e.key === 'Delete') && adjustedCursorPosition <= expectedPrefix.length) {
+    if (
+      (e.key === "Backspace" || e.key === "Delete") &&
+      adjustedCursorPosition <= expectedPrefix.length
+    ) {
       e.preventDefault();
     }
   };
 
   const handlePhoneInputClick = (e: React.MouseEvent<HTMLInputElement>) => {
     if (!selectedOption) return;
-    
+
     const phoneCode = selectedOption.code;
     const expectedPrefix = `${phoneCode} `;
     const cursorPosition = e.currentTarget.selectionStart || 0;
-    
+
     // Account for the "+" prefix in cursor position
     const adjustedCursorPosition = cursorPosition > 0 ? cursorPosition - 1 : 0;
-    
+
     // If user clicks before the phone code, move cursor to after the space
     if (adjustedCursorPosition < expectedPrefix.length) {
       setTimeout(() => {
         if (inputRef.current) {
           // Add 1 to account for the "+" prefix
-          inputRef.current.setSelectionRange(expectedPrefix.length + 1, expectedPrefix.length + 1);
+          inputRef.current.setSelectionRange(
+            expectedPrefix.length + 1,
+            expectedPrefix.length + 1
+          );
         }
       }, 0);
     }
   };
 
-  const displayValue = selectedOption ? 
-    phoneNumber.startsWith(selectedOption.code) ? 
-      phoneNumber : 
-      `${selectedOption.code} ${phoneNumber.replace(/^\+\d+\s*/, '')}` 
+  const displayValue = selectedOption
+    ? phoneNumber.startsWith(selectedOption.code)
+      ? phoneNumber
+      : `${selectedOption.code} ${phoneNumber.replace(/^\+\d+\s*/, "")}`
     : phoneNumber;
 
   return (
     <div className="flex flex-col gap-1">
-      <Label className="text-[14px]">
-        {label}
-        {required && <span className="text-red-500">*</span>}
-      </Label>
       <div
-  className="relative flex items-center border border-input rounded-md bg-background
+        className="relative flex items-center border border-input rounded-md bg-background
              focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-colors duration-300"
-  ref={containerRef}
->
+        ref={containerRef}
+      >
         {/* Country Flag Select */}
         <div className="relative h-full">
           <button
@@ -215,13 +219,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
             {selectedOption ? (
               <>
                 <span className="text-lg">
-                <ReactCountryFlag countryCode={selectedOption.countryCode} 
-                svg
-                style={{
-                    width: '25px',
-                    borderRadius: '6px',
-                }}
-             />
+                  <ReactCountryFlag
+                    countryCode={selectedOption.countryCode}
+                    svg
+                    style={{
+                      width: "25px",
+                      borderRadius: "6px",
+                    }}
+                  />
                 </span>
                 <ChevronDownIcon className="h-4 w-4 text-muted-foreground" />
               </>
@@ -236,7 +241,9 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           {isOpen && (
             <div className="absolute z-50 top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto w-[50px] min-w-[150px]">
               {loading ? (
-                <div className="px-3 py-2 text-sm text-gray-500">Loading...</div>
+                <div className="px-3 py-2 text-sm text-gray-500">
+                  Loading...
+                </div>
               ) : filteredOptions.length === 0 ? (
                 <div className="px-3 py-2 text-sm text-gray-500">
                   No countries found
@@ -252,16 +259,19 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                     onClick={() => handleCountrySelect(option)}
                   >
                     <span className="text-lg">
-                    <ReactCountryFlag countryCode={option.countryCode} 
-                svg
-                style={{
-                    width: '25px',
-                    borderRadius: '6px',
-                }}
-             />
+                      <ReactCountryFlag
+                        countryCode={option.countryCode}
+                        svg
+                        style={{
+                          width: "25px",
+                          borderRadius: "6px",
+                        }}
+                      />
                     </span>
                     <span className="flex-1 text-xs">{option.countryCode}</span>
-                    <span className="text-muted-foreground">+{option.code}</span>
+                    <span className="text-muted-foreground">
+                      +{option.code}
+                    </span>
                     {selectedOption?.value === option.value && (
                       <CheckIcon className="h-4 w-4 text-blue-600" />
                     )}
@@ -273,21 +283,25 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         </div>
 
         {/* Phone Number Input */}
-                  <Input
-            ref={inputRef}
-            type="tel"
-            value={displayValue ? `+${displayValue}` : ""}
-            onChange={handlePhoneInputChange}
-            onKeyDown={handlePhoneInputKeyDown}
-            onClick={handlePhoneInputClick}
-            placeholder={selectedOption ? `+${selectedOption.code} ${placeholder}` : placeholder}
-            disabled={disabled}
-            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
-          />
+        <Input
+          ref={inputRef}
+          type="tel"
+          value={displayValue ? `+${displayValue}` : ""}
+          onChange={handlePhoneInputChange}
+          onKeyDown={handlePhoneInputKeyDown}
+          onClick={handlePhoneInputClick}
+          placeholder={
+            selectedOption
+              ? `+${selectedOption.code} ${placeholder}`
+              : placeholder
+          }
+          disabled={disabled || !displayValue}
+          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+        />
       </div>
       {error && <span className="text-destructive text-xs">{error}</span>}
     </div>
   );
 };
 
-export default PhoneInput; 
+export default PhoneInput;

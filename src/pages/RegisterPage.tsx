@@ -5,11 +5,18 @@ import RegisterForm from "@/components/auth/forms/register/RegisterForm";
 
 const RegisterPage = () => {
   const [step, setStep] = useState<"type" | "sales" | "partner">("type");
-
-  const handleTypeNext = (type: "sales" | "partner") => {
+  const [isSendingPartner, setIsSendingPartner] = useState(false);
+  const [isPayoutPartner, setIsPayoutPartner] = useState(false);
+  const handleTypeNext = (
+    type: "sales" | "partner",
+    partnerRoles?: string[]
+  ) => {
     if (type === "sales") {
       setStep("sales");
     } else {
+      console.log("partnerRoles = ", partnerRoles);
+      setIsSendingPartner(partnerRoles?.includes("sending") || false);
+      setIsPayoutPartner(partnerRoles?.includes("payout") || false);
       setStep("partner");
     }
   };
@@ -23,7 +30,12 @@ const RegisterPage = () => {
       {step === "type" ? (
         <BusinessTypeStep onNext={handleTypeNext} />
       ) : (
-        <RegisterForm onBack={handleBack} step={step} />
+        <RegisterForm
+          onBack={handleBack}
+          step={step}
+          isSendingPartner={isSendingPartner}
+          isPayoutPartner={isPayoutPartner}
+        />
       )}
     </AuthLayout>
   );

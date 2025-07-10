@@ -17,7 +17,7 @@ import UploadIcon from "@/assets/icons/upload-icon.svg?react";
 import FileIcon from "@/assets/icons/file-icon.svg?react";
 import DatePicker from "@/components/DatePicker";
 import SearchableSelect from "@/components/ui/searchable-select";
-import PhoneInput from "@/components/ui/phone-input";
+import PhoneInput from "@/components/phone-input";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { X } from "lucide-react";
@@ -35,11 +35,16 @@ const schema = z
     city: z.string().min(1, "Required"),
     country: z.string().min(1, "Required"),
     state: z.string().optional(),
+    postalCode: z.string().optional(),
+    extraAddressDetails: z.string().optional(),
     phone: z.string().min(1, "Required"),
     gender: z.enum(["male", "female"]),
     identity: z.any(),
     businessName: z.string().min(1, "Required"),
-    businessAddress: z.string().min(1, "Required"),
+    businessStreetName: z.string().min(1, "Required"),
+    businessHouseNumber: z.string().min(1, "Required"),
+    businessPostalCode: z.string().optional(),
+    businessExtraAddressDetails: z.string().optional(),
     businessCity: z.string().min(1, "Required"),
     businessCountry: z.string().min(1, "Required"),
   })
@@ -54,7 +59,9 @@ const RegisterForm: React.FC<{
   onBack: () => void;
   onSubmit?: (data: FormInputs) => void;
   step: "partner" | "sales";
-}> = ({ onBack, /*onSubmit,*/ step }) => {
+  isSendingPartner?: boolean;
+  isPayoutPartner?: boolean;
+}> = ({ onBack, /*onSubmit,*/ step, isSendingPartner = false, isPayoutPartner = false }) => {
   // const {
   //   register,
   //   handleSubmit,
@@ -77,11 +84,16 @@ const RegisterForm: React.FC<{
     city: "",
     country: "",
     state: "",
+    postalCode: "",
+    extraAddressDetails: "",
     phone: "",
     countryCode: "",
     gender: "male",
     businessName: "",
-    businessAddress: "",
+    businessStreetName: "",
+    businessHouseNumber: "",
+    businessPostalCode: "",
+    businessExtraAddressDetails: "",
     businessCity: "",
     businessCountry: "",
   });
@@ -90,6 +102,8 @@ const RegisterForm: React.FC<{
   const { data: cities = [], isLoading: citiesLoading } = useCitiesByCountry(
     formData.country || null
   );
+  const { data: businessCities = [], isLoading: businessCitiesLoading } =
+    useCitiesByCountry(formData.businessCountry || null);
 
   const countryOptions =
     countries?.map((country) => ({
@@ -103,83 +117,21 @@ const RegisterForm: React.FC<{
       label: city.name,
     })) || [];
 
+  const businessCityOptions =
+    businessCities?.map((city) => ({
+      value: city.id.toString(),
+      label: city.name,
+    })) || [];
+
   // Country phone code options
-  const countryPhoneOptions = countries?.map((country:any) => {
-  return {  value: country.phone_code,
-    label: country.name,
-    code: country.phone_code,
-    countryCode: country.iso2,
-    // flag: country.flag,
-  }
-  
+  const countryPhoneOptions = countries?.map((country: any) => {
+    return {
+      value: country.phone_code,
+      label: country.name,
+      code: country.phone_code,
+      countryCode: country.iso2,
+    };
   });
-  // const countryPhoneOptions = [
-  //   { value: "+1", label: "United States", code: "+1", flag: "🇺🇸" },
-  //   { value: "+44", label: "United Kingdom", code: "+44", flag: "🇬🇧" },
-  //   { value: "+33", label: "France", code: "+33", flag: "🇫🇷" },
-  //   { value: "+49", label: "Germany", code: "+49", flag: "🇩🇪" },
-  //   { value: "+39", label: "Italy", code: "+39", flag: "🇮🇹" },
-  //   { value: "+34", label: "Spain", code: "+34", flag: "🇪🇸" },
-  //   { value: "+31", label: "Netherlands", code: "+31", flag: "🇳🇱" },
-  //   { value: "+32", label: "Belgium", code: "+32", flag: "🇧🇪" },
-  //   { value: "+41", label: "Switzerland", code: "+41", flag: "🇨🇭" },
-  //   { value: "+43", label: "Austria", code: "+43", flag: "🇦🇹" },
-  //   { value: "+46", label: "Sweden", code: "+46", flag: "🇸🇪" },
-  //   { value: "+47", label: "Norway", code: "+47", flag: "🇳🇴" },
-  //   { value: "+45", label: "Denmark", code: "+45", flag: "🇩🇰" },
-  //   { value: "+358", label: "Finland", code: "+358", flag: "🇫🇮" },
-  //   { value: "+48", label: "Poland", code: "+48", flag: "🇵🇱" },
-  //   { value: "+420", label: "Czech Republic", code: "+420", flag: "🇨🇿" },
-  //   { value: "+36", label: "Hungary", code: "+36", flag: "🇭🇺" },
-  //   { value: "+421", label: "Slovakia", code: "+421", flag: "🇸🇰" },
-  //   { value: "+385", label: "Croatia", code: "+385", flag: "🇭🇷" },
-  //   { value: "+386", label: "Slovenia", code: "+386", flag: "🇸🇮" },
-  //   { value: "+371", label: "Latvia", code: "+371", flag: "🇱🇻" },
-  //   { value: "+372", label: "Estonia", code: "+372", flag: "🇪🇪" },
-  //   { value: "+370", label: "Lithuania", code: "+370", flag: "🇱🇹" },
-  //   { value: "+7", label: "Russia", code: "+7", flag: "🇷🇺" },
-  //   { value: "+380", label: "Ukraine", code: "+380", flag: "🇺🇦" },
-  //   { value: "+375", label: "Belarus", code: "+375", flag: "🇧🇾" },
-  //   { value: "+81", label: "Japan", code: "+81", flag: "🇯🇵" },
-  //   { value: "+82", label: "South Korea", code: "+82", flag: "🇰🇷" },
-  //   { value: "+86", label: "China", code: "+86", flag: "🇨🇳" },
-  //   { value: "+91", label: "India", code: "+91", flag: "🇮🇳" },
-  //   { value: "+971", label: "United Arab Emirates", code: "+971", flag: "🇦🇪" },
-  //   { value: "+966", label: "Saudi Arabia", code: "+966", flag: "🇸🇦" },
-  //   { value: "+965", label: "Kuwait", code: "+965", flag: "🇰🇼" },
-  //   { value: "+973", label: "Bahrain", code: "+973", flag: "🇧🇭" },
-  //   { value: "+974", label: "Qatar", code: "+974", flag: "🇶🇦" },
-  //   { value: "+968", label: "Oman", code: "+968", flag: "🇴🇲" },
-  //   { value: "+962", label: "Jordan", code: "+962", flag: "🇯🇴" },
-  //   { value: "+961", label: "Lebanon", code: "+961", flag: "🇱🇧" },
-  //   { value: "+963", label: "Syria", code: "+963", flag: "🇸🇾" },
-  //   { value: "+964", label: "Iraq", code: "+964", flag: "🇮🇶" },
-  //   { value: "+98", label: "Iran", code: "+98", flag: "🇮🇷" },
-  //   { value: "+90", label: "Turkey", code: "+90", flag: "🇹🇷" },
-  //   { value: "+972", label: "Israel", code: "+972", flag: "🇮🇱" },
-  //   { value: "+20", label: "Egypt", code: "+20", flag: "🇪🇬" },
-  //   { value: "+212", label: "Morocco", code: "+212", flag: "🇲🇦" },
-  //   { value: "+216", label: "Tunisia", code: "+216", flag: "🇹🇳" },
-  //   { value: "+213", label: "Algeria", code: "+213", flag: "🇩🇿" },
-  //   { value: "+218", label: "Libya", code: "+218", flag: "🇱🇾" },
-  //   { value: "+249", label: "Sudan", code: "+249", flag: "🇸🇩" },
-  //   { value: "+251", label: "Ethiopia", code: "+251", flag: "🇪🇹" },
-  //   { value: "+254", label: "Kenya", code: "+254", flag: "🇰🇪" },
-  //   { value: "+234", label: "Nigeria", code: "+234", flag: "🇳🇬" },
-  //   { value: "+27", label: "South Africa", code: "+27", flag: "🇿🇦" },
-  //   { value: "+52", label: "Mexico", code: "+52", flag: "🇲🇽" },
-  //   { value: "+55", label: "Brazil", code: "+55", flag: "🇧🇷" },
-  //   { value: "+54", label: "Argentina", code: "+54", flag: "🇦🇷" },
-  //   { value: "+56", label: "Chile", code: "+56", flag: "🇨🇱" },
-  //   { value: "+57", label: "Colombia", code: "+57", flag: "🇨🇴" },
-  //   { value: "+58", label: "Venezuela", code: "+58", flag: "🇻🇪" },
-  //   { value: "+51", label: "Peru", code: "+51", flag: "🇵🇪" },
-  //   { value: "+593", label: "Ecuador", code: "+593", flag: "🇪🇨" },
-  //   { value: "+595", label: "Paraguay", code: "+595", flag: "🇵🇾" },
-  //   { value: "+598", label: "Uruguay", code: "+598", flag: "🇺🇾" },
-  //   { value: "+591", label: "Bolivia", code: "+591", flag: "🇧🇴" },
-  //   { value: "+970", label: "Palestine", code: "+970", flag: "🇵🇸" },
-  // ];
 
   React.useEffect(() => {
     console.log(" formData = = ", formData);
@@ -243,6 +195,14 @@ const RegisterForm: React.FC<{
       }));
     }
 
+    // Clear business city when business country changes
+    if (field === "businessCountry") {
+      setFormData((prev) => ({
+        ...prev,
+        businessCity: "",
+      }));
+    }
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
@@ -277,14 +237,17 @@ const RegisterForm: React.FC<{
       newErrors.houseNumber = "House number is required";
     if (!formData.city) newErrors.city = "City is required";
     if (!formData.country) newErrors.country = "Country is required";
-    if (!formData.countryCode) newErrors.countryCode = "Country code is required";
+    if (!formData.countryCode)
+      newErrors.countryCode = "Country code is required";
     if (!formData.phone) newErrors.phone = "Phone number is required";
 
     if (step === "partner") {
       if (!formData.businessName)
         newErrors.businessName = "Business name is required";
-      if (!formData.businessAddress)
-        newErrors.businessAddress = "Business address is required";
+      if (!formData.businessStreetName)
+        newErrors.businessStreetName = "Business street name is required";
+      if (!formData.businessHouseNumber)
+        newErrors.businessHouseNumber = "Business house number is required";
       if (!formData.businessCity)
         newErrors.businessCity = "Business city is required";
       if (!formData.businessCountry)
@@ -305,39 +268,41 @@ const RegisterForm: React.FC<{
         date_of_birth: formData.dob,
         country_phone_code: formData.countryCode,
         phone_number: formData.phone,
-        address: {
-          street_name: formData.streetName,
-          house_number: formData.houseNumber,
-          country_id: formData.country,
-          city_id: formData.city,
-          state_id: "",
-          extra_address_details: "",
-          postal_code: "",
-        },
-        agent_type: step === "partner" ? "business" : "sales_person",
-        is_sending_partner: "",
-        is_payout_partner: "",
+        // address: {
+        street_name: formData.streetName,
+        house_number: formData.houseNumber,
+        country_id: formData.country,
+        city_id: formData.city,
+        state_id: formData.state || "",
+        extra_address_details: formData.extraAddressDetails || "",
+        postal_code: formData.postalCode || "",
+        // },
+        agent_type: step === "partner" ? "business_partner" : "sales_person",
+        is_sending_partner: isSendingPartner,
+        is_payout_partner: isPayoutPartner,
         gender: formData.gender,
         identity_attachment: identityFiles,
       };
       if (step === "partner") {
         payload = {
           ...payload,
-          business_name: "",
-          business_street_name: "",
-          business_house_number: "",
-          business_postal_code: "",
-          business_extra_address_details: "",
+          business_name: formData.businessName,
+          business_street_name: formData.businessStreetName,
+          business_house_number: formData.businessHouseNumber,
+          business_postal_code: formData.businessPostalCode,
+          business_extra_address_details: formData.businessExtraAddressDetails,
+          business_country_id: formData.businessCountry,
+          business_city_id: formData.businessCity,
         };
       }
-      console.log(" payload before send = ", payload);
-
-      await registerAsync({
-        payload,
-        type: step === "partner" ? "business" : "sales",
-        partnerRoles: step === "partner" ? [] : undefined, // You'll need to pass partnerRoles from parent
-      });
-      navigate(ROUTES.AUTH.LOGIN);
+      try {
+        const result = await registerAsync(payload);
+        console.log("Registration result:", result);
+        navigate(ROUTES.AUTH.LOGIN);
+      } catch (error) {
+        console.error("Registration error in form:", error);
+        throw error;
+      }
     } catch (err) {
       // error is handled by React Query's error state
     }
@@ -376,15 +341,6 @@ const RegisterForm: React.FC<{
       </h1>
       <p className="mb-4 text-[18px]">Required Details For Registration</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
-        {/* <FormField
-          label={"First Name"}
-          name={"firstName"}
-          type={"text"}
-          placeholder={"Enter your first name"}
-          value={formData.firstName}
-          onChange={(value) => handleInputChange("firstName", value)}
-          error={errors.firstName}
-        /> */}
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             First Name<span className="text-red-500">*</span>
@@ -428,14 +384,25 @@ const RegisterForm: React.FC<{
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Date of Birth<span className="text-red-500">*</span>
+            Phone Number<span className="text-red-500">*</span>
           </Label>
-          {/* <Input type="date" {...register("dob")} placeholder="DD/MM/YY" /> */}
-          <DatePicker value={formData.dob} onChange={handleDateChange} />
-          {errors.dob && (
-            <span className="text-destructive text-xs">{errors.dob}</span>
-          )}
+          <PhoneInput
+            placeholder="Enter phone number"
+            countryOptions={countryPhoneOptions || []}
+            selectedCountry={formData.countryCode}
+            phoneNumber={formData.phone}
+            onCountryChange={(countryCode) => {
+              handleInputChange("countryCode", countryCode);
+              // Clear the phone number when country changes to let the PhoneInput component handle it
+              handleInputChange("phone", "");
+            }}
+            onPhoneChange={(phoneNumber) =>
+              handleInputChange("phone", phoneNumber)
+            }
+            error={errors.countryCode || errors.phone}
+          />
         </div>
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             Password<span className="text-red-500">*</span>
@@ -523,28 +490,44 @@ const RegisterForm: React.FC<{
         />
 
         <div className="flex flex-col gap-1">
-          <Label>State (Optional)</Label>
+          <Label className="text-[14px]">State (Optional)</Label>
           <Input
             value={formData.state}
             onChange={(e) => handleInputChange("state", e.target.value)}
             placeholder="Select your state"
           />
         </div>
-        <PhoneInput
-          label="Phone Number"
-          placeholder="Enter phone number"
-          countryOptions={countryPhoneOptions || []}
-          selectedCountry={formData.countryCode}
-          phoneNumber={formData.phone}
-          onCountryChange={(countryCode) => {
-            handleInputChange("countryCode", countryCode);
-            // Clear the phone number when country changes to let the PhoneInput component handle it
-            handleInputChange("phone", "");
-          }}
-          onPhoneChange={(phoneNumber) => handleInputChange("phone", phoneNumber)}
-          error={errors.countryCode || errors.phone}
-          required
-        />
+        <div className="flex flex-col gap-1">
+          <Label className="text-[14px]">Postal Code (Optional)</Label>
+          <Input
+            value={formData.postalCode}
+            onChange={(e) => handleInputChange("postalCode", e.target.value)}
+            placeholder="Enter postal code"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label className="text-[14px]">
+            Extra Address Details (Optional)
+          </Label>
+          <Input
+            value={formData.extraAddressDetails}
+            onChange={(e) =>
+              handleInputChange("extraAddressDetails", e.target.value)
+            }
+            placeholder="Enter extra address details"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label className="text-[14px]">
+            Date of Birth<span className="text-red-500">*</span>
+          </Label>
+          {/* <Input type="date" {...register("dob")} placeholder="DD/MM/YY" /> */}
+          <DatePicker value={formData.dob} onChange={handleDateChange} />
+          {errors.dob && (
+            <span className="text-destructive text-xs">{errors.dob}</span>
+          )}
+        </div>
+
         <div className="md:col-span-2 flex flex-col gap-2">
           <Label>Gender</Label>
           <div className="flex items-center gap-2">
@@ -667,7 +650,7 @@ const RegisterForm: React.FC<{
             Business Details
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
             <div className="flex flex-col gap-1 md:col-span-2">
               <Label className="text-[14px]">
                 Business Name<span className="text-red-500">*</span>
@@ -685,57 +668,90 @@ const RegisterForm: React.FC<{
                 </span>
               )}
             </div>
-            <div className="flex flex-col gap-1 md:col-span-2">
+            <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
-                Street Name and Number<span className="text-red-500">*</span>
+                Street Name<span className="text-red-500">*</span>
               </Label>
               <Input
-                value={formData.businessAddress}
+                value={formData.businessStreetName}
                 onChange={(e) =>
-                  handleInputChange("businessAddress", e.target.value)
+                  handleInputChange("businessStreetName", e.target.value)
                 }
-                placeholder="Enter street name and number"
+                placeholder="Enter street name"
               />
-              {errors.businessAddress && (
+              {errors.businessStreetName && (
                 <span className="text-destructive text-xs">
-                  {errors.businessAddress}
+                  {errors.businessStreetName}
                 </span>
               )}
             </div>
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
-                City/Town<span className="text-red-500">*</span>
+                House Number<span className="text-red-500">*</span>
               </Label>
               <Input
-                value={formData.businessCity}
+                value={formData.businessHouseNumber}
                 onChange={(e) =>
-                  handleInputChange("businessCity", e.target.value)
+                  handleInputChange("businessHouseNumber", e.target.value)
                 }
-                placeholder="Enter city/town"
+                placeholder="Enter house number"
               />
-              {errors.businessCity && (
+              {errors.businessHouseNumber && (
                 <span className="text-destructive text-xs">
-                  {errors.businessCity}
+                  {errors.businessHouseNumber}
                 </span>
               )}
             </div>
             <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">Postal Code (Optional)</Label>
+              <Input
+                value={formData.businessPostalCode}
+                onChange={(e) =>
+                  handleInputChange("businessPostalCode", e.target.value)
+                }
+                placeholder="Enter postal code"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
-                Country of the Business<span className="text-red-500">*</span>
+                Extra Address Details (Optional)
               </Label>
               <Input
-                value={formData.businessCountry}
+                value={formData.businessExtraAddressDetails}
                 onChange={(e) =>
-                  handleInputChange("businessCountry", e.target.value)
+                  handleInputChange(
+                    "businessExtraAddressDetails",
+                    e.target.value
+                  )
                 }
-                placeholder="Select your country"
+                placeholder="Enter extra address details"
               />
-              {errors.businessCountry && (
-                <span className="text-destructive text-xs">
-                  {errors.businessCountry}
-                </span>
-              )}
             </div>
+            <SearchableSelect
+              label="Business Country"
+              placeholder="Select your business country"
+              options={countryOptions}
+              value={formData.businessCountry}
+              onChange={(value) =>
+                handleInputChange("businessCountry", value.toString())
+              }
+              error={errors.businessCountry}
+              loading={countriesLoading}
+              required
+            />
+            <SearchableSelect
+              label="Business City"
+              placeholder="Select your business city"
+              options={businessCityOptions}
+              value={formData.businessCity}
+              onChange={(value) =>
+                handleInputChange("businessCity", value.toString())
+              }
+              error={errors.businessCity}
+              loading={businessCitiesLoading}
+              disabled={!formData.businessCountry}
+              required
+            />
           </div>
         </div>
       )}
