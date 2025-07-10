@@ -18,9 +18,10 @@ import { useNavigate } from "react-router-dom";
 
 // type LoginFormInputs = z.infer<typeof loginSchema>;
 
-const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
-  onSuccess,
-}) => {
+const LoginForm: React.FC<{
+  onSuccess: (identifier: string) => void;
+  onForgotPassword: () => void;
+}> = ({ onSuccess, onForgotPassword }) => {
   // const {
   //   register,
   //   handleSubmit,
@@ -68,8 +69,10 @@ const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
         </p>
       </div>
       {/* Email Input */}
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+      <div className="flex flex-col gap-1">
+        <Label className="text-[14px]">
+          Email<span className="text-red-500">*</span>
+        </Label>
         <Input
           id="email"
           type="email"
@@ -88,8 +91,10 @@ const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
         )} */}
       </div>
       {/* Password Input */}
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="flex flex-col gap-1">
+        <Label htmlFor="password" className="text-[14px]">
+          Password<span className="text-red-500">*</span>
+        </Label>
         <Input
           id="password"
           type="password"
@@ -118,9 +123,13 @@ const LoginForm: React.FC<{ onSuccess: (identifier: string) => void }> = ({
           />
           Remember me
         </Label>
-        <a href="#" className="text-primary text-sm hover:underline">
+        <button
+          type="button"
+          onClick={onForgotPassword}
+          className="text-primary text-sm hover:underline"
+        >
           Forgot password
-        </a>
+        </button>
       </div>
       {/* Error Message */}
       {error && (

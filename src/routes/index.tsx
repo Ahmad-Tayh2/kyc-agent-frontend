@@ -7,6 +7,7 @@ import PublicRoute from "./PublicRoute";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import AuthPage from '@/pages/AuthPage';
 import RegisterPage from '@/pages/RegisterPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
@@ -37,6 +38,7 @@ export const AppRoutes = () => (
       <Route element={<PublicRoute />}>
         <Route path={ROUTES.AUTH.LOGIN} element={<AuthPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path={ROUTES.AUTH.RESET_PASSWORD} element={<ResetPasswordPage />} />
       </Route>
       <Route element={<PrivateRoute />}>
         <Route element={<DashboardLayout />}>

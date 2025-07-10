@@ -5,6 +5,8 @@ export const API_URLS = {
     login: `${baseUrl}/auth/login`,
     logout: `${baseUrl}/auth/logout`,
     register: `${baseUrl}/auth/register/agent`,
+    forgotPassword: `${baseUrl}/auth/forgot-password`,
+    resetPassword: `${baseUrl}/auth/reset-password`,
   },
   otp: {
     verify: `${baseUrl}/auth/otp/verify`,

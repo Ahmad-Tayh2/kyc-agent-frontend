@@ -25,6 +25,23 @@ export function useLogout() {
   });
 }
 
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: authService.forgotPassword,
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: ({ token, email, password, confirmPassword }: { 
+      token: string; 
+      email: string;
+      password: string; 
+      confirmPassword: string; 
+    }) => authService.resetPassword(token, email, password, confirmPassword),
+  });
+}
+
 // export const useUpdateUser = () => {
 //   const queryClient = useQueryClient();
 

@@ -234,3 +234,61 @@ export async function logout() {
 
   return { success: true };
 }
+
+export async function forgotPassword(email: string) {
+  try {
+    const res = await fetch(API_URLS.auth.forgotPassword, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      const errorMessage = response.message || "Failed to send reset email";
+      throw new Error(errorMessage);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    throw error;
+  }
+}
+
+export async function resetPassword(
+  token: string,
+  email: string,
+  password: string,
+  confirmPassword: string
+) {
+  try {
+    const res = await fetch(API_URLS.auth.resetPassword, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token,
+        email,
+        password,
+        password_confirmation: confirmPassword,
+      }),
+    });
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      const errorMessage = response.message || "Failed to reset password";
+      throw new Error(errorMessage);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Reset password error:", error);
+    throw error;
+  }
+}
