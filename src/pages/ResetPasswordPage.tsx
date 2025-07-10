@@ -1,4 +1,3 @@
-import React from "react";
 import { useSearchParams, Navigate } from "react-router-dom";
 import AuthLayout from "@/components/auth/AuthLayout";
 import ResetPasswordForm from "@/components/auth/forms/reset-password/ResetPasswordForm";
@@ -16,13 +15,13 @@ const ResetPasswordPage = () => {
 
   return (
     <AuthLayout>
-      <ResetPasswordForm 
-        token={token} 
+      <ResetPasswordForm
+        token={token}
         email={email}
-        onBack={() => window.location.href = ROUTES.AUTH.LOGIN} 
+        onBack={() => (window.location.href = ROUTES.AUTH.LOGIN)}
       />
     </AuthLayout>
   );
 };
 
-export default ResetPasswordPage; 
+export default ResetPasswordPage;

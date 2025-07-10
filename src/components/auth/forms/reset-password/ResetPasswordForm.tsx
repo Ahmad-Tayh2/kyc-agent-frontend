@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useResetPassword } from "@/hooks/useAuth";
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 
@@ -117,7 +116,9 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
         />
         {errors.confirmPassword && (
-          <span className="text-destructive text-xs">{errors.confirmPassword}</span>
+          <span className="text-destructive text-xs">
+            {errors.confirmPassword}
+          </span>
         )}
       </div>
 
@@ -152,4 +153,4 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   );
 };
 
-export default ResetPasswordForm; 
+export default ResetPasswordForm;
