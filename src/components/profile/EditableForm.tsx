@@ -53,8 +53,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
 }) => {
   const agentId = React.useMemo(() => getUserIdFromStorage(), []);
   const { data } = useAgentProfile(agentId);
-  const { status: updateAgentStatus, mutateAsync: editAgent } =
-    useUpdateAgentProfile(agentId);
+  // const { status: updateAgentStatus, mutateAsync: editAgent } =
+  //   useUpdateAgentProfile(agentId);
   const [fields, setFields] = useState<any>(
     section === "personal" ? initialPersonalFields : initialCompanyFields
   );
@@ -99,32 +99,32 @@ const EditableForm: React.FC<EditableFormProps> = ({
     setFields((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    // Map fields to API payload
-    const payload =
-      section === "personal"
-        ? {
-            first_name: fields.firstName,
-            last_name: fields.lastName,
-            date_of_birth: fields.dob,
-            email: fields.email,
-            street_name: fields.streetName,
-            city: fields.city,
-            country: fields.country,
-            state: fields.state,
-            phone_number: fields.phone,
-            gender: fields.gender,
-          }
-        : {
-            business_name: fields.businessName,
-            business_street_name: fields.businessStreetName,
-            business_city: fields.businessCity,
-            business_country: fields.businessCountry,
-          };
-    editAgent(payload, {
-      onSuccess: () => setEditMode(false),
-    });
-  };
+  // const handleSave = () => {
+  //   // Map fields to API payload
+  //   const payload =
+  //     section === "personal"
+  //       ? {
+  //           first_name: fields.firstName,
+  //           last_name: fields.lastName,
+  //           date_of_birth: fields.dob,
+  //           email: fields.email,
+  //           street_name: fields.streetName,
+  //           city: fields.city,
+  //           country: fields.country,
+  //           state: fields.state,
+  //           phone_number: fields.phone,
+  //           gender: fields.gender,
+  //         }
+  //       : {
+  //           business_name: fields.businessName,
+  //           business_street_name: fields.businessStreetName,
+  //           business_city: fields.businessCity,
+  //           business_country: fields.businessCountry,
+  //         };
+  //   editAgent(payload, {
+  //     onSuccess: () => setEditMode(false),
+  //   });
+  // };
 
   // Field renderers
   const renderPersonalFields = () => (
