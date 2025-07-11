@@ -38,19 +38,19 @@ const UserMenu = () => {
   const menu: any[] = [
     {
       label: "Profile",
-      icon: <ProfileIcon width={50} height={50} />,
+      icon: <ProfileIcon style={{ width: "25px", height: "25px" }} />,
       onClick: () => {},
-      // link: "#",
+      link: ROUTES.PROFILE,
     },
     {
       label: "Settings",
-      icon: <SettingIcon />,
+      icon: <SettingIcon style={{ width: "25px", height: "25px" }} />,
       onClick: () => {},
       // link: "#",
     },
     {
       label: "Logout",
-      icon: <LogoutIcon />,
+      icon: <LogoutIcon style={{ width: "25px", height: "25px" }} />,
       onClick: handleLogout,
       link: "",
       isLoading: status === "pending",
@@ -80,21 +80,24 @@ const UserMenu = () => {
       <DropdownMenuContent className="mx-3">
         {menu?.map((menuItem: any) => (
           <DropdownMenuItem
-            className="h-[35px] hover:bg-primary/10"
+            className="h-[35px] hover:bg-primary/5 cursor-pointer"
             onClick={menuItem.onClick}
             disabled={menuItem.isLoading}
             key={menuItem.label}
+            asChild
           >
             {menuItem?.link ? (
               <NavLink to={menuItem.link}>
-                {menuItem.icon}
-                <span className="text-[14px]">{menuItem.label}</span>
+                <div className="flex items-center gap-2">
+                  {menuItem.icon}
+                  <span className="text-[14px]">{menuItem.label}</span>
+                </div>
               </NavLink>
             ) : (
-              <>
-                {menuItem.icon}
+              <div className="flex items-center gap-2">
+                <div>{menuItem.icon}</div>
                 <span className="text-[14px]">{menuItem.label}</span>
-              </>
+              </div>
             )}
           </DropdownMenuItem>
         ))}

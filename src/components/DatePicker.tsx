@@ -13,6 +13,7 @@ import {
 interface DatePickerProps {
   value: string;
   onChange: any;
+  disabled?: boolean;
 }
 
 function formatDate(date: Date | undefined) {

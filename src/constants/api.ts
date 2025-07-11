@@ -16,4 +16,8 @@ export const API_URLS = {
     citiesByCountry: (countryId: string | number) =>
       `${baseUrl}/countries/${countryId}/cities`,
   },
+  agents: {
+    get: (agentId: string | number) => `${baseUrl}/agent/${agentId}`,
+    update: (agentId: string | number) => `${baseUrl}/agent/${agentId}`,
+  },
 };

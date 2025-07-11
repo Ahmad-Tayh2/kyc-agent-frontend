@@ -13,10 +13,10 @@ interface CountryOption {
 
 interface PhoneInputProps {
   placeholder?: string;
-  countryOptions: CountryOption[];
-  selectedCountry: string;
+  countryOptions?: CountryOption[];
+  selectedCountry?: string;
   phoneNumber: string;
-  onCountryChange: (countryCode: string) => void;
+  onCountryChange?: (countryCode: string) => void;
   onPhoneChange: (phoneNumber: string) => void;
   error?: string;
   disabled?: boolean;
@@ -44,12 +44,12 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 
   // Find selected option based on selectedCountry
   useEffect(() => {
-    const option = countryOptions.find((opt) => opt.value === selectedCountry);
+    const option = countryOptions?.find((opt) => opt.value === selectedCountry);
     setSelectedOption(option || null);
   }, [selectedCountry, countryOptions]);
 
   // Filter options based on search term
-  const filteredOptions = countryOptions.filter((option) =>
+  const filteredOptions = countryOptions?.filter((option) =>
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -71,7 +71,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 
   const handleCountrySelect = (option: CountryOption) => {
     setSelectedOption(option);
-    onCountryChange(option.value);
+    onCountryChange?.(option.value);
 
     // Clear the previous phone number and set the new country code
     const newPhoneNumber = `${option.code} `;
@@ -244,7 +244,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                 <div className="px-3 py-2 text-sm text-gray-500">
                   Loading...
                 </div>
-              ) : filteredOptions.length === 0 ? (
+              ) : filteredOptions?.length === 0 ? (
                 <div className="px-3 py-2 text-sm text-gray-500">
                   No countries found
                 </div>

@@ -220,6 +220,7 @@ export async function logout() {
 
       if (response.status === true) {
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
         return { success: true };
       } else {
         const errorMessage =
