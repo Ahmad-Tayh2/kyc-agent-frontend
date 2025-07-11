@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 
 interface ForgotPasswordSuccessProps {
   onBack: () => void;
@@ -15,17 +15,9 @@ const ForgotPasswordSuccess: React.FC<ForgotPasswordSuccessProps> = ({
     <div className="space-y-6 my-70 text-center">
       {/* Header Section */}
       <div>
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center gap-2 text-primary mb-4 hover:underline mx-auto"
-        >
-          <ArrowLeft size={20} />
-          Back to login
-        </button>
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <Mail className="w-8 h-8 text-green-600" />
+          <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+            <Mail className="w-8 h-8 text-primary" />
           </div>
         </div>
         <h1 className="text-3xl font-bold mb-2">Check Your Email</h1>
@@ -35,7 +27,7 @@ const ForgotPasswordSuccess: React.FC<ForgotPasswordSuccessProps> = ({
       </div>
 
       {/* Instructions */}
-      <div className="bg-blue-50 border border-primary/20 rounded-lg p-6 text-left">
+      <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-left">
         <h3 className="font-semibold text-primary mb-2">What's next?</h3>
         <ul className="text-primary space-y-2 text-sm">
           <li>• Check your email inbox (and spam folder)</li>

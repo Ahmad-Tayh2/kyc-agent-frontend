@@ -37,7 +37,7 @@ const AuthPage = () => {
 
   return (
     <AuthLayout>
-      {step === "login" && (
+      {step === "login" && false && (
         <LoginForm
           onSuccess={handleLoginSuccess}
           onForgotPassword={handleForgotPassword}
@@ -52,12 +52,13 @@ const AuthPage = () => {
           onSuccess={handleForgotPasswordSuccess}
         />
       )}
-      {step === "forgot-password-success" && (
-        <ForgotPasswordSuccess
-          onBack={handleBackToLogin}
-          email={forgotPasswordEmail}
-        />
-      )}
+      {step === "forgot-password-success" ||
+        (true && (
+          <ForgotPasswordSuccess
+            onBack={handleBackToLogin}
+            email={forgotPasswordEmail}
+          />
+        ))}
     </AuthLayout>
   );
 };
