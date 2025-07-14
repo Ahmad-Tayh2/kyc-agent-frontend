@@ -104,18 +104,18 @@ export async function register(payload: RegisterPayload) {
         console.log(key, value);
       }
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      // const controller = new AbortController();
+      // const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
       res = await fetch(API_URLS.auth.register, {
         method: "POST",
         body: formData,
-        credentials: "include",
-        redirect: "follow",
-        signal: controller.signal,
+        // credentials: "include",
+        // redirect: "follow",
+        // signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
+      // clearTimeout(timeoutId);
     } else {
       // Use JSON for text-only data
       console.log("JSON payload:", payload);
@@ -162,6 +162,7 @@ export async function register(payload: RegisterPayload) {
     const response = await res.json();
 
     if (!res.ok) {
+      console.log(" error = ", response.message);
       const errorMessage = response.message || "Registration failed";
       throw new Error(errorMessage);
     }

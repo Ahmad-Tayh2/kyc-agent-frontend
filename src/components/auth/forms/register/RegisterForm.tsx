@@ -61,7 +61,12 @@ const RegisterForm: React.FC<{
   step: "partner" | "sales";
   isSendingPartner?: boolean;
   isPayoutPartner?: boolean;
-}> = ({ onBack, /*onSubmit,*/ step, isSendingPartner = false, isPayoutPartner = false }) => {
+}> = ({
+  onBack,
+  /*onSubmit,*/ step,
+  isSendingPartner = false,
+  isPayoutPartner = false,
+}) => {
   // const {
   //   register,
   //   handleSubmit,

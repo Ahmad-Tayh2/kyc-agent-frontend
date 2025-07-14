@@ -9,6 +9,7 @@ import AuthPage from "@/pages/AuthPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import UserProfilePage from "@/pages/UserProfilePage";
+import Loader from "@/components/Loader";
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
@@ -34,7 +35,13 @@ const SupportPage = lazy(() => import("../pages/SupportPage"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
 
 export const AppRoutes = () => (
-  <Suspense fallback={<div>Loading...</div>}>
+  <Suspense
+    fallback={
+      <div className="h-screen w-screen">
+        <Loader />
+      </div>
+    }
+  >
     <Routes>
       <Route element={<PublicRoute />}>
         <Route path={ROUTES.AUTH.LOGIN} element={<AuthPage />} />
