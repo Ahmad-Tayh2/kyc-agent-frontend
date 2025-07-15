@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useRegisterAndUpload } from "@/hooks/useAuth";
 import { useCountries, useCitiesByCountry } from "@/hooks/useAddress";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
@@ -223,6 +224,7 @@ const RegisterForm: React.FC<{
     error,
   } = useRegisterAndUpload();
   const navigate = useNavigate();
+  const [t] = useTranslation("global");
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,37 +232,37 @@ const RegisterForm: React.FC<{
     // Basic validation
     const newErrors: Record<string, string> = {};
 
-    if (!formData.firstName) newErrors.firstName = "First name is required";
-    if (!formData.lastName) newErrors.lastName = "Last name is required";
-    if (!formData.dob) newErrors.dob = "Date of birth is required";
-    if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.password) newErrors.password = "Password is required";
+    if (!formData.firstName) newErrors.firstName = t("modules.register.fields.firstName.error");
+    if (!formData.lastName) newErrors.lastName = t("modules.register.fields.lastName.error");
+    if (!formData.dob) newErrors.dob = t("modules.register.fields.dob.error");
+    if (!formData.email) newErrors.email = t("modules.register.fields.email.error");
+    if (!formData.password) newErrors.password = t("modules.register.fields.password.error");
     if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
+      newErrors.password = t("modules.register.fields.password.minLength");
     if (!formData.confirmPassword)
-      newErrors.confirmPassword = "Please confirm your password";
+      newErrors.confirmPassword = t("modules.register.fields.confirmPassword.required");
     if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Passwords don't match";
-    if (!formData.streetName) newErrors.streetName = "Street name is required";
+      newErrors.confirmPassword = t("modules.register.fields.confirmPassword.error");
+    if (!formData.streetName) newErrors.streetName = t("modules.register.fields.streetName.error");
     if (!formData.houseNumber)
-      newErrors.houseNumber = "House number is required";
-    if (!formData.city) newErrors.city = "City is required";
-    if (!formData.country) newErrors.country = "Country is required";
+      newErrors.houseNumber = t("modules.register.fields.houseNumber.error");
+    if (!formData.city) newErrors.city = t("modules.register.fields.city.error");
+    if (!formData.country) newErrors.country = t("modules.register.fields.country.error");
     if (!formData.countryCode)
-      newErrors.countryCode = "Country code is required";
-    if (!formData.phone) newErrors.phone = "Phone number is required";
+      newErrors.countryCode = t("common.validation.required");
+    if (!formData.phone) newErrors.phone = t("modules.register.fields.phone.error");
 
     if (step === "partner") {
       if (!formData.businessName)
-        newErrors.businessName = "Business name is required";
+        newErrors.businessName = t("modules.register.fields.businessName.error");
       if (!formData.businessStreetName)
-        newErrors.businessStreetName = "Business street name is required";
+        newErrors.businessStreetName = t("modules.register.fields.businessStreetName.error");
       if (!formData.businessHouseNumber)
-        newErrors.businessHouseNumber = "Business house number is required";
+        newErrors.businessHouseNumber = t("modules.register.fields.businessHouseNumber.error");
       if (!formData.businessCity)
-        newErrors.businessCity = "Business city is required";
+        newErrors.businessCity = t("modules.register.fields.businessCity.error");
       if (!formData.businessCountry)
-        newErrors.businessCountry = "Business country is required";
+        newErrors.businessCountry = t("modules.register.fields.businessCountry.error");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -331,7 +333,7 @@ const RegisterForm: React.FC<{
   return (
     <form
       onSubmit={onFormSubmit}
-      className={cn("mx-auto relative", step === "sales" && "my-15")}
+      className={cn("mx-auto relative", step === "sales" && "my-15", "mb-10")}
     >
       <button
         type="button"
@@ -342,20 +344,21 @@ const RegisterForm: React.FC<{
       </button>
       <h1 className="text-3xl font-bold mb-2">
         {step === "sales"
-          ? "Register as a Sales Person"
-          : step === "partner" && "Register As Business Partner"}
+          ? t("modules.register.salesTitle")
+          : step === "partner" && t("modules.register.partnerTitle")}
       </h1>
-      <p className="mb-4 text-[18px]">Required Details For Registration</p>
+      <p className="mb-4 text-[18px]">{t("modules.register.requiredDetails")}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            First Name<span className="text-red-500">*</span>
+            {t("modules.register.fields.firstName.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <Input
             // {...register("firstName")}
             value={formData.firstName}
             onChange={(e) => handleInputChange("firstName", e.target.value)}
-            placeholder="Enter your first name"
+            placeholder={t("modules.register.fields.firstName.placeholder")}
           />
           {errors.firstName && (
             <span className="text-destructive text-xs">{errors.firstName}</span>
@@ -363,12 +366,13 @@ const RegisterForm: React.FC<{
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Last Name<span className="text-red-500">*</span>
+            {t("modules.register.fields.lastName.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <Input
             value={formData.lastName}
             onChange={(e) => handleInputChange("lastName", e.target.value)}
-            placeholder="Enter your last name"
+            placeholder={t("modules.register.fields.lastName.placeholder")}
           />
           {errors.lastName && (
             <span className="text-destructive text-xs">{errors.lastName}</span>
@@ -376,13 +380,14 @@ const RegisterForm: React.FC<{
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Email<span className="text-red-500">*</span>
+            {t("modules.register.fields.email.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <Input
             type="email"
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
-            placeholder="Enter your email"
+            placeholder={t("modules.register.fields.email.placeholder")}
           />
           {errors.email && (
             <span className="text-destructive text-xs">{errors.email}</span>
@@ -390,10 +395,11 @@ const RegisterForm: React.FC<{
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Phone Number<span className="text-red-500">*</span>
+            {t("modules.register.fields.phone.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <PhoneInput
-            placeholder="Enter phone number"
+            placeholder={t("modules.register.fields.phone.placeholder")}
             countryOptions={countryPhoneOptions || []}
             selectedCountry={formData.countryCode}
             phoneNumber={formData.phone}
@@ -411,13 +417,14 @@ const RegisterForm: React.FC<{
 
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Password<span className="text-red-500">*</span>
+            {t("modules.register.fields.password.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <Input
             type="password"
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
-            placeholder="Enter your password"
+            placeholder={t("modules.register.fields.password.placeholder")}
           />
           {errors.password && (
             <span className="text-destructive text-xs">{errors.password}</span>
@@ -425,7 +432,8 @@ const RegisterForm: React.FC<{
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Confirm Password<span className="text-red-500">*</span>
+            {t("modules.register.fields.confirmPassword.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <Input
             type="password"
@@ -433,7 +441,7 @@ const RegisterForm: React.FC<{
             onChange={(e) =>
               handleInputChange("confirmPassword", e.target.value)
             }
-            placeholder="Confirm your password"
+            placeholder={t("modules.register.fields.confirmPassword.placeholder")}
           />
           {errors.confirmPassword && (
             <span className="text-destructive text-xs">
@@ -444,12 +452,13 @@ const RegisterForm: React.FC<{
 
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Street Name<span className="text-red-500">*</span>
+            {t("modules.register.fields.streetName.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <Input
             value={formData.streetName}
             onChange={(e) => handleInputChange("streetName", e.target.value)}
-            placeholder="Enter street name"
+            placeholder={t("modules.register.fields.streetName.placeholder")}
           />
           {errors.streetName && (
             <span className="text-destructive text-xs">
@@ -459,12 +468,13 @@ const RegisterForm: React.FC<{
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            House Number<span className="text-red-500">*</span>
+            {t("modules.register.fields.houseNumber.label")}
+            <span className="text-red-500">*</span>
           </Label>
           <Input
             value={formData.houseNumber}
             onChange={(e) => handleInputChange("houseNumber", e.target.value)}
-            placeholder="Enter house number"
+            placeholder={t("modules.register.fields.houseNumber.placeholder")}
           />
           {errors.houseNumber && (
             <span className="text-destructive text-xs">
@@ -473,8 +483,8 @@ const RegisterForm: React.FC<{
           )}
         </div>
         <SearchableSelect
-          label="Country"
-          placeholder="Select your country"
+          label={t("modules.register.fields.country.label")}
+          placeholder={t("modules.register.fields.country.placeholder")}
           options={countryOptions}
           value={formData.country}
           onChange={(value) => handleInputChange("country", value.toString())}
@@ -484,8 +494,8 @@ const RegisterForm: React.FC<{
         />
 
         <SearchableSelect
-          label="City"
-          placeholder="Select your city"
+          label={t("modules.register.fields.city.label")}
+          placeholder={t("modules.register.fields.city.placeholder")}
           options={cityOptions}
           value={formData.city}
           onChange={(value) => handleInputChange("city", value.toString())}
@@ -496,36 +506,37 @@ const RegisterForm: React.FC<{
         />
 
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">State (Optional)</Label>
+          <Label className="text-[14px]">{t("modules.register.fields.state.label")}</Label>
           <Input
             value={formData.state}
             onChange={(e) => handleInputChange("state", e.target.value)}
-            placeholder="Select your state"
+            placeholder={t("modules.register.fields.state.placeholder")}
           />
         </div>
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">Postal Code (Optional)</Label>
+          <Label className="text-[14px]">{t("modules.register.fields.postalCode.label")}</Label>
           <Input
             value={formData.postalCode}
             onChange={(e) => handleInputChange("postalCode", e.target.value)}
-            placeholder="Enter postal code"
+            placeholder={t("modules.register.fields.postalCode.placeholder")}
           />
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Extra Address Details (Optional)
+            {t("modules.register.fields.extraAddressDetails.label")}
           </Label>
           <Input
             value={formData.extraAddressDetails}
             onChange={(e) =>
               handleInputChange("extraAddressDetails", e.target.value)
             }
-            placeholder="Enter extra address details"
+            placeholder={t("modules.register.fields.extraAddressDetails.placeholder")}
           />
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
-            Date of Birth<span className="text-red-500">*</span>
+            {t("modules.register.fields.dob.label")}
+            <span className="text-red-500">*</span>
           </Label>
           {/* <Input type="date" {...register("dob")} placeholder="DD/MM/YY" /> */}
           <DatePicker value={formData.dob} onChange={handleDateChange} />
@@ -535,7 +546,7 @@ const RegisterForm: React.FC<{
         </div>
 
         <div className="md:col-span-2 flex flex-col gap-2">
-          <Label>Gender</Label>
+          <Label>{t("modules.register.fields.gender.label")}</Label>
           <div className="flex items-center gap-2">
             {genderOptions?.map((genderOption: any) => (
               <button
@@ -576,7 +587,7 @@ const RegisterForm: React.FC<{
           </div> */}
         </div>
         <div className="md:col-span-2 flex flex-col gap-2">
-          <Label>Identity Attachment [Id/Passport]</Label>
+          <Label>{t("modules.register.fields.identity.label")}</Label>
 
           <div
             className="h-20 border cursor-pointer rounded-lg px-2 hover:bg-gray-50 transition"
@@ -589,7 +600,7 @@ const RegisterForm: React.FC<{
               <div className="bg-primary/8 p-1 border-2 border-primary border-dashed rounded-lg w-full h-full flex flex-col items-center justify-center gap-1">
                 <UploadIcon width={90} />
                 <div className="text-sm font-600 text-primary">
-                  Drop files to upload them
+                  {t("modules.register.fields.identity.dragDropText")}
                 </div>
               </div>
             ) : (
@@ -598,9 +609,9 @@ const RegisterForm: React.FC<{
 
                 <span className="text-md text-muted-foreground">
                   <span className="text-primary font-medium">
-                    Click to upload attachment
+                    {t("modules.register.fields.identity.clickToUpload")}
                   </span>{" "}
-                  or drag and drop PNG, JPG or PDFs (Maximum 2 images or PDFs)
+                  {t("modules.register.fields.identity.fileTypes")}
                 </span>
               </div>
             )}
@@ -627,7 +638,7 @@ const RegisterForm: React.FC<{
               <div>
                 <div className="font-medium">{file.name}</div>
                 <div className="text-xs text-[#656565]">
-                  {(file.size / 1024).toFixed(0)} KB
+                  {(file.size / 1024).toFixed(0)} {t("modules.register.fields.identity.fileSize")}
                 </div>
               </div>
               {/* Optional: Remove button */}
@@ -653,20 +664,21 @@ const RegisterForm: React.FC<{
         <div>
           <Separator className="my-8" />
           <div className="mt-8 mb-2 text-lg font-semibold">
-            Business Details
+            {t("modules.register.businessDetails")}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
             <div className="flex flex-col gap-1 md:col-span-2">
               <Label className="text-[14px]">
-                Business Name<span className="text-red-500">*</span>
+                {t("modules.register.fields.businessName.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.businessName}
                 onChange={(e) =>
                   handleInputChange("businessName", e.target.value)
                 }
-                placeholder="Enter business name"
+                placeholder={t("modules.register.fields.businessName.placeholder")}
               />
               {errors.businessName && (
                 <span className="text-destructive text-xs">
@@ -676,14 +688,15 @@ const RegisterForm: React.FC<{
             </div>
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
-                Street Name<span className="text-red-500">*</span>
+                {t("modules.register.fields.businessStreetName.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.businessStreetName}
                 onChange={(e) =>
                   handleInputChange("businessStreetName", e.target.value)
                 }
-                placeholder="Enter street name"
+                placeholder={t("modules.register.fields.businessStreetName.placeholder")}
               />
               {errors.businessStreetName && (
                 <span className="text-destructive text-xs">
@@ -693,14 +706,15 @@ const RegisterForm: React.FC<{
             </div>
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
-                House Number<span className="text-red-500">*</span>
+                {t("modules.register.fields.businessHouseNumber.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.businessHouseNumber}
                 onChange={(e) =>
                   handleInputChange("businessHouseNumber", e.target.value)
                 }
-                placeholder="Enter house number"
+                placeholder={t("modules.register.fields.businessHouseNumber.placeholder")}
               />
               {errors.businessHouseNumber && (
                 <span className="text-destructive text-xs">
@@ -709,18 +723,18 @@ const RegisterForm: React.FC<{
               )}
             </div>
             <div className="flex flex-col gap-1">
-              <Label className="text-[14px]">Postal Code (Optional)</Label>
+              <Label className="text-[14px]">{t("modules.register.fields.businessPostalCode.label")}</Label>
               <Input
                 value={formData.businessPostalCode}
                 onChange={(e) =>
                   handleInputChange("businessPostalCode", e.target.value)
                 }
-                placeholder="Enter postal code"
+                placeholder={t("modules.register.fields.businessPostalCode.placeholder")}
               />
             </div>
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
-                Extra Address Details (Optional)
+                {t("modules.register.fields.businessExtraAddressDetails.label")}
               </Label>
               <Input
                 value={formData.businessExtraAddressDetails}
@@ -730,12 +744,12 @@ const RegisterForm: React.FC<{
                     e.target.value
                   )
                 }
-                placeholder="Enter extra address details"
+                placeholder={t("modules.register.fields.businessExtraAddressDetails.placeholder")}
               />
             </div>
             <SearchableSelect
-              label="Business Country"
-              placeholder="Select your business country"
+              label={t("modules.register.fields.businessCountry.label")}
+              placeholder={t("modules.register.fields.businessCountry.placeholder")}
               options={countryOptions}
               value={formData.businessCountry}
               onChange={(value) =>
@@ -746,8 +760,8 @@ const RegisterForm: React.FC<{
               required
             />
             <SearchableSelect
-              label="Business City"
-              placeholder="Select your business city"
+              label={t("modules.register.fields.businessCity.label")}
+              placeholder={t("modules.register.fields.businessCity.placeholder")}
               options={businessCityOptions}
               value={formData.businessCity}
               onChange={(value) =>
@@ -768,10 +782,10 @@ const RegisterForm: React.FC<{
         }}
       >
         <Button type="button" variant="outline" onClick={onBack}>
-          CANCEL
+          {t("common.buttons.cancel")}
         </Button>
         <Button type="submit" disabled={status === "pending"}>
-          REGISTER
+          {t("common.buttons.register")}
         </Button>
       </div>
       {error && (

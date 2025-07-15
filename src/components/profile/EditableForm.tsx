@@ -8,6 +8,7 @@ import PhoneInput from "@/components/phone-input";
 import FileUpload from "./FileUpload";
 import { useCountries, useCitiesByCountry } from "@/hooks/useAddress";
 import { useAgentProfile /*, useUpdateAgentProfile*/ } from "@/hooks/useAgent";
+import { useTranslation } from "react-i18next";
 
 interface EditableFormProps {
   section: "personal" | "company";
@@ -53,6 +54,7 @@ const EditableForm: React.FC<EditableFormProps> = ({
 }) => {
   const agentId = React.useMemo(() => getUserIdFromStorage(), []);
   const { data } = useAgentProfile(agentId);
+  const [t] = useTranslation("global");
   // const { status: updateAgentStatus, mutateAsync: editAgent } =
   //   useUpdateAgentProfile(agentId);
   const [fields, setFields] = useState<any>(
@@ -131,7 +133,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div className="flex flex-col gap-1">
         <Label className="text-[14px]">
-          First Name<span className="text-red-500">*</span>
+          {t("modules.profile.fields.firstName.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           disabled={!editMode}
@@ -141,7 +144,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Last Name<span className="text-red-500">*</span>
+          {t("modules.profile.fields.lastName.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           disabled={!editMode}
@@ -151,7 +155,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Date of Birth<span className="text-red-500">*</span>
+          {t("modules.profile.fields.dob.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <DatePicker
           disabled={!editMode}
@@ -161,7 +166,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Email<span className="text-red-500">*</span>
+          {t("modules.profile.fields.email.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           disabled={!editMode}
@@ -171,7 +177,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div className="col-span-2">
         <Label className="text-[14px]">
-          Street Name and House Number<span className="text-red-500">*</span>
+          {t("modules.profile.fields.streetName.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           disabled={!editMode}
@@ -181,7 +188,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          City<span className="text-red-500">*</span>
+          {t("modules.profile.fields.city.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <SearchableSelect
           disabled={!editMode}
@@ -192,7 +200,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Country of Residence<span className="text-red-500">*</span>
+          {t("modules.profile.fields.countryOfResidence.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <SearchableSelect
           disabled={!editMode}
@@ -202,7 +211,7 @@ const EditableForm: React.FC<EditableFormProps> = ({
         />
       </div>
       <div>
-        <Label className="text-[14px]">State (Optional)</Label>
+        <Label className="text-[14px]">{t("modules.profile.fields.state.label")}</Label>
         <Input
           disabled={!editMode}
           value={fields.state}
@@ -211,7 +220,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Phone Number<span className="text-red-500">*</span>
+          {t("modules.profile.fields.phone.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <PhoneInput
           disabled={!editMode}
@@ -221,7 +231,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Gender<span className="text-red-500">*</span>
+          {t("modules.profile.fields.gender.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <div className="flex gap-2">
           <Button
@@ -230,7 +241,7 @@ const EditableForm: React.FC<EditableFormProps> = ({
             disabled={!editMode}
             onClick={() => handleChange("gender", "male")}
           >
-            Male
+            {t("modules.profile.fields.gender.male")}
           </Button>
           <Button
             type="button"
@@ -238,12 +249,12 @@ const EditableForm: React.FC<EditableFormProps> = ({
             disabled={!editMode}
             onClick={() => handleChange("gender", "female")}
           >
-            Female
+            {t("modules.profile.fields.gender.female")}
           </Button>
         </div>
       </div>
       <div className="col-span-2">
-        <Label className="text-[14px]">Identity Attachment [Id/Passport]</Label>
+        <Label className="text-[14px]">{t("modules.profile.fields.identity.label")}</Label>
         <FileUpload
           file={fields.identity}
           onFileChange={(f) => handleChange("identity", f)}
@@ -256,7 +267,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div>
         <Label className="text-[14px]">
-          Business Name<span className="text-red-500">*</span>
+          {t("modules.profile.fields.businessName.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           disabled={!editMode}
@@ -266,7 +278,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Street Name and Number<span className="text-red-500">*</span>
+          {t("modules.profile.fields.businessStreetName.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           disabled={!editMode}
@@ -276,7 +289,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          City/Town<span className="text-red-500">*</span>
+          {t("modules.profile.fields.businessCity.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <SearchableSelect
           disabled={!editMode}
@@ -290,7 +304,8 @@ const EditableForm: React.FC<EditableFormProps> = ({
       </div>
       <div>
         <Label className="text-[14px]">
-          Country of the Business<span className="text-red-500">*</span>
+          {t("modules.profile.fields.businessCountry.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <SearchableSelect
           disabled={!editMode}

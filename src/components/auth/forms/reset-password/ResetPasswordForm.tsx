@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useResetPassword } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { useTranslation } from "react-i18next";
 
 interface ResetPasswordFormProps {
   token: string;
@@ -24,6 +25,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const { mutateAsync: resetPasswordAsync, status, error } = useResetPassword();
   const navigate = useNavigate();
+  const [t] = useTranslation("global");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,15 +33,23 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     // Basic validation
     const newErrors: Record<string, string> = {};
     if (!formData.password) {
-      newErrors.password = "Password is required";
+      newErrors.password = t(
+        "modules.resetPassword.fields.newPassword.required"
+      );
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+      newErrors.password = t(
+        "modules.resetPassword.fields.newPassword.minLength"
+      );
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
+      newErrors.confirmPassword = t(
+        "modules.resetPassword.fields.confirmNewPassword.required"
+      );
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords don't match";
+      newErrors.confirmPassword = t(
+        "modules.resetPassword.fields.confirmNewPassword.error"
+      );
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -77,24 +87,30 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 my-70">
+    <form onSubmit={handleSubmit} className="space-y-6 my-55">
       {/* Header Section */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Reset Password</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {t("modules.resetPassword.title")}
+        </h1>
         <p className="text-muted-foreground mb-6">
-          Enter your new password for <strong>{email}</strong>
+          {t("modules.resetPassword.subtitle")} <strong>{email}</strong>
         </p>
       </div>
 
       {/* Password Input */}
       <div className="space-y-2">
-        <Label htmlFor="password">New Password</Label>
+        <Label htmlFor="password">
+          {t("modules.resetPassword.fields.newPassword.label")}
+        </Label>
         <Input
           id="password"
           type="password"
           autoComplete="new-password"
           className="w-full"
-          placeholder="Enter your new password"
+          placeholder={t(
+            "modules.resetPassword.fields.newPassword.placeholder"
+          )}
           value={formData.password}
           onChange={(e) => handleInputChange("password", e.target.value)}
         />
@@ -105,13 +121,17 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 
       {/* Confirm Password Input */}
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+        <Label htmlFor="confirmPassword">
+          {t("modules.resetPassword.fields.confirmNewPassword.label")}
+        </Label>
         <Input
           id="confirmPassword"
           type="password"
           autoComplete="new-password"
           className="w-full"
-          placeholder="Confirm your new password"
+          placeholder={t(
+            "modules.resetPassword.fields.confirmNewPassword.placeholder"
+          )}
           value={formData.confirmPassword}
           onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
         />
@@ -136,17 +156,19 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         className="w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]"
         disabled={status === "pending"}
       >
-        {status === "pending" ? "Resetting..." : "RESET PASSWORD"}
+        {status === "pending"
+          ? t("common.messages.resetting")
+          : t("common.buttons.resetPassword")}
       </Button>
 
       <p className="text-muted-foreground">
-        Remember your password?{" "}
+        {t("modules.resetPassword.rememberPassword")}{" "}
         <button
           type="button"
           onClick={onBack}
           className="text-primary hover:underline font-medium"
         >
-          Back to login
+          {t("modules.resetPassword.backToLogin")}
         </button>
       </p>
     </form>

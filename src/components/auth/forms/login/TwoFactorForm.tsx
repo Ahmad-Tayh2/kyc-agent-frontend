@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useVerifyOtp } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { useTranslation } from "react-i18next";
 
 import {
   InputOTP,
@@ -29,6 +30,7 @@ const TwoFactorForm: React.FC<{
   const [resending, setResending] = useState(false);
   // const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
+  const [t] = useTranslation("global");
 
   // const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<OtpInputs>({
   //   resolver: zodResolver(otpSchema),
@@ -98,15 +100,15 @@ const TwoFactorForm: React.FC<{
     >
       <div>
         <h1 className="text-[30px] w-1/2 font-bold mb-2">
-          Two-factor Authentication
+          {t("modules.twoFactor.title")}
         </h1>
         <p className="text-muted-foreground mb-6 w-4/5">
-          Enter the code sent to your mobile number{" "}
-          {phoneOrEmail || "******7339, or email."}
+          {t("modules.twoFactor.subtitle")}{" "}
+          {phoneOrEmail || t("modules.twoFactor.defaultContact")}
         </p>
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">Enter Code</label>
+        <label className="block text-sm font-medium mb-2">{t("modules.twoFactor.enterCode")}</label>
         <InputOTP
           autoFocus
           maxLength={6}
@@ -157,7 +159,7 @@ const TwoFactorForm: React.FC<{
           disabled={timer > 0 || resending}
           onClick={onResend}
         >
-          Resend OTP
+          {t("modules.twoFactor.resendOtp")}
         </Button>
       </div>
       {error && (
@@ -170,7 +172,7 @@ const TwoFactorForm: React.FC<{
         className="w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]"
         disabled={status === "pending"}
       >
-        {status === "pending" ? "Verifying..." : "VERIFY"}
+        {status === "pending" ? t("modules.twoFactor.verifying") : t("modules.twoFactor.verify")}
       </Button>
     </form>
   );

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useForgotPassword } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface ForgotPasswordFormProps {
   onBack: () => void;
@@ -21,15 +22,17 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     error,
   } = useForgotPassword();
 
+  const [t] = useTranslation("global");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Basic validation
     const newErrors: Record<string, string> = {};
     if (!email) {
-      newErrors.email = "Email is required";
+      newErrors.email = t("modules.forgotPassword.fields.email.required");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = t("modules.forgotPassword.fields.email.error");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -56,24 +59,24 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6 my-70">
       {/* Header Section */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Forgot Password</h1>
+        <h1 className="text-3xl font-bold mb-2">{t("modules.forgotPassword.title")}</h1>
         <p className="text-muted-foreground mb-6">
-          Enter your email address and we'll send you a link to reset your
-          password.
+          {t("modules.forgotPassword.subtitle")}
         </p>
       </div>
 
       {/* Email Input */}
       <div className="flex flex-col gap-1">
         <Label className="text-[14px]">
-          Email<span className="text-red-500">*</span>
+          {t("modules.forgotPassword.fields.email.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           id="email"
           type="email"
           autoComplete="email"
           className="w-full"
-          placeholder="Enter your email"
+          placeholder={t("modules.forgotPassword.fields.email.placeholder")}
           value={email}
           onChange={handleEmailChange}
         />
@@ -96,17 +99,17 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
         className="w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]"
         disabled={status === "pending"}
       >
-        {status === "pending" ? "Sending..." : "SEND RESET LINK"}
+        {status === "pending" ? t("common.messages.sending") : t("common.buttons.sendResetLink")}
       </Button>
 
       <p className="text-muted-foreground">
-        Remember your password?{" "}
+        {t("modules.forgotPassword.rememberPassword")}{" "}
         <button
           type="button"
           onClick={onBack}
           className="text-primary hover:underline font-medium"
         >
-          Back to login
+          {t("modules.forgotPassword.backToLogin")}
         </button>
       </p>
     </form>

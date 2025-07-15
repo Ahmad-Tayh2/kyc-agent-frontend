@@ -7,6 +7,7 @@ import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ROUTES } from "@/constants/routes";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 interface BusinessTypeStepProps {
   onNext: (type: "sales" | "partner", partnerRoles?: string[]) => void;
@@ -15,6 +16,7 @@ interface BusinessTypeStepProps {
 const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
   const [selected, setSelected] = useState<"sales" | "partner" | null>(null);
   const [partnerRoles, setPartnerRoles] = useState<string[]>([]);
+  const [t] = useTranslation("global");
 
   const handleRoleChange = (role: string) => {
     setPartnerRoles((prev) =>
@@ -25,7 +27,7 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
   return (
     <div className="w-full max-w-md mx-auto space-y-6 my-70">
       <h1 className="text-3xl font-bold mb-6">
-        What best describes your business status
+        {t("modules.register.businessType.title")}
       </h1>
       <div className="space-y-4">
         <button
@@ -41,11 +43,11 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
             setPartnerRoles([]);
           }}
         >
-          {selected === "sales" ? <CheckedIcon /> : <UncheckedIcon />}I am a
-          Sales Person
+          {selected === "sales" ? <CheckedIcon /> : <UncheckedIcon />}
+          {t("modules.register.businessType.salesPerson")}
           <span
             className="ml-2 text-gray-400 text-xs"
-            title="A person who sells products/services"
+            title={t("modules.register.businessType.salesPersonTooltip")}
           >
             <InfoIcon />
           </span>
@@ -61,11 +63,11 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
           )}
           onClick={() => setSelected("partner")}
         >
-          {selected === "partner" ? <CheckedIcon /> : <UncheckedIcon />}I am a
-          Business Partner/Company
+          {selected === "partner" ? <CheckedIcon /> : <UncheckedIcon />}
+          {t("modules.register.businessType.businessPartner")}
           <span
             className="ml-2 text-gray-400 text-xs"
-            title="A business or company partner"
+            title={t("modules.register.businessType.businessPartnerTooltip")}
           >
             <InfoIcon />
           </span>
@@ -78,10 +80,10 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
                   checked={partnerRoles.includes("sending")}
                   onCheckedChange={() => handleRoleChange("sending")}
                 />
-                Sending Partner
+                {t("modules.register.businessType.partnerRoles.sending")}
                 <span
                   className="text-gray-400 text-xs"
-                  title="Partner for sending money"
+                  title={t("modules.register.businessType.partnerRoles.sendingTooltip")}
                 >
                   <InfoIcon />
                 </span>
@@ -91,18 +93,17 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
                   checked={partnerRoles.includes("payout")}
                   onCheckedChange={() => handleRoleChange("payout")}
                 />
-                Payout Partner
+                {t("modules.register.businessType.partnerRoles.payout")}
                 <span
                   className="text-gray-400 text-xs"
-                  title="Partner for paying out transfers"
+                  title={t("modules.register.businessType.partnerRoles.payoutTooltip")}
                 >
                   <InfoIcon />
                 </span>
               </label>
             </div>
             <div className="bg-primary/10 text-xs rounded p-2 mt-2">
-              You can be our partner for either sending money, paying out
-              transfers or doing both at the same time
+              {t("modules.register.businessType.partnerRoles.description")}
             </div>
           </>
         )}
@@ -119,15 +120,15 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
             : onNext("partner", partnerRoles)
         }
       >
-        NEXT
+        {t("common.buttons.next")}
       </Button>
       <div className="mt-4 text-sm">
-        Already have an account?{" "}
+        {t("modules.register.alreadyHaveAccount")}{" "}
         <a
           href={ROUTES.AUTH.LOGIN}
           className="text-primary hover:underline font-medium"
         >
-          Log in
+          {t("modules.register.loginLink")}
         </a>
       </div>
     </div>

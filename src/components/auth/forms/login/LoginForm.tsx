@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { useLogin } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // const loginSchema = z.object({
 //   email: z.string().email("Invalid email address"),
@@ -61,27 +62,28 @@ const LoginForm: React.FC<{
       // Error is handled by React Query's error state
     }
   };
-
+  const [t] = useTranslation("global");
   return (
-    <form onSubmit={onSubmit} className="space-y-6 my-70">
+    <form onSubmit={onSubmit} className="space-y-6 my-60">
       {/* Header Section */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Log in to your account</h1>
+        <h1 className="text-3xl font-bold mb-2">{t("modules.login.title")}</h1>
         <p className="text-muted-foreground mb-6">
-          Welcome back! Please enter your details.
+          {t("modules.login.subtitle")}
         </p>
       </div>
       {/* Email Input */}
       <div className="flex flex-col gap-1">
         <Label className="text-[14px]">
-          Email<span className="text-red-500">*</span>
+          {t("modules.login.fields.email.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           id="email"
           type="email"
           autoComplete="email"
           className="w-full"
-          placeholder="Enter your email"
+          placeholder={t("modules.login.fields.email.placeholder")}
           value={data.email}
           onChange={(e) =>
             setData((prev) => ({ ...prev, email: e.target.value }))
@@ -96,14 +98,15 @@ const LoginForm: React.FC<{
       {/* Password Input */}
       <div className="flex flex-col gap-1">
         <Label htmlFor="password" className="text-[14px]">
-          Password<span className="text-red-500">*</span>
+          {t("modules.login.fields.password.label")}
+          <span className="text-red-500">*</span>
         </Label>
         <Input
           id="password"
           type="password"
           autoComplete="current-password"
           className="w-full"
-          placeholder="••••••••"
+          placeholder={t("modules.login.fields.password.placeholder")}
           value={data.password}
           onChange={(e) =>
             setData((prev) => ({ ...prev, password: e.target.value }))
@@ -124,14 +127,14 @@ const LoginForm: React.FC<{
               setData((prev) => ({ ...prev, remember: !!checked }))
             }
           />
-          Remember me
+          {t("modules.login.rememberMe")}
         </Label>
         <button
           type="button"
           onClick={onForgotPassword}
           className="text-primary text-sm hover:underline"
         >
-          Forgot password
+          {t("modules.login.forgotPassword")}
         </button>
       </div>
       {/* Error Message */}
@@ -147,16 +150,16 @@ const LoginForm: React.FC<{
         className="w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]"
         disabled={status === "pending"}
       >
-        {status === "pending" ? "Logging in..." : "LOGIN"}
+        {status === "pending" ? t("common.messages.loggingIn") : t("common.buttons.login")}
       </Button>
-      <p className="text-muted-foreground mb-2">Don't have an account?</p>
+      <p className="text-muted-foreground mb-2">{t("modules.login.dontHaveAccount")}</p>
       <p className="text-muted-foreground">
-        Become our business partner and{" "}
+        {t("modules.login.becomePartner")}{" "}
         <a
           href={ROUTES.AUTH.REGISTER}
           className="text-primary hover:underline font-medium"
         >
-          Register
+          {t("modules.login.registerLink")}
         </a>
       </p>
     </form>
