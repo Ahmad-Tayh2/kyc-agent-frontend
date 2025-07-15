@@ -6,7 +6,9 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">{t("pages.dashboard.title")}</h1>
+      <h1 className="text-2xl font-bold">
+        {t("modules.pages.dashboard.title")}
+      </h1>
       <div>{t("modules.pages.dashboard.content")}</div>
     </div>
   );
