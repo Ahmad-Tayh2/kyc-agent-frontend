@@ -251,7 +251,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
               ) : (
                 filteredOptions?.map((option) => (
                   <div
-                    key={option.value}
+                    key={option.countryCode}
                     className={cn(
                       "px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2",
                       selectedOption?.value === option.value && "bg-blue-50"

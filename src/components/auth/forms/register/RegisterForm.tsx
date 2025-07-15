@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useRegister } from "@/hooks/useAuth";
+import { useRegisterAndUpload } from "@/hooks/useAuth";
 import { useCountries, useCitiesByCountry } from "@/hooks/useAddress";
 import { useNavigate } from "react-router-dom";
 
@@ -217,7 +217,11 @@ const RegisterForm: React.FC<{
     }
   };
 
-  const { mutateAsync: registerAsync, status, error } = useRegister();
+  const {
+    mutateAsync: registerAndUpload,
+    status,
+    error,
+  } = useRegisterAndUpload();
   const navigate = useNavigate();
 
   const onFormSubmit = async (e: React.FormEvent) => {
@@ -264,8 +268,8 @@ const RegisterForm: React.FC<{
       return;
     }
 
-    try {
-      let payload: any = {
+    let payload: any = {
+      user: {
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
@@ -273,43 +277,40 @@ const RegisterForm: React.FC<{
         date_of_birth: formData.dob,
         country_phone_code: formData.countryCode,
         phone_number: formData.phone,
-        // address: {
-        street_name: formData.streetName,
-        house_number: formData.houseNumber,
-        country_id: formData.country,
-        city_id: formData.city,
-        state_id: formData.state || "",
-        extra_address_details: formData.extraAddressDetails || "",
-        postal_code: formData.postalCode || "",
-        // },
-        agent_type: step === "partner" ? "business_partner" : "sales_person",
-        is_sending_partner: isSendingPartner,
-        is_payout_partner: isPayoutPartner,
-        gender: formData.gender,
-        identity_attachment: identityFiles,
+        address: {
+          street_name: formData.streetName,
+          house_number: formData.houseNumber,
+          country_id: formData.country,
+          city_id: formData.city,
+          state_id: formData.state || "",
+          extra_address_details: formData.extraAddressDetails || "",
+          postal_code: formData.postalCode || "",
+        },
+      },
+
+      agent_type: step === "partner" ? "business_partner" : "sales_person",
+      is_sending_partner: isSendingPartner,
+      is_payout_partner: isPayoutPartner,
+      gender: formData.gender,
+    };
+    if (step === "partner") {
+      payload = {
+        ...payload,
+        business_name: formData.businessName,
+        business_street_name: formData.businessStreetName,
+        business_house_number: formData.businessHouseNumber,
+        business_postal_code: formData.businessPostalCode,
+        business_extra_address_details: formData.businessExtraAddressDetails,
+        business_country_id: formData.businessCountry,
+        business_city_id: formData.businessCity,
       };
-      if (step === "partner") {
-        payload = {
-          ...payload,
-          business_name: formData.businessName,
-          business_street_name: formData.businessStreetName,
-          business_house_number: formData.businessHouseNumber,
-          business_postal_code: formData.businessPostalCode,
-          business_extra_address_details: formData.businessExtraAddressDetails,
-          business_country_id: formData.businessCountry,
-          business_city_id: formData.businessCity,
-        };
-      }
-      try {
-        const result = await registerAsync(payload);
-        console.log("Registration result:", result);
-        navigate(ROUTES.AUTH.LOGIN);
-      } catch (error) {
-        console.error("Registration error in form:", error);
-        throw error;
-      }
-    } catch (err) {
-      // error is handled by React Query's error state
+    }
+    try {
+      const result = await registerAndUpload({ payload, files: identityFiles });
+      console.log("Registration result:", result);
+      navigate(ROUTES.AUTH.LOGIN);
+    } catch (error) {
+      console.error("Registration error in form:", error);
     }
   };
   const handleDateChange = (date: string) => {

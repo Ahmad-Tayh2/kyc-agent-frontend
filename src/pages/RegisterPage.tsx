@@ -14,7 +14,6 @@ const RegisterPage = () => {
     if (type === "sales") {
       setStep("sales");
     } else {
-      console.log("partnerRoles = ", partnerRoles);
       setIsSendingPartner(partnerRoles?.includes("sending") || false);
       setIsPayoutPartner(partnerRoles?.includes("payout") || false);
       setStep("partner");

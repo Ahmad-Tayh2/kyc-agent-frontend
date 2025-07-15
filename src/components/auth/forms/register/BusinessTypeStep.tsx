@@ -16,9 +16,6 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
   const [selected, setSelected] = useState<"sales" | "partner" | null>(null);
   const [partnerRoles, setPartnerRoles] = useState<string[]>([]);
 
-  React.useEffect(() => {
-    console.log(" partnerRoles = ", partnerRoles);
-  }, [partnerRoles]);
   const handleRoleChange = (role: string) => {
     setPartnerRoles((prev) =>
       prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]
@@ -75,15 +72,8 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
         </button>
         {selected === "partner" && (
           <>
-            {" "}
             <div className="mt-4 flex gap-8">
               <label className="flex items-center gap-2">
-                {/* <input
-                type="checkbox"
-                checked={partnerRoles.includes('sending')}
-                onChange={() => handleRoleChange('sending')}
-                className="accent-primary"
-              /> */}
                 <Checkbox
                   checked={partnerRoles.includes("sending")}
                   onCheckedChange={() => handleRoleChange("sending")}
@@ -97,12 +87,6 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
                 </span>
               </label>
               <label className="flex items-center gap-2">
-                {/* <input
-                type="checkbox"
-                checked={partnerRoles.includes('payout')}
-                onChange={() => handleRoleChange('payout')}
-                className="accent-primary"
-              /> */}
                 <Checkbox
                   checked={partnerRoles.includes("payout")}
                   onCheckedChange={() => handleRoleChange("payout")}
@@ -126,7 +110,9 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
       <Separator />
       <Button
         className="w-32 mt-4"
-        disabled={!selected}
+        disabled={
+          !selected || (selected === "partner" && !partnerRoles?.length)
+        }
         onClick={() =>
           selected === "sales"
             ? onNext("sales")
