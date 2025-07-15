@@ -5,10 +5,106 @@ import Logo from "@/assets/logo.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import NotificationIcon from "@/assets/icons/notification.svg?react";
 import CalcIcon from "@/assets/icons/calc.svg?react";
+import ProfileIcon from "@/assets/icons/profile-icon.svg?react";
+import SettingIcon from "@/assets/icons/settings-icon.svg?react";
+import LogoutIcon from "@/assets/icons/logout-icon.svg?react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { NavLink, useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+import { useLogout } from "@/hooks/useAuth";
 interface TopbarProps {
   onMenuClick?: () => void;
 }
+const UserMenu = () => {
+  // const { handleLogout, user } = useAuth();
+  const { mutateAsync: logoutAsync, status } = useLogout();
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    try {
+      await logoutAsync();
+      navigate(ROUTES.AUTH.LOGIN);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const menu: any[] = [
+    {
+      label: "Profile",
+      icon: <ProfileIcon style={{ width: "25px", height: "25px" }} />,
+      onClick: () => {},
+      link: ROUTES.PROFILE,
+    },
+    {
+      label: "Settings",
+      icon: <SettingIcon style={{ width: "25px", height: "25px" }} />,
+      onClick: () => {},
+      // link: "#",
+    },
+    {
+      label: "Logout",
+      icon: <LogoutIcon style={{ width: "25px", height: "25px" }} />,
+      onClick: handleLogout,
+      link: "",
+      isLoading: status === "pending",
+    },
+  ];
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="outline-none cursor-pointer">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center">
+            <div className="rounded-full border-1 border-[#E88D7D] bg-[#E88D7D] p-1 flex items-center justify-center">
+              <Avatar className="bg-[#232728] w-9 h-9">
+                <AvatarImage
+                  src={userImage}
+                  className="object-cover w-full h-full"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </div>
+            <div className="mt-[-10px] px-2 py-0 rounded-full bg-[#E88D7D] text-white text-xs font-semibold border-1 border-[#E88D7D] shadow-md z-1">
+              Agent
+            </div>
+          </div>
+          <ArrowDownIcon width={18} height={20} />
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="mx-3">
+        {menu?.map((menuItem: any) => (
+          <DropdownMenuItem
+            className="h-[35px] hover:bg-primary/5 cursor-pointer"
+            onClick={menuItem.onClick}
+            disabled={menuItem.isLoading}
+            key={menuItem.label}
+            asChild
+          >
+            {menuItem?.link ? (
+              <NavLink to={menuItem.link}>
+                <div className="flex items-center gap-2">
+                  {menuItem.icon}
+                  <span className="text-[14px]">{menuItem.label}</span>
+                </div>
+              </NavLink>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div>{menuItem.icon}</div>
+                <span className="text-[14px]">{menuItem.label}</span>
+              </div>
+            )}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   return (
     <header className="flex items-center justify-between h-20 px-4 bg-secondary border-b shadow-sm">
@@ -43,23 +139,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
           <span>Simulate Transfer</span>
         </div>
         <NotificationIcon width={30} height={30} />
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col items-center">
-            <div className="rounded-full border-1 border-[#E88D7D] bg-[#E88D7D] p-1 flex items-center justify-center">
-              <Avatar className="bg-[#232728] w-9 h-9">
-                <AvatarImage
-                  src={userImage}
-                  className="object-cover w-full h-full"
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="mt-[-10px] px-2 py-0 rounded-full bg-[#E88D7D] text-white text-xs font-semibold border-1 border-[#E88D7D] shadow-md z-1">
-              Agent
-            </div>
-          </div>
-          <ArrowDownIcon width={18} height={20} />
-        </div>
+        <UserMenu />
       </div>
     </header>
   );

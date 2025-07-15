@@ -1,0 +1,535 @@
+{
+  "common": {
+    "fields": {
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter your email",
+        "type": "email"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter your password",
+        "type": "password"
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "Confirm your password",
+        "type": "password"
+      },
+      "newPassword": {
+        "label": "New Password",
+        "placeholder": "Enter your new password",
+        "type": "password"
+      },
+      "confirmNewPassword": {
+        "label": "Confirm New Password",
+        "placeholder": "Confirm your new password",
+        "type": "password"
+      },
+      "firstName": {
+        "label": "First Name",
+        "placeholder": "Enter your first name",
+        "type": "text"
+      },
+      "lastName": {
+        "label": "Last Name",
+        "placeholder": "Enter your last name",
+        "type": "text"
+      },
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter your name",
+        "type": "text"
+      },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "Enter your phone number",
+        "type": "tel"
+      },
+      "dob": {
+        "label": "Date of Birth",
+        "placeholder": "Select your date of birth",
+        "type": "date"
+      },
+      "gender": {
+        "label": "Gender",
+        "male": "Male",
+        "female": "Female"
+      },
+      "streetName": {
+        "label": "Street Name",
+        "placeholder": "Enter street name",
+        "type": "text"
+      },
+      "houseNumber": {
+        "label": "House Number",
+        "placeholder": "Enter house number",
+        "type": "text"
+      },
+      "city": {
+        "label": "City",
+        "placeholder": "Select your city"
+      },
+      "country": {
+        "label": "Country",
+        "placeholder": "Select your country"
+      },
+      "countryOfResidence": {
+        "label": "Country of Residence",
+        "placeholder": "Select your country of residence"
+      },
+      "state": {
+        "label": "State (Optional)",
+        "placeholder": "Select your state",
+        "type": "text"
+      },
+      "postalCode": {
+        "label": "Postal Code (Optional)",
+        "placeholder": "Enter postal code",
+        "type": "text"
+      },
+      "extraAddressDetails": {
+        "label": "Extra Address Details (Optional)",
+        "placeholder": "Enter extra address details",
+        "type": "text"
+      },
+      "businessName": {
+        "label": "Business Name",
+        "placeholder": "Enter business name",
+        "type": "text"
+      },
+      "businessStreetName": {
+        "label": "Business Street Name",
+        "placeholder": "Enter street name",
+        "type": "text"
+      },
+      "businessHouseNumber": {
+        "label": "Business House Number",
+        "placeholder": "Enter house number",
+        "type": "text"
+      },
+      "businessCity": {
+        "label": "Business City",
+        "placeholder": "Select your business city"
+      },
+      "businessCountry": {
+        "label": "Business Country",
+        "placeholder": "Select your business country"
+      },
+      "businessPostalCode": {
+        "label": "Business Postal Code (Optional)",
+        "placeholder": "Enter postal code",
+        "type": "text"
+      },
+      "businessExtraAddressDetails": {
+        "label": "Business Extra Address Details (Optional)",
+        "placeholder": "Enter extra address details",
+        "type": "text"
+      },
+      "identity": {
+        "label": "Identity Attachment [Id/Passport]",
+        "placeholder": "Upload identity documents",
+        "dragDropText": "Drop files to upload them",
+        "clickToUpload": "Click to upload attachment",
+        "fileTypes": "or drag and drop PNG, JPG or PDFs (Maximum 2 images or PDFs)",
+        "fileSize": "KB"
+      }
+    },
+    "validation": {
+      "required": "This field is required",
+      "email": "Please enter a valid email address",
+      "minLength": "Must be at least {{min}} characters",
+      "maxLength": "Must be no more than {{max}} characters",
+      "passwordMismatch": "Passwords don't match",
+      "invalidFormat": "Invalid format",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "confirmPasswordRequired": "Please confirm your password"
+    },
+    "buttons": {
+      "submit": "Submit",
+      "cancel": "CANCEL",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous",
+      "close": "Close",
+      "confirm": "Confirm",
+      "reset": "Reset",
+      "search": "Search",
+      "filter": "Filter",
+      "sort": "Sort",
+      "refresh": "Refresh",
+      "download": "Download",
+      "upload": "Upload",
+      "send": "Send",
+      "login": "LOGIN",
+      "register": "REGISTER",
+      "forgotPassword": "Forgot Password",
+      "resetPassword": "Reset Password",
+      "sendResetLink": "SEND RESET LINK",
+      "backToLogin": "Back to login",
+      "tryAgain": "Try again"
+    },
+    "messages": {
+      "loading": "Loading...",
+      "saving": "Saving...",
+      "sending": "Sending...",
+      "resetting": "Resetting...",
+      "loggingIn": "Logging in...",
+      "registering": "Registering...",
+      "error": "An error occurred",
+      "success": "Success",
+      "warning": "Warning",
+      "info": "Information",
+      "noOptionsFound": "No options found"
+    }
+  },
+  "modules": {
+    "login": {
+      "title": "Log in to your account",
+      "subtitle": "Welcome back! Please enter your details.",
+      "fields": {
+        "email": {
+          "label": "$t(common.fields.email.label)",
+          "placeholder": "$t(common.fields.email.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "password": {
+          "label": "$t(common.fields.password.label)",
+          "placeholder": "$t(common.fields.password.placeholder)",
+          "error": "$t(common.validation.required)"
+        }
+      },
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password",
+      "dontHaveAccount": "Don't have an account?",
+      "becomePartner": "Become our business partner and",
+      "registerLink": "Register"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+      "fields": {
+        "email": {
+          "label": "$t(common.fields.email.label)",
+          "placeholder": "$t(common.fields.email.placeholder)",
+          "error": "$t(common.validation.required)"
+        }
+      },
+      "rememberPassword": "Remember your password?",
+      "backToLogin": "Back to login"
+    },
+    "forgotPasswordSuccess": {
+      "title": "Check Your Email",
+      "subtitle": "We've sent a password reset link to",
+      "nextSteps": {
+        "title": "What's next?",
+        "steps": [
+          "Check your email inbox (and spam folder)",
+          "Click on the password reset link in the email",
+          "Create a new password for your account",
+          "Sign in with your new password"
+        ]
+      },
+      "didntReceiveEmail": "Didn't receive the email?",
+      "tryAgain": "Try again"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your new password for",
+      "fields": {
+        "newPassword": {
+          "label": "$t(common.fields.newPassword.label)",
+          "placeholder": "$t(common.fields.newPassword.placeholder)",
+          "error": "$t(common.validation.required)",
+          "minLength": "$t(common.validation.passwordMinLength)"
+        },
+        "confirmNewPassword": {
+          "label": "$t(common.fields.confirmNewPassword.label)",
+          "placeholder": "$t(common.fields.confirmNewPassword.placeholder)",
+          "error": "$t(common.validation.passwordMismatch)",
+          "required": "$t(common.validation.confirmPasswordRequired)"
+        }
+      },
+      "rememberPassword": "Remember your password?",
+      "backToLogin": "Back to login"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Please fill in the form below to create your account.",
+      "salesTitle": "Register as a Sales Person",
+      "partnerTitle": "Register As Business Partner",
+      "requiredDetails": "Required Details For Registration",
+      "businessDetails": "Business Details",
+      "businessType": {
+        "title": "What best describes your business status",
+        "salesPerson": "I am a Sales Person",
+        "salesPersonTooltip": "A person who sells products/services",
+        "businessPartner": "I am a Business Partner/Company",
+        "businessPartnerTooltip": "A business or company partner",
+        "partnerRoles": {
+          "sending": "Sending Partner",
+          "sendingTooltip": "Partner for sending money",
+          "payout": "Payout Partner",
+          "payoutTooltip": "Partner for paying out transfers",
+          "description": "You can be our partner for either sending money, paying out transfers or doing both at the same time"
+        }
+      },
+      "fields": {
+        "firstName": {
+          "label": "$t(common.fields.firstName.label)",
+          "placeholder": "$t(common.fields.firstName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "lastName": {
+          "label": "$t(common.fields.lastName.label)",
+          "placeholder": "$t(common.fields.lastName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "dob": {
+          "label": "$t(common.fields.dob.label)",
+          "placeholder": "$t(common.fields.dob.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "email": {
+          "label": "$t(common.fields.email.label)",
+          "placeholder": "$t(common.fields.email.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "password": {
+          "label": "$t(common.fields.password.label)",
+          "placeholder": "$t(common.fields.password.placeholder)",
+          "error": "$t(common.validation.required)",
+          "minLength": "$t(common.validation.passwordMinLength)"
+        },
+        "confirmPassword": {
+          "label": "$t(common.fields.confirmPassword.label)",
+          "placeholder": "$t(common.fields.confirmPassword.placeholder)",
+          "error": "$t(common.validation.passwordMismatch)",
+          "required": "$t(common.validation.confirmPasswordRequired)"
+        },
+        "phone": {
+          "label": "$t(common.fields.phone.label)",
+          "placeholder": "$t(common.fields.phone.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "gender": {
+          "label": "$t(common.fields.gender.label)",
+          "male": "$t(common.fields.gender.male)",
+          "female": "$t(common.fields.gender.female)"
+        },
+        "streetName": {
+          "label": "$t(common.fields.streetName.label)",
+          "placeholder": "$t(common.fields.streetName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "houseNumber": {
+          "label": "$t(common.fields.houseNumber.label)",
+          "placeholder": "$t(common.fields.houseNumber.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "city": {
+          "label": "$t(common.fields.city.label)",
+          "placeholder": "$t(common.fields.city.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "country": {
+          "label": "$t(common.fields.country.label)",
+          "placeholder": "$t(common.fields.country.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "state": {
+          "label": "$t(common.fields.state.label)",
+          "placeholder": "$t(common.fields.state.placeholder)"
+        },
+        "postalCode": {
+          "label": "$t(common.fields.postalCode.label)",
+          "placeholder": "$t(common.fields.postalCode.placeholder)"
+        },
+        "extraAddressDetails": {
+          "label": "$t(common.fields.extraAddressDetails.label)",
+          "placeholder": "$t(common.fields.extraAddressDetails.placeholder)"
+        },
+        "businessName": {
+          "label": "$t(common.fields.businessName.label)",
+          "placeholder": "$t(common.fields.businessName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessStreetName": {
+          "label": "$t(common.fields.businessStreetName.label)",
+          "placeholder": "$t(common.fields.businessStreetName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessHouseNumber": {
+          "label": "$t(common.fields.businessHouseNumber.label)",
+          "placeholder": "$t(common.fields.businessHouseNumber.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessCity": {
+          "label": "$t(common.fields.businessCity.label)",
+          "placeholder": "$t(common.fields.businessCity.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessCountry": {
+          "label": "$t(common.fields.businessCountry.label)",
+          "placeholder": "$t(common.fields.businessCountry.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessPostalCode": {
+          "label": "$t(common.fields.businessPostalCode.label)",
+          "placeholder": "$t(common.fields.businessPostalCode.placeholder)"
+        },
+        "businessExtraAddressDetails": {
+          "label": "$t(common.fields.businessExtraAddressDetails.label)",
+          "placeholder": "$t(common.fields.businessExtraAddressDetails.placeholder)"
+        },
+        "identity": {
+          "label": "$t(common.fields.identity.label)",
+          "dragDropText": "$t(common.fields.identity.dragDropText)",
+          "clickToUpload": "$t(common.fields.identity.clickToUpload)",
+          "fileTypes": "$t(common.fields.identity.fileTypes)",
+          "fileSize": "$t(common.fields.identity.fileSize)"
+        }
+      },
+      "alreadyHaveAccount": "Already have an account?",
+      "loginLink": "Log in"
+    },
+    "twoFactor": {
+      "title": "Two-factor Authentication",
+      "subtitle": "Enter the code sent to your mobile number",
+      "defaultContact": "******7339, or email.",
+      "enterCode": "Enter Code",
+      "resendOtp": "Resend OTP",
+      "verifying": "Verifying...",
+      "verify": "VERIFY"
+    },
+    "profile": {
+      "title": "Profile Details",
+      "subtitle": "Manage your profile information",
+      "greeting": "Hello,",
+      "personalInfo": {
+        "title": "Personal Information",
+        "subtitle": "Update your personal details"
+      },
+      "companyInfo": {
+        "title": "Company Information",
+        "subtitle": "Update your company details"
+      },
+      "fields": {
+        "firstName": {
+          "label": "$t(common.fields.firstName.label)",
+          "placeholder": "$t(common.fields.firstName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "lastName": {
+          "label": "$t(common.fields.lastName.label)",
+          "placeholder": "$t(common.fields.lastName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "dob": {
+          "label": "$t(common.fields.dob.label)",
+          "placeholder": "$t(common.fields.dob.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "email": {
+          "label": "$t(common.fields.email.label)",
+          "placeholder": "$t(common.fields.email.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "streetName": {
+          "label": "$t(common.fields.streetName.label)",
+          "placeholder": "$t(common.fields.streetName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "city": {
+          "label": "$t(common.fields.city.label)",
+          "placeholder": "$t(common.fields.city.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "countryOfResidence": {
+          "label": "$t(common.fields.countryOfResidence.label)",
+          "placeholder": "$t(common.fields.countryOfResidence.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "state": {
+          "label": "$t(common.fields.state.label)",
+          "placeholder": "$t(common.fields.state.placeholder)"
+        },
+        "phone": {
+          "label": "$t(common.fields.phone.label)",
+          "placeholder": "$t(common.fields.phone.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "gender": {
+          "label": "$t(common.fields.gender.label)",
+          "male": "$t(common.fields.gender.male)",
+          "female": "$t(common.fields.gender.female)"
+        },
+        "businessName": {
+          "label": "$t(common.fields.businessName.label)",
+          "placeholder": "$t(common.fields.businessName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessStreetName": {
+          "label": "$t(common.fields.businessStreetName.label)",
+          "placeholder": "$t(common.fields.businessStreetName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessCity": {
+          "label": "$t(common.fields.businessCity.label)",
+          "placeholder": "$t(common.fields.businessCity.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessCountry": {
+          "label": "$t(common.fields.businessCountry.label)",
+          "placeholder": "$t(common.fields.businessCountry.placeholder)",
+          "error": "$t(common.validation.required)"
+        }
+      }
+    },
+    "pages": {
+      "dashboard": {
+        "title": "Dashboard",
+        "content": "Dashboard content goes here."
+      },
+      "customers": {
+        "title": "Customers"
+      },
+      "customerForms": {
+        "title": "Customer Forms"
+      },
+      "sendRemittance": {
+        "title": "Send Remittance"
+      },
+      "transfers": {
+        "title": "Transfers"
+      },
+      "myWallet": {
+        "title": "My Wallet"
+      },
+      "paymentLinks": {
+        "title": "Payment Links"
+      },
+      "accountStatements": {
+        "title": "Account Statements"
+      },
+      "help": {
+        "title": "Help"
+      },
+      "payoutLocations": {
+        "title": "Payout Locations"
+      },
+      "addMoney": {
+        "title": "Add Money"
+      },
+      "commissionEarned": {
+        "title": "Commission Earned"
+      },
+      "moneyWithdrawals": {
+        "title": "Money Withdrawals"
+      }
+    }
+  }
+}

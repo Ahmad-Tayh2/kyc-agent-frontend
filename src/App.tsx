@@ -1,15 +1,15 @@
 import { BrowserRouter as Router } from "react-router-dom";
-
-import { DashboardLayout } from "./layouts/DashboardLayout";
 import { AppRoutes } from "./routes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 function App() {
   return (
-    <Router>
-      <DashboardLayout>
+    <QueryClientProvider client={queryClient}>
+      <Router>
         <AppRoutes />
-      </DashboardLayout>
-    </Router>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
