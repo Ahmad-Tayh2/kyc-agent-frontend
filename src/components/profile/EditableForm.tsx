@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import SearchableSelect from "@/components/ui/searchable-select";
 import DatePicker from "@/components/DatePicker";
-import PhoneInput from "@/components/phone-input";
+import PhoneInput from "@/components/PhoneInput";
 import FileUpload from "./FileUpload";
 import { useCountries, useCitiesByCountry } from "@/hooks/useAddress";
 import { useAgentProfile /*, useUpdateAgentProfile*/ } from "@/hooks/useAgent";
@@ -211,7 +211,9 @@ const EditableForm: React.FC<EditableFormProps> = ({
         />
       </div>
       <div>
-        <Label className="text-[14px]">{t("modules.profile.fields.state.label")}</Label>
+        <Label className="text-[14px]">
+          {t("modules.profile.fields.state.label")}
+        </Label>
         <Input
           disabled={!editMode}
           value={fields.state}
@@ -254,7 +256,9 @@ const EditableForm: React.FC<EditableFormProps> = ({
         </div>
       </div>
       <div className="col-span-2">
-        <Label className="text-[14px]">{t("modules.profile.fields.identity.label")}</Label>
+        <Label className="text-[14px]">
+          {t("modules.profile.fields.identity.label")}
+        </Label>
         <FileUpload
           file={fields.identity}
           onFileChange={(f) => handleChange("identity", f)}
