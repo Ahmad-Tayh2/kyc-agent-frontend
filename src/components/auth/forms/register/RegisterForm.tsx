@@ -18,7 +18,7 @@ import UploadIcon from "@/assets/icons/upload-icon.svg?react";
 import FileIcon from "@/assets/icons/file-icon.svg?react";
 import DatePicker from "@/components/DatePicker";
 import SearchableSelect from "@/components/ui/searchable-select";
-import PhoneInput from "@/components/phone-input";
+import PhoneInput from "@/components/PhoneInput";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { X } from "lucide-react";
@@ -232,37 +232,59 @@ const RegisterForm: React.FC<{
     // Basic validation
     const newErrors: Record<string, string> = {};
 
-    if (!formData.firstName) newErrors.firstName = t("modules.register.fields.firstName.error");
-    if (!formData.lastName) newErrors.lastName = t("modules.register.fields.lastName.error");
+    if (!formData.firstName)
+      newErrors.firstName = t("modules.register.fields.firstName.error");
+    if (!formData.lastName)
+      newErrors.lastName = t("modules.register.fields.lastName.error");
     if (!formData.dob) newErrors.dob = t("modules.register.fields.dob.error");
-    if (!formData.email) newErrors.email = t("modules.register.fields.email.error");
-    if (!formData.password) newErrors.password = t("modules.register.fields.password.error");
+    if (!formData.email)
+      newErrors.email = t("modules.register.fields.email.error");
+    if (!formData.password)
+      newErrors.password = t("modules.register.fields.password.error");
     if (formData.password.length < 6)
       newErrors.password = t("modules.register.fields.password.minLength");
     if (!formData.confirmPassword)
-      newErrors.confirmPassword = t("modules.register.fields.confirmPassword.required");
+      newErrors.confirmPassword = t(
+        "modules.register.fields.confirmPassword.required"
+      );
     if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = t("modules.register.fields.confirmPassword.error");
-    if (!formData.streetName) newErrors.streetName = t("modules.register.fields.streetName.error");
+      newErrors.confirmPassword = t(
+        "modules.register.fields.confirmPassword.error"
+      );
+    if (!formData.streetName)
+      newErrors.streetName = t("modules.register.fields.streetName.error");
     if (!formData.houseNumber)
       newErrors.houseNumber = t("modules.register.fields.houseNumber.error");
-    if (!formData.city) newErrors.city = t("modules.register.fields.city.error");
-    if (!formData.country) newErrors.country = t("modules.register.fields.country.error");
+    if (!formData.city)
+      newErrors.city = t("modules.register.fields.city.error");
+    if (!formData.country)
+      newErrors.country = t("modules.register.fields.country.error");
     if (!formData.countryCode)
       newErrors.countryCode = t("common.validation.required");
-    if (!formData.phone) newErrors.phone = t("modules.register.fields.phone.error");
+    if (!formData.phone)
+      newErrors.phone = t("modules.register.fields.phone.error");
 
     if (step === "partner") {
       if (!formData.businessName)
-        newErrors.businessName = t("modules.register.fields.businessName.error");
+        newErrors.businessName = t(
+          "modules.register.fields.businessName.error"
+        );
       if (!formData.businessStreetName)
-        newErrors.businessStreetName = t("modules.register.fields.businessStreetName.error");
+        newErrors.businessStreetName = t(
+          "modules.register.fields.businessStreetName.error"
+        );
       if (!formData.businessHouseNumber)
-        newErrors.businessHouseNumber = t("modules.register.fields.businessHouseNumber.error");
+        newErrors.businessHouseNumber = t(
+          "modules.register.fields.businessHouseNumber.error"
+        );
       if (!formData.businessCity)
-        newErrors.businessCity = t("modules.register.fields.businessCity.error");
+        newErrors.businessCity = t(
+          "modules.register.fields.businessCity.error"
+        );
       if (!formData.businessCountry)
-        newErrors.businessCountry = t("modules.register.fields.businessCountry.error");
+        newErrors.businessCountry = t(
+          "modules.register.fields.businessCountry.error"
+        );
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -347,7 +369,9 @@ const RegisterForm: React.FC<{
           ? t("modules.register.salesTitle")
           : step === "partner" && t("modules.register.partnerTitle")}
       </h1>
-      <p className="mb-4 text-[18px]">{t("modules.register.requiredDetails")}</p>
+      <p className="mb-4 text-[18px]">
+        {t("modules.register.requiredDetails")}
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -441,7 +465,9 @@ const RegisterForm: React.FC<{
             onChange={(e) =>
               handleInputChange("confirmPassword", e.target.value)
             }
-            placeholder={t("modules.register.fields.confirmPassword.placeholder")}
+            placeholder={t(
+              "modules.register.fields.confirmPassword.placeholder"
+            )}
           />
           {errors.confirmPassword && (
             <span className="text-destructive text-xs">
@@ -506,7 +532,9 @@ const RegisterForm: React.FC<{
         />
 
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">{t("modules.register.fields.state.label")}</Label>
+          <Label className="text-[14px]">
+            {t("modules.register.fields.state.label")}
+          </Label>
           <Input
             value={formData.state}
             onChange={(e) => handleInputChange("state", e.target.value)}
@@ -514,7 +542,9 @@ const RegisterForm: React.FC<{
           />
         </div>
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">{t("modules.register.fields.postalCode.label")}</Label>
+          <Label className="text-[14px]">
+            {t("modules.register.fields.postalCode.label")}
+          </Label>
           <Input
             value={formData.postalCode}
             onChange={(e) => handleInputChange("postalCode", e.target.value)}
@@ -530,7 +560,9 @@ const RegisterForm: React.FC<{
             onChange={(e) =>
               handleInputChange("extraAddressDetails", e.target.value)
             }
-            placeholder={t("modules.register.fields.extraAddressDetails.placeholder")}
+            placeholder={t(
+              "modules.register.fields.extraAddressDetails.placeholder"
+            )}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -638,7 +670,8 @@ const RegisterForm: React.FC<{
               <div>
                 <div className="font-medium">{file.name}</div>
                 <div className="text-xs text-[#656565]">
-                  {(file.size / 1024).toFixed(0)} {t("modules.register.fields.identity.fileSize")}
+                  {(file.size / 1024).toFixed(0)}{" "}
+                  {t("modules.register.fields.identity.fileSize")}
                 </div>
               </div>
               {/* Optional: Remove button */}
@@ -678,7 +711,9 @@ const RegisterForm: React.FC<{
                 onChange={(e) =>
                   handleInputChange("businessName", e.target.value)
                 }
-                placeholder={t("modules.register.fields.businessName.placeholder")}
+                placeholder={t(
+                  "modules.register.fields.businessName.placeholder"
+                )}
               />
               {errors.businessName && (
                 <span className="text-destructive text-xs">
@@ -696,7 +731,9 @@ const RegisterForm: React.FC<{
                 onChange={(e) =>
                   handleInputChange("businessStreetName", e.target.value)
                 }
-                placeholder={t("modules.register.fields.businessStreetName.placeholder")}
+                placeholder={t(
+                  "modules.register.fields.businessStreetName.placeholder"
+                )}
               />
               {errors.businessStreetName && (
                 <span className="text-destructive text-xs">
@@ -714,7 +751,9 @@ const RegisterForm: React.FC<{
                 onChange={(e) =>
                   handleInputChange("businessHouseNumber", e.target.value)
                 }
-                placeholder={t("modules.register.fields.businessHouseNumber.placeholder")}
+                placeholder={t(
+                  "modules.register.fields.businessHouseNumber.placeholder"
+                )}
               />
               {errors.businessHouseNumber && (
                 <span className="text-destructive text-xs">
@@ -723,13 +762,17 @@ const RegisterForm: React.FC<{
               )}
             </div>
             <div className="flex flex-col gap-1">
-              <Label className="text-[14px]">{t("modules.register.fields.businessPostalCode.label")}</Label>
+              <Label className="text-[14px]">
+                {t("modules.register.fields.businessPostalCode.label")}
+              </Label>
               <Input
                 value={formData.businessPostalCode}
                 onChange={(e) =>
                   handleInputChange("businessPostalCode", e.target.value)
                 }
-                placeholder={t("modules.register.fields.businessPostalCode.placeholder")}
+                placeholder={t(
+                  "modules.register.fields.businessPostalCode.placeholder"
+                )}
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -744,12 +787,16 @@ const RegisterForm: React.FC<{
                     e.target.value
                   )
                 }
-                placeholder={t("modules.register.fields.businessExtraAddressDetails.placeholder")}
+                placeholder={t(
+                  "modules.register.fields.businessExtraAddressDetails.placeholder"
+                )}
               />
             </div>
             <SearchableSelect
               label={t("modules.register.fields.businessCountry.label")}
-              placeholder={t("modules.register.fields.businessCountry.placeholder")}
+              placeholder={t(
+                "modules.register.fields.businessCountry.placeholder"
+              )}
               options={countryOptions}
               value={formData.businessCountry}
               onChange={(value) =>
@@ -761,7 +808,9 @@ const RegisterForm: React.FC<{
             />
             <SearchableSelect
               label={t("modules.register.fields.businessCity.label")}
-              placeholder={t("modules.register.fields.businessCity.placeholder")}
+              placeholder={t(
+                "modules.register.fields.businessCity.placeholder"
+              )}
               options={businessCityOptions}
               value={formData.businessCity}
               onChange={(value) =>
