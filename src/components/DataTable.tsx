@@ -199,7 +199,7 @@ export function DataTable({
           </Table>
         </div>
         {/* pagination */}
-        {enablePagination && totalPages > 0 && (
+        {enablePagination && totalPages > 1 && (
           <Pagination className="py-2 px-5">
             <PaginationContent className="w-full flex justify-between items-center">
               {/* Previous Button */}
@@ -219,6 +219,7 @@ export function DataTable({
                 {Array.from({ length: totalPages }, (_, index) => (
                   <PaginationItem key={index + 1}>
                     <PaginationLink
+                      className="hover:primary/10"
                       onClick={() => handlePageChange(index + 1)}
                       isActive={currentPage === index + 1}
                       href="#"
