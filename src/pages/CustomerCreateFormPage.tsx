@@ -23,7 +23,7 @@ import CustomerSuccessModal from "@/components/customers/CustomerSuccessModal";
 type FormStep = "basic" | "identity" | "income";
 
 const CustomerCreateFormPage: React.FC = () => {
-  const [t] = useTranslation("global");
+  // const [t] = useTranslation("global");
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<FormStep>("basic");
   const [showSuccessModal, setShowSuccessModal] = useState(false);

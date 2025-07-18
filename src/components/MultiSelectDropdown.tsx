@@ -54,13 +54,13 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
     onChange(newValue);
   };
 
-  const handleSelectAll = () => {
-    if (value.length === options.length) {
-      onChange([]);
-    } else {
-      onChange(options.map((option) => option.value));
-    }
-  };
+  // const handleSelectAll = () => {
+  //   if (value.length === options.length) {
+  //     onChange([]);
+  //   } else {
+  //     onChange(options.map((option) => option.value));
+  //   }
+  // };
 
   const getDisplayText = () => {
     if (value.length === 0) return placeholder;
@@ -72,8 +72,8 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
     return `${value.length} selected`;
   };
 
-  const isAllSelected = value.length === options.length;
-  const isIndeterminate = value.length > 0 && value.length < options.length;
+  // const isAllSelected = value.length === options.length;
+  // const isIndeterminate = value.length > 0 && value.length < options.length;
 
   return (
     <div className={cn("relative", className)} ref={containerRef}>

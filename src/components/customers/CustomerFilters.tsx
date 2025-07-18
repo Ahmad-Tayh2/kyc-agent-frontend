@@ -5,7 +5,6 @@ import MultiSelectDropdown from "@/components/MultiSelectDropdown";
 import DateRangeSelector from "@/components/DateRangeSelector";
 import CountrySelector from "@/components/CountrySelector";
 import { useCountries } from "@/hooks/useAddress";
-import { useCustomerFilters } from "@/hooks/useCustomerFilters";
 import type { FilterState } from "@/hooks/useCustomerFilters";
 
 const statusOptions = [
@@ -20,7 +19,10 @@ interface CustomerFiltersProps {
   onUpdateSearchName: (name: string) => void;
   onUpdateCustomerNumber: (number: string) => void;
   onUpdateStatus: (status: string[]) => void;
-  onUpdateDateCreated: (dateRange: { startDate: Date | null; endDate: Date | null }) => void;
+  onUpdateDateCreated: (dateRange: {
+    startDate: Date | null;
+    endDate: Date | null;
+  }) => void;
   onUpdateCountry: (country: string[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
@@ -37,7 +39,7 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   onApplyFilters,
 }) => {
   const { data: countriesData = [] } = useCountries();
-  
+
   const countries = React.useMemo(() => {
     if (!countriesData) return [];
     return countriesData?.map((country: any) => ({
@@ -92,4 +94,4 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   );
 };
 
-export default CustomerFilters; 
+export default CustomerFilters;

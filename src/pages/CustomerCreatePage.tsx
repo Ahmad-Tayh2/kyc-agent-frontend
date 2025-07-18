@@ -20,7 +20,7 @@ interface SearchFormData {
 }
 
 const CustomerCreatePage: React.FC = () => {
-  const [t] = useTranslation("global");
+  // const [t] = useTranslation("global");
   const navigate = useNavigate();
   const [searchForm, setSearchForm] = useState<SearchFormData>({
     customerNumber: "",
