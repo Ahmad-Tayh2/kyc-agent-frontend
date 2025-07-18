@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { parseISO, format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
@@ -122,4 +122,4 @@ export const useCustomerColumns = (): ColumnDef<Customer>[] => {
     ],
     []
   );
-}; 
+};
