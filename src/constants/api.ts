@@ -1,4 +1,4 @@
-const baseUrl = "https://amazing-agileteam.com/api";
+const baseUrl = 'https://amazing-agileteam.com/api';
 
 export const API_URLS = {
   auth: {
@@ -22,5 +22,16 @@ export const API_URLS = {
 
     uploadDocuments: (agentId: string | number) =>
       `${baseUrl}/agents/${agentId}/upload-documents`,
+  },
+  remittanceMethods: {
+    get: () => `${baseUrl}/remittance-methods`,
+  },
+  payoutLocations: {
+    get: () => `${baseUrl}/external_payout_agents`,
+  },
+  customerForms: {
+    get: () => `${baseUrl}/customer-forms`,
+    getById: (id: string | number) => `${baseUrl}/customer-forms/${id}`,
+    create: () => `${baseUrl}/customer-forms`,
   },
 };

@@ -1,0 +1,35 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { customerFormService } from '@/services/customerForm';
+import type { CreateCustomerFormRequest } from '../types/customerForm/CreateCustomerFormRequest';
+import type { CustomerForm } from '../types/customerForm/CustomerForm';
+
+export const useCustomerForm = () => {
+  return useQuery({
+    queryKey: ['customerForm'],
+    queryFn: customerFormService.getCustomerForms,
+  });
+};
+
+export const useCustomerFormById = (id: string | number) => {
+  return useQuery({
+    queryKey: ['customerForm', id],
+    queryFn: () => customerFormService.getCustomerFormById(id),
+    enabled: !!id, // Only run the query if id is provided
+  });
+};
+
+export const useCreateCustomerForm = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<CustomerForm, Error, CreateCustomerFormRequest>({
+    mutationFn: (data: CreateCustomerFormRequest) =>
+      customerFormService.createCustomerForm(data),
+    onSuccess: () => {
+      // Invalidate and refetch customer forms after successful creation
+      queryClient.invalidateQueries({ queryKey: ['customerForm'] });
+    },
+    onError: (error) => {
+      console.error('Error creating customer form:', error);
+    },
+  });
+};
