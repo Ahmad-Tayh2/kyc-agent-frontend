@@ -25,5 +25,7 @@ export const API_URLS = {
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,
+    search: `${baseUrl}/customers/search`,
+    create: `${baseUrl}/customers`,
   },
 };

@@ -7,9 +7,10 @@ interface ActionButtonProps {
   icon?: ReactNode;
   className?: string;
   onClick?: any;
+  buttonProps?: any;
 }
 export default function ActionButton(props: ActionButtonProps) {
-  const { title = "button", icon, className, onClick } = props;
+  const { title = "button", icon, className, onClick, ...buttonProps } = props;
   return (
     <Button
       className={cn(
@@ -17,6 +18,7 @@ export default function ActionButton(props: ActionButtonProps) {
         className
       )}
       onClick={onClick}
+      {...buttonProps}
     >
       {icon && <span>{icon}</span>}
       <span>{title}</span>

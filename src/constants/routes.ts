@@ -20,5 +20,6 @@ export const ROUTES = {
     LOGIN: "/auth/login",
     REGISTER: "/auth/register",
     RESET_PASSWORD: "/auth/reset-password",
-  } 
+  },
+  CUSTOMER_CREATE: "/customers/create",
 }; 

@@ -30,6 +30,8 @@ const AccountStatementsPage = lazy(
 const MyWalletPage = lazy(() => import("../pages/MyWalletPage"));
 const RemittanceCartPage = lazy(() => import("../pages/RemittanceCartPage"));
 const CustomerFormsPage = lazy(() => import("../pages/CustomerFormsPage"));
+const CustomerCreatePage = lazy(() => import("../pages/CustomerCreatePage"));
+const CustomerCreateFormPage = lazy(() => import("../pages/CustomerCreateFormPage"));
 const PaymentLinksPage = lazy(() => import("../pages/PaymentLinksPage"));
 const SupportPage = lazy(() => import("../pages/SupportPage"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
@@ -60,6 +62,8 @@ export const AppRoutes = () => (
             element={<SendRemittancePage />}
           />
           <Route path={ROUTES.CUSTOMERS} element={<CustomersPage />} />
+          <Route path={ROUTES.CUSTOMER_CREATE} element={<CustomerCreatePage />} />
+          <Route path={ROUTES.CUSTOMER_CREATE + "/form"} element={<CustomerCreateFormPage />} />
           <Route path={ROUTES.RECIPIENTS} element={<RecipientsPage />} />
           <Route
             path={ROUTES.PAYOUT_LOCATIONS}
