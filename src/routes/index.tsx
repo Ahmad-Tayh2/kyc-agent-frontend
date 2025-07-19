@@ -14,6 +14,15 @@ import Loader from "@/components/Loader";
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
 const CustomersPage = lazy(() => import("../pages/CustomersPage"));
+const CustomerEditPage = lazy(
+  () => import("../pages/CustomersPage/CustomerEditPage")
+);
+const CustomerCreatePage = lazy(
+  () => import("../pages/CustomersPage/CustomerCreatePage")
+);
+const CustomerCreateFormPage = lazy(
+  () => import("../pages/CustomersPage/CustomerCreateFormPage")
+);
 const RecipientsPage = lazy(() => import("../pages/RecipientsPage"));
 const PayoutLocationsPage = lazy(() => import("../pages/PayoutLocationsPage"));
 const TransfersPage = lazy(() => import("../pages/TransfersPage"));
@@ -30,8 +39,7 @@ const AccountStatementsPage = lazy(
 const MyWalletPage = lazy(() => import("../pages/MyWalletPage"));
 const RemittanceCartPage = lazy(() => import("../pages/RemittanceCartPage"));
 const CustomerFormsPage = lazy(() => import("../pages/CustomerFormsPage"));
-const CustomerCreatePage = lazy(() => import("../pages/CustomerCreatePage"));
-const CustomerCreateFormPage = lazy(() => import("../pages/CustomerCreateFormPage"));
+
 const PaymentLinksPage = lazy(() => import("../pages/PaymentLinksPage"));
 const SupportPage = lazy(() => import("../pages/SupportPage"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
@@ -47,7 +55,7 @@ export const AppRoutes = () => (
     <Routes>
       <Route element={<PublicRoute />}>
         <Route path={ROUTES.AUTH.LOGIN} element={<AuthPage />} />
-        <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
         <Route
           path={ROUTES.AUTH.RESET_PASSWORD}
           element={<ResetPasswordPage />}
@@ -61,9 +69,19 @@ export const AppRoutes = () => (
             path={ROUTES.SEND_REMITTANCE}
             element={<SendRemittancePage />}
           />
-          <Route path={ROUTES.CUSTOMERS} element={<CustomersPage />} />
-          <Route path={ROUTES.CUSTOMER_CREATE} element={<CustomerCreatePage />} />
-          <Route path={ROUTES.CUSTOMER_CREATE + "/form"} element={<CustomerCreateFormPage />} />
+          <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
+          <Route
+            path={ROUTES.CUSTOMERS.EDIT(":id")}
+            element={<CustomerEditPage />}
+          />
+          <Route
+            path={ROUTES.CUSTOMERS.CREATE}
+            element={<CustomerCreatePage />}
+          />
+          <Route
+            path={ROUTES.CUSTOMERS.CREATE_FORM}
+            element={<CustomerCreateFormPage />}
+          />
           <Route path={ROUTES.RECIPIENTS} element={<RecipientsPage />} />
           <Route
             path={ROUTES.PAYOUT_LOCATIONS}

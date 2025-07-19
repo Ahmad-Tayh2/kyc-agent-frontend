@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/DataTable";
-import { useSearchCustomer } from "@/hooks/useCustomerCreation";
+import { useSearchCustomer } from "@/hooks/useCustomers";
 import { useCustomerColumns } from "@/components/customers/CustomerTableColumns";
 import { ROUTES } from "@/constants/routes";
-import { Search, UserPlus } from "lucide-react";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
+import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
 import PageTitle from "@/components/PageTitle";
 import ActionButton from "@/components/ActionButton";
+import SearchNotFound from "@/components/SearchNotFound";
 
 interface SearchFormData {
   customerNumber: string;
@@ -60,11 +60,11 @@ const CustomerCreatePage: React.FC = () => {
   };
 
   const handleCreateNew = () => {
-    navigate(ROUTES.CUSTOMER_CREATE + "/form");
+    navigate(ROUTES.CUSTOMERS.CREATE_FORM);
   };
 
   const handleBack = () => {
-    navigate(ROUTES.CUSTOMERS);
+    navigate(ROUTES.CUSTOMERS.LIST);
   };
 
   const handleInputChange = (field: keyof SearchFormData, value: string) => {
@@ -75,7 +75,6 @@ const CustomerCreatePage: React.FC = () => {
   };
 
   // const customerNotFound = hasSearched && searchResults.length === 0;
-
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -90,7 +89,7 @@ const CustomerCreatePage: React.FC = () => {
       </div>
       {/* Search Form */}
       <div className="bg-white rounded-lg border ">
-        <div className="p-6  border-b-1">
+        <div className="p-6 border-b-1">
           You can add an existing customer of other agents by searching them.
         </div>
         <div className="flex items-end gap-4 flex-wrap p-6">
@@ -145,7 +144,6 @@ const CustomerCreatePage: React.FC = () => {
           />
         </div>
       </div>
-
       {/* Search Results */}
       {hasSearched && (
         <div className="space-y-4">
@@ -161,24 +159,15 @@ const CustomerCreatePage: React.FC = () => {
               />
             </div>
           ) : (
-            <div className="bg-white rounded-lg border p-8 text-center">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Search className="h-8 w-8 text-gray-400" />
-                </div>
-                <div>
-                  <p className="text-gray-600 mb-4">
-                    A customer is Not Found with the Provided Search Criteria
-                  </p>
-                  <Button
-                    onClick={handleCreateNew}
-                    className="bg-teal-600 hover:bg-teal-700"
-                  >
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    CREATE NEW CUSTOMER
-                  </Button>
-                </div>
-              </div>
+            <div className="text-center">
+              <SearchNotFound
+                description="A customer is Not Found with the Provided Search Criteria."
+                actionButton={{
+                  title: "create new customer",
+                  icon: <AddCustomerIcon />,
+                  onClick: handleCreateNew,
+                }}
+              />
             </div>
           )}
         </div>

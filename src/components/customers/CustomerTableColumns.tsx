@@ -8,6 +8,7 @@ import DropdownMenuOptions from "@/components/DropdownMenu";
 import SendMoneyIcon from "@/assets/icons/send-money.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import EditIcon from "@/assets/icons/edit.svg?react";
+import { ROUTES } from "@/constants/routes";
 
 export type Customer = {
   id: string;
@@ -26,24 +27,26 @@ const statusColors: { [key: string]: string } = {
   active: "#027A48",
 };
 
-const menu = [
-  {
-    label: "Send Money",
-    icon: <SendMoneyIcon />,
-    onClick: () => {},
-  },
-  {
-    label: "View Details",
-    icon: <ViewDetailsIcon />,
-    onClick: () => {},
-  },
-  {
-    label: "Edit Customer",
-    icon: <EditIcon />,
-    onClick: () => {},
-    link: "",
-  },
-];
+const menu = (customerId: string | number) => {
+  return [
+    {
+      label: "Send Money",
+      icon: <SendMoneyIcon />,
+      onClick: () => {},
+    },
+    {
+      label: "View Details",
+      icon: <ViewDetailsIcon />,
+      onClick: () => {},
+    },
+    {
+      label: "Edit Customer",
+      icon: <EditIcon />,
+      onClick: () => {},
+      link: ROUTES.CUSTOMERS.EDIT(customerId),
+    },
+  ];
+};
 
 export const useCustomerColumns = (): ColumnDef<Customer>[] => {
   return useMemo(
@@ -106,10 +109,11 @@ export const useCustomerColumns = (): ColumnDef<Customer>[] => {
         id: "actions",
         header: "Actions",
         enableHiding: false,
-        cell: () => {
+        cell: ({ row }) => {
+          const customer = row.original;
           return (
             <DropdownMenuOptions
-              menu={menu}
+              menu={menu(customer.id)}
               trigger={
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <MoreHorizontal />

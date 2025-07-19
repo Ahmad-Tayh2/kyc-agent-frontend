@@ -1,7 +1,12 @@
 export const ROUTES = {
   DASHBOARD: "/dashboard",
   SEND_REMITTANCE: "/send-remittance",
-  CUSTOMERS: "/customers",
+  CUSTOMERS: {
+    LIST: "/customers",
+    CREATE: "/customers/create",
+    CREATE_FORM: "/customers/create/form",
+    EDIT: (customerId: string | number) => `/customers/edit/${customerId}`,
+  },
   RECIPIENTS: "/recipients",
   PAYOUT_LOCATIONS: "/payout-locations",
   TRANSFERS: "/transfers",
@@ -16,10 +21,9 @@ export const ROUTES = {
   SUPPORT: "/support",
   HELP: "/help",
   PROFILE: "/profile",
-  AUTH:{
+  AUTH: {
     LOGIN: "/auth/login",
     REGISTER: "/auth/register",
     RESET_PASSWORD: "/auth/reset-password",
   },
-  CUSTOMER_CREATE: "/customers/create",
-}; 
+};

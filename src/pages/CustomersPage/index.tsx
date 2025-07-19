@@ -16,7 +16,7 @@ const CustomersPage: React.FC = () => {
   const [t] = useTranslation("global");
   const navigate = useNavigate();
   const columns = useCustomerColumns();
-  
+
   const {
     filters,
     filtersString,
@@ -37,16 +37,16 @@ const CustomersPage: React.FC = () => {
   }, [response?.data]);
 
   const handleAddCustomer = () => {
-    navigate(ROUTES.CUSTOMERS + "/create");
+    navigate(ROUTES.CUSTOMERS.CREATE);
   };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <PageTitle title={t("modules.pages.customers.title")} />
-        <ActionButton 
-          title="add new customer" 
-          icon={<AddCustomerIcon />} 
+        <ActionButton
+          title="add new customer"
+          icon={<AddCustomerIcon />}
           onClick={handleAddCustomer}
         />
       </div>

@@ -8,15 +8,30 @@ interface ActionButtonProps {
   className?: string;
   onClick?: any;
   buttonProps?: any;
+  type?: string;
 }
 export default function ActionButton(props: ActionButtonProps) {
-  const { title = "button", icon, className, onClick, ...buttonProps } = props;
+  const {
+    title = "button",
+    type,
+    icon,
+    className,
+    onClick,
+    ...buttonProps
+  } = props;
+  let baseClass = "text-[13px] uppercase cursor-pointer w-fit p-5 ";
+  if (type === "link") {
+    baseClass += "text-primary bg-transparent ";
+  } else if (type === "cancel") {
+    baseClass +=
+      "border-2 border-primary text-primary bg-white hover:bg-primary/5";
+  } else {
+    baseClass += "border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]";
+  }
   return (
     <Button
-      className={cn(
-        "text-[13px] uppercase cursor-pointer w-fit p-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]",
-        className
-      )}
+      variant={type === "link" ? "link" : "default"}
+      className={cn(baseClass, className)}
       onClick={onClick}
       {...buttonProps}
     >

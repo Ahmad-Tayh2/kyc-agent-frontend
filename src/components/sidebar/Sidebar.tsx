@@ -31,7 +31,7 @@ const navLinks = [
   },
   {
     label: "Customers",
-    to: ROUTES.CUSTOMERS,
+    to: ROUTES.CUSTOMERS.LIST,
     icon: <CustomersIcon color="inherit" />,
   },
   {
