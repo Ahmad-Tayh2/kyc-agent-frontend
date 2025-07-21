@@ -49,6 +49,32 @@ export const customersService = {
     return res.json();
   },
 
+  getCustomerById: async (id: string | number) => {
+    const authHeaders = getAuthHeaders();
+    const res = await fetch(API_URLS.customers.getById(id), {
+      ...(authHeaders ? { headers: authHeaders } : {}),
+    });
+    if (!res.ok) throw new Error("Failed to fetch customer");
+    return res.json();
+  },
+
+  updateCustomer: async (id: string | number, data: Partial<CustomerCreateData>) => {
+    const authHeaders = getAuthHeaders();
+    const res = await fetch(API_URLS.customers.update(id), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(authHeaders ? authHeaders : {}),
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to update customer");
+    }
+    return res.json();
+  },
+
   searchCustomer: async (params: CustomerSearchParams) => {
     const authHeaders = getAuthHeaders();
     const queryParams = new URLSearchParams();
@@ -74,62 +100,18 @@ export const customersService = {
 
   createCustomer: async (data: CustomerCreateData) => {
     const authHeaders = getAuthHeaders();
-    const formData = new FormData();
-
-    // Add basic details
-    formData.append("first_name", data.firstName);
-    formData.append("last_name", data.lastName);
-    formData.append("email", data.email);
-    formData.append("date_of_birth", data.dateOfBirth);
-    formData.append("street_name", data.streetName);
-    formData.append("city", data.city);
-    formData.append("postal_code", data.postalCode);
-    formData.append("country", data.country);
-    formData.append("gender", data.gender);
-    formData.append("phone_number", data.phoneNumber);
-    formData.append("country_code", data.countryCode);
-
-    // Add optional identity details
-    if (data.documentType) formData.append("document_type", data.documentType);
-    if (data.documentNumber)
-      formData.append("document_number", data.documentNumber);
-    if (data.documentIssueDate)
-      formData.append("document_issue_date", data.documentIssueDate);
-    if (data.documentExpiryDate)
-      formData.append("document_expiry_date", data.documentExpiryDate);
-
-    // Add files
-    if (data.identityDocuments) {
-      data.identityDocuments.forEach((file) => {
-        formData.append("identity_documents", file);
-      });
-    }
-
-    if (data.bankStatements) {
-      data.bankStatements.forEach((file) => {
-        formData.append("bank_statements", file);
-      });
-    }
-
-    if (data.extraDocuments) {
-      data.extraDocuments.forEach((file) => {
-        formData.append("extra_documents", file);
-      });
-    }
-
     const res = await fetch(API_URLS.customers.create, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         ...(authHeaders ? authHeaders : {}),
       },
-      body: formData,
+      body: JSON.stringify(data),
     });
-
     if (!res.ok) {
       const errorData = await res.json();
       throw new Error(errorData.message || "Failed to create customer");
     }
-
     return res.json();
   },
 };

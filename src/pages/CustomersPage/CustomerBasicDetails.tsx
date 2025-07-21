@@ -9,7 +9,12 @@ import SearchableSelect from "@/components/ui/searchable-select";
 import { cn } from "@/lib/utils";
 import { useCitiesByCountry, useCountries } from "@/hooks/useAddress";
 const CustomerBasicDetails = (props: any) => {
-  const { formData, handleInputChange, handleDateChange } = props;
+  const {
+    formData,
+    handleInputChange,
+    handleDateChange,
+    editMode = false,
+  } = props;
   const genderOptions = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
@@ -20,13 +25,13 @@ const CustomerBasicDetails = (props: any) => {
   const { data: cities = [] } = useCitiesByCountry(formData.country || null);
   const countryOptions =
     countries?.map((country: any) => ({
-      value: country.id.toString(),
+      value: country.id,
       label: country.name,
     })) || [];
 
   const cityOptions =
     cities?.map((city: any) => ({
-      value: city.id.toString(),
+      value: city.id,
       label: city.name,
     })) || [];
 
@@ -50,6 +55,7 @@ const CustomerBasicDetails = (props: any) => {
             placeholder="First Name"
             value={formData.firstName || ""}
             onChange={(e) => handleInputChange("firstName", e.target.value)}
+            disabled={!editMode}
           />
         </div>
 
@@ -62,6 +68,7 @@ const CustomerBasicDetails = (props: any) => {
             placeholder="Last Name"
             value={formData.lastName || ""}
             onChange={(e) => handleInputChange("lastName", e.target.value)}
+            disabled={!editMode}
           />
         </div>
 
@@ -75,6 +82,7 @@ const CustomerBasicDetails = (props: any) => {
             placeholder="The email must be verified"
             value={formData.email || ""}
             onChange={(e) => handleInputChange("email", e.target.value)}
+            disabled={!editMode}
           />
         </div>
 
@@ -85,6 +93,7 @@ const CustomerBasicDetails = (props: any) => {
           <DatePicker
             value={formData.dateOfBirth || ""}
             onChange={(date: string) => handleDateChange("dateOfBirth", date)}
+            disabled={!editMode}
           />
         </div>
 
@@ -97,6 +106,7 @@ const CustomerBasicDetails = (props: any) => {
             placeholder="Enter street name and house number"
             value={formData.streetName || ""}
             onChange={(e) => handleInputChange("streetName", e.target.value)}
+            disabled={!editMode}
           />
         </div>
 
@@ -109,28 +119,27 @@ const CustomerBasicDetails = (props: any) => {
             placeholder="Enter street name and house number"
             value={formData.houseNumber || ""}
             onChange={(e) => handleInputChange("houseNumber", e.target.value)}
+            disabled={!editMode}
           />
         </div>
         <SearchableSelect
           label={"Country"}
-          // placeholder={t("modules.register.fields.country.placeholder")}
           options={countryOptions}
-          value={formData.country || ""}
-          onChange={(value) => handleInputChange("country", value.toString())}
-          // error={errors.country}
-          // loading={countriesLoading}
+          value={formData.country}
+          onChange={(value) => {
+            console.log(" change country = ", value);
+            handleInputChange("country", value);
+          }}
           required
+          disabled={!editMode}
         />
 
         <SearchableSelect
           label={"City"}
-          // placeholder={t("modules.register.fields.city.placeholder")}
           options={cityOptions}
-          value={formData.city || ""}
-          onChange={(value) => handleInputChange("city", value.toString())}
-          // error={errors.city}
-          // loading={citiesLoading}
-          disabled={!formData.country}
+          value={formData.city}
+          onChange={(value) => handleInputChange("city", value)}
+          disabled={!formData.country || !editMode}
           required
         />
         <div className="flex flex-col gap-1">
@@ -142,6 +151,7 @@ const CustomerBasicDetails = (props: any) => {
             placeholder="Enter your postal code"
             value={formData.postalCode || ""}
             onChange={(e) => handleInputChange("postalCode", e.target.value)}
+            disabled={!editMode}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -153,11 +163,13 @@ const CustomerBasicDetails = (props: any) => {
                 type="button"
                 className={cn(
                   "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-                  "border-gray-200 bg-white"
+                  "border-gray-200 bg-white",
+                  !editMode && "opacity-60 cursor-not-allowed"
                 )}
                 onClick={() => {
-                  handleInputChange("gender", genderOption.value);
+                  if (editMode) handleInputChange("gender", genderOption.value);
                 }}
+                disabled={!editMode}
               >
                 {formData.gender === genderOption.value ? (
                   <CheckedIcon />
@@ -184,18 +196,17 @@ const CustomerBasicDetails = (props: any) => {
             onPhoneChange={(phoneNumber: string) =>
               handleInputChange("phoneNumber", phoneNumber)
             }
+            disabled={!editMode}
           />
         </div>
         <div className="flex flex-col gap-1">
           <SearchableSelect
             label={"Status"}
-            // placeholder={t("modules.register.fields.city.placeholder")}
             options={statusOptions}
             value={formData.status || ""}
             onChange={(value) => handleInputChange("status", value.toString())}
-            // error={errors.city}
-            // loading={citiesLoading}
             required
+            disabled={!editMode}
           />
         </div>
       </div>
