@@ -1,10 +1,268 @@
-import React from "react";
+import React from 'react';
+import { DataTable } from '../components/DataTable';
+import { useCustomerForm } from '@/hooks/useCustomerForm';
+import type { CustomerForm } from '@/types/customerForm/CustomerForm';
+import copyIcon from '@/assets/icons/clipboard.svg';
+import { Button } from '@/components/ui/button';
+import CustomerFormDialog from '@/components/CustomerForm/CustomerFormDialog';
+import { useState } from 'react';
+import StatusLabel from '@/components/StatusLabel';
+import CustomerFormDialogWrapper from '@/components/CustomerForm/CustomerFormDialogWrapper';
 
-const CustomerFormsPage: React.FC = () => (
-  <div className="space-y-4">
-    <h1 className="text-2xl font-bold">Customer Forms</h1>
-    <div>Customer Forms content goes here.</div>
-  </div>
-);
+type CustomerFormTableData = {
+  id: number;
+  fullName: string;
+  status: string;
+  frontendFormUrl: string;
+  createdAt: string;
+};
 
-export default CustomerFormsPage; 
+const CustomerFormsPage: React.FC = () => {
+  const { data: customerForms } = useCustomerForm();
+  const [previewToken, setPreviewToken] = useState<string | null>(null);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+
+      // You could add a toast notification here if you have a toast system
+      console.log('URL copied to clipboard');
+    } catch (err) {
+      console.error('Failed to copy URL:', err);
+    }
+  };
+
+  // Prepare the data for the table
+  const customerFormData: CustomerFormTableData[] = Array.isArray(customerForms)
+    ? customerForms.map((item: CustomerForm) => ({
+        id: item.id,
+        fullName: `${item.first_name} ${item.last_name}`,
+        status: item.status,
+        frontendFormUrl: item.form_urls.frontend_form_url,
+        createdAt: item.created_at,
+      }))
+    : [];
+
+  // Define columns for the DataTable
+  const columns = [
+    {
+      header: 'Full Name',
+
+      accessorKey: 'fullName',
+
+      size: 200,
+    },
+
+    {
+      header: 'Status',
+
+      accessorKey: 'status',
+
+      size: 180,
+
+      cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
+        const getStatusConfig = (status: string) => {
+          switch (status) {
+            case 'successful_registration':
+              return { label: 'Registration Successful', color: '#027A48' };
+
+            case 'valid_link':
+              return { label: 'Link Valid', color: '#DF6B1D' };
+
+            case 'expired_link':
+              return { label: 'Link Expired', color: '#B42318' };
+
+            default:
+              return { label: status, color: '#6B7280' };
+          }
+        };
+
+        const statusConfig = getStatusConfig(row.original.status);
+
+        return (
+          <StatusLabel value={statusConfig.label} color={statusConfig.color} />
+        );
+      },
+    },
+
+    {
+      header: 'Form URL',
+
+      accessorKey: 'frontendFormUrl',
+
+      cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
+        const url = row.original.frontendFormUrl;
+
+        const displayUrl = url.length > 55 ? `${url.slice(0, 55)}...` : url;
+
+        return (
+          <div className='flex items-center'>
+            <span className='text-sm text-gray-600 break-all'>
+              <a
+                href={url}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-blue-600 hover:text-blue-800 underline text-sm whitespace-nowrap'
+                onClick={(e) => {
+                  e.preventDefault();
+                  // Always show preview dialog for agents
+                  const token = url.split('/').pop() || '';
+                  setPreviewToken(token);
+                }}
+              >
+                {displayUrl}
+              </a>
+            </span>
+
+            <button
+              onClick={() => copyToClipboard(url)}
+              className='p-1 hover:bg-gray-100 rounded ml-[10px] cursor-pointer group'
+              title='Copy URL'
+            >
+              <img
+                src={copyIcon}
+                alt='Copy'
+                className='w-4 h-4 group-hover:cursor-pointer'
+                style={{ cursor: 'inherit' }}
+              />
+            </button>
+          </div>
+        );
+      },
+    },
+
+    {
+      header: 'Created At',
+
+      accessorKey: 'createdAt',
+
+      size: 150,
+
+      cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
+        const date = new Date(row.original.createdAt);
+
+        const formattedDate = date.toLocaleDateString('en-GB', {
+          day: '2-digit',
+
+          month: '2-digit',
+
+          year: 'numeric',
+        });
+
+        const formattedTime = date.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+
+          minute: '2-digit',
+        });
+
+        return (
+          <span className='whitespace-nowrap'>
+            {formattedDate} {formattedTime}
+          </span>
+        );
+      },
+    },
+
+    {
+      header: 'Actions',
+
+      accessorKey: 'id',
+
+      size: 250,
+
+      cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
+        const renderActions = () => {
+          switch (row.original.status) {
+            case 'valid_link':
+              return (
+                <div className='flex gap-2'>
+                  <button
+                    onClick={() =>
+                      console.log('Resend clicked for:', row.original.id)
+                    }
+                    className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
+                  >
+                    RESEND
+                  </button>
+                </div>
+              );
+
+            case 'expired_link':
+              return (
+                <div className='flex gap-2'>
+                  <button
+                    onClick={() =>
+                      console.log(
+                        'Generate new link clicked for:',
+
+                        row.original.id
+                      )
+                    }
+                    className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
+                  >
+                    GENERATE NEW LINK AND SEND IT
+                  </button>
+                </div>
+              );
+
+            case 'successful_registration':
+              return (
+                <div className='flex gap-2'>
+                  <a
+                    href={`/customer-forms/${row.original.id}`}
+                    className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
+                  >
+                    Customer Details
+                  </a>
+                </div>
+              );
+
+            default:
+              return (
+                <div className='flex gap-2'>
+                  <a
+                    href={`/customer-forms/${row.original.id}`}
+                    className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
+                  >
+                    View
+                  </a>
+                </div>
+              );
+          }
+        };
+
+        return <div>{renderActions()}</div>;
+      },
+    },
+  ];
+
+  return (
+    <div className='space-y-4'>
+      <div className='flex justify-between items-center p-2'>
+        <h1 className='text-2xl font-bold'>Customer Forms</h1>
+        <CustomerFormDialog trigger={<Button>Generate New Link</Button>} />
+      </div>
+      <div className='p-5'>
+        <DataTable
+          data={customerFormData}
+          columns={columns}
+          enablePagination={true}
+          rowsPerPage={10}
+          tableTitle='Customer Forms'
+        />
+      </div>
+
+      {/* Preview Dialog - Only opens for valid links */}
+      {previewToken && (
+        <CustomerFormDialogWrapper
+          isOpen={!!previewToken}
+          onOpenChange={(open) => !open && setPreviewToken(null)}
+          token={previewToken}
+          mode='preview'
+        />
+      )}
+    </div>
+  );
+};
+
+export default CustomerFormsPage;

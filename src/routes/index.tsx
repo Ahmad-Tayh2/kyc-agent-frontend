@@ -10,6 +10,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import UserProfilePage from "@/pages/UserProfilePage";
 import Loader from "@/components/Loader";
+import CustomerFormPage from "@/pages/CustomerFormPage";
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
@@ -53,6 +54,9 @@ export const AppRoutes = () => (
     }
   >
     <Routes>
+      {/* Public customer form route */}
+      <Route path="/customer-form/:token" element={<CustomerFormPage />} />
+
       <Route element={<PublicRoute />}>
         <Route path={ROUTES.AUTH.LOGIN} element={<AuthPage />} />
         <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
