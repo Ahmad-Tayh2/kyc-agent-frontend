@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { addressService } from "@/services/address";
+import { useQuery } from '@tanstack/react-query';
+import { addressService } from '@/services/address';
 // import type { Country, City } from "@/services/address";
 
 export const useCountries = () => {
   return useQuery({
-    queryKey: ["countries"],
+    queryKey: ['countries'],
     queryFn: addressService.getCountries,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -12,8 +12,17 @@ export const useCountries = () => {
 
 export const useCitiesByCountry = (countryId: string | number | null) => {
   return useQuery({
-    queryKey: ["cities", countryId],
+    queryKey: ['cities', countryId],
     queryFn: () => addressService.getCitiesByCountry(countryId!),
+    enabled: !!countryId, // Only fetch when countryId is provided
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useStatesByCountry = (countryId: string | number | null) => {
+  return useQuery({
+    queryKey: ['states', countryId],
+    queryFn: () => addressService.getStatesByCountry(countryId!),
     enabled: !!countryId, // Only fetch when countryId is provided
     staleTime: 5 * 60 * 1000,
   });
