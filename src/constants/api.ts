@@ -15,6 +15,8 @@ export const API_URLS = {
     countries: `${baseUrl}/countries`,
     citiesByCountry: (countryId: string | number) =>
       `${baseUrl}/countries/${countryId}/cities`,
+    states: (countryId: string | number) =>
+      `${baseUrl}/countries/${countryId}/states`,
   },
   agents: {
     get: (agentId: string | number) => `${baseUrl}/agent/${agentId}`,
@@ -36,5 +38,7 @@ export const API_URLS = {
     get: () => `${baseUrl}/customer-forms`,
     getById: (id: string | number) => `${baseUrl}/customer-forms/${id}`,
     create: () => `${baseUrl}/customer-forms`,
+    validateToken: (token: string) => `${baseUrl}/customer-forms/validate-token/${token}`,
+    submit: (token: string) => `${baseUrl}/customer-forms/${token}/submit`,
   },
 };

@@ -3,7 +3,7 @@ import { DataTable } from '@/components/DataTable';
 import { useRemittanceMethods } from '@/hooks/useRemittanceMethod';
 import type { RemittanceMethod } from '@/types/remittanceMethod/RemittanceMethod';
 import type { PayoutLocation } from '@/types/payoutLocation/PayoutLocation';
-import { usePayoutLocations } from '@/hooks/payoutLocation';
+import { usePayoutLocations } from '@/hooks/usePayoutLocation';
 
 const PayoutLocationsPage: React.FC = () => {
   const { data: remittanceMethods } = useRemittanceMethods();

@@ -6,7 +6,7 @@ import { Share2 } from 'lucide-react';
 
 import PhoneInput from '@/components/PhoneInput';
 import { useCountries } from '@/hooks/useAddress';
-import { useCreateCustomerForm } from '@/hooks/customerForm';
+import { useCreateCustomerForm } from '@/hooks/useCustomerForm';
 import type { CreateCustomerFormRequest } from '@/types/customerForm/CreateCustomerFormRequest';
 import type { Country } from '@/services/address';
 

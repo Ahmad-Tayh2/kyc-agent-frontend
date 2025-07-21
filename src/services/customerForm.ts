@@ -1,6 +1,9 @@
 import { API_URLS } from '@/constants/api';
 import type { CreateCustomerFormRequest } from '../types/customerForm/CreateCustomerFormRequest';
 import type { CustomerForm } from '../types/customerForm/CustomerForm';
+import type { CustomerFormValidationResponse } from '../types/customerForm/CustomerFormValidation';
+import type { CustomerFormSubmissionRequest } from '../types/customerForm/CustomerFormSubmission';
+import type { CustomerFormSubmissionResponse } from '../types/customerForm/CustomerFormSubmissionResponse';
 import { handleApiResponse } from '@/lib/handleApiResponse';
 
 function getHeaders(): HeadersInit {
@@ -44,5 +47,29 @@ export const customerFormService = {
       body: JSON.stringify(data),
     });
     return handleResponse<CustomerForm>(res);
+  },
+
+  async validateToken(token: string): Promise<CustomerFormValidationResponse> {
+    const res = await fetch(API_URLS.customerForms.validateToken(token), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return handleResponse<CustomerFormValidationResponse>(res);
+  },
+
+  async submitCustomerForm(
+    token: string,
+    data: CustomerFormSubmissionRequest
+  ): Promise<CustomerFormSubmissionResponse> {
+    const res = await fetch(API_URLS.customerForms.submit(token), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse<CustomerFormSubmissionResponse>(res);
   },
 };
