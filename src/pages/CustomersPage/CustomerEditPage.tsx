@@ -12,7 +12,6 @@ const CustomerEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useGetCustomer(id!);
   const [formData, setFormData] = useState<any>({});
-  const [showSuccess, setShowSuccess] = useState(false);
   const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
     useUpdateCustomer(id!);
 
@@ -64,7 +63,6 @@ const CustomerEditPage: React.FC = () => {
         status: formData.status,
       };
       await updateCustomer(payloadToUpdate);
-      setShowSuccess(true);
     } catch (e) {
       // handle error
     }
@@ -107,9 +105,6 @@ const CustomerEditPage: React.FC = () => {
         onSave={handleSave}
         loading={isUpdateCustomerPending}
       />
-      {showSuccess && (
-        <div className="p-4 text-green-600">Customer updated successfully!</div>
-      )}
     </div>
   );
 };

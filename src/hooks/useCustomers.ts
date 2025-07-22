@@ -1,4 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 import {
   customersService,
   type CustomerSearchParams,
@@ -24,6 +26,9 @@ export function useUpdateCustomer(id: string | number) {
   return useMutation({
     mutationFn: (data: Partial<CustomerCreateData>) =>
       customersService.updateCustomer(id, data),
+    onSuccess: () => {
+      toast.success("Customer updated successfully!");
+    },
   });
 }
 

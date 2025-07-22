@@ -8,12 +8,12 @@ interface ActionButtonProps {
   className?: string;
   onClick?: any;
   buttonProps?: any;
-  type?: string;
+  type?: "link" | "cancel" | "action";
 }
 export default function ActionButton(props: ActionButtonProps) {
   const {
     title = "button",
-    type,
+    type = "action",
     icon,
     className,
     onClick,
