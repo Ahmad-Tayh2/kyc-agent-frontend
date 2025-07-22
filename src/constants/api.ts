@@ -27,6 +27,10 @@ export const API_URLS = {
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,
+    search: `${baseUrl}/customers/search`,
+    create: `${baseUrl}/customers`,
+    getById: (id: string | number) => `${baseUrl}/customers/${id}`,
+    update: (id: string | number) => `${baseUrl}/customers/${id}`,
   },
   remittanceMethods: {
     get: () => `${baseUrl}/remittance-methods`,

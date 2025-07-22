@@ -6,11 +6,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import ActionButton from "@/components/ActionButton";
 
 interface FilterButtonProps {
   onClick: () => void;
   onResetClick: () => void;
+  onApplyFilters: () => void;
   active?: boolean;
   title?: string;
   children?: React.ReactNode;
@@ -18,6 +18,8 @@ interface FilterButtonProps {
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
   onClick,
+  onResetClick,
+  onApplyFilters,
   children,
   title,
 }) => {
@@ -29,9 +31,24 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
           {title || "Filters"}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="mx-2 flex items-center gap-2">
+      <PopoverContent className="mx-2 flex items-end gap-2 w-fit">
         {children}
-        <ActionButton title="reset" className="ml-auto py-2 px-3" />
+        <Button
+          variant="default"
+          title="Apply"
+          className="ml-auto py-2 px-3"
+          onClick={onApplyFilters}
+        >
+          Apply
+        </Button>
+        <Button
+          variant="outline"
+          title="Reset"
+          className="ml-auto py-2 px-3"
+          onClick={onResetClick}
+        >
+          Reset
+        </Button>
       </PopoverContent>
     </Popover>
   );

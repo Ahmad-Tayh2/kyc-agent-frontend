@@ -176,7 +176,7 @@ const RegisterForm: React.FC<{
       }
     }
   };
-
+  const fileRef = React.useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [selectedGender, setSelectedGender] = React.useState<string>("");
 
@@ -184,8 +184,6 @@ const RegisterForm: React.FC<{
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
   ];
-
-  const fileRef = React.useRef<HTMLInputElement | null>(null);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({

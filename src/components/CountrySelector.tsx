@@ -1,0 +1,183 @@
+import React, { useState, useRef, useEffect } from "react";
+import ReactCountryFlag from "react-country-flag";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ChevronDownIcon, ChevronUpIcon, Search, Globe } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface Country {
+  code: string;
+  name: string;
+}
+
+interface CountrySelectorProps {
+  label?: string;
+  placeholder?: string;
+  countries: Country[];
+  value: string[];
+  onChange: (value: string[]) => void;
+  disabled?: boolean;
+  className?: string;
+}
+
+const CountrySelector: React.FC<CountrySelectorProps> = ({
+  label,
+  placeholder = "Select countries",
+  countries,
+  value = [],
+  onChange,
+  disabled = false,
+  className,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearchTerm("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleCountryToggle = (countryCode: string) => {
+    const newValue = value.includes(countryCode)
+      ? value.filter((v) => v !== countryCode)
+      : [...value, countryCode];
+    onChange(newValue);
+  };
+
+  const handleSelectAll = () => {
+    if (value.length === countries.length) {
+      onChange([]);
+    } else {
+      onChange(countries.map((country) => country.code));
+    }
+  };
+
+  const filteredCountries = countries.filter((country) =>
+    country.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getDisplayText = () => {
+    if (value.length === 0) return placeholder;
+    if (value.length === countries.length) return "All";
+    if (value.length === 1) {
+      const country = countries.find((c) => c.code === value[0]);
+      return country?.name || placeholder;
+    }
+    return `${value.length} countries selected`;
+  };
+
+  const isAllSelected = value.length === countries.length;
+
+  return (
+    <div className={cn("relative", className)} ref={containerRef}>
+      {label && (
+        <Label className="block text-sm font-medium text-gray-700">
+          {label}
+        </Label>
+      )}
+      <Button
+        variant="outline"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className={cn(
+          "w-[150px] justify-between h-[40px] bg-white border border-gray-300 rounded-md px-3 py-2 text-left",
+          isOpen && "border-primary/50 ring-1 ring-primary"
+        )}
+      >
+        <span className={cn("truncate", value.length === 0 && "text-gray-500")}>
+          {getDisplayText()}
+        </span>
+        {isOpen ? (
+          <ChevronUpIcon className="h-4 w-4 text-gray-400" />
+        ) : (
+          <ChevronDownIcon className="h-4 w-4 text-gray-400" />
+        )}
+      </Button>
+
+      {isOpen && (
+        <div className="absolute z-50 w-[320px] right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+          <div className="p-2">
+            {/* All option */}
+            <div
+              className="flex items-center space-x-2 py-2 px-1 hover:bg-primary/5  rounded cursor-pointer"
+              onClick={handleSelectAll}
+            >
+              <Checkbox
+                checked={isAllSelected}
+                className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+              />
+              <Globe className="h-4 w-4 text-teal-600" />
+              <span className="text-sm text-gray-700">All</span>
+            </div>
+
+            {/* Search input */}
+            <div className="relative mt-2 mb-2">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 h-8 text-sm"
+              />
+            </div>
+
+            {/* Country list */}
+            <div className="overflow-y-auto max-h-60">
+              {filteredCountries.map((country) => (
+                <div
+                  key={country.code}
+                  className="flex items-center space-x-2 py-2 px-1 hover:bg-primary/5 rounded cursor-pointer"
+                  onClick={() => handleCountryToggle(country.code)}
+                >
+                  <Checkbox
+                    checked={value.includes(country.code)}
+                    onCheckedChange={() => handleCountryToggle(country.code)}
+                    className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                  />
+                  <div className="flex items-center space-x-2 flex-1">
+                    <span className="text-lg">
+                      <ReactCountryFlag
+                        countryCode={country.code}
+                        svg
+                        style={{
+                          width: "25px",
+                          borderRadius: "6px",
+                        }}
+                      />
+                    </span>
+                    <span className="text-sm text-gray-700">
+                      {country.name}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredCountries.length === 0 && searchTerm && (
+              <div className="px-3 py-2 text-sm text-gray-500">
+                No countries found
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CountrySelector;
