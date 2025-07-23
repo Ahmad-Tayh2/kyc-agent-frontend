@@ -502,33 +502,60 @@
       },
       "customerForm": {
         "title": "Customer Forms",
+        "filters": {
+          "title": "Filters",
+          "search": "Search by Name or Email",
+          "status": "Status",
+          "dateRange": "Date Range",
+          "apply": "Apply Filters",
+          "reset": "Reset Filters",
+          "all": "All",
+          "createdDate": "Created Date",
+          "selectDateRange": "Select Date Range"
+        },
+        "statuses": {
+          "linkValid": "Active",
+          "linkExpired": "Expired",
+          "registrationSuccessful": "Registered"
+        },
         "columns": {
           "fullName": "Full Name",
           "status": "Status",
-          "formUrl": "Form URL",
+          "formUrl": "URL",
           "createdAt": "Created At",
           "actions": "Actions"
         },
-        "statuses": {
-          "registrationSuccessful": "Registration Successful",
-          "linkValid": "Link Valid",
-          "linkExpired": "Link Expired"
-        },
         "actions": {
-          "resend": "RESEND",
-          "generateNewLink": "GENERATE NEW LINK AND SEND IT",
+          "resend": "Resend Link",
+          "generateNewLink": "Generate New Link",
           "customerDetails": "Customer Details",
           "view": "View"
         },
         "buttons": {
           "generateNewLink": "Generate New Link"
         },
-        "filters": {
-          "status": "Status",
-          "createdDate": "Created Date",
-          "all": "All",
-          "selectDateRange": "Select date range"
-        }
+        "noFormsFound": "No forms found",
+        "linkExpired": {
+          "title": "Link Expired",
+          "message": "This link has expired or is no longer valid. Please contact the agent for a new link."
+        },
+        "linkUsed": {
+          "title": "Link Used",
+          "message": "This link has already been used to submit a customer form. Each link can only be used once."
+        },
+        "formSubmitted": {
+          "title": "Form Submitted Successfully!",
+          "message": "Thank you for completing the customer form. Your information has been received.",
+          "autoClose": "This dialog will close automatically..."
+        },
+        "previewMode": "📋 Preview Mode - This is how the form appears to customers",
+        "previewModeSubmitDisabled": "Preview Mode - Submission Disabled",
+        "closePreview": "Close Preview",
+        "createAccount": "Create an Account",
+        "usingLinkOf": "You're using the link of",
+        "unnamed": "Unnamed",
+        "linkExpireAt": "The link will expire at",
+        "signUp": "SIGN UP"
       },
       "sendRemittance": {
         "title": "Send Remittance"
