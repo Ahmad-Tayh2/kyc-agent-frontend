@@ -66,7 +66,7 @@ const ExchangeCurrenciesDialog: React.FC<ExchangeCurrenciesDialogProps> = ({
   isOpen,
   onOpenChange,
 }) => {
-  const [t] = useTranslation("global");
+  const [t] = useTranslation('global');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
@@ -286,7 +286,9 @@ const ExchangeCurrenciesDialog: React.FC<ExchangeCurrenciesDialogProps> = ({
               <div className='space-y-4'>
                 <div className='flex items-center space-x-2'>
                   <h3 className='text-lg font-medium text-gray-900'>
-                    {t('modules.pages.wallet.exchange.sections.existingCurrencies')}
+                    {t(
+                      'modules.pages.wallet.exchange.sections.existingCurrencies'
+                    )}
                   </h3>
                   <Info className='w-4 h-4 text-gray-400' />
                 </div>
@@ -343,7 +345,9 @@ const ExchangeCurrenciesDialog: React.FC<ExchangeCurrenciesDialogProps> = ({
                       <div className='text-sm text-gray-600'>
                         <div className='flex justify-between'>
                           <span>
-                            {t('modules.pages.wallet.exchange.details.exchangeRate')}
+                            {t(
+                              'modules.pages.wallet.exchange.details.exchangeRate'
+                            )}
                           </span>
                           <span>
                             1 {selectedFromCurrency?.currency.code} ={' '}
@@ -364,7 +368,9 @@ const ExchangeCurrenciesDialog: React.FC<ExchangeCurrenciesDialogProps> = ({
                         </div>
                         <div className='flex justify-between'>
                           <span>
-                            {t('modules.pages.wallet.exchange.details.marginFee')}
+                            {t(
+                              'modules.pages.wallet.exchange.details.marginFee'
+                            )}
                           </span>
                           <span>
                             -{conversionInfo.charges.toFixed(2)}{' '}
@@ -406,10 +412,13 @@ const ExchangeCurrenciesDialog: React.FC<ExchangeCurrenciesDialogProps> = ({
                   {previewData && !previewData.sufficient_balance && (
                     <div className='bg-red-50 rounded-lg p-4'>
                       <div className='text-sm text-red-600'>
-                        {t('modules.pages.wallet.messages.insufficientBalance', {
-                          amount: previewData.from_currency.available_amount,
-                          code: previewData.from_currency.code,
-                        })}
+                        {t(
+                          'modules.pages.wallet.messages.insufficientBalance',
+                          {
+                            amount: previewData.from_currency.available_amount,
+                            code: previewData.from_currency.code,
+                          }
+                        )}
                       </div>
                     </div>
                   )}

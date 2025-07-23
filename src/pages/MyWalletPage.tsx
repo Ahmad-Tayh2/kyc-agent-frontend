@@ -8,8 +8,8 @@ import AddCurrencyDialog from '@/components/wallet/AddCurrencyDialog';
 import Loader from '@/components/Loader';
 
 const MyWalletPage: React.FC = () => {
-  const [t] = useTranslation("global");
-  
+  const [t] = useTranslation('global');
+
   // For now, we'll use a placeholder agent ID. In a real app, this would come from auth context
   const agentId = 2; // This should come from your auth context/state
 
@@ -35,7 +35,9 @@ const MyWalletPage: React.FC = () => {
     return (
       <div className='space-y-4'>
         <div className='flex justify-between items-center'>
-          <h1 className='text-2xl font-bold'>{t('modules.pages.wallet.title')}</h1>
+          <h1 className='text-2xl font-bold'>
+            {t('modules.pages.wallet.title')}
+          </h1>
           <div className='flex space-x-3'>
             <button
               className='px-4 py-2 border border-cyan-500 text-cyan-500 rounded-lg hover:bg-cyan-50 transition-colors opacity-50 cursor-not-allowed'
@@ -61,7 +63,9 @@ const MyWalletPage: React.FC = () => {
   if (error) {
     return (
       <div className='space-y-4'>
-        <h1 className='text-2xl font-bold'>{t('modules.pages.wallet.title')}</h1>
+        <h1 className='text-2xl font-bold'>
+          {t('modules.pages.wallet.title')}
+        </h1>
         <div className='bg-red-50 border border-red-200 rounded-lg p-4 text-red-700'>
           {t('modules.pages.wallet.messages.errorLoading')} {error.message}
         </div>
@@ -73,7 +77,9 @@ const MyWalletPage: React.FC = () => {
     <div className='space-y-6'>
       {/* Header */}
       <div className='flex justify-between items-center'>
-        <h1 className='text-2xl font-bold'>{t('modules.pages.wallet.title')}</h1>
+        <h1 className='text-2xl font-bold'>
+          {t('modules.pages.wallet.title')}
+        </h1>
         <div className='flex space-x-3'>
           <button
             onClick={() => setIsExchangeDialogOpen(true)}
@@ -110,7 +116,9 @@ const MyWalletPage: React.FC = () => {
         wallet.wallet_currencies.length === 0) && (
         <div className='text-center py-12 text-gray-500'>
           <p>{t('modules.pages.wallet.messages.noCurrencies')}</p>
-          <p className='text-sm'>{t('modules.pages.wallet.messages.noCurrenciesSubtext')}</p>
+          <p className='text-sm'>
+            {t('modules.pages.wallet.messages.noCurrenciesSubtext')}
+          </p>
         </div>
       )}
 

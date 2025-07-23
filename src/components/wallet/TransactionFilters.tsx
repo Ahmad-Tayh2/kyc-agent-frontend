@@ -29,26 +29,56 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   onResetFilters,
   onApplyFilters,
 }) => {
-  const [t] = useTranslation("global");
-  
+  const [t] = useTranslation('global');
+
   // Get currencies from API
   const { data: currencies = [] } = useCurrencies();
 
   // Create translated type options
-  const translatedTypeOptions = React.useMemo(() => [
-    { value: 'add_money', label: t('modules.pages.wallet.transactions.types.addMoney') },
-    { value: 'withdraw_money', label: t('modules.pages.wallet.transactions.types.withdrawMoney') },
-    { value: 'exchange_money', label: t('modules.pages.wallet.transactions.types.exchangeMoney') },
-  ], [t]);
+  const translatedTypeOptions = React.useMemo(
+    () => [
+      {
+        value: 'add_money',
+        label: t('modules.pages.wallet.transactions.types.addMoney'),
+      },
+      {
+        value: 'withdraw_money',
+        label: t('modules.pages.wallet.transactions.types.withdrawMoney'),
+      },
+      {
+        value: 'exchange_money',
+        label: t('modules.pages.wallet.transactions.types.exchangeMoney'),
+      },
+    ],
+    [t]
+  );
 
   // Create translated status options
-  const translatedStatusOptions = React.useMemo(() => [
-    { value: 'initiated', label: t('modules.pages.wallet.transactions.statuses.initiated') },
-    { value: 'processing', label: t('modules.pages.wallet.transactions.statuses.processing') },
-    { value: 'completed', label: t('modules.pages.wallet.transactions.statuses.completed') },
-    { value: 'failed', label: t('modules.pages.wallet.transactions.statuses.failed') },
-    { value: 'cancelled', label: t('modules.pages.wallet.transactions.statuses.cancelled') },
-  ], [t]);
+  const translatedStatusOptions = React.useMemo(
+    () => [
+      {
+        value: 'initiated',
+        label: t('modules.pages.wallet.transactions.statuses.initiated'),
+      },
+      {
+        value: 'processing',
+        label: t('modules.pages.wallet.transactions.statuses.processing'),
+      },
+      {
+        value: 'completed',
+        label: t('modules.pages.wallet.transactions.statuses.completed'),
+      },
+      {
+        value: 'failed',
+        label: t('modules.pages.wallet.transactions.statuses.failed'),
+      },
+      {
+        value: 'cancelled',
+        label: t('modules.pages.wallet.transactions.statuses.cancelled'),
+      },
+    ],
+    [t]
+  );
 
   // Transform currencies into options format for dropdown
   const currencyOptions = React.useMemo(() => {
@@ -81,7 +111,9 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
         >
           <div className='flex gap-2 w-fit'>
             <MultiSelectDropdown
-              label={t('modules.pages.wallet.transactions.filters.transactionType')}
+              label={t(
+                'modules.pages.wallet.transactions.filters.transactionType'
+              )}
               placeholder={t('modules.pages.wallet.transactions.filters.all')}
               options={translatedTypeOptions}
               value={filters.type}
@@ -103,7 +135,9 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             />
             <DateRangeSelector
               label={t('modules.pages.wallet.transactions.filters.date')}
-              placeholder={t('modules.pages.wallet.transactions.filters.selectDateRange')}
+              placeholder={t(
+                'modules.pages.wallet.transactions.filters.selectDateRange'
+              )}
               value={filters.dateRange}
               onChange={onUpdateDateRange}
             />

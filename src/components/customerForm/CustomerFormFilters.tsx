@@ -23,14 +23,26 @@ const CustomerFormFilters: React.FC<CustomerFormFiltersProps> = ({
   onResetFilters,
   onApplyFilters,
 }) => {
-  const [t] = useTranslation("global");
-  
+  const [t] = useTranslation('global');
+
   // Create translated status options
-  const translatedStatusOptions = React.useMemo(() => [
-    { value: 'valid_link', label: t('modules.pages.customerForm.statuses.linkValid') },
-    { value: 'expired_link', label: t('modules.pages.customerForm.statuses.linkExpired') },
-    { value: 'successful_registration', label: t('modules.pages.customerForm.statuses.registrationSuccessful') },
-  ], [t]);
+  const translatedStatusOptions = React.useMemo(
+    () => [
+      {
+        value: 'valid_link',
+        label: t('modules.pages.customerForm.statuses.linkValid'),
+      },
+      {
+        value: 'expired_link',
+        label: t('modules.pages.customerForm.statuses.linkExpired'),
+      },
+      {
+        value: 'successful_registration',
+        label: t('modules.pages.customerForm.statuses.registrationSuccessful'),
+      },
+    ],
+    [t]
+  );
   return (
     <div className='flex items-center justify-between flex-wrap'>
       <div className='flex items-center justify-start w-fit gap-1 flex-wrap'>
@@ -49,7 +61,9 @@ const CustomerFormFilters: React.FC<CustomerFormFiltersProps> = ({
             />
             <DateRangeSelector
               label={t('modules.pages.customerForm.filters.createdDate')}
-              placeholder={t('modules.pages.customerForm.filters.selectDateRange')}
+              placeholder={t(
+                'modules.pages.customerForm.filters.selectDateRange'
+              )}
               value={filters.dateRange}
               onChange={updateDateRange}
             />
