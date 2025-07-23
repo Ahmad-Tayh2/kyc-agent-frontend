@@ -58,5 +58,6 @@ export const API_URLS = {
   currencies: {
     get: () => `${baseUrl}/currencies`,
     exchange: () => `${baseUrl}/exchange-money-transactions`,
+    preview: () => `${baseUrl}/exchange-money-transactions/preview`,
   },
 };

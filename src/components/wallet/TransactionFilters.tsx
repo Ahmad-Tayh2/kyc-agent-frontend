@@ -1,26 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FilterButton } from '@/components/FilterButton';
 import MultiSelectDropdown from '@/components/MultiSelectDropdown';
 import DateRangeSelector from '@/components/DateRangeSelector';
 import type { TransactionFilterState } from '@/hooks/useTransactionFilters';
 import { useCurrencies } from '@/hooks/useCurrency';
 import type { Currency } from '@/types/currency';
-
-// Transaction type options
-const typeOptions = [
-  { value: 'add_money', label: 'Add Money' },
-  { value: 'withdraw_money', label: 'Withdraw Money' },
-  { value: 'exchange_money', label: 'Exchange Money' },
-];
-
-// Transaction status options
-const statusOptions = [
-  { value: 'initiated', label: 'Initiated' },
-  { value: 'processing', label: 'Processing' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'failed', label: 'Failed' },
-  { value: 'cancelled', label: 'Cancelled' },
-];
 
 interface TransactionFiltersProps {
   filters: TransactionFilterState;
@@ -44,8 +29,26 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   onResetFilters,
   onApplyFilters,
 }) => {
+  const [t] = useTranslation("global");
+  
   // Get currencies from API
   const { data: currencies = [] } = useCurrencies();
+
+  // Create translated type options
+  const translatedTypeOptions = React.useMemo(() => [
+    { value: 'add_money', label: t('modules.pages.wallet.transactions.types.addMoney') },
+    { value: 'withdraw_money', label: t('modules.pages.wallet.transactions.types.withdrawMoney') },
+    { value: 'exchange_money', label: t('modules.pages.wallet.transactions.types.exchangeMoney') },
+  ], [t]);
+
+  // Create translated status options
+  const translatedStatusOptions = React.useMemo(() => [
+    { value: 'initiated', label: t('modules.pages.wallet.transactions.statuses.initiated') },
+    { value: 'processing', label: t('modules.pages.wallet.transactions.statuses.processing') },
+    { value: 'completed', label: t('modules.pages.wallet.transactions.statuses.completed') },
+    { value: 'failed', label: t('modules.pages.wallet.transactions.statuses.failed') },
+    { value: 'cancelled', label: t('modules.pages.wallet.transactions.statuses.cancelled') },
+  ], [t]);
 
   // Transform currencies into options format for dropdown
   const currencyOptions = React.useMemo(() => {
@@ -78,29 +81,29 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
         >
           <div className='flex gap-2 w-fit'>
             <MultiSelectDropdown
-              label='Transaction Type'
-              placeholder='All'
-              options={typeOptions}
+              label={t('modules.pages.wallet.transactions.filters.transactionType')}
+              placeholder={t('modules.pages.wallet.transactions.filters.all')}
+              options={translatedTypeOptions}
               value={filters.type}
               onChange={onUpdateType}
             />
             <MultiSelectDropdown
-              label='Status'
-              placeholder='All'
-              options={statusOptions}
+              label={t('modules.pages.wallet.transactions.filters.status')}
+              placeholder={t('modules.pages.wallet.transactions.filters.all')}
+              options={translatedStatusOptions}
               value={filters.status}
               onChange={onUpdateStatus}
             />
             <MultiSelectDropdown
-              label='Currency'
-              placeholder='All'
+              label={t('modules.pages.wallet.transactions.filters.currency')}
+              placeholder={t('modules.pages.wallet.transactions.filters.all')}
               options={currencyOptions}
               value={filters.currency}
               onChange={onUpdateCurrency}
             />
             <DateRangeSelector
-              label='Date'
-              placeholder='Select date range'
+              label={t('modules.pages.wallet.transactions.filters.date')}
+              placeholder={t('modules.pages.wallet.transactions.filters.selectDateRange')}
               value={filters.dateRange}
               onChange={onUpdateDateRange}
             />
