@@ -351,7 +351,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           <div className='grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5'>
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                {t('common.fields.firstName.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.firstName.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -359,7 +360,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder={t('common.fields.firstName.placeholder')} {...field} />
+                      <Input
+                        placeholder={t('common.fields.firstName.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -369,7 +373,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                {t('common.fields.lastName.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.lastName.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -377,7 +382,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder={t('common.fields.lastName.placeholder')} {...field} />
+                      <Input
+                        placeholder={t('common.fields.lastName.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -387,7 +395,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                {t('common.fields.email.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.email.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -409,7 +418,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                {t('common.fields.phone.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.phone.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -440,7 +450,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                {t('common.fields.streetName.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.streetName.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -448,7 +459,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder={t('common.fields.streetName.placeholder')} {...field} />
+                      <Input
+                        placeholder={t('common.fields.streetName.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -458,7 +472,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                {t('common.fields.houseNumber.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.houseNumber.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -466,7 +481,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder={t('common.fields.houseNumber.placeholder')} {...field} />
+                      <Input
+                        placeholder={t('common.fields.houseNumber.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -475,14 +493,19 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>{t('common.fields.postalCode.label')}</Label>
+              <Label className='text-[14px]'>
+                {t('common.fields.postalCode.label')}
+              </Label>
               <FormField
                 control={form.control}
                 name='postalCode'
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder={t('common.fields.postalCode.placeholder')} {...field} />
+                      <Input
+                        placeholder={t('common.fields.postalCode.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -491,14 +514,21 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>{t('common.fields.extraAddressDetails.label')}</Label>
+              <Label className='text-[14px]'>
+                {t('common.fields.extraAddressDetails.label')}
+              </Label>
               <FormField
                 control={form.control}
                 name='extraAddressDetails'
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder={t('common.fields.extraAddressDetails.placeholder')} {...field} />
+                      <Input
+                        placeholder={t(
+                          'common.fields.extraAddressDetails.placeholder'
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -550,7 +580,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                {t('common.fields.dob.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.dob.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -571,7 +602,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='md:col-span-2 flex flex-col gap-2'>
               <Label>
-                {t('common.fields.gender.label')}<span className='text-red-500'>*</span>
+                {t('common.fields.gender.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
