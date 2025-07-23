@@ -8,6 +8,8 @@ import CustomerFormDialog from '@/components/customerForm/CustomerFormDialog';
 import { useState } from 'react';
 import StatusLabel from '@/components/StatusLabel';
 import CustomerFormDialogWrapper from '@/components/customerForm/CustomerFormDialogWrapper';
+import CustomerFormFilters from '@/components/customerForm/CustomerFormFilters';
+import { useCustomerFormFilters } from '@/hooks/useCustomerFormFilters';
 
 type CustomerFormTableData = {
   id: number;
@@ -18,7 +20,16 @@ type CustomerFormTableData = {
 };
 
 const CustomerFormsPage: React.FC = () => {
-  const { data: customerForms } = useCustomerForm();
+  const {
+    filters,
+    filtersString,
+    updateStatus,
+    updateDateRange,
+    resetFilters,
+    applyFilters,
+  } = useCustomerFormFilters();
+
+  const { data: customerForms } = useCustomerForm(filtersString);
   const [previewToken, setPreviewToken] = useState<string | null>(null);
 
   const copyToClipboard = async (text: string) => {
@@ -240,7 +251,16 @@ const CustomerFormsPage: React.FC = () => {
     <div className='space-y-4'>
       <div className='flex justify-between items-center p-2'>
         <h1 className='text-2xl font-bold'>Customer Forms</h1>
-        <CustomerFormDialog trigger={<Button>Generate New Link</Button>} />
+        <div className='flex items-center gap-3'>
+          <CustomerFormFilters
+            filters={filters}
+            updateStatus={updateStatus}
+            updateDateRange={updateDateRange}
+            onResetFilters={resetFilters}
+            onApplyFilters={applyFilters}
+          />
+          <CustomerFormDialog trigger={<Button>Generate New Link</Button>} />
+        </div>
       </div>
       <div className='p-5'>
         <DataTable

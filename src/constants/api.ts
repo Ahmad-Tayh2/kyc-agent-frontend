@@ -49,6 +49,8 @@ export const API_URLS = {
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
     deleteCurrency: () => '', // URL not ready yet
+    addCurrency: (walletId: string | number) =>
+      `${baseUrl}/wallets/${walletId}/currencies`,
   },
   transactions: {
     get: () => `${baseUrl}/extra-transactions`,

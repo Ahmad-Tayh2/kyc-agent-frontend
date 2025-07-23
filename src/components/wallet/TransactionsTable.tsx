@@ -1,21 +1,29 @@
 import React from 'react';
 import { useExtraTransactions } from '@/hooks/useTransactions';
+import { useTransactionFilters } from '@/hooks/useTransactionFilters';
 import { DataTable } from '@/components/DataTable';
 import StatusLabel from '@/components/StatusLabel';
 import { ExportButton } from '@/components/ExportButton';
-import { FilterButton } from '@/components/FilterButton';
+import TransactionFilters from '@/components/wallet/TransactionFilters';
 import type { ExtraTransaction, TransactionStatus } from '@/types/transactions';
 
 export const ExtraTransactionsTable: React.FC = () => {
-  const { data: extraTransactions, isLoading, error } = useExtraTransactions();
+  const {
+    filters,
+    filtersString,
+    updateType,
+    updateStatus,
+    updateCurrency,
+    updateDateRange,
+    resetFilters,
+    applyFilters,
+  } = useTransactionFilters();
 
-  const handleFilter = () => {
-    console.log('Filter extra transactions');
-  };
-
-  const handleResetFilter = () => {
-    console.log('Reset filter');
-  };
+  const {
+    data: extraTransactions,
+    isLoading,
+    error,
+  } = useExtraTransactions(filtersString);
 
   const exportOptions = [
     { label: 'Export as CSV', onClick: () => console.log('Export CSV') },
@@ -100,9 +108,15 @@ export const ExtraTransactionsTable: React.FC = () => {
           Extra Transaction History
         </h2>
         <div className='flex space-x-3'>
-          <FilterButton
-            onClick={handleFilter}
-            onResetClick={handleResetFilter}
+          {/* Transaction Filters */}
+          <TransactionFilters
+            filters={filters}
+            onUpdateType={updateType}
+            onUpdateStatus={updateStatus}
+            onUpdateCurrency={updateCurrency}
+            onUpdateDateRange={updateDateRange}
+            onResetFilters={resetFilters}
+            onApplyFilters={applyFilters}
           />
           <ExportButton options={exportOptions} />
         </div>
@@ -113,6 +127,7 @@ export const ExtraTransactionsTable: React.FC = () => {
         data={extraTransactions || []}
         columns={columns}
         isLoading={isLoading}
+        error={error}
       />
     </div>
   );

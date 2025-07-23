@@ -49,3 +49,28 @@ export async function deleteCurrency(
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 }
+
+export async function addCurrency(
+  walletId: string | number,
+  currencyId: number
+): Promise<void> {
+  const token = localStorage.getItem('token');
+
+  const response = await fetch(API_URLS.wallet.addCurrency(walletId), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      currency_id: currencyId,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return handleApiResponse(data);
+}

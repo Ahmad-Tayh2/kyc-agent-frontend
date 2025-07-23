@@ -5,10 +5,15 @@ import type {
   ExtraTransactionsResponse,
 } from '@/types/transactions';
 
-export async function getExtraTransactions(): Promise<ExtraTransaction[]> {
+export async function getExtraTransactions(
+  queryParams?: string
+): Promise<ExtraTransaction[]> {
   const token = localStorage.getItem('token');
+  const url = queryParams
+    ? `${API_URLS.transactions.get()}?${queryParams}`
+    : API_URLS.transactions.get();
 
-  const response = await fetch(API_URLS.transactions.get(), {
+  const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

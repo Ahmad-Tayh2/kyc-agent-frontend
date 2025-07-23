@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useWallet, useDeleteCurrency } from '@/hooks/useWallet';
 import { CurrencyCard } from '@/components/CurrencyCard';
-import { ExtraTransactionsTable } from '@/components/TransactionsTable';
-import ExchangeCurrenciesDialog from '@/components/ExchangeCurrenciesDialog';
+import { ExtraTransactionsTable } from '@/components/wallet/TransactionsTable';
+import ExchangeCurrenciesDialog from '@/components/wallet/ExchangeCurrenciesDialog';
+import AddCurrencyDialog from '@/components/wallet/AddCurrencyDialog';
 import Loader from '@/components/Loader';
 
 const MyWalletPage: React.FC = () => {
@@ -10,6 +11,7 @@ const MyWalletPage: React.FC = () => {
   const agentId = 2; // This should come from your auth context/state
 
   const [isExchangeDialogOpen, setIsExchangeDialogOpen] = useState(false);
+  const [isAddCurrencyDialogOpen, setIsAddCurrencyDialogOpen] = useState(false);
 
   const { data: wallet, isLoading, error } = useWallet(agentId);
   const deleteCurrencyMutation = useDeleteCurrency();
@@ -38,7 +40,10 @@ const MyWalletPage: React.FC = () => {
             >
               EXCHANGE CURRENCIES
             </button>
-            <button className='px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors'>
+            <button
+              onClick={() => setIsAddCurrencyDialogOpen(true)}
+              className='px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors'
+            >
               ADD CURRENCY
             </button>
           </div>
@@ -76,8 +81,11 @@ const MyWalletPage: React.FC = () => {
             }
           >
             EXCHANGE CURRENCIES
-          </button>
-          <button className='px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors'>
+          </button>{' '}
+          <button
+            onClick={() => setIsAddCurrencyDialogOpen(true)}
+            className='px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors'
+          >
             ADD CURRENCY
           </button>
         </div>
@@ -113,6 +121,14 @@ const MyWalletPage: React.FC = () => {
         isOpen={isExchangeDialogOpen}
         onOpenChange={setIsExchangeDialogOpen}
         walletCurrencies={wallet?.wallet_currencies || []}
+      />
+
+      {/* Add Currency Dialog */}
+      <AddCurrencyDialog
+        walletId={wallet?.id || 0}
+        walletCurrencies={wallet?.wallet_currencies || []}
+        isOpen={isAddCurrencyDialogOpen}
+        onOpenChange={setIsAddCurrencyDialogOpen}
       />
     </div>
   );

@@ -26,3 +26,21 @@ export function useDeleteCurrency() {
     },
   });
 }
+
+export function useAddCurrency() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      walletId,
+      currencyId,
+    }: {
+      walletId: string | number;
+      currencyId: number;
+    }) => walletService.addCurrency(walletId, currencyId),
+    onSuccess: () => {
+      // Invalidate and refetch wallet data after successful addition
+      queryClient.invalidateQueries({ queryKey: ['wallet'] });
+    },
+  });
+}
