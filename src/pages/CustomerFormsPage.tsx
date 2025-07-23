@@ -4,10 +4,10 @@ import { useCustomerForm } from '@/hooks/useCustomerForm';
 import type { CustomerForm } from '@/types/customerForm/CustomerForm';
 import copyIcon from '@/assets/icons/clipboard.svg';
 import { Button } from '@/components/ui/button';
-import CustomerFormDialog from '@/components/CustomerForm/CustomerFormDialog';
+import CustomerFormDialog from '@/components/customerForm/CustomerFormDialog';
 import { useState } from 'react';
 import StatusLabel from '@/components/StatusLabel';
-import CustomerFormDialogWrapper from '@/components/CustomerForm/CustomerFormDialogWrapper';
+import CustomerFormDialogWrapper from '@/components/customerForm/CustomerFormDialogWrapper';
 
 type CustomerFormTableData = {
   id: number;

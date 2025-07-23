@@ -42,7 +42,19 @@ export const API_URLS = {
     get: () => `${baseUrl}/customer-forms`,
     getById: (id: string | number) => `${baseUrl}/customer-forms/${id}`,
     create: () => `${baseUrl}/customer-forms`,
-    validateToken: (token: string) => `${baseUrl}/customer-forms/validate-token/${token}`,
+    validateToken: (token: string) =>
+      `${baseUrl}/customer-forms/validate-token/${token}`,
     submit: (token: string) => `${baseUrl}/customer-forms/${token}/submit`,
+  },
+  wallet: {
+    get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
+    deleteCurrency: () => '', // URL not ready yet
+  },
+  transactions: {
+    get: () => `${baseUrl}/extra-transactions`,
+  },
+  currencies: {
+    get: () => `${baseUrl}/currencies`,
+    exchange: () => `${baseUrl}/exchange-money-transactions`,
   },
 };
