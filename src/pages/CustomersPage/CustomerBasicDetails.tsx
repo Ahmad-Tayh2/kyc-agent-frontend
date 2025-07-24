@@ -8,21 +8,26 @@ import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { cn } from "@/lib/utils";
 import { useCitiesByCountry, useCountries } from "@/hooks/useAddress";
+import { CUSTOMER_STATUSES } from "@/constants/appConstants";
+
 const CustomerBasicDetails = (props: any) => {
   const {
     formData,
     handleInputChange,
     handleDateChange,
-    editMode = false,
+    editMode = true,
   } = props;
   const genderOptions = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
   ];
-  const statusOptions = [{ label: "Active", value: "active" }];
+  const statusOptions = CUSTOMER_STATUSES.map((status) => ({
+    label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+    value: status,
+  }));
 
   const { data: countries = [] } = useCountries();
-  const { data: cities = [] } = useCitiesByCountry(formData.country || null);
+  const { data: cities = [] } = useCitiesByCountry(formData.country_id || null);
   const countryOptions =
     countries?.map((country: any) => ({
       value: country.id,
@@ -46,28 +51,30 @@ const CustomerBasicDetails = (props: any) => {
     <div className="space-y-6 p-5">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]" htmlFor="firstName">
+          <Label className="text-[14px]" htmlFor="first_name">
             First Name
             <span className="text-red-500">*</span>
           </Label>
           <Input
-            id="firstName"
+            id="first_name"
+            name="first_name"
             placeholder="First Name"
-            value={formData.firstName || ""}
-            onChange={(e) => handleInputChange("firstName", e.target.value)}
+            value={formData.first_name || ""}
+            onChange={(e) => handleInputChange("first_name", e.target.value)}
             disabled={!editMode}
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]" htmlFor="lastName">
+          <Label className="text-[14px]" htmlFor="last_name">
             Last Name<span className="text-red-500">*</span>
           </Label>
           <Input
-            id="lastName"
+            id="last_name"
+            name="last_name"
             placeholder="Last Name"
-            value={formData.lastName || ""}
-            onChange={(e) => handleInputChange("lastName", e.target.value)}
+            value={formData.last_name || ""}
+            onChange={(e) => handleInputChange("last_name", e.target.value)}
             disabled={!editMode}
           />
         </div>
@@ -78,6 +85,7 @@ const CustomerBasicDetails = (props: any) => {
           </Label>
           <Input
             id="email"
+            name="email"
             type="email"
             placeholder="The email must be verified"
             value={formData.email || ""}
@@ -87,48 +95,50 @@ const CustomerBasicDetails = (props: any) => {
         </div>
 
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]" htmlFor="dateOfBirth">
+          <Label className="text-[14px]" htmlFor="date_of_birth">
             Date of Birth<span className="text-red-500">*</span>
           </Label>
           <DatePicker
-            value={formData.dateOfBirth || ""}
-            onChange={(date: string) => handleDateChange("dateOfBirth", date)}
+            value={formData.date_of_birth || ""}
+            onChange={(date: string) => handleDateChange("date_of_birth", date)}
             disabled={!editMode}
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]" htmlFor="streetName">
+          <Label className="text-[14px]" htmlFor="street_name">
             Street Name<span className="text-red-500">*</span>
           </Label>
           <Input
-            id="streetName"
+            id="street_name"
+            name="street_name"
             placeholder="Enter street name and house number"
-            value={formData.streetName || ""}
-            onChange={(e) => handleInputChange("streetName", e.target.value)}
+            value={formData.street_name || ""}
+            onChange={(e) => handleInputChange("street_name", e.target.value)}
             disabled={!editMode}
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]" htmlFor="houseNumber">
+          <Label className="text-[14px]" htmlFor="house_number">
             House Number<span className="text-red-500">*</span>
           </Label>
           <Input
-            id="houseNumber"
+            id="house_number"
+            name="house_number"
             placeholder="Enter street name and house number"
-            value={formData.houseNumber || ""}
-            onChange={(e) => handleInputChange("houseNumber", e.target.value)}
+            value={formData.house_number || ""}
+            onChange={(e) => handleInputChange("house_number", e.target.value)}
             disabled={!editMode}
           />
         </div>
         <SearchableSelect
           label={"Country"}
           options={countryOptions}
-          value={formData.country}
+          value={formData.country_id}
           onChange={(value) => {
             console.log(" change country = ", value);
-            handleInputChange("country", value);
+            handleInputChange("country_id", value);
           }}
           required
           disabled={!editMode}
@@ -137,20 +147,21 @@ const CustomerBasicDetails = (props: any) => {
         <SearchableSelect
           label={"City"}
           options={cityOptions}
-          value={formData.city}
-          onChange={(value) => handleInputChange("city", value)}
-          disabled={!formData.country || !editMode}
+          value={formData.city_id}
+          onChange={(value) => handleInputChange("city_id", value)}
+          disabled={!formData.country_id || !editMode}
           required
         />
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]" htmlFor="postalCode">
+          <Label className="text-[14px]" htmlFor="postal_code">
             Postal Code<span className="text-red-500">*</span>
           </Label>
           <Input
-            id="postalCode"
+            id="postal_code"
+            name="postal_code"
             placeholder="Enter your postal code"
-            value={formData.postalCode || ""}
-            onChange={(e) => handleInputChange("postalCode", e.target.value)}
+            value={formData.postal_code || ""}
+            onChange={(e) => handleInputChange("postal_code", e.target.value)}
             disabled={!editMode}
           />
         </div>
@@ -182,19 +193,19 @@ const CustomerBasicDetails = (props: any) => {
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]" htmlFor="phoneNumber">
+          <Label className="text-[14px]" htmlFor="phone_number">
             Phone Number<span className="text-red-500">*</span>
           </Label>
           <PhoneInput
             placeholder="Enter your phone number"
             countryOptions={countryPhoneOptions}
-            selectedCountry={formData.countryCode || ""}
-            phoneNumber={formData.phoneNumber || ""}
+            selectedCountry={formData.country_phone_code || ""}
+            phoneNumber={formData.phone_number || ""}
             onCountryChange={(countryCode: string) =>
-              handleInputChange("countryCode", countryCode)
+              handleInputChange("country_phone_code", countryCode)
             }
             onPhoneChange={(phoneNumber: string) =>
-              handleInputChange("phoneNumber", phoneNumber)
+              handleInputChange("phone_number", phoneNumber)
             }
             disabled={!editMode}
           />

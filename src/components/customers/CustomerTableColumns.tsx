@@ -9,6 +9,7 @@ import SendMoneyIcon from "@/assets/icons/send-money.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
+import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 
 export type Customer = {
   id: string;
@@ -21,10 +22,6 @@ export type Customer = {
   phone_number: string;
   created_at: string;
   status: string;
-};
-
-const statusColors: { [key: string]: string } = {
-  active: "#027A48",
 };
 
 const menu = (customerId: string | number) => {
@@ -101,7 +98,7 @@ export const useCustomerColumns = (): ColumnDef<Customer>[] => {
         header: "Status",
         cell: ({ row }) => {
           const value: string = row.getValue("status");
-          const color = statusColors[value] || "#000000";
+          const color = CUSTOMER_STATUS_COLORS[value as keyof typeof CUSTOMER_STATUS_COLORS] || "#000000";
           return <StatusLabel value={value} color={color} />;
         },
       },

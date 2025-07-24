@@ -5,6 +5,8 @@ import {
   customersService,
   type CustomerSearchParams,
   type CustomerCreateData,
+  type CustomerIdentityFileData,
+  type CustomerIncomeFileData,
 } from "@/services/customers";
 
 export function useGetCustomers(filters: string) {
@@ -43,5 +45,38 @@ export function useCreateCustomer() {
   return useMutation({
     mutationFn: (data: CustomerCreateData) =>
       customersService.createCustomer(data),
+    onSuccess: () => {
+      toast.success("Customer created successfully!");
+    },
+  });
+}
+
+export function useUploadIdentityDocuments() {
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string | number;
+      data: CustomerIdentityFileData;
+    }) => customersService.uploadIdentityDocuments(id, data),
+    onSuccess: () => {
+      toast.success("Identity documents uploaded successfully!");
+    },
+  });
+}
+
+export function useUploadIncomeDocuments() {
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string | number;
+      data: CustomerIncomeFileData;
+    }) => customersService.uploadIncomeDocuments(id, data),
+    onSuccess: () => {
+      toast.success("Income documents uploaded successfully!");
+    },
   });
 }

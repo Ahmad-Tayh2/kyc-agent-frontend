@@ -6,6 +6,7 @@ import PageTitle from "@/components/PageTitle";
 import StatusLabel from "@/components/StatusLabel";
 import CustomerSectionCard from "./CustomerSectionCard";
 import { useGetCustomer, useUpdateCustomer } from "@/hooks/useCustomers";
+import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 
 const CustomerEditPage: React.FC = () => {
   const navigate = useNavigate();
@@ -18,18 +19,19 @@ const CustomerEditPage: React.FC = () => {
   useEffect(() => {
     if (data && data.data) {
       setFormData({
-        country: data.data?.country.id,
-        city: data.data?.city.id,
-        postalCode: data.data.postal_code,
-        firstName: data.data.first_name,
-        lastName: data.data.last_name,
-        dateOfBirth: data.data.date_of_birth,
+        country_id: data.data?.country.id,
+        city_id: data.data?.city.id,
+        postal_code: data.data.postal_code,
+        first_name: data.data.first_name,
+        last_name: data.data.last_name,
+        date_of_birth: data.data.date_of_birth,
         gender: data.data.gender,
-        streetName: data.data.street_name,
-        houseNumber: data.data.house_number,
-        phoneNumber: data.data.phone_number,
-        countryPhoneCode: data.data.country_phone_code,
+        street_name: data.data.street_name,
+        house_number: data.data.house_number,
+        phone_number: data.data.phone_number,
+        country_phone_code: data.data.country_phone_code,
         status: data.data.status,
+        created_at: data.data.created_at,
       });
     }
   }, [data]);
@@ -49,17 +51,17 @@ const CustomerEditPage: React.FC = () => {
   const handleSave = async () => {
     try {
       const payloadToUpdate: any = {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        date_of_birth: formData.dateOfBirth,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        date_of_birth: formData.date_of_birth,
         gender: formData.gender,
-        country_id: formData.country,
-        city_id: formData.city,
-        street_name: formData.streetName,
-        house_number: formData.houseNumber,
-        postal_code: formData.postalCode,
-        phone_number: formData.phoneNumber,
-        country_phone_code: formData.countryPhoneCode,
+        country_id: formData.country_id,
+        city_id: formData.city_id,
+        street_name: formData.street_name,
+        house_number: formData.house_number,
+        postal_code: formData.postal_code,
+        phone_number: formData.phone_number,
+        country_phone_code: formData.country_phone_code,
         status: formData.status,
       };
       await updateCustomer(payloadToUpdate);
@@ -71,6 +73,8 @@ const CustomerEditPage: React.FC = () => {
   if (isLoading) return <div className="p-8">Loading...</div>;
   if (error)
     return <div className="p-8 text-red-500">Error loading customer.</div>;
+
+  const statusColor = CUSTOMER_STATUS_COLORS[formData.status as keyof typeof CUSTOMER_STATUS_COLORS] || "#000000";
 
   return (
     <div className="space-y-4">
@@ -84,11 +88,11 @@ const CustomerEditPage: React.FC = () => {
             <BackArrowIcon width={30} height={30} />
           </button>
           <PageTitle
-            title={`${formData.firstName || ""} ${formData.lastName || ""}`}
+            title={`${formData.first_name || ""} ${formData.last_name || ""}`}
           />
           <StatusLabel
             value={formData.status || "active"}
-            color="#ff0000"
+            color={statusColor}
             className="rounded-full"
           />
         </div>

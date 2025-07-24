@@ -31,6 +31,11 @@ export const API_URLS = {
     create: `${baseUrl}/customers`,
     getById: (id: string | number) => `${baseUrl}/customers/${id}`,
     update: (id: string | number) => `${baseUrl}/customers/${id}`,
+
+    uploadIdentityDocuments: (id: string | number) =>
+      `${baseUrl}/customers/${id}/upload-identity-documents`,
+    uploadIncomeDocuments: (id: string | number) =>
+      `${baseUrl}/customers/${id}/upload-income-documents`,
   },
   remittanceMethods: {
     get: () => `${baseUrl}/remittance-methods`,

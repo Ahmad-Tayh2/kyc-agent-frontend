@@ -6,13 +6,12 @@ import DateRangeSelector from "@/components/DateRangeSelector";
 import CountrySelector from "@/components/CountrySelector";
 import { useCountries } from "@/hooks/useAddress";
 import type { FilterState } from "@/hooks/useCustomerFilters";
+import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
-const statusOptions = [
-  { value: "active", label: "Active" },
-  { value: "kyc_identity", label: "KYC Identity" },
-  { value: "kyc_income", label: "KYC Income" },
-  { value: "banned", label: "Banned" },
-];
+const statusOptions = CUSTOMER_STATUSES.map(status => ({
+  value: status,
+  label: status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+}));
 
 interface CustomerFiltersProps {
   filters: FilterState;
