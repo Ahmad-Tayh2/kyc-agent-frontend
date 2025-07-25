@@ -1,0 +1,113 @@
+import { useState, useCallback, useMemo } from 'react';
+
+export interface TransactionFilterState {
+  type: string[];
+  status: string[];
+  currency: string[];
+  dateRange: {
+    startDate: Date | null;
+    endDate: Date | null;
+  };
+}
+
+export function useTransactionFilters() {
+  const [filters, setFilters] = useState<TransactionFilterState>({
+    type: [],
+    status: [],
+    currency: [],
+    dateRange: {
+      startDate: null,
+      endDate: null,
+    },
+  });
+
+  const [isFiltersApplied, setIsFiltersApplied] = useState(false);
+
+  // Create a querystring from the filters
+  const filtersString = useMemo(() => {
+    if (!isFiltersApplied) return '';
+
+    const params = new URLSearchParams();
+
+    // Add transaction types with array format
+    if (filters.type.length > 0) {
+      filters.type.forEach((type) => {
+        params.append('type[]', type);
+      });
+    }
+
+    // Add status filters with array format
+    if (filters.status.length > 0) {
+      filters.status.forEach((status) => {
+        params.append('status[]', status);
+      });
+    }
+
+    // Add currency filters
+    if (filters.currency.length > 0) {
+      filters.currency.forEach((currency) => {
+        params.append('currency', currency);
+      });
+    }
+
+    // Add date range filters
+    if (filters.dateRange.startDate) {
+      params.append('date_from', filters.dateRange.startDate.toISOString());
+    }
+    if (filters.dateRange.endDate) {
+      params.append('date_to', filters.dateRange.endDate.toISOString());
+    }
+
+    return params.toString();
+  }, [filters, isFiltersApplied]);
+
+  // Update filters functions
+  const updateType = useCallback((type: string[]) => {
+    setFilters((prev) => ({ ...prev, type }));
+  }, []);
+
+  const updateStatus = useCallback((status: string[]) => {
+    setFilters((prev) => ({ ...prev, status }));
+  }, []);
+
+  const updateCurrency = useCallback((currency: string[]) => {
+    setFilters((prev) => ({ ...prev, currency }));
+  }, []);
+
+  const updateDateRange = useCallback(
+    (dateRange: { startDate: Date | null; endDate: Date | null }) => {
+      setFilters((prev) => ({ ...prev, dateRange }));
+    },
+    []
+  );
+
+  // Reset all filters
+  const resetFilters = useCallback(() => {
+    setFilters({
+      type: [],
+      status: [],
+      currency: [],
+      dateRange: {
+        startDate: null,
+        endDate: null,
+      },
+    });
+    setIsFiltersApplied(false);
+  }, []);
+
+  // Apply filters to trigger the API call
+  const applyFilters = useCallback(() => {
+    setIsFiltersApplied(true);
+  }, []);
+
+  return {
+    filters,
+    filtersString,
+    updateType,
+    updateStatus,
+    updateCurrency,
+    updateDateRange,
+    resetFilters,
+    applyFilters,
+  };
+}

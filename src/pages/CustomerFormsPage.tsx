@@ -1,13 +1,16 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { DataTable } from '../components/DataTable';
 import { useCustomerForm } from '@/hooks/useCustomerForm';
 import type { CustomerForm } from '@/types/customerForm/CustomerForm';
 import copyIcon from '@/assets/icons/clipboard.svg';
 import { Button } from '@/components/ui/button';
-import CustomerFormDialog from '@/components/CustomerForm/CustomerFormDialog';
+import CustomerFormDialog from '@/components/customerForm/CustomerFormDialog';
 import { useState } from 'react';
 import StatusLabel from '@/components/StatusLabel';
-import CustomerFormDialogWrapper from '@/components/CustomerForm/CustomerFormDialogWrapper';
+import CustomerFormDialogWrapper from '@/components/customerForm/CustomerFormDialogWrapper';
+import CustomerFormFilters from '@/components/customerForm/CustomerFormFilters';
+import { useCustomerFormFilters } from '@/hooks/useCustomerFormFilters';
 
 type CustomerFormTableData = {
   id: number;
@@ -18,7 +21,18 @@ type CustomerFormTableData = {
 };
 
 const CustomerFormsPage: React.FC = () => {
-  const { data: customerForms } = useCustomerForm();
+  const [t] = useTranslation('global');
+
+  const {
+    filters,
+    filtersString,
+    updateStatus,
+    updateDateRange,
+    resetFilters,
+    applyFilters,
+  } = useCustomerFormFilters();
+
+  const { data: customerForms } = useCustomerForm(filtersString);
   const [previewToken, setPreviewToken] = useState<string | null>(null);
 
   const copyToClipboard = async (text: string) => {
@@ -41,37 +55,38 @@ const CustomerFormsPage: React.FC = () => {
         frontendFormUrl: item.form_urls.frontend_form_url,
         createdAt: item.created_at,
       }))
-    : [];
-
-  // Define columns for the DataTable
+    : []; // Define columns for the DataTable
   const columns = [
     {
-      header: 'Full Name',
-
+      header: t('modules.pages.customerForm.columns.fullName'),
       accessorKey: 'fullName',
-
       size: 200,
     },
-
     {
-      header: 'Status',
-
+      header: t('modules.pages.customerForm.columns.status'),
       accessorKey: 'status',
-
       size: 180,
 
       cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
         const getStatusConfig = (status: string) => {
           switch (status) {
             case 'successful_registration':
-              return { label: 'Registration Successful', color: '#027A48' };
-
+              return {
+                label: t(
+                  'modules.pages.customerForm.statuses.registrationSuccessful'
+                ),
+                color: '#027A48',
+              };
             case 'valid_link':
-              return { label: 'Link Valid', color: '#DF6B1D' };
-
+              return {
+                label: t('modules.pages.customerForm.statuses.linkValid'),
+                color: '#DF6B1D',
+              };
             case 'expired_link':
-              return { label: 'Link Expired', color: '#B42318' };
-
+              return {
+                label: t('modules.pages.customerForm.statuses.linkExpired'),
+                color: '#B42318',
+              };
             default:
               return { label: status, color: '#6B7280' };
           }
@@ -84,10 +99,8 @@ const CustomerFormsPage: React.FC = () => {
         );
       },
     },
-
     {
-      header: 'Form URL',
-
+      header: t('modules.pages.customerForm.columns.formUrl'),
       accessorKey: 'frontendFormUrl',
 
       cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
@@ -130,12 +143,9 @@ const CustomerFormsPage: React.FC = () => {
         );
       },
     },
-
     {
-      header: 'Created At',
-
+      header: t('modules.pages.customerForm.columns.createdAt'),
       accessorKey: 'createdAt',
-
       size: 150,
 
       cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
@@ -162,12 +172,9 @@ const CustomerFormsPage: React.FC = () => {
         );
       },
     },
-
     {
-      header: 'Actions',
-
+      header: t('modules.pages.customerForm.columns.actions'),
       accessorKey: 'id',
-
       size: 250,
 
       cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
@@ -182,7 +189,7 @@ const CustomerFormsPage: React.FC = () => {
                     }
                     className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
                   >
-                    RESEND
+                    {t('modules.pages.customerForm.actions.resend')}
                   </button>
                 </div>
               );
@@ -200,7 +207,7 @@ const CustomerFormsPage: React.FC = () => {
                     }
                     className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
                   >
-                    GENERATE NEW LINK AND SEND IT
+                    {t('modules.pages.customerForm.actions.generateNewLink')}
                   </button>
                 </div>
               );
@@ -212,7 +219,7 @@ const CustomerFormsPage: React.FC = () => {
                     href={`/customer-forms/${row.original.id}`}
                     className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
                   >
-                    Customer Details
+                    {t('modules.pages.customerForm.actions.customerDetails')}
                   </a>
                 </div>
               );
@@ -224,7 +231,7 @@ const CustomerFormsPage: React.FC = () => {
                     href={`/customer-forms/${row.original.id}`}
                     className='text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap'
                   >
-                    View
+                    {t('modules.pages.customerForm.actions.view')}
                   </a>
                 </div>
               );
@@ -239,8 +246,25 @@ const CustomerFormsPage: React.FC = () => {
   return (
     <div className='space-y-4'>
       <div className='flex justify-between items-center p-2'>
-        <h1 className='text-2xl font-bold'>Customer Forms</h1>
-        <CustomerFormDialog trigger={<Button>Generate New Link</Button>} />
+        <h1 className='text-2xl font-bold'>
+          {t('modules.pages.customerForm.title')}
+        </h1>
+        <div className='flex items-center gap-3'>
+          <CustomerFormFilters
+            filters={filters}
+            updateStatus={updateStatus}
+            updateDateRange={updateDateRange}
+            onResetFilters={resetFilters}
+            onApplyFilters={applyFilters}
+          />
+          <CustomerFormDialog
+            trigger={
+              <Button>
+                {t('modules.pages.customerForm.buttons.generateNewLink')}
+              </Button>
+            }
+          />
+        </div>
       </div>
       <div className='p-5'>
         <DataTable
@@ -248,7 +272,7 @@ const CustomerFormsPage: React.FC = () => {
           columns={columns}
           enablePagination={true}
           rowsPerPage={10}
-          tableTitle='Customer Forms'
+          tableTitle={t('modules.pages.customerForm.title')}
         />
       </div>
 

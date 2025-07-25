@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import {
   useValidateCustomerFormToken,
   useSubmitCustomerForm,
@@ -72,6 +73,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 }) => {
   const { token: urlToken } = useParams<{ token: string }>();
   const navigate = useNavigate();
+  const [t] = useTranslation('global');
   const effectiveToken = token || urlToken;
   const isUserAuthenticated = isAuthenticated();
   const isPreviewMode = mode === 'preview';
@@ -196,10 +198,11 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   if (validationError || !tokenValidation?.id) {
     return (
       <div className='flex flex-col items-center justify-center h-64 text-center'>
-        <h2 className='text-2xl font-bold text-red-600 mb-4'>Link Expired</h2>
+        <h2 className='text-2xl font-bold text-red-600 mb-4'>
+          {t('modules.pages.customerForm.linkExpired.title')}
+        </h2>
         <p className='text-gray-600'>
-          This link has expired or is no longer valid. Please contact the agent
-          for a new link.
+          {t('modules.pages.customerForm.linkExpired.message')}
         </p>
         {mode === 'fullpage' && (
           <Button
@@ -207,12 +210,12 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             className='mt-4'
             variant='outline'
           >
-            Go Home
+            {t('common.actions.goHome')}
           </Button>
         )}
         {isPreviewMode && (
           <Button onClick={onClose} className='mt-4' variant='outline'>
-            Close Preview
+            {t('modules.pages.customerForm.closePreview')}
           </Button>
         )}
       </div>
@@ -223,10 +226,11 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   if (tokenValidation?.status === 'successful_registration') {
     return (
       <div className='flex flex-col items-center justify-center h-64 text-center'>
-        <h2 className='text-2xl font-bold text-orange-600 mb-4'>Link Used</h2>
+        <h2 className='text-2xl font-bold text-orange-600 mb-4'>
+          {t('modules.pages.customerForm.linkUsed.title')}
+        </h2>
         <p className='text-gray-600'>
-          This link has already been used to submit a customer form. Each link
-          can only be used once.
+          {t('modules.pages.customerForm.linkUsed.message')}
         </p>
         {mode === 'fullpage' && (
           <Button
@@ -234,12 +238,12 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             className='mt-4'
             variant='outline'
           >
-            Go Home
+            {t('common.actions.goHome')}
           </Button>
         )}
         {isPreviewMode && (
           <Button onClick={onClose} className='mt-4' variant='outline'>
-            Close Preview
+            {t('modules.pages.customerForm.closePreview')}
           </Button>
         )}
       </div>
@@ -250,9 +254,11 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   if (tokenValidation?.status === 'expired_link') {
     return (
       <div className='flex flex-col items-center justify-center h-64 text-center'>
-        <h2 className='text-2xl font-bold text-red-600 mb-4'>Link Expired</h2>
+        <h2 className='text-2xl font-bold text-red-600 mb-4'>
+          {t('modules.pages.customerForm.linkExpired.title')}
+        </h2>
         <p className='text-gray-600'>
-          This link has expired. Please contact the agent for a new link.
+          {t('modules.pages.customerForm.linkExpired.message')}
         </p>
         {mode === 'fullpage' && (
           <Button
@@ -260,12 +266,12 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             className='mt-4'
             variant='outline'
           >
-            Go Home
+            {t('common.actions.goHome')}
           </Button>
         )}
         {isPreviewMode && (
           <Button onClick={onClose} className='mt-4' variant='outline'>
-            Close Preview
+            {t('modules.pages.customerForm.closePreview')}
           </Button>
         )}
       </div>
@@ -277,15 +283,14 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     return (
       <div className='flex flex-col items-center justify-center h-64 text-center'>
         <h2 className='text-2xl font-bold text-green-600 mb-4'>
-          Form Submitted Successfully!
+          {t('modules.pages.customerForm.formSubmitted.title')}
         </h2>
         <p className='text-gray-600'>
-          Thank you for completing the customer form. Your information has been
-          received.
+          {t('modules.pages.customerForm.formSubmitted.message')}
         </p>
         {mode === 'dialog' && (
           <p className='text-sm text-gray-500 mt-2'>
-            This dialog will close automatically...
+            {t('modules.pages.customerForm.formSubmitted.autoClose')}
           </p>
         )}
       </div>
@@ -316,8 +321,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     })) || [];
 
   const genderOptions = [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
+    { label: t('common.fields.gender.male'), value: 'male' },
+    { label: t('common.fields.gender.female'), value: 'female' },
   ];
 
   // Show preview notification for agents
@@ -329,7 +334,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       {showPreviewBanner && (
         <div className='text-center bg-yellow-50 border border-yellow-200 p-4 rounded-lg'>
           <p className='text-sm text-yellow-800 font-medium'>
-            📋 Preview Mode - This is how the form appears to customers
+            {t('modules.pages.customerForm.previewMode')}
           </p>
         </div>
       )}
@@ -346,7 +351,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           <div className='grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5'>
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                First Name<span className='text-red-500'>*</span>
+                {t('common.fields.firstName.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -354,7 +360,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder='Enter first name' {...field} />
+                      <Input
+                        placeholder={t('common.fields.firstName.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -364,7 +373,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                Last Name<span className='text-red-500'>*</span>
+                {t('common.fields.lastName.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -372,7 +382,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder='Enter last name' {...field} />
+                      <Input
+                        placeholder={t('common.fields.lastName.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -382,7 +395,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                Email<span className='text-red-500'>*</span>
+                {t('common.fields.email.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -391,7 +405,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder='Enter email address'
+                        placeholder={t('common.fields.email.placeholder')}
                         type='email'
                         {...field}
                       />
@@ -404,7 +418,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                Phone Number<span className='text-red-500'>*</span>
+                {t('common.fields.phone.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -413,7 +428,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                   <FormItem>
                     <FormControl>
                       <PhoneInput
-                        placeholder='Enter phone number'
+                        placeholder={t('common.fields.phone.placeholder')}
                         countryOptions={countryPhoneOptions}
                         selectedCountry={form.watch('countryPhoneCode')}
                         phoneNumber={field.value}
@@ -435,7 +450,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                Street Name<span className='text-red-500'>*</span>
+                {t('common.fields.streetName.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -443,7 +459,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder='Enter street name' {...field} />
+                      <Input
+                        placeholder={t('common.fields.streetName.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -453,7 +472,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                House Number<span className='text-red-500'>*</span>
+                {t('common.fields.houseNumber.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -461,7 +481,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder='Enter house number' {...field} />
+                      <Input
+                        placeholder={t('common.fields.houseNumber.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -470,14 +493,19 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>Postal Code</Label>
+              <Label className='text-[14px]'>
+                {t('common.fields.postalCode.label')}
+              </Label>
               <FormField
                 control={form.control}
                 name='postalCode'
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder='Enter your postal code' {...field} />
+                      <Input
+                        placeholder={t('common.fields.postalCode.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -486,14 +514,21 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>Extra Address Details</Label>
+              <Label className='text-[14px]'>
+                {t('common.fields.extraAddressDetails.label')}
+              </Label>
               <FormField
                 control={form.control}
                 name='extraAddressDetails'
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder='Apartment, suite, etc.' {...field} />
+                      <Input
+                        placeholder={t(
+                          'common.fields.extraAddressDetails.placeholder'
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -502,8 +537,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <SearchableSelect
-              label='Country*'
-              placeholder='Select Country'
+              label={`${t('common.fields.country.label')}*`}
+              placeholder={t('common.fields.country.placeholder')}
               options={countryOptions}
               value={form.watch('countryId')?.toString() || ''}
               onChange={(value) => {
@@ -517,8 +552,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             />
 
             <SearchableSelect
-              label='City*'
-              placeholder='Select city'
+              label={`${t('common.fields.city.label')}*`}
+              placeholder={t('common.fields.city.placeholder')}
               options={cityOptions}
               value={form.watch('cityId')?.toString() || ''}
               onChange={(value) =>
@@ -531,8 +566,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             />
 
             <SearchableSelect
-              label='State of residence'
-              placeholder='Select State'
+              label={t('common.fields.state.label')}
+              placeholder={t('common.fields.state.placeholder')}
               options={stateOptions}
               value={form.watch('stateId')?.toString() || ''}
               onChange={(value) =>
@@ -545,7 +580,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='flex flex-col gap-1'>
               <Label className='text-[14px]'>
-                Date of Birth<span className='text-red-500'>*</span>
+                {t('common.fields.dob.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -566,7 +602,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <div className='md:col-span-2 flex flex-col gap-2'>
               <Label>
-                Gender<span className='text-red-500'>*</span>
+                {t('common.fields.gender.label')}
+                <span className='text-red-500'>*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -593,7 +630,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                             ) : (
                               <UncheckedIcon />
                             )}
-                            {genderOption.label}
+                            {t(`common.fields.gender.${genderOption.value}`)}
                           </button>
                         ))}
                       </div>
@@ -611,10 +648,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             disabled={isSubmitting || submitMutation.isPending || isPreviewMode}
           >
             {isPreviewMode
-              ? 'Preview Mode - Submission Disabled'
+              ? t('modules.pages.customerForm.previewModeSubmitDisabled')
               : isSubmitting || submitMutation.isPending
-              ? 'Submitting...'
-              : 'SIGN UP'}
+              ? t('common.actions.submitting')
+              : t('modules.pages.customerForm.signUp')}
           </Button>
         </form>
       </Form>
@@ -630,16 +667,16 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       <div className='max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8'>
         <div className='text-center mb-8'>
           <h1 className='text-3xl font-bold text-gray-900'>
-            Create an Account
+            {t('modules.pages.customerForm.createAccount')}
           </h1>
           <p className='text-gray-600 mt-2'>
-            You're using the link of{' '}
+            {t('modules.pages.customerForm.usingLinkOf')}{' '}
             <span className='font-semibold'>
               {`${formData?.first_name ?? ''} ${
                 formData?.last_name ?? ''
-              }`.trim() || 'Unnamed'}
+              }`.trim() || t('modules.pages.customerForm.unnamed')}
             </span>
-            . The link will expire at{' '}
+            . {t('modules.pages.customerForm.linkExpireAt')}{' '}
             <span className='font-semibold'>{expiryTime}</span>
           </p>
         </div>

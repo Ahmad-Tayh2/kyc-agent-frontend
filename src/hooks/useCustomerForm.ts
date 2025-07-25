@@ -4,10 +4,10 @@ import type { CreateCustomerFormRequest } from '../types/customerForm/CreateCust
 import type { CustomerForm } from '../types/customerForm/CustomerForm';
 import type { CustomerFormSubmissionRequest } from '../types/customerForm/CustomerFormSubmission';
 
-export const useCustomerForm = () => {
+export const useCustomerForm = (filters: string = '') => {
   return useQuery({
-    queryKey: ['customerForm'],
-    queryFn: customerFormService.getCustomerForms,
+    queryKey: ['customerForm', filters],
+    queryFn: () => customerFormService.getCustomerForms(filters),
   });
 };
 

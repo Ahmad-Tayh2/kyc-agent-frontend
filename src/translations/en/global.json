@@ -500,6 +500,63 @@
       "customerForms": {
         "title": "Customer Forms"
       },
+      "customerForm": {
+        "title": "Customer Forms",
+        "filters": {
+          "title": "Filters",
+          "search": "Search by Name or Email",
+          "status": "Status",
+          "dateRange": "Date Range",
+          "apply": "Apply Filters",
+          "reset": "Reset Filters",
+          "all": "All",
+          "createdDate": "Created Date",
+          "selectDateRange": "Select Date Range"
+        },
+        "statuses": {
+          "linkValid": "Active",
+          "linkExpired": "Expired",
+          "registrationSuccessful": "Registered"
+        },
+        "columns": {
+          "fullName": "Full Name",
+          "status": "Status",
+          "formUrl": "URL",
+          "createdAt": "Created At",
+          "actions": "Actions"
+        },
+        "actions": {
+          "resend": "Resend Link",
+          "generateNewLink": "Generate New Link",
+          "customerDetails": "Customer Details",
+          "view": "View"
+        },
+        "buttons": {
+          "generateNewLink": "Generate New Link"
+        },
+        "noFormsFound": "No forms found",
+        "linkExpired": {
+          "title": "Link Expired",
+          "message": "This link has expired or is no longer valid. Please contact the agent for a new link."
+        },
+        "linkUsed": {
+          "title": "Link Used",
+          "message": "This link has already been used to submit a customer form. Each link can only be used once."
+        },
+        "formSubmitted": {
+          "title": "Form Submitted Successfully!",
+          "message": "Thank you for completing the customer form. Your information has been received.",
+          "autoClose": "This dialog will close automatically..."
+        },
+        "previewMode": "📋 Preview Mode - This is how the form appears to customers",
+        "previewModeSubmitDisabled": "Preview Mode - Submission Disabled",
+        "closePreview": "Close Preview",
+        "createAccount": "Create an Account",
+        "usingLinkOf": "You're using the link of",
+        "unnamed": "Unnamed",
+        "linkExpireAt": "The link will expire at",
+        "signUp": "SIGN UP"
+      },
       "sendRemittance": {
         "title": "Send Remittance"
       },
@@ -529,6 +586,98 @@
       },
       "moneyWithdrawals": {
         "title": "Money Withdrawals"
+      },
+      "wallet": {
+        "title": "My Wallet",
+        "buttons": {
+          "exchangeCurrencies": "EXCHANGE CURRENCIES",
+          "addCurrency": "ADD CURRENCY",
+          "confirm": "CONFIRM",
+          "cancel": "CANCEL",
+          "adding": "Adding...",
+          "processing": "Processing..."
+        },
+        "messages": {
+          "noCurrencies": "No currencies in your wallet yet.",
+          "noCurrenciesSubtext": "Click \"ADD CURRENCY\" to get started.",
+          "loadingWallet": "Loading wallet...",
+          "errorLoading": "Error loading wallet:",
+          "deleteConfirm": "Are you sure you want to delete this currency?",
+          "exchangeSuccess": "Currency exchange completed successfully!",
+          "addCurrencySuccess": "Currency added to wallet successfully!",
+          "exchangeError": "An error occurred during currency exchange",
+          "addCurrencyError": "An error occurred while adding currency",
+          "unexpectedError": "An unexpected error occurred",
+          "allCurrenciesAdded": "All available currencies are already in your wallet.",
+          "insufficientBalance": "Insufficient balance. You have {{amount}} {{code}} available.",
+          "calculatingRate": "Calculating exchange rate...",
+          "unableToCalculate": "Unable to calculate exchange rate. Please try again."
+        },
+        "exchange": {
+          "title": "Exchange Currencies",
+          "infoMessage": "If you opt to convert money to a currency that is not yet in your wallet, then the new currency will be added to your wallet after a successful exchange process",
+          "sections": {
+            "existingCurrencies": "Existing Currencies",
+            "allCurrencies": "All Currencies"
+          },
+          "placeholders": {
+            "selectFromWallet": "Select currency from your wallet",
+            "enterAmount": "Enter amount to exchange",
+            "selectTarget": "Select target currency",
+            "amountReceive": "Amount you will receive"
+          },
+          "details": {
+            "exchangeRate": "Exchange Rate:",
+            "convertedAmount": "Converted Amount:",
+            "marginFee": "Margin Fee:",
+            "youWillReceive": "You will receive:"
+          },
+          "validation": {
+            "selectFromCurrency": "Please select a currency to exchange from",
+            "selectToCurrency": "Please select a currency to exchange to",
+            "amountRequired": "Amount must be greater than 0"
+          }
+        },
+        "addCurrency": {
+          "title": "Add Currency to Wallet",
+          "placeholder": "Select currency to add",
+          "amountPlaceholder": "Amount (0 by default)",
+          "validation": {
+            "selectCurrency": "Please select a currency to add"
+          }
+        },
+        "transactions": {
+          "title": "Extra Transaction History",
+          "filters": {
+            "transactionType": "Transaction Type",
+            "status": "Status",
+            "currency": "Currency",
+            "date": "Date",
+            "all": "All",
+            "selectDateRange": "Select date range"
+          },
+          "types": {
+            "addMoney": "Add Money",
+            "withdrawMoney": "Withdraw Money",
+            "exchangeMoney": "Exchange Money"
+          },
+          "statuses": {
+            "initiated": "Initiated",
+            "processing": "Processing",
+            "completed": "Completed",
+            "failed": "Failed",
+            "cancelled": "Cancelled"
+          },
+          "columns": {
+            "transactionNumber": "Transaction Number",
+            "date": "Date",
+            "type": "Type",
+            "status": "Status"
+          },
+          "messages": {
+            "errorLoading": "Error loading extra transactions:"
+          }
+        }
       }
     }
   }
