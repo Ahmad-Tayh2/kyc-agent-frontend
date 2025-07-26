@@ -1,5 +1,4 @@
 import { API_URLS } from "@/constants/api";
-import { getAuthHeaders } from "@/lib/utils";
 import apiClient from "@/lib/axiosInstance";
 
 export interface CustomerSearchParams {
