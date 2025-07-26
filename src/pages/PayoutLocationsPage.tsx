@@ -1,9 +1,9 @@
-import React from 'react';
-import { DataTable } from '@/components/DataTable';
-import { useRemittanceMethods } from '@/hooks/useRemittanceMethod';
-import type { RemittanceMethod } from '@/types/remittanceMethod/RemittanceMethod';
-import type { PayoutLocation } from '@/types/payoutLocation/PayoutLocation';
-import { usePayoutLocations } from '@/hooks/usePayoutLocation';
+import React from "react";
+import { DataTable } from "@/components/shared/DataTable";
+import { useRemittanceMethods } from "@/hooks/useRemittanceMethod";
+import type { RemittanceMethod } from "@/types/remittanceMethod/RemittanceMethod";
+import type { PayoutLocation } from "@/types/payoutLocation/PayoutLocation";
+import { usePayoutLocations } from "@/hooks/usePayoutLocation";
 
 const PayoutLocationsPage: React.FC = () => {
   const { data: remittanceMethods } = useRemittanceMethods();
@@ -32,53 +32,53 @@ const PayoutLocationsPage: React.FC = () => {
 
   const RemittanceMethodColumns = [
     {
-      header: 'Remittance Method',
-      accessorKey: 'name',
+      header: "Remittance Method",
+      accessorKey: "name",
     },
     {
-      header: 'Description',
-      accessorKey: 'description',
+      header: "Description",
+      accessorKey: "description",
     },
   ];
 
   const PayoutLocationColumns = [
     {
-      header: 'Name',
-      accessorKey: 'business_name',
+      header: "Name",
+      accessorKey: "business_name",
     },
     {
-      header: 'City',
-      accessorKey: 'city',
+      header: "City",
+      accessorKey: "city",
     },
     {
-      header: 'Country',
-      accessorKey: 'country',
+      header: "Country",
+      accessorKey: "country",
     },
     {
-      header: 'Address',
-      accessorKey: 'address',
+      header: "Address",
+      accessorKey: "address",
     },
   ];
 
   return (
-    <div className='space-y-4 flex flex-col gap-4'>
-      <h1 className='text-2xl font-bold'>Payout Locations/Methods</h1>
-      <div className='p-5'>
+    <div className="space-y-4 flex flex-col gap-4">
+      <h1 className="text-2xl font-bold">Payout Locations/Methods</h1>
+      <div className="p-5">
         <DataTable
           data={remittanceData}
           columns={RemittanceMethodColumns}
           enablePagination={true}
           rowsPerPage={10}
-          tableTitle='Remittance Methods'
+          tableTitle="Remittance Methods"
         />
       </div>
-      <div className='p-5'>
+      <div className="p-5">
         <DataTable
           data={payoutLocationData}
           columns={PayoutLocationColumns}
           enablePagination={true}
           rowsPerPage={10}
-          tableTitle='Payout Locations'
+          tableTitle="Payout Locations"
         />
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import ReactCountryFlag from "react-country-flag";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,13 +25,15 @@ interface CountrySelectorProps {
 
 const CountrySelector: React.FC<CountrySelectorProps> = ({
   label,
-  placeholder = "Select countries",
+  placeholder,
   countries,
   value = [],
   onChange,
   disabled = false,
   className,
 }) => {
+  const { t } = useTranslation("global");
+  const defaultPlaceholder = placeholder || t("modules.components.countrySelector.defaultPlaceholder");
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,13 +74,13 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   );
 
   const getDisplayText = () => {
-    if (value.length === 0) return placeholder;
-    if (value.length === countries.length) return "All";
+    if (value.length === 0) return defaultPlaceholder;
+    if (value.length === countries.length) return t("modules.components.countrySelector.all");
     if (value.length === 1) {
       const country = countries.find((c) => c.code === value[0]);
-      return country?.name || placeholder;
+      return country?.name || defaultPlaceholder;
     }
-    return `${value.length} countries selected`;
+    return t("modules.components.countrySelector.countriesSelected", { count: value.length });
   };
 
   const isAllSelected = value.length === countries.length;
@@ -129,7 +132,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search"
+                placeholder={t("modules.components.phoneInput.search")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-8 text-sm"

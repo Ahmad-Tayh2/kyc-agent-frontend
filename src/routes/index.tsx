@@ -9,7 +9,7 @@ import AuthPage from "@/pages/AuthPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import UserProfilePage from "@/pages/UserProfilePage";
-import Loader from "@/components/Loader";
+import Loader from "@/components/shared/Loader";
 import CustomerFormPage from "@/pages/CustomerFormPage";
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));

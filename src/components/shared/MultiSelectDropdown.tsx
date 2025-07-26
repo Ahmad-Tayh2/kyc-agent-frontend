@@ -18,6 +18,7 @@ interface MultiSelectDropdownProps {
   onChange: (value: string[]) => void;
   disabled?: boolean;
   className?: string;
+  showSelectAll?: boolean;
 }
 
 const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
@@ -28,6 +29,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   onChange,
   disabled = false,
   className,
+  showSelectAll = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,13 +56,14 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
     onChange(newValue);
   };
 
-  // const handleSelectAll = () => {
-  //   if (value.length === options.length) {
-  //     onChange([]);
-  //   } else {
-  //     onChange(options.map((option) => option.value));
-  //   }
-  // };
+  const handleSelectAll = () => {
+    if (value.length === options.length) {
+      onChange([]);
+    } else {
+      onChange(options.map((option) => option.value));
+    }
+  };
+  const isAllSelected = value.length === options.length;
 
   const getDisplayText = () => {
     if (value.length === 0) return placeholder;
@@ -71,9 +74,6 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
     }
     return `${value.length} selected`;
   };
-
-  // const isAllSelected = value.length === options.length;
-  // const isIndeterminate = value.length > 0 && value.length < options.length;
 
   return (
     <div className={cn("relative", className)} ref={containerRef}>
@@ -104,6 +104,19 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       {isOpen && (
         <div className="absolute z-50 w-max mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
           <div className="p-2">
+            {showSelectAll && (
+              <div
+                className="flex items-center space-x-2 py-2 px-1 hover:bg-gray-50 rounded cursor-pointer"
+                onClick={handleSelectAll}
+              >
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={handleSelectAll}
+                  className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                />
+                <span className="text-sm text-gray-700">Select All</span>
+              </div>
+            )}
             {options.map((option) => (
               <div
                 key={option.value}

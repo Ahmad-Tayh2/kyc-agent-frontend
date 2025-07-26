@@ -7,7 +7,7 @@ export const CUSTOMER_STATUSES = [
 
 export const CUSTOMER_STATUS_COLORS = {
   active: "#027A48", // Green
-  banned: "#DC2626", // Red
-  kyc_income: "#F59E0B", // Amber
-  kyc_identity: "#3B82F6", // Blue
+  banned: "#B42318", // Red
+  kyc_income: "#9D7C5F", // Amber
+  kyc_identity: "#DF6B1D", // Blue
 } as const;

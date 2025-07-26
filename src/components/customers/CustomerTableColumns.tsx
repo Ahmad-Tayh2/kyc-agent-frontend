@@ -3,8 +3,8 @@ import { parseISO, format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import StatusLabel from "@/components/StatusLabel";
-import DropdownMenuOptions from "@/components/DropdownMenu";
+import StatusLabel from "@/components/shared/StatusLabel";
+import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import SendMoneyIcon from "@/assets/icons/send-money.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import EditIcon from "@/assets/icons/edit.svg?react";
@@ -98,7 +98,10 @@ export const useCustomerColumns = (): ColumnDef<Customer>[] => {
         header: "Status",
         cell: ({ row }) => {
           const value: string = row.getValue("status");
-          const color = CUSTOMER_STATUS_COLORS[value as keyof typeof CUSTOMER_STATUS_COLORS] || "#000000";
+          const color =
+            CUSTOMER_STATUS_COLORS[
+              value as keyof typeof CUSTOMER_STATUS_COLORS
+            ] || "#000000";
           return <StatusLabel value={value} color={color} />;
         },
       },

@@ -6,6 +6,7 @@ import { useResetPassword } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useTranslation } from "react-i18next";
+import { PasswordInput } from "@/components/ui/password-input";
 
 interface ResetPasswordFormProps {
   token: string;
@@ -103,9 +104,8 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         <Label htmlFor="password">
           {t("modules.resetPassword.fields.newPassword.label")}
         </Label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           autoComplete="new-password"
           className="w-full"
           placeholder={t(
@@ -124,9 +124,8 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         <Label htmlFor="confirmPassword">
           {t("modules.resetPassword.fields.confirmNewPassword.label")}
         </Label>
-        <Input
+        <PasswordInput
           id="confirmPassword"
-          type="password"
           autoComplete="new-password"
           className="w-full"
           placeholder={t(

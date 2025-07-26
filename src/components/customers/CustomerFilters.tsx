@@ -1,16 +1,16 @@
 import React from "react";
-import { SearchInput } from "@/components/SearchInput";
-import { FilterButton } from "@/components/FilterButton";
-import MultiSelectDropdown from "@/components/MultiSelectDropdown";
-import DateRangeSelector from "@/components/DateRangeSelector";
-import CountrySelector from "@/components/CountrySelector";
+import { SearchInput } from "@/components/shared/SearchInput";
+import { FilterButton } from "@/components/shared/FilterButton";
+import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
+import DateRangeSelector from "@/components/shared/DateRangeSelector";
+import CountrySelector from "@/components/shared/CountrySelector";
 import { useCountries } from "@/hooks/useAddress";
 import type { FilterState } from "@/hooks/useCustomerFilters";
 import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
-const statusOptions = CUSTOMER_STATUSES.map(status => ({
+const statusOptions = CUSTOMER_STATUSES.map((status) => ({
   value: status,
-  label: status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+  label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
 }));
 
 interface CustomerFiltersProps {
@@ -19,8 +19,8 @@ interface CustomerFiltersProps {
   onUpdateCustomerNumber: (number: string) => void;
   onUpdateStatus: (status: string[]) => void;
   onUpdateDateCreated: (dateRange: {
-    startDate: Date | null;
-    endDate: Date | null;
+    startDate: string | null;
+    endDate: string | null;
   }) => void;
   onUpdateCountry: (country: string[]) => void;
   onResetFilters: () => void;
@@ -72,6 +72,7 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
               options={statusOptions}
               value={filters.status}
               onChange={onUpdateStatus}
+              showSelectAll
             />
             <DateRangeSelector
               label="Date"

@@ -16,7 +16,7 @@ import {
   useUploadIncomeDocuments,
 } from "@/hooks/useCustomers";
 import CustomerBasicDetails from "./CustomerBasicDetails";
-import DatePicker from "@/components/DatePicker";
+import DatePicker from "@/components/shared/DatePicker";
 import { ROUTES } from "@/constants/routes";
 import { AlertCircle, Upload } from "lucide-react";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
@@ -29,8 +29,8 @@ import type {
   CustomerIdentityFileData,
   CustomerIncomeFileData,
 } from "@/services/customers";
-import PageTitle from "@/components/PageTitle";
-import ActionButton from "@/components/ActionButton";
+import PageTitle from "@/components/shared/PageTitle";
+import ActionButton from "@/components/shared/ActionButton";
 
 type FormStep = "basic" | "identity" | "income";
 
@@ -190,13 +190,14 @@ const CustomerCreateFormPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    console.log("test submit");
     try {
       // Step 1: Create customer with basic data (sync)
       const customerResponse = await createCustomer(
         formData as CustomerCreateData
       );
-      const customerId = customerResponse.data?.id;
 
+      const customerId = customerResponse.data?.id;
       if (!customerId) {
         throw new Error("Customer ID not received from server");
       }
@@ -222,7 +223,7 @@ const CustomerCreateFormPage: React.FC = () => {
         );
       }
     } catch (error) {
-      console.error("Failed to create customer:", error);
+      console.log(" show response = ", error);
     }
   };
 

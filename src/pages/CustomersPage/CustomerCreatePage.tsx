@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@/components/shared/DataTable";
 import { useSearchCustomer } from "@/hooks/useCustomers";
 import { useCustomerColumns } from "@/components/customers/CustomerTableColumns";
 import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
-import PageTitle from "@/components/PageTitle";
-import ActionButton from "@/components/ActionButton";
-import SearchNotFound from "@/components/SearchNotFound";
+import PageTitle from "@/components/shared/PageTitle";
+import ActionButton from "@/components/shared/ActionButton";
+import SearchNotFound from "@/components/shared/SearchNotFound";
 
 interface SearchFormData {
   customerNumber: string;

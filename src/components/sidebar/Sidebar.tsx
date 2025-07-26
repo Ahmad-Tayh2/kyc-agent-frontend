@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ROUTES } from "../../constants/routes";
 import DashboardIcon from "../../assets/icons/dashboard.svg?react";
 import SendRemittanceIcon from "../../assets/icons/send-remittance.svg?react";
@@ -18,89 +19,91 @@ import PaymentLinksIcon from "../../assets/icons/payment-links.svg?react";
 import HelpIcon from "../../assets/icons/help.svg?react";
 import SupportIcon from "../../assets/icons/support.svg?react";
 
-const navLinks = [
-  {
-    label: "Dashboard",
-    to: ROUTES.DASHBOARD,
-    icon: <DashboardIcon color="inherit" />,
-  },
-  {
-    label: "Send Remittance",
-    to: ROUTES.SEND_REMITTANCE,
-    icon: <SendRemittanceIcon color="inherit" />,
-  },
-  {
-    label: "Customers",
-    to: ROUTES.CUSTOMERS.LIST,
-    icon: <CustomersIcon color="inherit" />,
-  },
-  {
-    label: "Recipients",
-    to: ROUTES.RECIPIENTS,
-    icon: <RecipientsIcon color="inherit" />,
-  },
-  {
-    label: "Payout Locations",
-    to: ROUTES.PAYOUT_LOCATIONS,
-    icon: <PayoutLocationsIcon color="inherit" />,
-  },
-  {
-    label: "Transfers",
-    to: ROUTES.TRANSFERS,
-    icon: <TransfersIcon color="inherit" />,
-  },
-  {
-    label: "Commission Earned",
-    to: ROUTES.COMMISSION_EARNED,
-    icon: <CommissionEarnedIcon color="inherit" />,
-  },
-  {
-    label: "Money Withdrawals",
-    to: ROUTES.MONEY_WITHDRAWALS,
-    icon: <MoneyWithdrawalsIcon color="inherit" />,
-  },
-  {
-    label: "Add Money",
-    to: ROUTES.ADD_MONEY,
-    icon: <AddMoneyIcon color="inherit" />,
-  },
-  {
-    label: "Account Statements",
-    to: ROUTES.ACCOUNT_STATEMENTS,
-    icon: <AccountStatementsIcon color="inherit" />,
-  },
-  {
-    label: "My Wallet",
-    to: ROUTES.MY_WALLET,
-    icon: <MyWalletIcon color="inherit" />,
-  },
-  {
-    label: "Remittance Cart",
-    to: ROUTES.REMITTANCE_CART,
-    icon: <RemittanceCartIcon color="inherit" />,
-  },
-  {
-    label: "Customer Forms",
-    to: ROUTES.CUSTOMER_FORMS,
-    icon: <CustomerFormsIcon color="inherit" />,
-  },
-  {
-    label: "Payment Links",
-    to: ROUTES.PAYMENT_LINKS,
-    icon: <PaymentLinksIcon color="inherit" />,
-  },
-  { label: "Help", to: ROUTES.HELP, icon: <HelpIcon color="inherit" /> },
-  {
-    label: "Support",
-    to: ROUTES.SUPPORT,
-    icon: <SupportIcon color="inherit" />,
-  },
-];
-
 export const Sidebar: React.FC<{
   mobileOpen?: boolean;
   onClose?: () => void;
 }> = ({ mobileOpen = false, onClose }) => {
+  const { t } = useTranslation("global");
+
+  const navLinks = [
+    {
+      label: t("modules.navigation.dashboard"),
+      to: ROUTES.DASHBOARD,
+      icon: <DashboardIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.sendRemittance"),
+      to: ROUTES.SEND_REMITTANCE,
+      icon: <SendRemittanceIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.customers"),
+      to: ROUTES.CUSTOMERS.LIST,
+      icon: <CustomersIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.recipients"),
+      to: ROUTES.RECIPIENTS,
+      icon: <RecipientsIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.payoutLocations"),
+      to: ROUTES.PAYOUT_LOCATIONS,
+      icon: <PayoutLocationsIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.transfers"),
+      to: ROUTES.TRANSFERS,
+      icon: <TransfersIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.commissionEarned"),
+      to: ROUTES.COMMISSION_EARNED,
+      icon: <CommissionEarnedIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.moneyWithdrawals"),
+      to: ROUTES.MONEY_WITHDRAWALS,
+      icon: <MoneyWithdrawalsIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.addMoney"),
+      to: ROUTES.ADD_MONEY,
+      icon: <AddMoneyIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.accountStatements"),
+      to: ROUTES.ACCOUNT_STATEMENTS,
+      icon: <AccountStatementsIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.myWallet"),
+      to: ROUTES.MY_WALLET,
+      icon: <MyWalletIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.remittanceCart"),
+      to: ROUTES.REMITTANCE_CART,
+      icon: <RemittanceCartIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.customerForms"),
+      to: ROUTES.CUSTOMER_FORMS,
+      icon: <CustomerFormsIcon color="inherit" />,
+    },
+    {
+      label: t("modules.navigation.paymentLinks"),
+      to: ROUTES.PAYMENT_LINKS,
+      icon: <PaymentLinksIcon color="inherit" />,
+    },
+    { label: t("modules.navigation.help"), to: ROUTES.HELP, icon: <HelpIcon color="inherit" /> },
+    {
+      label: t("modules.navigation.support"),
+      to: ROUTES.SUPPORT,
+      icon: <SupportIcon color="inherit" />,
+    },
+  ];
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -139,7 +142,7 @@ export const Sidebar: React.FC<{
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center h-16 px-6 font-bold text-lg border-b">
-            NomadRem
+            {t("modules.app.brand")}
           </div>
           <nav className="flex-1 overflow-y-auto py-4">
             <ul className="space-y-1">

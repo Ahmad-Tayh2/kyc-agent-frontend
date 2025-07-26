@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
-import PageTitle from "@/components/PageTitle";
-import StatusLabel from "@/components/StatusLabel";
+import PageTitle from "@/components/shared/PageTitle";
+import StatusLabel from "@/components/shared/StatusLabel";
 import CustomerSectionCard from "./CustomerSectionCard";
 import { useGetCustomer, useUpdateCustomer } from "@/hooks/useCustomers";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
@@ -74,7 +74,10 @@ const CustomerEditPage: React.FC = () => {
   if (error)
     return <div className="p-8 text-red-500">Error loading customer.</div>;
 
-  const statusColor = CUSTOMER_STATUS_COLORS[formData.status as keyof typeof CUSTOMER_STATUS_COLORS] || "#000000";
+  const statusColor =
+    CUSTOMER_STATUS_COLORS[
+      formData.status as keyof typeof CUSTOMER_STATUS_COLORS
+    ] || "#000000";
 
   return (
     <div className="space-y-4">

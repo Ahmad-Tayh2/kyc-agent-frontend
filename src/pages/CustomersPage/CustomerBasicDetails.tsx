@@ -1,8 +1,8 @@
 // import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import PhoneInput from "@/components/PhoneInput";
-import DatePicker from "@/components/DatePicker";
+import PhoneInput from "@/components/shared/PhoneInput";
+import DatePicker from "@/components/shared/DatePicker";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
@@ -154,7 +154,7 @@ const CustomerBasicDetails = (props: any) => {
         />
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="postal_code">
-            Postal Code<span className="text-red-500">*</span>
+            Postal Code
           </Label>
           <Input
             id="postal_code"

@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import {
@@ -8,6 +8,8 @@ import {
   type CustomerIdentityFileData,
   type CustomerIncomeFileData,
 } from "@/services/customers";
+import { ROUTES } from "@/constants/routes";
+import { useNavigate } from "react-router-dom";
 
 export function useGetCustomers(filters: string) {
   return useQuery({
@@ -25,11 +27,13 @@ export function useGetCustomer(id: string | number) {
 }
 
 export function useUpdateCustomer(id: string | number) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<CustomerCreateData>) =>
       customersService.updateCustomer(id, data),
     onSuccess: () => {
       toast.success("Customer updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["get-customers"] });
     },
   });
 }
@@ -42,11 +46,18 @@ export function useSearchCustomer() {
 }
 
 export function useCreateCustomer() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CustomerCreateData) =>
       customersService.createCustomer(data),
     onSuccess: () => {
       toast.success("Customer created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["get-customers"] });
+      navigate(ROUTES.CUSTOMERS.LIST);
+    },
+    onError: () => {
+      toast.error("Customer creation failed!");
     },
   });
 }

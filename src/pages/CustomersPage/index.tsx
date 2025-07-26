@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@/components/shared/DataTable";
 import { useTranslation } from "react-i18next";
 import { useGetCustomers } from "@/hooks/useCustomers";
 import { useNavigate } from "react-router-dom";
 
 import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
-import ActionButton from "@/components/ActionButton";
-import PageTitle from "@/components/PageTitle";
+import ActionButton from "@/components/shared/ActionButton";
+import PageTitle from "@/components/shared/PageTitle";
 import CustomerFilters from "@/components/customers/CustomerFilters";
 import { useCustomerColumns } from "@/components/customers/CustomerTableColumns";
 import { useCustomerFilters } from "@/hooks/useCustomerFilters";

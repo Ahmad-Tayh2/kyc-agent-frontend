@@ -3,6 +3,7 @@ import React from "react";
 // import { z } from "zod";
 // import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -101,13 +102,12 @@ const LoginForm: React.FC<{
           {t("modules.login.fields.password.label")}
           <span className="text-red-500">*</span>
         </Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          className="w-full"
-          placeholder={t("modules.login.fields.password.placeholder")}
-          value={data.password}
+        <PasswordInput
+         id="password"
+         autoComplete="current-password"
+         className="w-full"
+         placeholder={t("modules.login.fields.password.placeholder")}
+         value={data.password}
           onChange={(e) =>
             setData((prev) => ({ ...prev, password: e.target.value }))
           }
@@ -118,6 +118,7 @@ const LoginForm: React.FC<{
           </span>
         )} */}
       </div>
+      
       {/* Remember Me & Forgot Password */}
       <div className="flex items-center justify-between">
         <Label className="flex items-center gap-2 text-sm cursor-pointer">

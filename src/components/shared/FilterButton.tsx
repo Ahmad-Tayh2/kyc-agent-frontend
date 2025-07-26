@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import FilterIcon from "@/assets/icons/filter-icon.svg?react";
 import {
@@ -23,31 +24,33 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   children,
   title,
 }) => {
+  const { t } = useTranslation("global");
+  
   return (
     <Popover>
       <PopoverTrigger>
         <Button variant="outline" onClick={onClick} className="h-[40px]">
           <FilterIcon />
-          {title || "Filters"}
+          {title || t("modules.components.filterButton.defaultTitle")}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="mx-2 flex items-end gap-2 w-fit">
         {children}
         <Button
           variant="default"
-          title="Apply"
+          title={t("modules.components.filterButton.apply")}
           className="ml-auto py-2 px-3"
           onClick={onApplyFilters}
         >
-          Apply
+          {t("modules.components.filterButton.apply")}
         </Button>
         <Button
           variant="outline"
-          title="Reset"
+          title={t("modules.components.filterButton.reset")}
           className="ml-auto py-2 px-3"
           onClick={onResetClick}
         >
-          Reset
+          {t("modules.components.filterButton.reset")}
         </Button>
       </PopoverContent>
     </Popover>

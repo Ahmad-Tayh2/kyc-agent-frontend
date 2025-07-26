@@ -5,7 +5,7 @@ export interface FilterState {
   searchName: string;
   customerNumber: string;
   status: string[];
-  dateCreated: { startDate: Date | null; endDate: Date | null };
+  dateCreated: { startDate: string | null; endDate: string | null };
   country: string[];
 }
 
@@ -34,7 +34,7 @@ export const useCustomerFilters = () => {
   }, []);
 
   const updateDateCreated = useCallback(
-    (dateRange: { startDate: Date | null; endDate: Date | null }) => {
+    (dateRange: { startDate: string | null; endDate: string | null }) => {
       setFilters((prev) => ({ ...prev, dateCreated: dateRange }));
     },
     []
@@ -51,7 +51,7 @@ export const useCustomerFilters = () => {
       dateCreated: { startDate: null, endDate: null },
       country: [],
     }));
-    
+
     // Keep search filters but reset others
     let filterString: string = "";
     if (filters?.searchName) {
@@ -71,57 +71,51 @@ export const useCustomerFilters = () => {
 
   const applyFilters = useCallback(() => {
     let filterString: string = "";
-    
+
     if (filters?.dateCreated?.startDate) {
-      const formattedStartDate = format(
-        filters?.dateCreated?.startDate,
-        "yyyy-MM-dd"
-      );
       filterString +=
         filterString === ""
-          ? `?date_from=${formattedStartDate}`
-          : `&date_from=${formattedStartDate}`;
+          ? `?date_from=${filters?.dateCreated?.startDate}`
+          : `&date_from=${filters?.dateCreated?.startDate}`;
     }
-    
+
     if (filters?.dateCreated?.endDate) {
-      const formattedEndDate = format(
-        filters?.dateCreated?.endDate,
-        "yyyy-MM-dd"
-      );
       filterString +=
         filterString === ""
-          ? `?date_to=${formattedEndDate}`
-          : `&date_to=${formattedEndDate}`;
+          ? `?date_to=${filters?.dateCreated?.endDate}`
+          : `&date_to=${filters?.dateCreated?.endDate}`;
     }
-    
+
     if (filters?.searchName) {
       filterString +=
         filterString === ""
           ? `?search=${filters?.searchName}`
           : `&search=${filters?.searchName}`;
     }
-    
+
     if (filters?.customerNumber) {
       filterString +=
         filterString === ""
           ? `?customer_number=${filters?.customerNumber}`
           : `&customer_number=${filters?.customerNumber}`;
     }
-    
+
     if (filters?.status.length > 0) {
+      const jsonString = JSON.stringify(filters?.status);
+      const encodedString = encodeURIComponent(jsonString);
       filterString +=
         filterString === ""
-          ? `?status=${filters?.status.join(",")}`
-          : `&status=${filters?.status.join(",")}`;
+          ? `?status=${encodedString}`
+          : `&status=${encodedString}`;
     }
-    
+
     if (filters?.country.length > 0) {
       filterString +=
         filterString === ""
           ? `?country=${filters?.country.join(",")}`
           : `&country=${filters?.country.join(",")}`;
     }
-    
+
     setFilterString(filterString);
   }, [filters]);
 
@@ -146,4 +140,4 @@ export const useCustomerFilters = () => {
     applyFilters,
     hasActiveFilters,
   };
-}; 
+};

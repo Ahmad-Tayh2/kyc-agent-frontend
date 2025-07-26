@@ -1,10 +1,15 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
-const HelpPage: React.FC = () => (
-  <div className="space-y-4">
-    <h1 className="text-2xl font-bold">Help</h1>
-    <div>Help content goes here.</div>
-  </div>
-);
+const HelpPage: React.FC = () => {
+  const { t } = useTranslation("global");
+  
+  return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold">{t("modules.pages.help.title")}</h1>
+      <div>{t("modules.pages.help.content")}</div>
+    </div>
+  );
+};
 
 export default HelpPage; 
