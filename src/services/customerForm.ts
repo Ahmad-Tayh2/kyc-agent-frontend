@@ -22,8 +22,15 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 export const customerFormService = {
-  async getCustomerForms(): Promise<CustomerForm[]> {
-    const res = await fetch(API_URLS.customerForms.get(), {
+  async getCustomerForms(filters: string = ''): Promise<CustomerForm[]> {
+    const url = filters
+      ? `${API_URLS.customerForms.get()}?${filters}`
+      : API_URLS.customerForms.get();
+
+    // Log the URL for debugging
+    console.log('Fetching customer forms with URL:', url);
+
+    const res = await fetch(url, {
       method: 'GET',
       headers: getHeaders(),
     });

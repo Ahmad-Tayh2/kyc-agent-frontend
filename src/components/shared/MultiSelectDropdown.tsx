@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 interface Option {
   value: string;
-  label: string;
+  label: string | React.ReactElement;
 }
 
 interface MultiSelectDropdownProps {
@@ -70,7 +70,10 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
     if (value.length === options.length) return "All";
     if (value.length === 1) {
       const option = options.find((opt) => opt.value === value[0]);
-      return option?.label || placeholder;
+      if (!option) return placeholder;
+
+      // If the label is a JSX element, return a simplified string representation
+      return typeof option.label === "string" ? option.label : option.value; // Fallback to value if label is JSX
     }
     return `${value.length} selected`;
   };
@@ -128,7 +131,11 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                   onCheckedChange={() => handleOptionToggle(option.value)}
                   className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
                 />
-                <span className="text-sm text-gray-700">{option.label}</span>
+                <span className="text-sm text-gray-700">
+                  {typeof option.label === "string"
+                    ? option.label
+                    : option.label}
+                </span>
               </div>
             ))}
           </div>
