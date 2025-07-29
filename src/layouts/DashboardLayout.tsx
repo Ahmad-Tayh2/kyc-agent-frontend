@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "../components/sidebar/Sidebar";
 import { Topbar } from "../components/topbar/Topbar";
-import { Toaster } from "@/components/ui/sonner";
 
 export const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,13 +16,6 @@ export const DashboardLayout = () => {
         <main className="flex-1 overflow-auto bg-[#eeeff3] p-4">
           <Outlet />
         </main>
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            className: "bg-red-200",
-            duration: 3000,
-          }}
-        />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { API_URLS } from "@/constants/api";
+import apiClient from "@/lib/axiosInstance";
 
 export interface LoginPayload {
   email: string;
@@ -49,21 +50,26 @@ export interface OtpPayload {
   phone?: string;
 }
 
+// export async function login(payload: LoginPayload) {
+//   const res = await fetch(API_URLS.auth.login, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify(payload),
+//   });
+
+//   const response = await res.json();
+
+//   if (!res.ok) {
+//     const errorMessage = response.message || "Login failed";
+//     throw new Error(errorMessage);
+//   }
+
+//   return response;
+// }
+
 export async function login(payload: LoginPayload) {
-  const res = await fetch(API_URLS.auth.login, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  const response = await res.json();
-
-  if (!res.ok) {
-    const errorMessage = response.message || "Login failed";
-    throw new Error(errorMessage);
-  }
-
-  return response;
+  const response = await apiClient.post(API_URLS.auth.login, payload);
+  return response.data;
 }
 
 export async function register(payload: RegisterPayload) {
