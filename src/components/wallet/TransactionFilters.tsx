@@ -13,8 +13,8 @@ interface TransactionFiltersProps {
   onUpdateStatus: (status: string[]) => void;
   onUpdateCurrency: (currency: string[]) => void;
   onUpdateDateRange: (dateRange: {
-    startDate: Date | null;
-    endDate: Date | null;
+    startDate: string | null;
+    endDate: string | null;
   }) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;

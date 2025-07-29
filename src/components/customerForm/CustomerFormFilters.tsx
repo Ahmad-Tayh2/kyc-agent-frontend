@@ -9,8 +9,8 @@ interface CustomerFormFiltersProps {
   filters: CustomerFormFilterState;
   updateStatus: (status: string[]) => void;
   updateDateRange: (dateRange: {
-    startDate: Date | null;
-    endDate: Date | null;
+    startDate: string | null;
+    endDate: string | null;
   }) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
