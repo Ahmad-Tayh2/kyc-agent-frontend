@@ -86,7 +86,7 @@ export const AppRoutes = () => (
             path={ROUTES.CUSTOMERS.CREATE_FORM}
             element={<CustomerCreateFormPage />}
           />
-          <Route path={ROUTES.RECIPIENTS} element={<RecipientsPage />} />
+          <Route path={ROUTES.RECIPIENTS.LIST} element={<RecipientsPage />} />
           <Route
             path={ROUTES.PAYOUT_LOCATIONS}
             element={<PayoutLocationsPage />}

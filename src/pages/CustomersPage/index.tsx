@@ -8,14 +8,14 @@ import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
 import ActionButton from "@/components/shared/ActionButton";
 import PageTitle from "@/components/shared/PageTitle";
 import CustomerFilters from "@/components/customers/CustomerFilters";
-import { useCustomerColumns } from "@/components/customers/CustomerTableColumns";
+import { recipientsColumns } from "@/components/recipients/RecipientsTableColumns";
 import { useCustomerFilters } from "@/hooks/useCustomerFilters";
 import { ROUTES } from "@/constants/routes";
 
 const CustomersPage: React.FC = () => {
   const [t] = useTranslation("global");
   const navigate = useNavigate();
-  const columns = useCustomerColumns();
+  const columns = recipientsColumns();
 
   const {
     filters,
