@@ -138,11 +138,10 @@
     "validation": {
       "required": "This field is required",
       "email": "Please enter a valid email address",
-      "minLength": "Must be at least {{min}} characters",
+      "minLength": "Must be at least 8 characters",
       "maxLength": "Must be no more than {{max}} characters",
       "passwordMismatch": "Passwords don't match",
       "invalidFormat": "Invalid format",
-      "passwordMinLength": "Password must be at least 6 characters",
       "confirmPasswordRequired": "Please confirm your password"
     },
     "buttons": {
@@ -194,12 +193,14 @@
         "email": {
           "label": "$t(common.fields.email.label)",
           "placeholder": "$t(common.fields.email.placeholder)",
-          "error": "$t(common.validation.required)"
+          "requiredError": "$t(common.validation.required)",
+          "validationError": "$t(common.validation.email)"
         },
         "password": {
           "label": "$t(common.fields.password.label)",
           "placeholder": "$t(common.fields.password.placeholder)",
-          "error": "$t(common.validation.required)"
+          "requiredError": "$t(common.validation.required)",
+          "minLengthError": "$t(common.validation.minLength)"
         }
       },
       "rememberMe": "Remember me",
@@ -558,22 +559,31 @@
         "signUp": "SIGN UP"
       },
       "sendRemittance": {
-        "title": "Send Remittance"
+        "title": "Send Remittance",
+        "content": "Send Remittance content goes here."
       },
       "transfers": {
-        "title": "Transfers"
+        "title": "Transfers",
+        "content": "Transfers content goes here."
       },
       "myWallet": {
-        "title": "My Wallet"
+        "title": "My Wallet",
+        "content": "My Wallet content goes here."
       },
       "paymentLinks": {
         "title": "Payment Links"
       },
       "accountStatements": {
-        "title": "Account Statements"
+        "title": "Account Statements",
+        "content": "Account Statements content goes here."
       },
       "help": {
-        "title": "Help"
+        "title": "Help",
+        "content": "Help content goes here."
+      },
+      "support": {
+        "title": "Support",
+        "content": "Support content goes here."
       },
       "payoutLocations": {
         "title": "Payout Locations"
@@ -582,10 +592,17 @@
         "title": "Add Money"
       },
       "commissionEarned": {
-        "title": "Commission Earned"
+        "title": "Commission Earned",
+        "content": "Commission Earned content goes here."
       },
       "moneyWithdrawals": {
         "title": "Money Withdrawals"
+      },
+      "recipients": {
+        "title": "Recipients"
+      },
+      "remittanceCart": {
+        "title": "Remittance Cart"
       },
       "wallet": {
         "title": "My Wallet",
@@ -679,6 +696,70 @@
           }
         }
       }
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "sendRemittance": "Send Remittance",
+      "customers": "Customers",
+      "recipients": "Recipients",
+      "payoutLocations": "Payout Locations",
+      "transfers": "Transfers",
+      "commissionEarned": "Commission Earned",
+      "moneyWithdrawals": "Money Withdrawals",
+      "addMoney": "Add Money",
+      "accountStatements": "Account Statements",
+      "myWallet": "My Wallet",
+      "remittanceCart": "Remittance Cart",
+      "customerForms": "Customer Forms",
+      "paymentLinks": "Payment Links",
+      "help": "Help",
+      "support": "Support"
+    },
+    "components": {
+      "exportButton": {
+        "defaultText": "Export"
+      },
+      "filterButton": {
+        "defaultTitle": "Filters",
+        "apply": "Apply",
+        "reset": "Reset"
+      },
+      "phoneInput": {
+        "defaultPlaceholder": "Choose your phone code",
+        "search": "Search"
+      },
+      "countrySelector": {
+        "defaultPlaceholder": "Select countries",
+        "all": "All",
+        "countriesSelected": "{{count}} countries selected"
+      },
+      "searchInput": {
+        "defaultPlaceholder": "Search..."
+      },
+      "statusLabel": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "pending": "Pending",
+        "completed": "Completed",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      },
+      "customerSuccessModal": {
+        "title": "Customer Created Successfully",
+        "message": "The customer has been created successfully.",
+        "viewDetails": "View Details",
+        "close": "Close"
+      }
+    },
+    "app": {
+      "brand": "NomadRem"
+    },
+    "topbar": {
+      "simulateTransfer": "Simulate Transfer",
+      "agent": "Agent",
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
     }
   }
 }

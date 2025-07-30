@@ -1,13 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from "react";
 
 export interface TransactionFilterState {
   type: string[];
   status: string[];
   currency: string[];
-  dateRange: {
-    startDate: Date | null;
-    endDate: Date | null;
-  };
+  dateRange: { startDate: string | null; endDate: string | null };
 }
 
 export function useTransactionFilters() {
@@ -25,37 +22,37 @@ export function useTransactionFilters() {
 
   // Create a querystring from the filters
   const filtersString = useMemo(() => {
-    if (!isFiltersApplied) return '';
+    if (!isFiltersApplied) return "";
 
     const params = new URLSearchParams();
 
     // Add transaction types with array format
     if (filters.type.length > 0) {
       filters.type.forEach((type) => {
-        params.append('type[]', type);
+        params.append("type[]", type);
       });
     }
 
     // Add status filters with array format
     if (filters.status.length > 0) {
       filters.status.forEach((status) => {
-        params.append('status[]', status);
+        params.append("status[]", status);
       });
     }
 
     // Add currency filters
     if (filters.currency.length > 0) {
       filters.currency.forEach((currency) => {
-        params.append('currency', currency);
+        params.append("currency", currency);
       });
     }
 
     // Add date range filters
     if (filters.dateRange.startDate) {
-      params.append('date_from', filters.dateRange.startDate.toISOString());
+      params.append("date_from", filters.dateRange.startDate);
     }
     if (filters.dateRange.endDate) {
-      params.append('date_to', filters.dateRange.endDate.toISOString());
+      params.append("date_to", filters.dateRange.endDate);
     }
 
     return params.toString();
@@ -75,7 +72,7 @@ export function useTransactionFilters() {
   }, []);
 
   const updateDateRange = useCallback(
-    (dateRange: { startDate: Date | null; endDate: Date | null }) => {
+    (dateRange: { startDate: string | null; endDate: string | null }) => {
       setFilters((prev) => ({ ...prev, dateRange }));
     },
     []

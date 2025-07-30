@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import userImage from "@/assets/images/image.png";
 import Logo from "@/assets/logo.svg?react";
@@ -22,6 +23,7 @@ interface TopbarProps {
   onMenuClick?: () => void;
 }
 const UserMenu = () => {
+  const { t } = useTranslation("global");
   // const { handleLogout, user } = useAuth();
   const { mutateAsync: logoutAsync, status } = useLogout();
   const navigate = useNavigate();
@@ -37,19 +39,19 @@ const UserMenu = () => {
 
   const menu: any[] = [
     {
-      label: "Profile",
+      label: t("modules.topbar.profile"),
       icon: <ProfileIcon style={{ width: "25px", height: "25px" }} />,
       onClick: () => {},
       link: ROUTES.PROFILE,
     },
     {
-      label: "Settings",
+      label: t("modules.topbar.settings"),
       icon: <SettingIcon style={{ width: "25px", height: "25px" }} />,
       onClick: () => {},
       // link: "#",
     },
     {
-      label: "Logout",
+      label: t("modules.topbar.logout"),
       icon: <LogoutIcon style={{ width: "25px", height: "25px" }} />,
       onClick: handleLogout,
       link: "",
@@ -71,7 +73,7 @@ const UserMenu = () => {
               </Avatar>
             </div>
             <div className="mt-[-10px] px-2 py-0 rounded-full bg-[#E88D7D] text-white text-xs font-semibold border-1 border-[#E88D7D] shadow-md z-1">
-              Agent
+              {t("modules.topbar.agent")}
             </div>
           </div>
           <ArrowDownIcon width={18} height={20} />
@@ -106,6 +108,8 @@ const UserMenu = () => {
   );
 };
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
+  const { t } = useTranslation("global");
+  
   return (
     <header className="flex items-center justify-between h-20 px-4 bg-secondary border-b shadow-sm">
       <div className="flex items-center gap-2">
@@ -136,7 +140,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
         <div className="flex items-center gap-1 border-1 rounded-3xl py-2 px-3 text-background text-sm">
           <CalcIcon width={20} height={20} />
 
-          <span>Simulate Transfer</span>
+          <span>{t("modules.topbar.simulateTransfer")}</span>
         </div>
         <NotificationIcon width={30} height={30} />
         <UserMenu />

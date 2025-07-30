@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { X, CheckCircle } from "lucide-react";
 
@@ -13,6 +14,8 @@ const CustomerSuccessModal: React.FC<CustomerSuccessModalProps> = ({
   onClose,
   onContinue,
 }) => {
+  const { t } = useTranslation("global");
+  
   if (!isOpen) return null;
 
   return (
@@ -32,20 +35,20 @@ const CustomerSuccessModal: React.FC<CustomerSuccessModalProps> = ({
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
           
-          <h2 className="text-xl font-semibold mb-2">Customer added successfully!</h2>
+          <h2 className="text-xl font-semibold mb-2">{t("modules.components.customerSuccessModal.title")}</h2>
           
           <div className="flex justify-center gap-4 mt-6">
             <Button
               variant="outline"
               onClick={onClose}
             >
-              Close
+              {t("modules.components.customerSuccessModal.close")}
             </Button>
             <Button
               onClick={onContinue}
               className="bg-teal-600 hover:bg-teal-700"
             >
-              Continue
+              {t("modules.components.customerSuccessModal.viewDetails")}
             </Button>
           </div>
         </div>

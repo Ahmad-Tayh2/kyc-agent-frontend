@@ -1,94 +1,94 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { format } from 'date-fns';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import {
   useValidateCustomerFormToken,
   useSubmitCustomerForm,
-} from '@/hooks/useCustomerForm';
+} from "@/hooks/useCustomerForm";
 import {
   useCountries,
   useCitiesByCountry,
   useStatesByCountry,
-} from '@/hooks/useAddress';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@/hooks/useAddress";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import { Label } from '@/components/ui/label';
-import DatePicker from '@/components/DatePicker';
-import PhoneInput from '@/components/PhoneInput';
-import Loader from '@/components/Loader';
-import SearchableSelect from '@/components/ui/searchable-select';
-import { cn } from '@/lib/utils';
-import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
-import UncheckedIcon from '@/assets/icons/unchecked-icon.svg?react';
-import type { Country } from '@/services/address';
+} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import DatePicker from "@/components/shared/DatePicker";
+import PhoneInput from "@/components/shared/PhoneInput";
+import Loader from "@/components/shared/Loader";
+import SearchableSelect from "@/components/ui/searchable-select";
+import { cn } from "@/lib/utils";
+import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
+import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
+import type { Country } from "@/services/address";
 
 // Simple authentication check
 const isAuthenticated = () => {
-  return !!localStorage.getItem('token');
+  return !!localStorage.getItem("token");
 };
 
 // Form validation schema
 const customerFormSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Please enter a valid email address'),
-  dateOfBirth: z.string().min(1, 'Date of birth is required'),
-  streetName: z.string().min(1, 'Street name is required'),
-  houseNumber: z.string().min(1, 'House number is required'),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Please enter a valid email address"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  streetName: z.string().min(1, "Street name is required"),
+  houseNumber: z.string().min(1, "House number is required"),
   postalCode: z.string().optional(),
   extraAddressDetails: z.string().optional(),
-  cityId: z.number().min(1, 'City is required'),
+  cityId: z.number().min(1, "City is required"),
   stateId: z.number().optional(),
-  countryId: z.number().min(1, 'Country is required'),
-  gender: z.enum(['male', 'female', 'other'], {
-    required_error: 'Gender is required',
+  countryId: z.number().min(1, "Country is required"),
+  gender: z.enum(["male", "female", "other"], {
+    required_error: "Gender is required",
   }),
-  countryPhoneCode: z.string().min(1, 'Country code is required'),
-  phoneNumber: z.string().min(1, 'Phone number is required'),
+  countryPhoneCode: z.string().min(1, "Country code is required"),
+  phoneNumber: z.string().min(1, "Phone number is required"),
 });
 
 type CustomerFormData = z.infer<typeof customerFormSchema>;
 
 interface CustomerFormProps {
   token?: string;
-  mode?: 'dialog' | 'fullpage' | 'preview';
+  mode?: "dialog" | "fullpage" | "preview";
   onClose?: () => void;
 }
 
 const CustomerForm: React.FC<CustomerFormProps> = ({
   token,
-  mode = 'fullpage',
+  mode = "fullpage",
   onClose,
 }) => {
   const { token: urlToken } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  const [t] = useTranslation('global');
+  const [t] = useTranslation("global");
   const effectiveToken = token || urlToken;
   const isUserAuthenticated = isAuthenticated();
-  const isPreviewMode = mode === 'preview';
+  const isPreviewMode = mode === "preview";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState<string>('');
-  const [selectedGender, setSelectedGender] = useState<string>('male');
+  const [submitError, setSubmitError] = useState<string>("");
+  const [selectedGender, setSelectedGender] = useState<string>("male");
 
   // Validate token
   const {
     data: tokenValidation,
     isLoading: isValidating,
     error: validationError,
-  } = useValidateCustomerFormToken(effectiveToken || '');
+  } = useValidateCustomerFormToken(effectiveToken || "");
 
   // Fetch address data
   const { data: countries = [] } = useCountries();
@@ -99,34 +99,34 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   const { data: states = [] } = useStatesByCountry(selectedCountryId);
 
   // Submit mutation
-  const submitMutation = useSubmitCustomerForm(effectiveToken || '');
+  const submitMutation = useSubmitCustomerForm(effectiveToken || "");
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      dateOfBirth: '',
-      streetName: '',
-      houseNumber: '',
-      postalCode: '',
-      extraAddressDetails: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      dateOfBirth: "",
+      streetName: "",
+      houseNumber: "",
+      postalCode: "",
+      extraAddressDetails: "",
       cityId: 0,
       stateId: 0,
       countryId: 0,
-      gender: 'male',
-      countryPhoneCode: '',
-      phoneNumber: '',
+      gender: "male",
+      countryPhoneCode: "",
+      phoneNumber: "",
     },
   });
 
   // Handle country change
   const handleCountryChange = (countryId: number) => {
     setSelectedCountryId(countryId);
-    form.setValue('countryId', countryId);
-    form.setValue('cityId', 0);
-    form.setValue('stateId', 0);
+    form.setValue("countryId", countryId);
+    form.setValue("cityId", 0);
+    form.setValue("stateId", 0);
   };
 
   // Country phone code options
@@ -144,7 +144,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     }
 
     setIsSubmitting(true);
-    setSubmitError('');
+    setSubmitError("");
 
     try {
       const submissionData = {
@@ -154,22 +154,22 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         date_of_birth: data.dateOfBirth,
         street_name: data.streetName,
         house_number: data.houseNumber,
-        postal_code: data.postalCode || '', // Provide default empty string for optional postal code
-        extra_address_details: data.extraAddressDetails || '',
+        postal_code: data.postalCode || "", // Provide default empty string for optional postal code
+        extra_address_details: data.extraAddressDetails || "",
         city_id: data.cityId,
         state_id: data.stateId || 0, // Provide default 0 for optional state
         country_id: data.countryId,
         gender: data.gender,
         country_phone_code: data.countryPhoneCode,
         phone_number: data.phoneNumber,
-        status: 'active' as const,
+        status: "active" as const,
       };
 
       await submitMutation.mutateAsync(submissionData);
       setSubmitSuccess(true);
 
       // Close dialog after success if in dialog mode
-      if (mode === 'dialog' && onClose) {
+      if (mode === "dialog" && onClose) {
         setTimeout(() => {
           onClose();
         }, 2000);
@@ -178,7 +178,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       if (error instanceof Error) {
         setSubmitError(error.message);
       } else {
-        setSubmitError('An unexpected error occurred. Please try again.');
+        setSubmitError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
@@ -188,7 +188,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   // Loading state
   if (isValidating) {
     return (
-      <div className='flex justify-center items-center h-64'>
+      <div className="flex justify-center items-center h-64">
         <Loader />
       </div>
     );
@@ -197,25 +197,25 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   // Error state - invalid, expired, or used token
   if (validationError || !tokenValidation?.id) {
     return (
-      <div className='flex flex-col items-center justify-center h-64 text-center'>
-        <h2 className='text-2xl font-bold text-red-600 mb-4'>
-          {t('modules.pages.customerForm.linkExpired.title')}
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">
+          {t("modules.pages.customerForm.linkExpired.title")}
         </h2>
-        <p className='text-gray-600'>
-          {t('modules.pages.customerForm.linkExpired.message')}
+        <p className="text-gray-600">
+          {t("modules.pages.customerForm.linkExpired.message")}
         </p>
-        {mode === 'fullpage' && (
+        {mode === "fullpage" && (
           <Button
-            onClick={() => navigate('/')}
-            className='mt-4'
-            variant='outline'
+            onClick={() => navigate("/")}
+            className="mt-4"
+            variant="outline"
           >
-            {t('common.actions.goHome')}
+            {t("common.actions.goHome")}
           </Button>
         )}
         {isPreviewMode && (
-          <Button onClick={onClose} className='mt-4' variant='outline'>
-            {t('modules.pages.customerForm.closePreview')}
+          <Button onClick={onClose} className="mt-4" variant="outline">
+            {t("modules.pages.customerForm.closePreview")}
           </Button>
         )}
       </div>
@@ -223,27 +223,27 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   }
 
   // Check if the form link is already used (successful_registration)
-  if (tokenValidation?.status === 'successful_registration') {
+  if (tokenValidation?.status === "successful_registration") {
     return (
-      <div className='flex flex-col items-center justify-center h-64 text-center'>
-        <h2 className='text-2xl font-bold text-orange-600 mb-4'>
-          {t('modules.pages.customerForm.linkUsed.title')}
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <h2 className="text-2xl font-bold text-orange-600 mb-4">
+          {t("modules.pages.customerForm.linkUsed.title")}
         </h2>
-        <p className='text-gray-600'>
-          {t('modules.pages.customerForm.linkUsed.message')}
+        <p className="text-gray-600">
+          {t("modules.pages.customerForm.linkUsed.message")}
         </p>
-        {mode === 'fullpage' && (
+        {mode === "fullpage" && (
           <Button
-            onClick={() => navigate('/')}
-            className='mt-4'
-            variant='outline'
+            onClick={() => navigate("/")}
+            className="mt-4"
+            variant="outline"
           >
-            {t('common.actions.goHome')}
+            {t("common.actions.goHome")}
           </Button>
         )}
         {isPreviewMode && (
-          <Button onClick={onClose} className='mt-4' variant='outline'>
-            {t('modules.pages.customerForm.closePreview')}
+          <Button onClick={onClose} className="mt-4" variant="outline">
+            {t("modules.pages.customerForm.closePreview")}
           </Button>
         )}
       </div>
@@ -251,27 +251,27 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   }
 
   // Check if the form link is expired
-  if (tokenValidation?.status === 'expired_link') {
+  if (tokenValidation?.status === "expired_link") {
     return (
-      <div className='flex flex-col items-center justify-center h-64 text-center'>
-        <h2 className='text-2xl font-bold text-red-600 mb-4'>
-          {t('modules.pages.customerForm.linkExpired.title')}
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">
+          {t("modules.pages.customerForm.linkExpired.title")}
         </h2>
-        <p className='text-gray-600'>
-          {t('modules.pages.customerForm.linkExpired.message')}
+        <p className="text-gray-600">
+          {t("modules.pages.customerForm.linkExpired.message")}
         </p>
-        {mode === 'fullpage' && (
+        {mode === "fullpage" && (
           <Button
-            onClick={() => navigate('/')}
-            className='mt-4'
-            variant='outline'
+            onClick={() => navigate("/")}
+            className="mt-4"
+            variant="outline"
           >
-            {t('common.actions.goHome')}
+            {t("common.actions.goHome")}
           </Button>
         )}
         {isPreviewMode && (
-          <Button onClick={onClose} className='mt-4' variant='outline'>
-            {t('modules.pages.customerForm.closePreview')}
+          <Button onClick={onClose} className="mt-4" variant="outline">
+            {t("modules.pages.customerForm.closePreview")}
           </Button>
         )}
       </div>
@@ -281,16 +281,16 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   // Success state
   if (submitSuccess) {
     return (
-      <div className='flex flex-col items-center justify-center h-64 text-center'>
-        <h2 className='text-2xl font-bold text-green-600 mb-4'>
-          {t('modules.pages.customerForm.formSubmitted.title')}
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <h2 className="text-2xl font-bold text-green-600 mb-4">
+          {t("modules.pages.customerForm.formSubmitted.title")}
         </h2>
-        <p className='text-gray-600'>
-          {t('modules.pages.customerForm.formSubmitted.message')}
+        <p className="text-gray-600">
+          {t("modules.pages.customerForm.formSubmitted.message")}
         </p>
-        {mode === 'dialog' && (
-          <p className='text-sm text-gray-500 mt-2'>
-            {t('modules.pages.customerForm.formSubmitted.autoClose')}
+        {mode === "dialog" && (
+          <p className="text-sm text-gray-500 mt-2">
+            {t("modules.pages.customerForm.formSubmitted.autoClose")}
           </p>
         )}
       </div>
@@ -299,7 +299,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
   const formData = tokenValidation;
   const expiryDate = new Date(formData?.expired_at ?? Date.now());
-  const expiryTime = format(expiryDate, 'HH:mm:ss');
+  const expiryTime = format(expiryDate, "HH:mm:ss");
 
   // Create options for selects
   const countryOptions =
@@ -321,47 +321,47 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     })) || [];
 
   const genderOptions = [
-    { label: t('common.fields.gender.male'), value: 'male' },
-    { label: t('common.fields.gender.female'), value: 'female' },
+    { label: t("common.fields.gender.male"), value: "male" },
+    { label: t("common.fields.gender.female"), value: "female" },
   ];
 
   // Show preview notification for agents
   const showPreviewBanner = isPreviewMode && isUserAuthenticated;
 
   const formContent = (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       {/* Preview banner for agents */}
       {showPreviewBanner && (
-        <div className='text-center bg-yellow-50 border border-yellow-200 p-4 rounded-lg'>
-          <p className='text-sm text-yellow-800 font-medium'>
-            {t('modules.pages.customerForm.previewMode')}
+        <div className="text-center bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+          <p className="text-sm text-yellow-800 font-medium">
+            {t("modules.pages.customerForm.previewMode")}
           </p>
         </div>
       )}
 
       {/* Error message */}
       {submitError && (
-        <div className='p-4 bg-red-50 border border-red-200 rounded-lg'>
-          <p className='text-sm text-red-700'>{submitError}</p>
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-700">{submitError}</p>
         </div>
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-5'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5'>
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.firstName.label')}
-                <span className='text-red-500'>*</span>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.firstName.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='firstName'
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder={t('common.fields.firstName.placeholder')}
+                        placeholder={t("common.fields.firstName.placeholder")}
                         {...field}
                       />
                     </FormControl>
@@ -371,19 +371,19 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.lastName.label')}
-                <span className='text-red-500'>*</span>
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.lastName.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='lastName'
+                name="lastName"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder={t('common.fields.lastName.placeholder')}
+                        placeholder={t("common.fields.lastName.placeholder")}
                         {...field}
                       />
                     </FormControl>
@@ -393,20 +393,20 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.email.label')}
-                <span className='text-red-500'>*</span>
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.email.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='email'
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder={t('common.fields.email.placeholder')}
-                        type='email'
+                        placeholder={t("common.fields.email.placeholder")}
+                        type="email"
                         {...field}
                       />
                     </FormControl>
@@ -416,24 +416,24 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.phone.label')}
-                <span className='text-red-500'>*</span>
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.phone.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='phoneNumber'
+                name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <PhoneInput
-                        placeholder={t('common.fields.phone.placeholder')}
+                        placeholder={t("common.fields.phone.placeholder")}
                         countryOptions={countryPhoneOptions}
-                        selectedCountry={form.watch('countryPhoneCode')}
+                        selectedCountry={form.watch("countryPhoneCode")}
                         phoneNumber={field.value}
                         onCountryChange={(countryCode: string) =>
-                          form.setValue('countryPhoneCode', countryCode)
+                          form.setValue("countryPhoneCode", countryCode)
                         }
                         onPhoneChange={field.onChange}
                         error={
@@ -448,19 +448,19 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.streetName.label')}
-                <span className='text-red-500'>*</span>
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.streetName.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='streetName'
+                name="streetName"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder={t('common.fields.streetName.placeholder')}
+                        placeholder={t("common.fields.streetName.placeholder")}
                         {...field}
                       />
                     </FormControl>
@@ -470,19 +470,19 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.houseNumber.label')}
-                <span className='text-red-500'>*</span>
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.houseNumber.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='houseNumber'
+                name="houseNumber"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder={t('common.fields.houseNumber.placeholder')}
+                        placeholder={t("common.fields.houseNumber.placeholder")}
                         {...field}
                       />
                     </FormControl>
@@ -492,18 +492,18 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.postalCode.label')}
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.postalCode.label")}
               </Label>
               <FormField
                 control={form.control}
-                name='postalCode'
+                name="postalCode"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder={t('common.fields.postalCode.placeholder')}
+                        placeholder={t("common.fields.postalCode.placeholder")}
                         {...field}
                       />
                     </FormControl>
@@ -513,19 +513,19 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.extraAddressDetails.label')}
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.extraAddressDetails.label")}
               </Label>
               <FormField
                 control={form.control}
-                name='extraAddressDetails'
+                name="extraAddressDetails"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
                         placeholder={t(
-                          'common.fields.extraAddressDetails.placeholder'
+                          "common.fields.extraAddressDetails.placeholder"
                         )}
                         {...field}
                       />
@@ -537,13 +537,13 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <SearchableSelect
-              label={`${t('common.fields.country.label')}*`}
-              placeholder={t('common.fields.country.placeholder')}
+              label={`${t("common.fields.country.label")}*`}
+              placeholder={t("common.fields.country.placeholder")}
               options={countryOptions}
-              value={form.watch('countryId')?.toString() || ''}
+              value={form.watch("countryId")?.toString() || ""}
               onChange={(value) => {
                 const countryId = parseInt(value.toString());
-                form.setValue('countryId', countryId);
+                form.setValue("countryId", countryId);
                 handleCountryChange(countryId);
               }}
               error={form.formState.errors.countryId?.message}
@@ -552,12 +552,12 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             />
 
             <SearchableSelect
-              label={`${t('common.fields.city.label')}*`}
-              placeholder={t('common.fields.city.placeholder')}
+              label={`${t("common.fields.city.label")}*`}
+              placeholder={t("common.fields.city.placeholder")}
               options={cityOptions}
-              value={form.watch('cityId')?.toString() || ''}
+              value={form.watch("cityId")?.toString() || ""}
               onChange={(value) =>
-                form.setValue('cityId', parseInt(value.toString()))
+                form.setValue("cityId", parseInt(value.toString()))
               }
               error={form.formState.errors.cityId?.message}
               loading={false}
@@ -566,26 +566,26 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             />
 
             <SearchableSelect
-              label={t('common.fields.state.label')}
-              placeholder={t('common.fields.state.placeholder')}
+              label={t("common.fields.state.label")}
+              placeholder={t("common.fields.state.placeholder")}
               options={stateOptions}
-              value={form.watch('stateId')?.toString() || ''}
+              value={form.watch("stateId")?.toString() || ""}
               onChange={(value) =>
-                form.setValue('stateId', parseInt(value.toString()))
+                form.setValue("stateId", parseInt(value.toString()))
               }
               error={form.formState.errors.stateId?.message}
               loading={false}
               disabled={!selectedCountryId}
             />
 
-            <div className='flex flex-col gap-1'>
-              <Label className='text-[14px]'>
-                {t('common.fields.dob.label')}
-                <span className='text-red-500'>*</span>
+            <div className="flex flex-col gap-1">
+              <Label className="text-[14px]">
+                {t("common.fields.dob.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='dateOfBirth'
+                name="dateOfBirth"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -600,25 +600,25 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               />
             </div>
 
-            <div className='md:col-span-2 flex flex-col gap-2'>
+            <div className="md:col-span-2 flex flex-col gap-2">
               <Label>
-                {t('common.fields.gender.label')}
-                <span className='text-red-500'>*</span>
+                {t("common.fields.gender.label")}
+                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
-                name='gender'
+                name="gender"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <div className='flex items-center gap-2'>
+                      <div className="flex items-center gap-2">
                         {genderOptions?.map((genderOption) => (
                           <button
                             key={genderOption.value}
-                            type='button'
+                            type="button"
                             className={cn(
-                              'w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition',
-                              'border-gray-200 bg-white'
+                              "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
+                              "border-gray-200 bg-white"
                             )}
                             onClick={() => {
                               setSelectedGender(genderOption.value);
@@ -643,41 +643,41 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           </div>
 
           <Button
-            type='submit'
-            className='w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-medium'
+            type="submit"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-medium"
             disabled={isSubmitting || submitMutation.isPending || isPreviewMode}
           >
             {isPreviewMode
-              ? t('modules.pages.customerForm.previewModeSubmitDisabled')
+              ? t("modules.pages.customerForm.previewModeSubmitDisabled")
               : isSubmitting || submitMutation.isPending
-              ? t('common.actions.submitting')
-              : t('modules.pages.customerForm.signUp')}
+              ? t("common.actions.submitting")
+              : t("modules.pages.customerForm.signUp")}
           </Button>
         </form>
       </Form>
     </div>
   );
 
-  if (mode === 'dialog') {
+  if (mode === "dialog") {
     return formContent;
   }
 
   return (
-    <div className='min-h-screen bg-gray-50 py-8'>
-      <div className='max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8'>
-        <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold text-gray-900'>
-            {t('modules.pages.customerForm.createAccount')}
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t("modules.pages.customerForm.createAccount")}
           </h1>
-          <p className='text-gray-600 mt-2'>
-            {t('modules.pages.customerForm.usingLinkOf')}{' '}
-            <span className='font-semibold'>
-              {`${formData?.first_name ?? ''} ${
-                formData?.last_name ?? ''
-              }`.trim() || t('modules.pages.customerForm.unnamed')}
+          <p className="text-gray-600 mt-2">
+            {t("modules.pages.customerForm.usingLinkOf")}{" "}
+            <span className="font-semibold">
+              {`${formData?.first_name ?? ""} ${
+                formData?.last_name ?? ""
+              }`.trim() || t("modules.pages.customerForm.unnamed")}
             </span>
-            . {t('modules.pages.customerForm.linkExpireAt')}{' '}
-            <span className='font-semibold'>{expiryTime}</span>
+            . {t("modules.pages.customerForm.linkExpireAt")}{" "}
+            <span className="font-semibold">{expiryTime}</span>
           </p>
         </div>
         {formContent}

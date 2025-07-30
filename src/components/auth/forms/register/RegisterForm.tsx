@@ -16,12 +16,13 @@ import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UploadIcon from "@/assets/icons/upload-icon.svg?react";
 import FileIcon from "@/assets/icons/file-icon.svg?react";
-import DatePicker from "@/components/DatePicker";
+import DatePicker from "@/components/shared/DatePicker";
 import SearchableSelect from "@/components/ui/searchable-select";
-import PhoneInput from "@/components/PhoneInput";
+import PhoneInput from "@/components/shared/PhoneInput";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { X } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const schema = z
   .object({
@@ -442,12 +443,12 @@ const RegisterForm: React.FC<{
             {t("modules.register.fields.password.label")}
             <span className="text-red-500">*</span>
           </Label>
-          <Input
-            type="password"
+          <PasswordInput
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             placeholder={t("modules.register.fields.password.placeholder")}
           />
+
           {errors.password && (
             <span className="text-destructive text-xs">{errors.password}</span>
           )}
@@ -457,8 +458,7 @@ const RegisterForm: React.FC<{
             {t("modules.register.fields.confirmPassword.label")}
             <span className="text-red-500">*</span>
           </Label>
-          <Input
-            type="password"
+          <PasswordInput
             value={formData.confirmPassword}
             onChange={(e) =>
               handleInputChange("confirmPassword", e.target.value)
