@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/shared/DataTable";
 import { useSearchCustomer } from "@/hooks/useCustomers";
-import { useCustomerColumns } from "@/components/customers/CustomerTableColumns";
+import { customerColumns } from "@/components/customers/CustomerTableColumns";
 import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
@@ -32,7 +32,7 @@ const CustomerCreatePage: React.FC = () => {
 
   const { mutateAsync: searchCustomer, isPending: isSearching } =
     useSearchCustomer();
-  const columns = useCustomerColumns();
+  const columns = customerColumns();
 
   const handleSearch = async () => {
     if (
