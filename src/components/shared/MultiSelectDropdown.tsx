@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SearchInput } from "@/components/shared/SearchInput";
 
 interface Option {
   value: string;
@@ -19,6 +20,8 @@ interface MultiSelectDropdownProps {
   disabled?: boolean;
   className?: string;
   showSelectAll?: boolean;
+  isSearchable?: boolean;
+  checkboxPlacement?: "left" | "right";
 }
 
 const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
@@ -30,10 +33,19 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   disabled = false,
   className,
   showSelectAll = false,
+  isSearchable = false,
+  checkboxPlacement = "left",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = React.useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const filteredOptions = React.useMemo(() => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return options?.filter((option: Option) =>
+      option.label?.toString().toLowerCase().includes(lowerSearchTerm)
+    );
+  }, [searchTerm, options]);
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -105,39 +117,71 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       </Button>
 
       {isOpen && (
-        <div className="absolute z-50 w-max mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-max mt-1 bg-white border border-gray-200 rounded-md shadow-lg ">
           <div className="p-2">
             {showSelectAll && (
               <div
-                className="flex items-center space-x-2 py-2 px-1 hover:bg-gray-50 rounded cursor-pointer"
+                className="flex items-center space-x-2 p-2 hover:bg-primary/5 rounded cursor-pointer"
                 onClick={handleSelectAll}
               >
-                <Checkbox
-                  checked={isAllSelected}
-                  onCheckedChange={handleSelectAll}
-                  className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                />
+                {checkboxPlacement === "left" && (
+                  <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={handleSelectAll}
+                    className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                  />
+                )}
                 <span className="text-sm text-gray-700">Select All</span>
+                {checkboxPlacement === "right" && (
+                  <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={handleSelectAll}
+                    className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 ml-auto"
+                  />
+                )}
               </div>
             )}
-            {options.map((option) => (
-              <div
-                key={option.value}
-                className="flex items-center space-x-2 py-2 px-1 hover:bg-gray-50 rounded cursor-pointer"
-                onClick={() => handleOptionToggle(option.value)}
-              >
-                <Checkbox
-                  checked={value.includes(option.value)}
-                  onCheckedChange={() => handleOptionToggle(option.value)}
-                  className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+            {isSearchable && (
+              <div className="my-2">
+                <SearchInput
+                  value={searchTerm}
+                  onChange={(value: string) => {
+                    setSearchTerm(value);
+                  }}
+                  className="w-fit"
                 />
-                <span className="text-sm text-gray-700">
-                  {typeof option.label === "string"
-                    ? option.label
-                    : option.label}
-                </span>
               </div>
-            ))}
+            )}
+            <div className="max-h-60 overflow-y-auto overflow-x-hidden">
+              {filteredOptions?.map((option) => (
+                <div
+                  key={option.value}
+                  className="flex items-center space-x-2 p-2 hover:bg-primary/5 rounded cursor-pointer"
+                  onClick={() => handleOptionToggle(option.value)}
+                >
+                  {checkboxPlacement === "left" && (
+                    <Checkbox
+                      checked={value.includes(option.value)}
+                      onCheckedChange={() => handleOptionToggle(option.value)}
+                      className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                    />
+                  )}
+
+                  <span className="text-sm text-gray-700">
+                    {typeof option.label === "string"
+                      ? option.label
+                      : option.label}
+                  </span>
+                  {checkboxPlacement === "right" && (
+                    <Checkbox
+                      checked={value.includes(option.value)}
+                      onCheckedChange={() => handleOptionToggle(option.value)}
+                      className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 ml-auto"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

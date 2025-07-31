@@ -6,12 +6,13 @@ import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
 // import CountrySelector from "@/components/shared/CountrySelector";
 // import { useCountries } from "@/hooks/useAddress";
 import type { RecipientsFilterState } from "@/hooks/useRecipientsFilters";
+import type { Customer } from "@/types/customers";
 // import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
-const customersOptions = [{ label: "customer 1 ", value: "1" }];
 const remitanceMethodOptions = [{ label: "method 1 ", value: "1" }];
 interface RecipientsFiltersProps {
   filters: RecipientsFilterState;
+  customers: Customer[];
   onUpdateSearchTerm: (name: string) => void;
   onUpdateCustomersIds: (status: string[]) => void;
   // onUpdateCuntryId: (number: string) => void;
@@ -24,6 +25,7 @@ interface RecipientsFiltersProps {
 
 const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   filters,
+  customers,
   onUpdateSearchTerm,
   onUpdateCustomersIds,
   // onUpdateCuntryId,
@@ -42,6 +44,13 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   //     name: country.name,
   //   }));
   // }, [countriesData]);
+
+  const customersOptions = [
+    ...customers?.map((customer: Customer) => ({
+      label: customer.full_name,
+      value: customer.id,
+    })),
+  ];
 
   return (
     <div className="flex items-center justify-between flex-wrap">
@@ -68,7 +77,8 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
               options={customersOptions}
               value={filters.customer_ids ?? []}
               onChange={onUpdateCustomersIds}
-              showSelectAll
+              isSearchable
+              checkboxPlacement="right"
             />
             {/* <CountrySelector
               label="Country"

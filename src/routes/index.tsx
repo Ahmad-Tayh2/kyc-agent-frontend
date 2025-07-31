@@ -25,6 +25,12 @@ const CustomerCreateFormPage = lazy(
   () => import("../pages/CustomersPage/CustomerCreateFormPage")
 );
 const RecipientsPage = lazy(() => import("../pages/RecipientsPage"));
+const RecipientEditPage = lazy(
+  () => import("../pages/RecipientsPage/RecipientEditPage")
+);
+const RecipientCreatePage = lazy(
+  () => import("../pages/RecipientsPage/RecipientCreatePage")
+);
 const PayoutLocationsPage = lazy(() => import("../pages/PayoutLocationsPage"));
 const TransfersPage = lazy(() => import("../pages/TransfersPage"));
 const CommissionEarnedPage = lazy(
@@ -73,6 +79,7 @@ export const AppRoutes = () => (
             path={ROUTES.SEND_REMITTANCE}
             element={<SendRemittancePage />}
           />
+          {/* customers routes */}
           <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
           <Route
             path={ROUTES.CUSTOMERS.EDIT(":id")}
@@ -86,7 +93,17 @@ export const AppRoutes = () => (
             path={ROUTES.CUSTOMERS.CREATE_FORM}
             element={<CustomerCreateFormPage />}
           />
+          {/* recipients routes */}
           <Route path={ROUTES.RECIPIENTS.LIST} element={<RecipientsPage />} />
+          <Route
+            path={ROUTES.RECIPIENTS.EDIT(":id")}
+            element={<RecipientEditPage />}
+          />
+          <Route
+            path={ROUTES.RECIPIENTS.CREATE}
+            element={<RecipientCreatePage />}
+          />
+
           <Route
             path={ROUTES.PAYOUT_LOCATIONS}
             element={<PayoutLocationsPage />}

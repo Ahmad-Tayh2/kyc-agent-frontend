@@ -11,7 +11,7 @@ export const ROUTES = {
     LIST: "/recipients",
     CREATE: "/recipients/create",
     CREATE_FORM: "/recipients/create/form",
-    EDIT: (customerId: string | number) => `/recipients/edit/${customerId}`,
+    EDIT: (recipientId: string | number) => `/recipients/edit/${recipientId}`,
   },
   PAYOUT_LOCATIONS: "/payout-locations",
   TRANSFERS: "/transfers",

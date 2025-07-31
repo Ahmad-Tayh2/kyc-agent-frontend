@@ -22,7 +22,7 @@ export type Customer = {
   status: string;
 };
 
-const menu = (customerId: string | number) => {
+const menu = (recipientId: string | number) => {
   return [
     {
       label: "Send Remittance",
@@ -33,12 +33,12 @@ const menu = (customerId: string | number) => {
       label: "Edit Recipient",
       icon: <EditIcon />,
       onClick: () => {},
+      link: ROUTES.RECIPIENTS.EDIT(recipientId),
     },
     {
       label: "View Recipient",
       icon: <ViewDetailsIcon />,
       onClick: () => {},
-      link: ROUTES.CUSTOMERS.EDIT(customerId),
     },
   ];
 };

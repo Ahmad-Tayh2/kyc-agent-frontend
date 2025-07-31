@@ -46,4 +46,8 @@ export const recipientsService = {
     const response = await apiClient.get(API_URLS.recipients.get(filters));
     return response.data;
   },
+  getRecipientById: async (id: string | number) => {
+    const response = await apiClient.get(API_URLS.recipients.getById(id));
+    return response.data;
+  },
 };

@@ -39,6 +39,10 @@ export const API_URLS = {
   },
   recipients: {
     get: (filters: string) => `${baseUrl}/recipients${filters}`,
+    search: `${baseUrl}/recipients/search`,
+    create: `${baseUrl}/recipients`,
+    getById: (id: string | number) => `${baseUrl}/recipients/${id}`,
+    update: (id: string | number) => `${baseUrl}/recipients/${id}`,
   },
   remittanceMethods: {
     get: () => `${baseUrl}/remittance-methods`,
