@@ -24,7 +24,14 @@ const CustomerCreatePage = lazy(
 const CustomerCreateFormPage = lazy(
   () => import("../pages/CustomersPage/CustomerCreateFormPage")
 );
-const RecipientsPage = lazy(() => import("../pages/RecipientsPage"));
+
+const RecipientCreateFormPage = lazy(
+  () =>
+    import("../pages/RecipientsPage/RecipientCreatePage/RecipientCreateForm")
+);
+const RecipientsPage = lazy(
+  () => import("../pages/RecipientsPage/RecipientList")
+);
 const RecipientEditPage = lazy(
   () => import("../pages/RecipientsPage/RecipientEditPage")
 );
@@ -52,13 +59,7 @@ const SupportPage = lazy(() => import("../pages/SupportPage"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
 
 export const AppRoutes = () => (
-  <Suspense
-    fallback={
-      <div className="h-screen w-screen">
-        <Loader />
-      </div>
-    }
-  >
+  <Suspense fallback={<Loader className="h-screen w-screen" />}>
     <Routes>
       {/* Public customer form route */}
       <Route path="/customer-form/:token" element={<CustomerFormPage />} />
@@ -102,6 +103,10 @@ export const AppRoutes = () => (
           <Route
             path={ROUTES.RECIPIENTS.CREATE}
             element={<RecipientCreatePage />}
+          />
+          <Route
+            path={ROUTES.RECIPIENTS.CREATE_FORM}
+            element={<RecipientCreateFormPage />}
           />
 
           <Route

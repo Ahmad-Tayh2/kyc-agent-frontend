@@ -102,7 +102,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          "w-[120px] justify-between h-[40px] bg-white border border-gray-300 rounded-md px-3 py-2 text-left",
+          "min-w-[120px] w-full justify-between h-[40px] bg-white border border-gray-300 rounded-md px-3 py-2 text-left",
           isOpen && "border-blue-500 ring-1 ring-blue-500"
         )}
       >
@@ -117,7 +117,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       </Button>
 
       {isOpen && (
-        <div className="absolute z-50 w-max mt-1 bg-white border border-gray-200 rounded-md shadow-lg ">
+        <div className="absolute w-max min-w-full z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg ">
           <div className="p-2">
             {showSelectAll && (
               <div
@@ -148,7 +148,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                   onChange={(value: string) => {
                     setSearchTerm(value);
                   }}
-                  className="w-fit"
+                  className="w-full"
                 />
               </div>
             )}

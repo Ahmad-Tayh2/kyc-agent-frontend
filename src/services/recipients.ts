@@ -1,5 +1,6 @@
 import { API_URLS } from "@/constants/api";
 import apiClient from "@/lib/axiosInstance";
+import type { RecipientUpdatedDataType } from "@/types/recipients";
 
 export interface CustomerSearchParams {
   customerNumber?: string;
@@ -48,6 +49,13 @@ export const recipientsService = {
   },
   getRecipientById: async (id: string | number) => {
     const response = await apiClient.get(API_URLS.recipients.getById(id));
+    return response.data;
+  },
+  updateCustomer: async (
+    id: string | number,
+    data: Partial<RecipientUpdatedDataType>
+  ) => {
+    const response = await apiClient.put(API_URLS.recipients.update(id), data);
     return response.data;
   },
 };

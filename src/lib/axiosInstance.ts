@@ -4,6 +4,12 @@ import type {
   InternalAxiosRequestConfig,
   AxiosHeaders,
 } from "axios";
+
+export interface ErrorResponseData {
+  message: string;
+  status: boolean;
+}
+
 import { getAuthHeaders } from "@/lib/utils";
 
 const createAxiosInstance = (): AxiosInstance => {
