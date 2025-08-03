@@ -4,7 +4,7 @@ import SearchableSelect from "@/components/ui/searchable-select";
 import { Textarea } from "@/components/ui/textarea";
 
 const RecipientBankDetails = (props: any) => {
-  const { data, handleInputChange, handleDateChange, editMode = true } = props;
+  const { data, handleInputChange, editMode = true } = props;
 
   const accountTypeOptions = [
     { label: "Savings", value: "savings" },

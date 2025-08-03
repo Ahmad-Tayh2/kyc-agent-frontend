@@ -16,7 +16,7 @@ import RecipientBankDetails from "./RecipientBankDetails";
 const CustomerEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useGetRecipient(id!);
+  const { data, error } = useGetRecipient(id!);
   const [recipientData, setRecipientData] = useState<RecipientDataType | null>(
     null
   );
