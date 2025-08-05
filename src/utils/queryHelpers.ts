@@ -30,3 +30,65 @@ export function appendQueryParam(
 
   return `${filterString}${separator}${key}=${encodedValue}`;
 }
+
+export function appendArrayQueryParam(
+  filterString: string,
+  key: string,
+  values?: string[] | number[]
+): string {
+  if (!values || values.length === 0) {
+    return filterString;
+  }
+
+  let result = filterString;
+  const startSeparator = result === "" ? "?" : "&";
+
+  values.forEach((value, index) => {
+    const encodedValue = encodeURIComponent(String(value));
+    if (index === 0) result += `${startSeparator}${key}[]=${encodedValue}`;
+    else result += `&${key}[]=${encodedValue}`;
+  });
+
+  return result;
+}
+
+function addOneDay(dateString: string) {
+  // Parse the string into a Date object
+  const date = new Date(dateString);
+
+  // Add one day (in milliseconds)
+  date.setDate(date.getDate() + 1);
+
+  // Convert back to YYYY-MM-DD string
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+export function buildFilterString(filters: Record<string, any>): string {
+  let filterString = "";
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      if (Array.isArray(value) && value.length > 0) {
+        // Use array format for specific fields that should be sent as arrays
+        if (key === 'status' || key === 'customer_ids' || key === 'remittance_method_ids' || key === 'ids' || key === 'country_ids') {
+          filterString = appendArrayQueryParam(filterString, key, value);
+        } else {
+          // For other arrays, use JSON format
+          filterString = appendQueryParam(filterString, key, value);
+        }
+      } else if (!Array.isArray(value)) {
+        if (key === "date_to") {
+          // Adjust the end date by adding 1 day to include the full end date in the API range
+          const newDateTo = addOneDay(value);
+          filterString = appendQueryParam(filterString, key, newDateTo);
+        } else filterString = appendQueryParam(filterString, key, value);
+      }
+    }
+  });
+
+  return filterString;
+}

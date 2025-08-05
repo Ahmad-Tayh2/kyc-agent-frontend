@@ -1,10 +1,10 @@
-import { useState, useCallback } from "react";
-import { appendQueryParam } from "@/utils/queryHelpers";
+import { useState, useCallback, useMemo } from "react";
+import { createFilterApply, createFilterReset, createHasActiveFilters } from "@/utils/filterHelpers";
 
 export interface RecipientsFilterState {
   search_term?: string;
   customer_ids?: string[];
-  country_id?: number;
+  country_ids?: number[];
   remittance_method_ids?: string[];
   ids?: string[];
   added_by?: number;
@@ -14,7 +14,7 @@ export const useRecipientsFilters = () => {
   const [filters, setFilters] = useState<RecipientsFilterState>({
     search_term: "",
     customer_ids: [],
-    country_id: undefined,
+    country_ids: [],
     remittance_method_ids: [],
     ids: [],
     added_by: undefined,
@@ -30,8 +30,8 @@ export const useRecipientsFilters = () => {
     setFilters((prev) => ({ ...prev, customer_ids }));
   }, []);
 
-  const updateCuntryId = useCallback((country_id: number) => {
-    setFilters((prev) => ({ ...prev, country_id }));
+  const updateCountryIds = useCallback((country_ids: number[]) => {
+    setFilters((prev) => ({ ...prev, country_ids }));
   }, []);
 
   const updateRemittanceMethodIds = useCallback(
@@ -40,6 +40,7 @@ export const useRecipientsFilters = () => {
     },
     []
   );
+
   const updateIds = useCallback((ids: string[]) => {
     setFilters((prev) => ({ ...prev, ids }));
   }, []);
@@ -48,86 +49,32 @@ export const useRecipientsFilters = () => {
     setFilters((prev) => ({ ...prev, added_by }));
   }, []);
 
-  const resetFilters = useCallback(() => {
-    setFilters((prev) => ({
-      ...prev,
-      status: [],
-      dateCreated: { startDate: null, endDate: null },
-      country: [],
-    }));
+  const resetFilters = useCallback(
+    createFilterReset(filters, setFilters, setFilterString, ['search_term']),
+    [filters]
+  );
 
-    let filterString: string = "";
-    if (filters?.search_term) {
-      filterString = appendQueryParam(
-        filterString,
-        "search_term",
-        filters.search_term
-      );
-    }
-    //do not reset the numbers also
-    setFilterString(filterString);
-  }, [filters?.search_term]);
+  const applyFilters = useCallback(
+    createFilterApply(filters, setFilterString),
+    [filters]
+  );
 
-  const applyFilters = useCallback(() => {
-    let filterString: string = "";
-
-    if (filters?.search_term) {
-      filterString = appendQueryParam(
-        filterString,
-        "search_term",
-        filters.search_term
-      );
-    }
-
-    if (filters?.customer_ids && filters.customer_ids.length > 0) {
-      filterString = appendQueryParam(
-        filterString,
-        "customer_ids",
-        filters.customer_ids
-      );
-    }
-    if (filters?.country_id) {
-      filterString = appendQueryParam(
-        filterString,
-        "country_id",
-        filters.country_id
-      );
-    }
-    if (
-      filters?.remittance_method_ids &&
-      filters.remittance_method_ids.length > 0
-    ) {
-      filterString = appendQueryParam(
-        filterString,
-        "remittance_method_ids",
-        filters.remittance_method_ids
-      );
-    }
-    if (filters?.ids && filters.ids?.length > 0) {
-      filterString = appendQueryParam(filterString, "ids", filters.ids);
-    }
-    if (filters?.added_by) {
-      filterString = appendQueryParam(
-        filterString,
-        "added_by",
-        filters.added_by
-      );
-    }
-
-    setFilterString(filterString);
-  }, [filters]);
+  const hasActiveFilters = useMemo(
+    () => createHasActiveFilters(filters, ['search_term']),
+    [filters]
+  );
 
   return {
     filters,
     filtersString,
     updateSearchTerm,
     updateCustomersIds,
-    updateCuntryId,
+    updateCountryIds,
     updateRemittanceMethodIds,
     updateIds,
     updateAddedBy,
-
     resetFilters,
     applyFilters,
+    hasActiveFilters,
   };
 };

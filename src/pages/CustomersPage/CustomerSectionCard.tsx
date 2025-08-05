@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EditIcon from "@/assets/icons/edit-icon.svg?react";
 import SaveIcon from "@/assets/icons/save-icon.svg?react";
-import CustomerBasicDetails from "./CustomerBasicDetails";
+import CustomerBasicDetails from "./CustomerCreatePage/components/CustomerBasicDetails";
 
 interface CustomerSectionCardProps {
   formData: any;

@@ -23,10 +23,8 @@ const RecipientsPage: React.FC = () => {
     filtersString,
     updateSearchTerm,
     updateCustomersIds,
-    // updateCuntryId,
+    updateCountryIds,
     updateRemittanceMethodIds,
-    updateIds,
-    // updateAddedBy,
     resetFilters,
     applyFilters,
   } = useRecipientsFilters();
@@ -41,6 +39,7 @@ const RecipientsPage: React.FC = () => {
   const customersData = useMemo(() => {
     return CustomersResponse?.data || [];
   }, [CustomersResponse?.data]);
+
   const handleAddRecipient = () => {
     navigate(ROUTES.RECIPIENTS.CREATE);
   };
@@ -60,10 +59,8 @@ const RecipientsPage: React.FC = () => {
         customers={customersData}
         onUpdateSearchTerm={updateSearchTerm}
         onUpdateCustomersIds={updateCustomersIds}
-        // onUpdateCuntryId={updateCuntryId}
+        onUpdateCountryIds={updateCountryIds}
         onUpdateRemittanceMethodIds={updateRemittanceMethodIds}
-        onUpdateIds={updateIds}
-        // onUpdateAddedBy={updateAddedBy}
         onResetFilters={resetFilters}
         onApplyFilters={applyFilters}
       />

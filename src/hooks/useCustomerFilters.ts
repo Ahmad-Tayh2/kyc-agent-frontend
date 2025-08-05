@@ -1,140 +1,85 @@
 import { useState, useCallback, useMemo } from "react";
+import {
+  createFilterApply,
+  createFilterReset,
+  createHasActiveFilters,
+} from "@/utils/filterHelpers";
 
-export interface FilterState {
-  searchName: string;
-  customerNumber: string;
-  status: string[];
-  dateCreated: { startDate: string | null; endDate: string | null };
-  country: string[];
+export interface CustomerFilterState {
+  search_term?: string;
+  reference_number?: string;
+  status?: string[];
+  country_ids?: number[];
+  date_from?: string;
+  date_to?: string;
 }
 
 export const useCustomerFilters = () => {
-  const [filters, setFilters] = useState<FilterState>({
-    searchName: "",
-    customerNumber: "",
+  const [filters, setFilters] = useState<CustomerFilterState>({
+    search_term: "",
+    reference_number: "",
     status: [],
-    dateCreated: { startDate: null, endDate: null },
-    country: [],
+    country_ids: [],
+    date_from: "",
+    date_to: "",
   });
 
   const [filtersString, setFilterString] = useState<string>("");
 
   // Update functions for each filter
-  const updateSearchName = useCallback((name: string) => {
-    setFilters((prev) => ({ ...prev, searchName: name }));
+  const updateSearchTerm = useCallback((search_term: string) => {
+    setFilters((prev) => ({ ...prev, search_term }));
   }, []);
 
-  const updateCustomerNumber = useCallback((number: string) => {
-    setFilters((prev) => ({ ...prev, customerNumber: number }));
+  const updateReferenceNumber = useCallback((reference_number: string) => {
+    setFilters((prev) => ({ ...prev, reference_number }));
   }, []);
 
   const updateStatus = useCallback((status: string[]) => {
     setFilters((prev) => ({ ...prev, status }));
   }, []);
 
-  const updateDateCreated = useCallback(
+  const updateDateRange = useCallback(
     (dateRange: { startDate: string | null; endDate: string | null }) => {
-      setFilters((prev) => ({ ...prev, dateCreated: dateRange }));
+      setFilters((prev) => ({
+        ...prev,
+        date_from: dateRange.startDate || "",
+        date_to: dateRange.endDate || "",
+      }));
     },
     []
   );
 
-  const updateCountry = useCallback((country: string[]) => {
-    setFilters((prev) => ({ ...prev, country }));
+  const updateCountryIds = useCallback((country_ids: number[]) => {
+    setFilters((prev) => ({ ...prev, country_ids }));
   }, []);
 
-  const resetFilters = useCallback(() => {
-    setFilters((prev) => ({
-      ...prev,
-      status: [],
-      dateCreated: { startDate: null, endDate: null },
-      country: [],
-    }));
+  const resetFilters = useCallback(
+    createFilterReset(filters, setFilters, setFilterString, [
+      "search_term",
+      "reference_number",
+    ]),
+    [filters]
+  );
 
-    // Keep search filters but reset others
-    let filterString: string = "";
-    if (filters?.searchName) {
-      filterString +=
-        filterString === ""
-          ? `?search=${filters?.searchName}`
-          : `&search=${filters?.searchName}`;
-    }
-    if (filters?.customerNumber) {
-      filterString +=
-        filterString === ""
-          ? `?customer_number=${filters?.customerNumber}`
-          : `&customer_number=${filters?.customerNumber}`;
-    }
-    setFilterString(filterString);
-  }, [filters?.searchName, filters?.customerNumber]);
+  const applyFilters = useCallback(
+    createFilterApply(filters, setFilterString),
+    [filters]
+  );
 
-  const applyFilters = useCallback(() => {
-    let filterString: string = "";
-
-    if (filters?.dateCreated?.startDate) {
-      filterString +=
-        filterString === ""
-          ? `?date_from=${filters?.dateCreated?.startDate}`
-          : `&date_from=${filters?.dateCreated?.startDate}`;
-    }
-
-    if (filters?.dateCreated?.endDate) {
-      filterString +=
-        filterString === ""
-          ? `?date_to=${filters?.dateCreated?.endDate}`
-          : `&date_to=${filters?.dateCreated?.endDate}`;
-    }
-
-    if (filters?.searchName) {
-      filterString +=
-        filterString === ""
-          ? `?search=${filters?.searchName}`
-          : `&search=${filters?.searchName}`;
-    }
-
-    if (filters?.customerNumber) {
-      filterString +=
-        filterString === ""
-          ? `?customer_number=${filters?.customerNumber}`
-          : `&customer_number=${filters?.customerNumber}`;
-    }
-
-    if (filters?.status.length > 0) {
-      const jsonString = JSON.stringify(filters?.status);
-      const encodedString = encodeURIComponent(jsonString);
-      filterString +=
-        filterString === ""
-          ? `?status=${encodedString}`
-          : `&status=${encodedString}`;
-    }
-
-    if (filters?.country.length > 0) {
-      filterString +=
-        filterString === ""
-          ? `?country=${filters?.country.join(",")}`
-          : `&country=${filters?.country.join(",")}`;
-    }
-
-    setFilterString(filterString);
-  }, [filters]);
-
-  const hasActiveFilters = useMemo(() => {
-    return (
-      filters.status.length > 0 ||
-      filters.dateCreated.startDate !== null ||
-      filters.dateCreated.endDate !== null ||
-      filters.country.length > 0
-    );
-  }, [filters]);
+  const hasActiveFilters = useMemo(
+    () => createHasActiveFilters(filters, ["search_term", "reference_number"]),
+    [filters]
+  );
 
   return {
     filters,
     filtersString,
-    updateSearchName,
-    updateCustomerNumber,
+    updateSearchTerm,
+    updateReferenceNumber,
     updateStatus,
-    updateDateCreated,
-    updateCountry,
+    updateDateRange,
+    updateCountryIds,
     resetFilters,
     applyFilters,
     hasActiveFilters,

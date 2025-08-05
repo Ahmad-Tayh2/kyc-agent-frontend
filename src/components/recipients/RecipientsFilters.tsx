@@ -2,23 +2,20 @@ import React from "react";
 import { SearchInput } from "@/components/shared/SearchInput";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
-// import DateRangeSelector from "@/components/shared/DateRangeSelector";
-// import CountrySelector from "@/components/shared/CountrySelector";
-// import { useCountries } from "@/hooks/useAddress";
+import CountrySelector from "@/components/shared/CountrySelector";
+import { useCountries } from "@/hooks/useAddress";
 import type { RecipientsFilterState } from "@/hooks/useRecipientsFilters";
 import type { Customer } from "@/types/customers";
-// import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
 const remitanceMethodOptions = [{ label: "method 1 ", value: "1" }];
+
 interface RecipientsFiltersProps {
   filters: RecipientsFilterState;
   customers: Customer[];
   onUpdateSearchTerm: (name: string) => void;
   onUpdateCustomersIds: (status: string[]) => void;
-  // onUpdateCuntryId: (number: string) => void;
+  onUpdateCountryIds: (countryIds: number[]) => void;
   onUpdateRemittanceMethodIds: (status: string[]) => void;
-  onUpdateIds: (status: string[]) => void;
-  // onUpdateAddedBy: (number: string) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
@@ -28,22 +25,21 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   customers,
   onUpdateSearchTerm,
   onUpdateCustomersIds,
-  // onUpdateCuntryId,
+  onUpdateCountryIds,
   onUpdateRemittanceMethodIds,
-  // onUpdateIds,
-  // onUpdateAddedBy,
   onResetFilters,
   onApplyFilters,
 }) => {
-  // const { data: countriesData = [] } = useCountries();
+  const { data: countriesData = [] } = useCountries();
 
-  // const countries = React.useMemo(() => {
-  //   if (!countriesData) return [];
-  //   return countriesData?.map((country: any) => ({
-  //     code: country?.iso2,
-  //     name: country.name,
-  //   }));
-  // }, [countriesData]);
+  const countries = React.useMemo(() => {
+    if (!countriesData) return [];
+    return countriesData?.map((country: any) => ({
+      id: country.id,
+      code: country?.iso2,
+      name: country.name,
+    }));
+  }, [countriesData]);
 
   const customersOptions = [
     ...customers?.map((customer: Customer) => ({
@@ -60,11 +56,6 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
         onChange={onUpdateSearchTerm}
       />
       <div className="flex items-center justify-start w-fit gap-1 flex-wrap">
-        {/* <SearchInput
-          placeholder="Search by customer's number"
-          value={filters.customerNumber}
-          onChange={onUpdateCustomerNumber}
-        /> */}
         <FilterButton
           onClick={() => {}}
           onResetClick={onResetFilters}
@@ -80,13 +71,13 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
               isSearchable
               checkboxPlacement="right"
             />
-            {/* <CountrySelector
+            <CountrySelector
               label="Country"
               placeholder="Select countries"
               countries={countries}
-              value={filters.country_id ?? []}
-              onChange={onUpdateCuntryId}
-            /> */}
+              value={filters.country_ids ?? []}
+              onChange={onUpdateCountryIds}
+            />
             <MultiSelectDropdown
               label="Remittance method"
               placeholder="All"

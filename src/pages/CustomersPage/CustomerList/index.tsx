@@ -20,11 +20,11 @@ const CustomersPage: React.FC = () => {
   const {
     filters,
     filtersString,
-    updateSearchName,
-    updateCustomerNumber,
+    updateSearchTerm,
+    updateReferenceNumber,
     updateStatus,
-    updateDateCreated,
-    updateCountry,
+    updateDateRange,
+    updateCountryIds,
     resetFilters,
     applyFilters,
   } = useCustomerFilters();
@@ -52,11 +52,11 @@ const CustomersPage: React.FC = () => {
       </div>
       <CustomerFilters
         filters={filters}
-        onUpdateSearchName={updateSearchName}
-        onUpdateCustomerNumber={updateCustomerNumber}
+        onUpdateSearchTerm={updateSearchTerm}
+        onUpdateReferenceNumber={updateReferenceNumber}
         onUpdateStatus={updateStatus}
-        onUpdateDateCreated={updateDateCreated}
-        onUpdateCountry={updateCountry}
+        onUpdateDateRange={updateDateRange}
+        onUpdateCountryIds={updateCountryIds}
         onResetFilters={resetFilters}
         onApplyFilters={applyFilters}
       />

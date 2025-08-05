@@ -4,7 +4,7 @@ import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import StatusLabel from "@/components/shared/StatusLabel";
-import CustomerSectionCard from "./CustomerSectionCard";
+import CustomerSectionCard from "../CustomerSectionCard";
 import { useGetCustomer, useUpdateCustomer } from "@/hooks/useCustomers";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 

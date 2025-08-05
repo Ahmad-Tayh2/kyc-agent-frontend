@@ -5,7 +5,7 @@ import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
 import DateRangeSelector from "@/components/shared/DateRangeSelector";
 import CountrySelector from "@/components/shared/CountrySelector";
 import { useCountries } from "@/hooks/useAddress";
-import type { FilterState } from "@/hooks/useCustomerFilters";
+import type { CustomerFilterState } from "@/hooks/useCustomerFilters";
 import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
 const statusOptions = CUSTOMER_STATUSES.map((status) => ({
@@ -14,26 +14,26 @@ const statusOptions = CUSTOMER_STATUSES.map((status) => ({
 }));
 
 interface CustomerFiltersProps {
-  filters: FilterState;
-  onUpdateSearchName: (name: string) => void;
-  onUpdateCustomerNumber: (number: string) => void;
+  filters: CustomerFilterState;
+  onUpdateSearchTerm: (search_term: string) => void;
+  onUpdateReferenceNumber: (reference_number: string) => void;
   onUpdateStatus: (status: string[]) => void;
-  onUpdateDateCreated: (dateRange: {
+  onUpdateDateRange: (dateRange: {
     startDate: string | null;
     endDate: string | null;
   }) => void;
-  onUpdateCountry: (country: string[]) => void;
+  onUpdateCountryIds: (country_ids: number[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
 
 const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   filters,
-  onUpdateSearchName,
-  onUpdateCustomerNumber,
+  onUpdateSearchTerm,
+  onUpdateReferenceNumber,
   onUpdateStatus,
-  onUpdateDateCreated,
-  onUpdateCountry,
+  onUpdateDateRange,
+  onUpdateCountryIds,
   onResetFilters,
   onApplyFilters,
 }) => {
@@ -42,23 +42,29 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   const countries = React.useMemo(() => {
     if (!countriesData) return [];
     return countriesData?.map((country: any) => ({
+      id: country.id,
       code: country?.iso2,
       name: country.name,
     }));
   }, [countriesData]);
 
+  const dateRangeValue = {
+    startDate: filters.date_from || null,
+    endDate: filters.date_to || null,
+  };
+
   return (
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
         placeholder="Search by customer's name or phone"
-        value={filters.searchName}
-        onChange={onUpdateSearchName}
+        value={filters.search_term ?? ""}
+        onChange={onUpdateSearchTerm}
       />
       <div className="flex items-center justify-start w-fit gap-1 flex-wrap">
         <SearchInput
-          placeholder="Search by customer's number"
-          value={filters.customerNumber}
-          onChange={onUpdateCustomerNumber}
+          placeholder="Search by reference number"
+          value={filters.reference_number ?? ""}
+          onChange={onUpdateReferenceNumber}
         />
         <FilterButton
           onClick={() => {}}
@@ -70,22 +76,22 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
               label="Status"
               placeholder="All"
               options={statusOptions}
-              value={filters.status}
+              value={filters.status ?? []}
               onChange={onUpdateStatus}
               showSelectAll
             />
             <DateRangeSelector
               label="Date"
               placeholder="Select date range"
-              value={filters.dateCreated}
-              onChange={onUpdateDateCreated}
+              value={dateRangeValue}
+              onChange={onUpdateDateRange}
             />
             <CountrySelector
               label="Country"
               placeholder="Select countries"
               countries={countries}
-              value={filters.country}
-              onChange={onUpdateCountry}
+              value={filters.country_ids ?? []}
+              onChange={onUpdateCountryIds}
             />
           </div>
         </FilterButton>

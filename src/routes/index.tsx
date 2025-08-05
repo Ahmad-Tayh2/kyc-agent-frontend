@@ -14,15 +14,16 @@ import CustomerFormPage from "@/pages/CustomerFormPage";
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
-const CustomersPage = lazy(() => import("../pages/CustomersPage"));
+const CustomersPage = lazy(() => import("../pages/CustomersPage/CustomerList"));
 const CustomerEditPage = lazy(
-  () => import("../pages/CustomersPage/CustomerEditPage")
+  () => import("../pages/CustomersPage/CustomerEditPage/CustomerEditPage")
 );
 const CustomerCreatePage = lazy(
   () => import("../pages/CustomersPage/CustomerCreatePage")
 );
 const CustomerCreateFormPage = lazy(
-  () => import("../pages/CustomersPage/CustomerCreateFormPage")
+  () =>
+    import("../pages/CustomersPage/CustomerCreatePage/CustomerCreateFormPage")
 );
 
 const RecipientCreateFormPage = lazy(
