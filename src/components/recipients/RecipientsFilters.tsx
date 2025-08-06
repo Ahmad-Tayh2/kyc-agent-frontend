@@ -5,13 +5,13 @@ import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
 import CountrySelector from "@/components/shared/CountrySelector";
 import { useCountries } from "@/hooks/data/useAddress";
 import type { RecipientsFilterState } from "@/hooks/data/useRecipientsFilters";
-import type { Customer } from "@/types/customers";
+import type { CustomerType } from "@/types/customers";
 
 const remitanceMethodOptions = [{ label: "method 1 ", value: "1" }];
 
 interface RecipientsFiltersProps {
   filters: RecipientsFilterState;
-  customers: Customer[];
+  customers: CustomerType[];
   onUpdateSearchTerm: (name: string) => void;
   onUpdateCustomersIds: (status: string[]) => void;
   onUpdateCountryIds: (countryIds: number[]) => void;
@@ -42,7 +42,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   }, [countriesData]);
 
   const customersOptions = [
-    ...customers?.map((customer: Customer) => ({
+    ...customers?.map((customer: CustomerType) => ({
       label: customer.full_name,
       value: customer.id,
     })),
