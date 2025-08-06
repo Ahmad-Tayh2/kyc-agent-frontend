@@ -4,8 +4,8 @@ import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
 import DateRangeSelector from "@/components/shared/DateRangeSelector";
 import CountrySelector from "@/components/shared/CountrySelector";
-import { useCountries } from "@/hooks/useAddress";
-import type { CustomerFilterState } from "@/hooks/useCustomerFilters";
+import { useCountries } from "@/hooks/data/useAddress";
+import type { CustomerFilterState } from "@/hooks/data/useCustomerFilters";
 import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
 const statusOptions = CUSTOMER_STATUSES.map((status) => ({
@@ -15,7 +15,7 @@ const statusOptions = CUSTOMER_STATUSES.map((status) => ({
 
 interface CustomerFiltersProps {
   filters: CustomerFilterState;
-  onUpdateSearchTerm: (search_term: string) => void;
+  onUpdateSearchTerm: (search: string) => void;
   onUpdateReferenceNumber: (reference_number: string) => void;
   onUpdateStatus: (status: string[]) => void;
   onUpdateDateRange: (dateRange: {
@@ -30,7 +30,7 @@ interface CustomerFiltersProps {
 const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   filters,
   onUpdateSearchTerm,
-  onUpdateReferenceNumber,
+  // onUpdateReferenceNumber,
   onUpdateStatus,
   onUpdateDateRange,
   onUpdateCountryIds,
@@ -57,15 +57,15 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
         placeholder="Search by customer's name or phone"
-        value={filters.search_term ?? ""}
+        value={filters.search ?? ""}
         onChange={onUpdateSearchTerm}
       />
       <div className="flex items-center justify-start w-fit gap-1 flex-wrap">
-        <SearchInput
+        {/* <SearchInput
           placeholder="Search by reference number"
           value={filters.reference_number ?? ""}
           onChange={onUpdateReferenceNumber}
-        />
+        /> */}
         <FilterButton
           onClick={() => {}}
           onResetClick={onResetFilters}

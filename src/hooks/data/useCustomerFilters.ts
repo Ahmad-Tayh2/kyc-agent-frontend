@@ -1,12 +1,13 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import {
   createFilterApply,
   createFilterReset,
   createHasActiveFilters,
 } from "@/utils/filterHelpers";
+import { useDebounce } from "../utils/useDebounce";
 
 export interface CustomerFilterState {
-  search_term?: string;
+  search?: string;
   reference_number?: string;
   status?: string[];
   country_ids?: number[];
@@ -16,19 +17,24 @@ export interface CustomerFilterState {
 
 export const useCustomerFilters = () => {
   const [filters, setFilters] = useState<CustomerFilterState>({
-    search_term: "",
+    search: "",
     reference_number: "",
     status: [],
     country_ids: [],
     date_from: "",
     date_to: "",
   });
+  const debouncedSearch = useDebounce(filters?.search);
 
   const [filtersString, setFilterString] = useState<string>("");
 
+  useEffect(() => {
+    applyFilters();
+  }, [debouncedSearch]);
+
   // Update functions for each filter
-  const updateSearchTerm = useCallback((search_term: string) => {
-    setFilters((prev) => ({ ...prev, search_term }));
+  const updateSearchTerm = useCallback((search: string) => {
+    setFilters((prev) => ({ ...prev, search }));
   }, []);
 
   const updateReferenceNumber = useCallback((reference_number: string) => {
@@ -56,19 +62,19 @@ export const useCustomerFilters = () => {
 
   const resetFilters = useCallback(
     createFilterReset(filters, setFilters, setFilterString, [
-      "search_term",
+      "search",
       "reference_number",
     ]),
     [filters]
   );
 
   const applyFilters = useCallback(
-    createFilterApply(filters, setFilterString),
-    [filters]
+    createFilterApply({ ...filters, search: debouncedSearch }, setFilterString),
+    [filters, debouncedSearch]
   );
 
   const hasActiveFilters = useMemo(
-    () => createHasActiveFilters(filters, ["search_term", "reference_number"]),
+    () => createHasActiveFilters(filters, ["search", "reference_number"]),
     [filters]
   );
 

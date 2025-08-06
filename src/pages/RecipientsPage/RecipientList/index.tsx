@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { useTranslation } from "react-i18next";
-import { useRecipients } from "@/hooks/useRecipients";
+import { useRecipients } from "@/hooks/data/useRecipients";
 import { useNavigate } from "react-router-dom";
 
 import AddRecipientIcon from "@/assets/icons/add-customer.svg?react";
@@ -9,8 +9,8 @@ import ActionButton from "@/components/shared/ActionButton";
 import PageTitle from "@/components/shared/PageTitle";
 import RecipientsFilters from "@/components/recipients/RecipientsFilters";
 import { recipientsColumns } from "@/components/recipients/RecipientsTableColumns";
-import { useRecipientsFilters } from "@/hooks/useRecipientsFilters";
-import { useGetCustomers } from "@/hooks/useCustomers";
+import { useRecipientsFilters } from "@/hooks/data/useRecipientsFilters";
+import { useGetCustomers } from "@/hooks/data/useCustomers";
 import { ROUTES } from "@/constants/routes";
 
 const RecipientsPage: React.FC = () => {

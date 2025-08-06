@@ -1,8 +1,13 @@
-import { useState, useCallback, useMemo } from "react";
-import { createFilterApply, createFilterReset, createHasActiveFilters } from "@/utils/filterHelpers";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import {
+  createFilterApply,
+  createFilterReset,
+  createHasActiveFilters,
+} from "@/utils/filterHelpers";
+import { useDebounce } from "../utils/useDebounce";
 
 export interface RecipientsFilterState {
-  search_term?: string;
+  search?: string;
   customer_ids?: string[];
   country_ids?: number[];
   remittance_method_ids?: string[];
@@ -12,18 +17,23 @@ export interface RecipientsFilterState {
 
 export const useRecipientsFilters = () => {
   const [filters, setFilters] = useState<RecipientsFilterState>({
-    search_term: "",
+    search: "",
     customer_ids: [],
     country_ids: [],
     remittance_method_ids: [],
     ids: [],
     added_by: undefined,
   });
+  const debouncedSearch = useDebounce(filters?.search);
 
   const [filtersString, setFilterString] = useState<string>("");
 
+  useEffect(() => {
+    applyFilters();
+  }, [debouncedSearch]);
+
   const updateSearchTerm = useCallback((term: string) => {
-    setFilters((prev) => ({ ...prev, search_term: term }));
+    setFilters((prev) => ({ ...prev, search: term }));
   }, []);
 
   const updateCustomersIds = useCallback((customer_ids: string[]) => {
@@ -50,17 +60,17 @@ export const useRecipientsFilters = () => {
   }, []);
 
   const resetFilters = useCallback(
-    createFilterReset(filters, setFilters, setFilterString, ['search_term']),
+    createFilterReset(filters, setFilters, setFilterString, ["search"]),
     [filters]
   );
 
   const applyFilters = useCallback(
-    createFilterApply(filters, setFilterString),
-    [filters]
+    createFilterApply({ ...filters, search: debouncedSearch }, setFilterString),
+    [filters, debouncedSearch]
   );
 
   const hasActiveFilters = useMemo(
-    () => createHasActiveFilters(filters, ['search_term']),
+    () => createHasActiveFilters(filters, ["search"]),
     [filters]
   );
 

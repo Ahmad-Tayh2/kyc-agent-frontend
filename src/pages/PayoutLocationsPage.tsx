@@ -1,9 +1,9 @@
 import React from "react";
 import { DataTable } from "@/components/shared/DataTable";
-import { useRemittanceMethods } from "@/hooks/useRemittanceMethod";
+import { useRemittanceMethods } from "@/hooks/data/useRemittanceMethod";
 import type { RemittanceMethod } from "@/types/remittanceMethod/RemittanceMethod";
 import type { PayoutLocation } from "@/types/payoutLocation/PayoutLocation";
-import { usePayoutLocations } from "@/hooks/usePayoutLocation";
+import { usePayoutLocations } from "@/hooks/data/usePayoutLocation";
 
 const PayoutLocationsPage: React.FC = () => {
   const { data: remittanceMethods } = useRemittanceMethods();

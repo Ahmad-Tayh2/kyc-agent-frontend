@@ -7,7 +7,7 @@ import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { cn } from "@/lib/utils";
-import { useCitiesByCountry, useCountries } from "@/hooks/useAddress";
+import { useCitiesByCountry, useCountries } from "@/hooks/data/useAddress";
 import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
 const CustomerBasicDetails = (props: any) => {

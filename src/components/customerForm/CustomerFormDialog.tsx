@@ -5,8 +5,8 @@ import { z } from "zod";
 import { Share2 } from "lucide-react";
 
 import PhoneInput from "@/components/shared/PhoneInput";
-import { useCountries } from "@/hooks/useAddress";
-import { useCreateCustomerForm } from "@/hooks/useCustomerForm";
+import { useCountries } from "@/hooks/data/useAddress";
+import { useCreateCustomerForm } from "@/hooks/data/useCustomerForm";
 import type { CreateCustomerFormRequest } from "@/types/customerForm/CreateCustomerFormRequest";
 import type { Country } from "@/services/address";
 

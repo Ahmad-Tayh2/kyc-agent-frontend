@@ -4,7 +4,10 @@ import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import EditSectionCard from "@/components/shared/EditSectionCard";
-import { useGetRecipient, useUpdateRecipient } from "@/hooks/useRecipients";
+import {
+  useGetRecipient,
+  useUpdateRecipient,
+} from "@/hooks/data/useRecipients";
 import type {
   RecipientDataType,
   RecipientUpdatedDataType,

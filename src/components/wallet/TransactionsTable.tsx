@@ -1,6 +1,6 @@
 import React from "react";
-import { useExtraTransactions } from "@/hooks/useTransactions";
-import { useTransactionFilters } from "@/hooks/useTransactionFilters";
+import { useExtraTransactions } from "@/hooks/data/useTransactions";
+import { useTransactionFilters } from "@/hooks/data/useTransactionFilters";
 import { DataTable } from "@/components/shared/DataTable";
 import StatusLabel from "@/components/shared/StatusLabel";
 import { ExportButton } from "@/components/shared/ExportButton";

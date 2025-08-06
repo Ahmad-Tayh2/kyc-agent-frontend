@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
 import DateRangeSelector from "@/components/shared/DateRangeSelector";
-import type { CustomerFormFilterState } from "@/hooks/useCustomerFormFilters";
+import type { CustomerFormFilterState } from "@/hooks/data/useCustomerFormFilters";
 
 interface CustomerFormFiltersProps {
   filters: CustomerFormFilterState;

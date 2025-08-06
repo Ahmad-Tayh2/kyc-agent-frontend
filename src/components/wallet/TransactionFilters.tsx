@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
 import DateRangeSelector from "@/components/shared/DateRangeSelector";
-import type { TransactionFilterState } from "@/hooks/useTransactionFilters";
-import { useCurrencies } from "@/hooks/useCurrency";
+import type { TransactionFilterState } from "@/hooks/data/useTransactionFilters";
+import { useCurrencies } from "@/hooks/data/useCurrency";
 import type { Currency } from "@/types/currency";
 
 interface TransactionFiltersProps {

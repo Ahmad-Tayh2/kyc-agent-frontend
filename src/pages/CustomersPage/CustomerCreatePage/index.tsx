@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/shared/DataTable";
-import { useSearchCustomer } from "@/hooks/useCustomers";
+import { useSearchCustomer } from "@/hooks/data/useCustomers";
 import { customerColumns } from "@/components/customers/CustomerTableColumns";
 import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";

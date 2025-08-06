@@ -3,8 +3,8 @@ import { SearchInput } from "@/components/shared/SearchInput";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
 import CountrySelector from "@/components/shared/CountrySelector";
-import { useCountries } from "@/hooks/useAddress";
-import type { RecipientsFilterState } from "@/hooks/useRecipientsFilters";
+import { useCountries } from "@/hooks/data/useAddress";
+import type { RecipientsFilterState } from "@/hooks/data/useRecipientsFilters";
 import type { Customer } from "@/types/customers";
 
 const remitanceMethodOptions = [{ label: "method 1 ", value: "1" }];
@@ -52,7 +52,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
         placeholder="Search by customer's name or phone"
-        value={filters.search_term ?? ""}
+        value={filters.search ?? ""}
         onChange={onUpdateSearchTerm}
       />
       <div className="flex items-center justify-start w-fit gap-1 flex-wrap">

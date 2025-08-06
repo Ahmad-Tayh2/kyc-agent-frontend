@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { useLogout } from "@/hooks/useAuth";
+import { useLogout } from "@/hooks/data/useAuth";
 interface TopbarProps {
   onMenuClick?: () => void;
 }
@@ -109,7 +109,7 @@ const UserMenu = () => {
 };
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { t } = useTranslation("global");
-  
+
   return (
     <header className="flex items-center justify-between h-20 px-4 bg-secondary border-b shadow-sm">
       <div className="flex items-center gap-2">

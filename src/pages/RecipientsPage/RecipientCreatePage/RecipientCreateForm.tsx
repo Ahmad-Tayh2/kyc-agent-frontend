@@ -6,7 +6,7 @@ import NextStepArrow from "@/assets/icons/next-step-arrow.svg?react";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
-import { useCountries, useCitiesByCountry } from "@/hooks/useAddress";
+import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
 import RecipientBasicDetails from "./components/RecipientBasicDetails";
 import RecipientRemittanceMethods from "./components/RecipientRemittanceMethods";
 import RecipientBankDetails from "./components/RecipientBankDetails";
