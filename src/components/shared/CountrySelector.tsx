@@ -8,7 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDownIcon, ChevronUpIcon, Search, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Country {
+export interface Country {
+  id: number;
   code: string;
   name: string;
 }
@@ -17,8 +18,8 @@ interface CountrySelectorProps {
   label?: string;
   placeholder?: string;
   countries: Country[];
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: number[];
+  onChange: (value: number[]) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -33,7 +34,8 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   className,
 }) => {
   const { t } = useTranslation("global");
-  const defaultPlaceholder = placeholder || t("modules.components.countrySelector.defaultPlaceholder");
+  const defaultPlaceholder =
+    placeholder || t("modules.components.countrySelector.defaultPlaceholder");
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,10 +56,10 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCountryToggle = (countryCode: string) => {
-    const newValue = value.includes(countryCode)
-      ? value.filter((v) => v !== countryCode)
-      : [...value, countryCode];
+  const handleCountryToggle = (id: number) => {
+    const newValue = value.includes(id)
+      ? value.filter((v) => v !== id)
+      : [...value, id];
     onChange(newValue);
   };
 
@@ -65,7 +67,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
     if (value.length === countries.length) {
       onChange([]);
     } else {
-      onChange(countries.map((country) => country.code));
+      onChange(countries.map((country) => country.id));
     }
   };
 
@@ -75,12 +77,15 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
 
   const getDisplayText = () => {
     if (value.length === 0) return defaultPlaceholder;
-    if (value.length === countries.length) return t("modules.components.countrySelector.all");
+    if (value.length === countries.length)
+      return t("modules.components.countrySelector.all");
     if (value.length === 1) {
-      const country = countries.find((c) => c.code === value[0]);
+      const country = countries.find((c) => c.id === value[0]);
       return country?.name || defaultPlaceholder;
     }
-    return t("modules.components.countrySelector.countriesSelected", { count: value.length });
+    return t("modules.components.countrySelector.countriesSelected", {
+      count: value.length,
+    });
   };
 
   const isAllSelected = value.length === countries.length;
@@ -119,12 +124,12 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
               className="flex items-center space-x-2 py-2 px-1 hover:bg-primary/5  rounded cursor-pointer"
               onClick={handleSelectAll}
             >
-              <Checkbox
-                checked={isAllSelected}
-                className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-              />
               <Globe className="h-4 w-4 text-teal-600" />
               <span className="text-sm text-gray-700">All</span>
+              <Checkbox
+                checked={isAllSelected}
+                className="ml-auto data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+              />
             </div>
 
             {/* Search input */}
@@ -145,13 +150,8 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                 <div
                   key={country.code}
                   className="flex items-center space-x-2 py-2 px-1 hover:bg-primary/5 rounded cursor-pointer"
-                  onClick={() => handleCountryToggle(country.code)}
+                  onClick={() => handleCountryToggle(country.id)}
                 >
-                  <Checkbox
-                    checked={value.includes(country.code)}
-                    onCheckedChange={() => handleCountryToggle(country.code)}
-                    className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                  />
                   <div className="flex items-center space-x-2 flex-1">
                     <span className="text-lg">
                       <ReactCountryFlag
@@ -167,6 +167,11 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                       {country.name}
                     </span>
                   </div>
+                  <Checkbox
+                    checked={value.includes(country.id)}
+                    onCheckedChange={() => handleCountryToggle(country.id)}
+                    className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                  />
                 </div>
               ))}
             </div>

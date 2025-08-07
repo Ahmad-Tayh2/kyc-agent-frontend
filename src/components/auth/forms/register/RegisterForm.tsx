@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useRegisterAndUpload } from "@/hooks/useAuth";
-import { useCountries, useCitiesByCountry } from "@/hooks/useAddress";
+import { useRegisterAndUpload } from "@/hooks/data/useAuth";
+import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 

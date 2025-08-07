@@ -8,12 +8,12 @@ import { useTranslation } from "react-i18next";
 import {
   useValidateCustomerFormToken,
   useSubmitCustomerForm,
-} from "@/hooks/useCustomerForm";
+} from "@/hooks/data/useCustomerForm";
 import {
   useCountries,
   useCitiesByCountry,
   useStatesByCountry,
-} from "@/hooks/useAddress";
+} from "@/hooks/data/useAddress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

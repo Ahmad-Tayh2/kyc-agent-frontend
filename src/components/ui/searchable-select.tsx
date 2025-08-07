@@ -43,11 +43,6 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   useEffect(() => {
     const option = options.find((opt) => opt.value === value);
     setSelectedOption(option || null);
-    if (value && options) {
-      console.log(" options = ", options);
-      console.log(" value = ", value);
-      console.log(" option found = ", option);
-    }
   }, [value, options]);
 
   // Filter options based on search term

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useResetPassword } from "@/hooks/useAuth";
+import { useResetPassword } from "@/hooks/data/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useTranslation } from "react-i18next";

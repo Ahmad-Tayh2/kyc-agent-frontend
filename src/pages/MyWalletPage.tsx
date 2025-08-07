@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useWallet, useDeleteCurrency } from "@/hooks/useWallet";
+import { useWallet, useDeleteCurrency } from "@/hooks/data/useWallet";
 import { CurrencyCard } from "@/components/CurrencyCard";
 import { ExtraTransactionsTable } from "@/components/wallet/TransactionsTable";
 import ExchangeCurrenciesDialog from "@/components/wallet/ExchangeCurrenciesDialog";

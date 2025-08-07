@@ -6,8 +6,10 @@ import SearchableSelect from "@/components/ui/searchable-select";
 import DatePicker from "@/components/shared/DatePicker";
 import PhoneInput from "@/components/shared/PhoneInput";
 import FileUpload from "./FileUpload";
-import { useCountries, useCitiesByCountry } from "@/hooks/useAddress";
-import { useAgentProfile /*, useUpdateAgentProfile*/ } from "@/hooks/useAgent";
+import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
+import {
+  useAgentProfile /*, useUpdateAgentProfile*/,
+} from "@/hooks/data/useAgent";
 import { useTranslation } from "react-i18next";
 
 interface EditableFormProps {

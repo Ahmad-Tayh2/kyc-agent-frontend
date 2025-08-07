@@ -10,19 +10,7 @@ import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
-
-export type Customer = {
-  id: string;
-  reference_number: string;
-  first_name: string;
-  last_name: string;
-  country: {
-    name: string;
-  };
-  phone_number: string;
-  created_at: string;
-  status: string;
-};
+import type { CustomerType } from "@/types/customers";
 
 const menu = (customerId: string | number) => {
   return [
@@ -45,7 +33,7 @@ const menu = (customerId: string | number) => {
   ];
 };
 
-export const useCustomerColumns = (): ColumnDef<Customer>[] => {
+export const customerColumns = (): ColumnDef<CustomerType>[] => {
   return useMemo(
     () => [
       {

@@ -7,7 +7,7 @@ import {
   useCurrencies,
   useExchangeMoney,
   useExchangeMoneyPreview,
-} from "@/hooks/useCurrency";
+} from "@/hooks/data/useCurrency";
 import type { WalletCurrency } from "@/types/wallet";
 import type { ExchangePreviewPayload } from "@/types/currency";
 import { Info } from "lucide-react";

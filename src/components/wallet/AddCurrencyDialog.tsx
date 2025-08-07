@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCurrencies } from "@/hooks/useCurrency";
-import { useAddCurrency } from "@/hooks/useWallet";
+import { useCurrencies } from "@/hooks/data/useCurrency";
+import { useAddCurrency } from "@/hooks/data/useWallet";
 import type { WalletCurrency } from "@/types/wallet";
 import CurrencyInput from "@/components/CurrencyInput";
 

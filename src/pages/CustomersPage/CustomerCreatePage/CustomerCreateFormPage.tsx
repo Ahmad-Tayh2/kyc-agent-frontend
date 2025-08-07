@@ -14,8 +14,8 @@ import {
   useCreateCustomer,
   useUploadIdentityDocuments,
   useUploadIncomeDocuments,
-} from "@/hooks/useCustomers";
-import CustomerBasicDetails from "./CustomerBasicDetails";
+} from "@/hooks/data/useCustomers";
+import CustomerBasicDetails from "./components/CustomerBasicDetails";
 import DatePicker from "@/components/shared/DatePicker";
 import { ROUTES } from "@/constants/routes";
 import { AlertCircle, Upload } from "lucide-react";

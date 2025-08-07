@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable } from "../components/shared/DataTable";
-import { useCustomerForm } from "@/hooks/useCustomerForm";
+import { useCustomerForm } from "@/hooks/data/useCustomerForm";
 import type { CustomerForm } from "@/types/customerForm/CustomerForm";
 import copyIcon from "@/assets/icons/clipboard.svg";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { useState } from "react";
 import StatusLabel from "@/components/shared/StatusLabel";
 import CustomerFormDialogWrapper from "@/components/customerForm/CustomerFormDialogWrapper";
 import CustomerFormFilters from "@/components/customerForm/CustomerFormFilters";
-import { useCustomerFormFilters } from "@/hooks/useCustomerFormFilters";
+import { useCustomerFormFilters } from "@/hooks/data/useCustomerFormFilters";
 
 type CustomerFormTableData = {
   id: number;

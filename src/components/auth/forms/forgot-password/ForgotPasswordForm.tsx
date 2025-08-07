@@ -2,7 +2,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useForgotPassword } from "@/hooks/useAuth";
+import { useForgotPassword } from "@/hooks/data/useAuth";
 import { useTranslation } from "react-i18next";
 
 interface ForgotPasswordFormProps {
@@ -59,7 +59,9 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6 my-70">
       {/* Header Section */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">{t("modules.forgotPassword.title")}</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {t("modules.forgotPassword.title")}
+        </h1>
         <p className="text-muted-foreground mb-6">
           {t("modules.forgotPassword.subtitle")}
         </p>
@@ -99,7 +101,9 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
         className="w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]"
         disabled={status === "pending"}
       >
-        {status === "pending" ? t("common.messages.sending") : t("common.buttons.sendResetLink")}
+        {status === "pending"
+          ? t("common.messages.sending")
+          : t("common.buttons.sendResetLink")}
       </Button>
 
       <p className="text-muted-foreground">

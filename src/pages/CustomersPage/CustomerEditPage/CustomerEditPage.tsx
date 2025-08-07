@@ -4,15 +4,18 @@ import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import StatusLabel from "@/components/shared/StatusLabel";
-import CustomerSectionCard from "./CustomerSectionCard";
-import { useGetCustomer, useUpdateCustomer } from "@/hooks/useCustomers";
+import { useGetCustomer, useUpdateCustomer } from "@/hooks/data/useCustomers";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
+import EditSectionCard from "@/components/shared/EditSectionCard";
+import CustomerBasicDetails from "../CustomerCreatePage/components/CustomerBasicDetails";
 
 const CustomerEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useGetCustomer(id!);
   const [formData, setFormData] = useState<any>({});
+  const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
+
   const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
     useUpdateCustomer(id!);
 
@@ -105,13 +108,20 @@ const CustomerEditPage: React.FC = () => {
           </div>
         )}
       </div>
-      <CustomerSectionCard
-        formData={formData}
-        onChange={handleInputChange}
-        onDateChange={handleDateChange}
+      <EditSectionCard
+        sectionTitle="Customer Bio"
         onSave={handleSave}
         loading={isUpdateCustomerPending}
-      />
+        editMode={basicInfoEditMode}
+        setEditMode={setBasicInfoEditMode}
+      >
+        <CustomerBasicDetails
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleDateChange={handleDateChange}
+          editMode={basicInfoEditMode}
+        />
+      </EditSectionCard>
     </div>
   );
 };

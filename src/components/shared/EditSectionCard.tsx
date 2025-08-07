@@ -1,37 +1,34 @@
-import React, { useState } from "react";
+import React, { type ReactNode } from "react";
 import EditIcon from "@/assets/icons/edit-icon.svg?react";
 import SaveIcon from "@/assets/icons/save-icon.svg?react";
-import CustomerBasicDetails from "./CustomerBasicDetails";
 
-interface CustomerSectionCardProps {
-  formData: any;
-  onChange: (field: string, value: any) => void;
-  onDateChange: (field: string, value: any) => void;
+interface EditSectionCardProps {
+  sectionTitle?: string;
   onSave: () => void;
   loading?: boolean;
+  editMode?: boolean;
+  setEditMode?: (editMode: boolean) => void;
+  checkOtherSectionEditMode?: boolean;
+  children?: ReactNode;
 }
 
-const CustomerSectionCard: React.FC<CustomerSectionCardProps> = ({
-  formData,
-  onChange,
-  onDateChange,
+const EditSectionCard: React.FC<EditSectionCardProps> = ({
+  sectionTitle,
   onSave,
   loading = false,
+  editMode,
+  setEditMode,
+  checkOtherSectionEditMode,
+  children,
 }) => {
-  const [editMode, setEditMode] = useState(false);
-  const handleEdit = () => setEditMode(true);
-  const handleSave = () => {
-    onSave();
-    setEditMode(false);
-  };
-
+  const handleEdit = () => !checkOtherSectionEditMode && setEditMode?.(true);
   return (
     <div className="bg-white rounded-lg border border-[#E7EFEF]">
       <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] p-5">
-        <h2 className="text-lg font-semibold">Customer Bio</h2>
+        <h2 className="text-lg font-semibold">{sectionTitle}</h2>
         {editMode ? (
           <button
-            onClick={handleSave}
+            onClick={onSave}
             className="cursor-pointer text-white text-[12px] flex items-center gap-1 px-2 py-1 rounded-full border border-primary bg-primary"
             disabled={loading}
           >
@@ -48,14 +45,9 @@ const CustomerSectionCard: React.FC<CustomerSectionCardProps> = ({
           </button>
         )}
       </div>
-      <CustomerBasicDetails
-        formData={formData}
-        handleInputChange={onChange}
-        handleDateChange={onDateChange}
-        editMode={editMode}
-      />
+      {children}
     </div>
   );
 };
 
-export default CustomerSectionCard;
+export default EditSectionCard;

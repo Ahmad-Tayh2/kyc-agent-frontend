@@ -3,7 +3,7 @@ import React, { useState } from "react";
 // import { z } from "zod";
 // import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { useVerifyOtp } from "@/hooks/useAuth";
+import { useVerifyOtp } from "@/hooks/data/useAuth";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useTranslation } from "react-i18next";
@@ -108,7 +108,9 @@ const TwoFactorForm: React.FC<{
         </p>
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">{t("modules.twoFactor.enterCode")}</label>
+        <label className="block text-sm font-medium mb-2">
+          {t("modules.twoFactor.enterCode")}
+        </label>
         <InputOTP
           autoFocus
           maxLength={6}
@@ -172,7 +174,9 @@ const TwoFactorForm: React.FC<{
         className="w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]"
         disabled={status === "pending"}
       >
-        {status === "pending" ? t("modules.twoFactor.verifying") : t("modules.twoFactor.verify")}
+        {status === "pending"
+          ? t("modules.twoFactor.verifying")
+          : t("modules.twoFactor.verify")}
       </Button>
     </form>
   );

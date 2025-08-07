@@ -7,7 +7,12 @@ export const ROUTES = {
     CREATE_FORM: "/customers/create/form",
     EDIT: (customerId: string | number) => `/customers/edit/${customerId}`,
   },
-  RECIPIENTS: "/recipients",
+  RECIPIENTS: {
+    LIST: "/recipients",
+    CREATE: "/recipients/create",
+    CREATE_FORM: "/recipients/create/form",
+    EDIT: (recipientId: string | number) => `/recipients/edit/${recipientId}`,
+  },
   PAYOUT_LOCATIONS: "/payout-locations",
   TRANSFERS: "/transfers",
   COMMISSION_EARNED: "/commission-earned",

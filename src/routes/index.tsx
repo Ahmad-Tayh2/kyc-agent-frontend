@@ -14,17 +14,31 @@ import CustomerFormPage from "@/pages/CustomerFormPage";
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
-const CustomersPage = lazy(() => import("../pages/CustomersPage"));
+const CustomersPage = lazy(() => import("../pages/CustomersPage/CustomerList"));
 const CustomerEditPage = lazy(
-  () => import("../pages/CustomersPage/CustomerEditPage")
+  () => import("../pages/CustomersPage/CustomerEditPage/CustomerEditPage")
 );
 const CustomerCreatePage = lazy(
   () => import("../pages/CustomersPage/CustomerCreatePage")
 );
 const CustomerCreateFormPage = lazy(
-  () => import("../pages/CustomersPage/CustomerCreateFormPage")
+  () =>
+    import("../pages/CustomersPage/CustomerCreatePage/CustomerCreateFormPage")
 );
-const RecipientsPage = lazy(() => import("../pages/RecipientsPage"));
+
+const RecipientCreateFormPage = lazy(
+  () =>
+    import("../pages/RecipientsPage/RecipientCreatePage/RecipientCreateForm")
+);
+const RecipientsPage = lazy(
+  () => import("../pages/RecipientsPage/RecipientList")
+);
+const RecipientEditPage = lazy(
+  () => import("../pages/RecipientsPage/RecipientEditPage")
+);
+const RecipientCreatePage = lazy(
+  () => import("../pages/RecipientsPage/RecipientCreatePage")
+);
 const PayoutLocationsPage = lazy(() => import("../pages/PayoutLocationsPage"));
 const TransfersPage = lazy(() => import("../pages/TransfersPage"));
 const CommissionEarnedPage = lazy(
@@ -46,13 +60,7 @@ const SupportPage = lazy(() => import("../pages/SupportPage"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
 
 export const AppRoutes = () => (
-  <Suspense
-    fallback={
-      <div className="h-screen w-screen">
-        <Loader />
-      </div>
-    }
-  >
+  <Suspense fallback={<Loader className="h-screen w-screen" />}>
     <Routes>
       {/* Public customer form route */}
       <Route path="/customer-form/:token" element={<CustomerFormPage />} />
@@ -73,6 +81,7 @@ export const AppRoutes = () => (
             path={ROUTES.SEND_REMITTANCE}
             element={<SendRemittancePage />}
           />
+          {/* customers routes */}
           <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
           <Route
             path={ROUTES.CUSTOMERS.EDIT(":id")}
@@ -86,7 +95,21 @@ export const AppRoutes = () => (
             path={ROUTES.CUSTOMERS.CREATE_FORM}
             element={<CustomerCreateFormPage />}
           />
-          <Route path={ROUTES.RECIPIENTS} element={<RecipientsPage />} />
+          {/* recipients routes */}
+          <Route path={ROUTES.RECIPIENTS.LIST} element={<RecipientsPage />} />
+          <Route
+            path={ROUTES.RECIPIENTS.EDIT(":id")}
+            element={<RecipientEditPage />}
+          />
+          <Route
+            path={ROUTES.RECIPIENTS.CREATE}
+            element={<RecipientCreatePage />}
+          />
+          <Route
+            path={ROUTES.RECIPIENTS.CREATE_FORM}
+            element={<RecipientCreateFormPage />}
+          />
+
           <Route
             path={ROUTES.PAYOUT_LOCATIONS}
             element={<PayoutLocationsPage />}

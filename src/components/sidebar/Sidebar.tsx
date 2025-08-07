@@ -43,7 +43,7 @@ export const Sidebar: React.FC<{
     },
     {
       label: t("modules.navigation.recipients"),
-      to: ROUTES.RECIPIENTS,
+      to: ROUTES.RECIPIENTS.LIST,
       icon: <RecipientsIcon color="inherit" />,
     },
     {
@@ -96,7 +96,11 @@ export const Sidebar: React.FC<{
       to: ROUTES.PAYMENT_LINKS,
       icon: <PaymentLinksIcon color="inherit" />,
     },
-    { label: t("modules.navigation.help"), to: ROUTES.HELP, icon: <HelpIcon color="inherit" /> },
+    {
+      label: t("modules.navigation.help"),
+      to: ROUTES.HELP,
+      icon: <HelpIcon color="inherit" />,
+    },
     {
       label: t("modules.navigation.support"),
       to: ROUTES.SUPPORT,

@@ -11,7 +11,7 @@ import {
 import { ROUTES } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 
-export function useGetCustomers(filters: string) {
+export function useGetCustomers(filters?: string) {
   return useQuery({
     queryKey: ["get-customers", filters],
     queryFn: () => customersService.getCustomers(filters),

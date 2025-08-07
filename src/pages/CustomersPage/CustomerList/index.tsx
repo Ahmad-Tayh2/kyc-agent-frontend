@@ -1,30 +1,30 @@
 import { useMemo } from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { useTranslation } from "react-i18next";
-import { useGetCustomers } from "@/hooks/useCustomers";
+import { useGetCustomers } from "@/hooks/data/useCustomers";
 import { useNavigate } from "react-router-dom";
 
 import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
 import ActionButton from "@/components/shared/ActionButton";
 import PageTitle from "@/components/shared/PageTitle";
 import CustomerFilters from "@/components/customers/CustomerFilters";
-import { useCustomerColumns } from "@/components/customers/CustomerTableColumns";
-import { useCustomerFilters } from "@/hooks/useCustomerFilters";
+import { customerColumns } from "@/components/customers/CustomerTableColumns";
+import { useCustomerFilters } from "@/hooks/data/useCustomerFilters";
 import { ROUTES } from "@/constants/routes";
 
 const CustomersPage: React.FC = () => {
   const [t] = useTranslation("global");
   const navigate = useNavigate();
-  const columns = useCustomerColumns();
+  const columns = customerColumns();
 
   const {
     filters,
     filtersString,
-    updateSearchName,
-    updateCustomerNumber,
+    updateSearchTerm,
+    updateReferenceNumber,
     updateStatus,
-    updateDateCreated,
-    updateCountry,
+    updateDateRange,
+    updateCountryIds,
     resetFilters,
     applyFilters,
   } = useCustomerFilters();
@@ -52,11 +52,11 @@ const CustomersPage: React.FC = () => {
       </div>
       <CustomerFilters
         filters={filters}
-        onUpdateSearchName={updateSearchName}
-        onUpdateCustomerNumber={updateCustomerNumber}
+        onUpdateSearchTerm={updateSearchTerm}
+        onUpdateReferenceNumber={updateReferenceNumber}
         onUpdateStatus={updateStatus}
-        onUpdateDateCreated={updateDateCreated}
-        onUpdateCountry={updateCountry}
+        onUpdateDateRange={updateDateRange}
+        onUpdateCountryIds={updateCountryIds}
         onResetFilters={resetFilters}
         onApplyFilters={applyFilters}
       />
