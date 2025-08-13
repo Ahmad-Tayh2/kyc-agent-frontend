@@ -14,16 +14,23 @@ interface RecipientBankDetailsProps {
       iban: string;
       bic_code: string;
       bank_address: string;
+      currency_id: string;
+      extra_address_details: string;
+      state_id: string;
     };
   };
   handleBankDetailsChange: (field: string, value: any) => void;
   accountTypeOptions: Array<{ label: string; value: string }>;
+  currencyOptions: Array<{ label: string; value: string }>;
+  stateOptions: Array<{ label: string; value: string }>;
 }
 
 const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
   formData,
   handleBankDetailsChange,
   accountTypeOptions,
+  currencyOptions,
+  stateOptions,
 }) => {
   return (
     <div className="space-y-6 p-5">
@@ -112,6 +119,43 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
             onChange={(value) => handleBankDetailsChange("account_type", value)}
             placeholder="Select the account type"
             required
+          />
+        </div>
+
+        {/* Currency and State in a row */}
+        <div className="flex flex-col gap-1">
+          <SearchableSelect
+            label="Currency"
+            options={currencyOptions}
+            value={formData.bank_details.currency_id || ""}
+            onChange={(value) => handleBankDetailsChange("currency_id", value)}
+            placeholder="Select currency"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <SearchableSelect
+            label="State/Province"
+            options={stateOptions}
+            value={formData.bank_details.state_id || ""}
+            onChange={(value) => handleBankDetailsChange("state_id", value)}
+            placeholder="Select state/province"
+          />
+        </div>
+
+        {/* Extra Address Details field */}
+        <div className="flex flex-col gap-1">
+          <Label className="text-[14px]" htmlFor="extra_address_details">
+            Extra Address Details
+          </Label>
+          <Input
+            id="extra_address_details"
+            placeholder="e.g., Apt 4B, Floor 2"
+            value={formData.bank_details.extra_address_details || ""}
+            onChange={(e) =>
+              handleBankDetailsChange("extra_address_details", e.target.value)
+            }
           />
         </div>
 

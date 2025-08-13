@@ -3,6 +3,7 @@ import { toast } from "sonner";
 
 import { recipientsService } from "@/services/recipients";
 import type { RecipientUpdatedDataType } from "@/types/recipients";
+import type { RecipientCreateData, RecipientSearchParams } from "@/services/recipients";
 import type { AxiosError } from "axios";
 import type { ErrorResponseData } from "@/lib/axiosInstance";
 // import { ROUTES } from "@/constants/routes";
@@ -30,6 +31,28 @@ export function useUpdateRecipient(id: string | number) {
       recipientsService.updateCustomer(id, data),
     onSuccess: () => {
       toast.success("Recipient updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["get-recipients"] });
+    },
+    onError: (error: AxiosError<ErrorResponseData>) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+}
+
+export function useSearchRecipient() {
+  return useMutation({
+    mutationFn: (params: RecipientSearchParams) =>
+      recipientsService.searchRecipient(params),
+  });
+}
+
+export function useCreateRecipient() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: RecipientCreateData) =>
+      recipientsService.createRecipient(data),
+    onSuccess: () => {
+      toast.success("Recipient created successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-recipients"] });
     },
     onError: (error: AxiosError<ErrorResponseData>) => {

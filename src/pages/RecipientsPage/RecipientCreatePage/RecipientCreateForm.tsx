@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
@@ -6,12 +6,16 @@ import NextStepArrow from "@/assets/icons/next-step-arrow.svg?react";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
-import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
+import { useCountries, useCitiesByCountry, useStatesByCountry } from "@/hooks/data/useAddress";
+import { useCreateRecipient } from "@/hooks/data/useRecipients";
+import { useCreateBankAccount } from "@/hooks/data/useBankAccounts";
+import { useCurrencies } from "@/hooks/data/useCurrency";
 import RecipientBasicDetails from "./components/RecipientBasicDetails";
-import RecipientRemittanceMethods from "./components/RecipientRemittanceMethods";
-import RecipientBankDetails from "./components/RecipientBankDetails";
 
-type FormStep = "basic" | "remittance" | "bank";
+import RecipientBankDetails from "./components/RecipientBankDetails";
+import { useGetCustomers } from "@/hooks/data/useCustomers";
+
+type FormStep = "basic" | "bank";
 
 interface RecipientFormData {
   // Basic Details
@@ -29,32 +33,6 @@ interface RecipientFormData {
   country_phone_code: string;
   phone_number: string;
 
-  // Mobile Wallet Import
-  import_mobile_wallet: boolean;
-  mobile_wallet_type: string;
-  mobile_wallet_number: string;
-  wallet_account_number: string;
-
-  // Remittance Methods
-  remittance_methods: string[];
-  cash_pickup_addresses: Array<{
-    id: string;
-    name: string;
-    phone: string;
-    address: string;
-    selected: boolean;
-  }>;
-  wallet_accounts: Array<{
-    id: string;
-    wallet_type: string;
-    phone: string;
-    account_number: string;
-    selected: boolean;
-  }>;
-  search_available_wallets: boolean;
-  search_mobile_number: string;
-  search_wallet_account: string;
-
   // Bank Details
   bank_details: {
     bank_name: string;
@@ -64,6 +42,9 @@ interface RecipientFormData {
     iban: string;
     bic_code: string;
     bank_address: string;
+    currency_id: string;
+    extra_address_details: string;
+    state_id: string;
   };
 }
 
@@ -85,32 +66,6 @@ const RecipientCreateForm: React.FC = () => {
     gender: "",
     country_phone_code: "",
     phone_number: "",
-    import_mobile_wallet: false,
-    mobile_wallet_type: "",
-    mobile_wallet_number: "",
-    wallet_account_number: "",
-    remittance_methods: [],
-    cash_pickup_addresses: [
-      {
-        id: "1",
-        name: "Ahmed Tayeh",
-        phone: "+97 70876547678",
-        address: "123, Street name, city name, country name, 770017",
-        selected: true,
-      },
-    ],
-    wallet_accounts: [
-      {
-        id: "1",
-        wallet_type: "ZAAD",
-        phone: "+9784948584949",
-        account_number: "45678647435678",
-        selected: true,
-      },
-    ],
-    search_available_wallets: false,
-    search_mobile_number: "",
-    search_wallet_account: "",
     bank_details: {
       bank_name: "",
       account_number: "",
@@ -119,11 +74,26 @@ const RecipientCreateForm: React.FC = () => {
       iban: "",
       bic_code: "",
       bank_address: "",
+      currency_id: "",
+      extra_address_details: "",
+      state_id: "",
     },
   });
 
+  const { mutateAsync: createRecipient, isPending: isCreatingRecipient } = useCreateRecipient();
+  const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } = useCreateBankAccount();
+
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(formData.country_id || "");
+  const { data: states = [] } = useStatesByCountry(formData.country_id || null);
+  const { data: currencies = [] } = useCurrencies();
+  const { data: customersResponse} = useGetCustomers("");
+
+  // Memoize customers data to prevent unnecessary re-renders
+  const customersData = useMemo(() => {
+    return customersResponse?.data || [];
+  }, [customersResponse?.data]);
+
 
   const countryOptions =
     countries?.map((country: any) => ({
@@ -137,6 +107,12 @@ const RecipientCreateForm: React.FC = () => {
       label: city.name,
     })) || [];
 
+  const stateOptions =
+    states?.map((state: any) => ({
+      value: state.id,
+      label: state.name,
+    })) || [];
+
   const countryPhoneOptions =
     countries?.map((country: any) => ({
       value: country.phone_code,
@@ -146,15 +122,10 @@ const RecipientCreateForm: React.FC = () => {
     })) || [];
 
   const customerOptions = [
-    { value: "1", label: "Mohammad Imran (my self)" },
-    { value: "2", label: "Hassan Ali" },
+   ...customersData?.map((customer: any) => ({label: customer.full_name, value: customer.id}))
   ];
 
-  const mobileWalletOptions = [
-    { value: "zaad", label: "ZAAD" },
-    { value: "e_dahab", label: "E-Dahab" },
-    { value: "waafi", label: "Waafi" },
-  ];
+
 
   const accountTypeOptions = [
     { label: "Savings", value: "savings" },
@@ -162,6 +133,12 @@ const RecipientCreateForm: React.FC = () => {
     { label: "Current", value: "current" },
     { label: "Business", value: "business" },
   ];
+
+  const currencyOptions =
+    currencies?.map((currency: any) => ({
+      label: `${currency.code} - ${currency.name}`,
+      value: currency.id.toString(),
+    })) || [];
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({
@@ -205,13 +182,8 @@ const RecipientCreateForm: React.FC = () => {
     switch (step) {
       case "basic":
         return true;
-      case "remittance":
-        return completedSteps.includes("basic");
       case "bank":
-        return (
-          completedSteps.includes("basic") &&
-          completedSteps.includes("remittance")
-        );
+        return completedSteps.includes("basic");
       default:
         return false;
     }
@@ -223,25 +195,66 @@ const RecipientCreateForm: React.FC = () => {
     }
 
     if (currentStep === "basic") {
-      setCurrentStep("remittance");
-    } else if (currentStep === "remittance") {
       setCurrentStep("bank");
     }
   };
 
-  const handleBack = () => {
-    if (currentStep === "remittance") {
-      setCurrentStep("basic");
-    } else if (currentStep === "bank") {
-      setCurrentStep("remittance");
-    }
-  };
+
 
   const handleSubmit = async () => {
     try {
-      console.log("Submitting recipient data:", formData);
-      // TODO: Implement API call to create recipient
-      // await createRecipient(formData);
+      // Step 1: Create recipient with basic data (sync)
+      const recipientResponse = await createRecipient({
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        date_of_birth: formData.date_of_birth,
+        gender: formData.gender,
+        country_phone_code: formData.country_phone_code,
+        phone_number: formData.phone_number,
+        address: {
+          street_name: formData.street_name,
+          house_number: formData.house_number,
+          postal_code: formData.postal_code,
+          extra_address_details: formData.bank_details.extra_address_details,
+          city_id: parseInt(formData.city_id),
+          state_id: formData.bank_details.state_id && formData.bank_details.state_id !== "" ? parseInt(formData.bank_details.state_id) : undefined,
+          country_id: parseInt(formData.country_id),
+        },
+        customer_ids: formData.customer_id ? [parseInt(formData.customer_id)] : [],
+        remittance_methods: [],
+      });
+
+      const recipientId = recipientResponse.data?.id;
+      if (!recipientId) {
+        throw new Error("Recipient ID not received from server");
+      }
+
+      // Step 2: Create bank account (async) - only if bank details are provided
+      if (formData.bank_details.bank_name && formData.bank_details.account_number) {
+        const bankAccountData = {
+          accountable_type: "Recipient" as const,
+          accountable_id: recipientId,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          street_name: formData.street_name,
+          house_number: formData.house_number,
+          postal_code: formData.postal_code,
+          extra_address_details: formData.bank_details.extra_address_details,
+          city_id: parseInt(formData.city_id),
+          state_id: formData.bank_details.state_id && formData.bank_details.state_id !== "" ? parseInt(formData.bank_details.state_id) : undefined,
+          country_id: parseInt(formData.country_id),
+          bank_name: formData.bank_details.bank_name,
+          account_number: formData.bank_details.account_number,
+          swift_code: formData.bank_details.swift_code,
+          currency_id: parseInt(formData.bank_details.currency_id),
+          iban_code: formData.bank_details.iban,
+          bank_address: formData.bank_details.bank_address,
+        };
+
+        await createBankAccount(bankAccountData);
+      }
+
       navigate(ROUTES.RECIPIENTS.LIST);
     } catch (error) {
       console.error("Error creating recipient:", error);
@@ -260,11 +273,6 @@ const RecipientCreateForm: React.FC = () => {
     },
     {
       number: 2,
-      title: "Remittance Methods",
-      name: "remittance" as FormStep,
-    },
-    {
-      number: 3,
       title: "Bank Details (Optional)",
       name: "bank" as FormStep,
     },
@@ -300,7 +308,7 @@ const RecipientCreateForm: React.FC = () => {
               </div>
               <span className="ml-2 font-medium">{step.title}</span>
             </div>
-            {step.number < 3 && <NextStepArrow />}
+            {step.number < 2 && <NextStepArrow />}
           </React.Fragment>
         ))}
       </div>
@@ -334,17 +342,8 @@ const RecipientCreateForm: React.FC = () => {
             handleInputChange={handleInputChange}
             handleDateChange={handleDateChange}
             customerOptions={customerOptions}
-            mobileWalletOptions={mobileWalletOptions}
             countryOptions={countryOptions}
             cityOptions={cityOptions}
-            countryPhoneOptions={countryPhoneOptions}
-          />
-        )}
-
-        {currentStep === "remittance" && (
-          <RecipientRemittanceMethods
-            formData={formData}
-            handleInputChange={handleInputChange}
             countryPhoneOptions={countryPhoneOptions}
           />
         )}
@@ -354,14 +353,14 @@ const RecipientCreateForm: React.FC = () => {
             formData={formData}
             handleBankDetailsChange={handleBankDetailsChange}
             accountTypeOptions={accountTypeOptions}
+            currencyOptions={currencyOptions}
+            stateOptions={stateOptions}
           />
         )}
 
         {/* Action Buttons */}
         <div className="flex justify-end items-end gap-4 m-5 pt-5 border-t-1">
-          {currentStep === "remittance" && (
-            <ActionButton title="skip step" onClick={handleBack} type="link" />
-          )}
+       
           <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
 
           {currentStep === "bank" ? (
@@ -369,7 +368,7 @@ const RecipientCreateForm: React.FC = () => {
               title="save & continue"
               onClick={handleSubmit}
               buttonProps={{
-                disabled: false,
+                disabled: isCreatingRecipient || isCreatingBankAccount,
               }}
             />
           ) : (

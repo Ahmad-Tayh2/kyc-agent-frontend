@@ -9,7 +9,7 @@ import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
 
-export type Customer = {
+export type Recipient = {
   id: string;
   reference_number: string;
   first_name: string;
@@ -43,12 +43,12 @@ const menu = (recipientId: string | number) => {
   ];
 };
 
-export const recipientsColumns = (): ColumnDef<Customer>[] => {
+export const recipientsColumns = (): ColumnDef<Recipient>[] => {
   return useMemo(
     () => [
       {
         accessorKey: "reference_number",
-        header: "Customer no.",
+        header: "Recipient no.",
       },
       {
         accessorKey: "first_name",
@@ -100,10 +100,10 @@ export const recipientsColumns = (): ColumnDef<Customer>[] => {
         header: "Actions",
         enableHiding: false,
         cell: ({ row }) => {
-          const customer = row.original;
+          const recipient = row.original;
           return (
             <DropdownMenuOptions
-              menu={menu(customer.id)}
+              menu={menu(recipient.id)}
               trigger={
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <MoreHorizontal />
