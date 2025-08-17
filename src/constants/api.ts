@@ -39,10 +39,14 @@ export const API_URLS = {
   },
   recipients: {
     get: (filters: string) => `${baseUrl}/recipients${filters}`,
-    search: `${baseUrl}/recipients/search`,
+    search: (query: string) => `${baseUrl}/recipients/search?${query}`,
     create: `${baseUrl}/recipients`,
     getById: (id: string | number) => `${baseUrl}/recipients/${id}`,
     update: (id: string | number) => `${baseUrl}/recipients/${id}`,
+  },
+
+  bankAccounts: {
+    create: `${baseUrl}/bank-accounts`,
   },
   remittanceMethods: {
     get: () => `${baseUrl}/remittance-methods`,
