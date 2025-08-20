@@ -69,12 +69,16 @@ function addOneDay(dateString: string) {
 
 export function buildFilterString(filters: Record<string, any>): string {
   let filterString = "";
-
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "") {
       if (Array.isArray(value) && value.length > 0) {
         // Use array format for specific fields that should be sent as arrays
-        if (key === 'status' || key === 'customer_ids' || key === 'remittance_method_ids' || key === 'ids' || key === 'country_ids') {
+        if (
+          key === "status" ||
+          key === "remittance_method_ids" ||
+          key === "ids" ||
+          key === "countries"
+        ) {
           filterString = appendArrayQueryParam(filterString, key, value);
         } else {
           // For other arrays, use JSON format

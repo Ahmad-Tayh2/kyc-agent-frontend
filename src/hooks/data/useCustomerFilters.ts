@@ -10,7 +10,7 @@ export interface CustomerFilterState {
   search?: string;
   reference_number?: string;
   status?: string[];
-  country_ids?: number[];
+  countries?: number[];
   date_from?: string;
   date_to?: string;
 }
@@ -20,7 +20,7 @@ export const useCustomerFilters = () => {
     search: "",
     reference_number: "",
     status: [],
-    country_ids: [],
+    countries: [],
     date_from: "",
     date_to: "",
   });
@@ -56,8 +56,8 @@ export const useCustomerFilters = () => {
     []
   );
 
-  const updateCountryIds = useCallback((country_ids: number[]) => {
-    setFilters((prev) => ({ ...prev, country_ids }));
+  const updateCountryIds = useCallback((countries: number[]) => {
+    setFilters((prev) => ({ ...prev, countries }));
   }, []);
 
   const resetFilters = useCallback(

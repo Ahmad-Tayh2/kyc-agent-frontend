@@ -19,8 +19,8 @@ export const API_URLS = {
       `${baseUrl}/countries/${countryId}/states`,
   },
   agents: {
-    get: (agentId: string | number) => `${baseUrl}/agent/${agentId}`,
-    update: (agentId: string | number) => `${baseUrl}/agent/${agentId}`,
+    get: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
+    update: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
 
     uploadDocuments: (agentId: string | number) =>
       `${baseUrl}/agents/${agentId}/upload-documents`,

@@ -62,6 +62,13 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
       {
         accessorKey: "phone_number",
         header: "Mobile Number",
+        cell: ({ row }) => {
+          return (
+            <div className="capitalize">
+              {row.original?.country_phone_code} {row.original.phone_number}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "created_at",
@@ -78,7 +85,7 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
         header: "Transactions",
       },
       {
-        accessorKey: "recipients",
+        accessorKey: "recipient_count",
         header: "Recipients",
       },
       {

@@ -22,7 +22,7 @@ interface CustomerFiltersProps {
     startDate: string | null;
     endDate: string | null;
   }) => void;
-  onUpdateCountryIds: (country_ids: number[]) => void;
+  onUpdateCountryIds: (countries: number[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
@@ -81,7 +81,7 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
               showSelectAll
             />
             <DateRangeSelector
-              label="Date"
+              label="Reg. date"
               placeholder="Select date range"
               value={dateRangeValue}
               onChange={onUpdateDateRange}
@@ -90,7 +90,7 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
               label="Country"
               placeholder="Select countries"
               countries={countries}
-              value={filters.country_ids ?? []}
+              value={filters.countries ?? []}
               onChange={onUpdateCountryIds}
             />
           </div>
