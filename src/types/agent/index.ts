@@ -28,15 +28,13 @@ export interface Address {
 
 export interface BusinessDetails {
   business_name: string;
-  address: {
-    street_name: string;
-    house_number: string;
-    postal_code?: string;
-    extra_address_details?: string;
-    city: City;
-    state?: State;
-    country: Country;
-  };
+  street_name: string;
+  house_number: string;
+  postal_code?: string;
+  extra_address_details?: string;
+  city: City;
+  state?: State;
+  country: Country;
 }
 
 export interface Agent {
@@ -120,20 +118,18 @@ export interface UpdateAgentProfileRequest {
   is_payout_partner: boolean;
   date_of_birth: string;
   gender: "male" | "female";
-  sending_agent_group_id: number;
-  payout_agent_group_id: number;
+  sending_agent_group_id?: number;
+  payout_agent_group_id?: number;
   commission: number;
   business_details?: {
     business_name: string;
-    address: {
-      street_name: string;
-      house_number: string;
-      postal_code?: string;
-      extra_address_details?: string;
-      city_id: number;
-      state_id?: number;
-      country_id: number;
-    };
+    street_name: string;
+    house_number: string;
+    postal_code?: string;
+    extra_address_details?: string;
+    city_id: number;
+    state_id?: number;
+    country_id: number;
   };
 }
 
@@ -153,7 +149,7 @@ export interface ProfileFormData {
   postalCode: string;
   extraAddressDetails: string;
   gender: "male" | "female";
-  
+
   // Business Information
   businessName: string;
   businessStreetName: string;
@@ -163,12 +159,12 @@ export interface ProfileFormData {
   businessState: string;
   businessPostalCode: string;
   businessExtraAddressDetails: string;
-  
+
   // Agent Information
   agentType: "sales_person" | "business_partner";
   isSendingPartner: boolean;
   isPayoutPartner: boolean;
-  sendingAgentGroupId: number;
-  payoutAgentGroupId: number;
+  sendingAgentGroupId?: number;
+  payoutAgentGroupId?: number;
   commission: number;
-} 
+}

@@ -6,9 +6,7 @@ import DatePicker from "@/components/shared/DatePicker";
 import PhoneInput from "@/components/shared/PhoneInput";
 import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
-import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
-import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
+import RadioInput from "@/components/shared/RadioInput";
 
 interface PersonalInfoFormProps {
   formData: any;
@@ -39,15 +37,17 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     countryCode: country.iso2,
   }));
 
-  const countryOptions = countries?.map((country) => ({
-    value: country.id.toString(),
-    label: country.name,
-  })) || [];
+  const countryOptions =
+    countries?.map((country) => ({
+      value: country.id.toString(),
+      label: country.name,
+    })) || [];
 
-  const cityOptions = cities?.map((city) => ({
-    value: city.id.toString(),
-    label: city.name,
-  })) || [];
+  const cityOptions =
+    cities?.map((city) => ({
+      value: city.id.toString(),
+      label: city.name,
+    })) || [];
 
   const genderOptions = [
     { label: t("modules.profile.fields.gender.male"), value: "male" },
@@ -56,7 +56,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
   return (
     <div className="p-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-x-2 gap-y-5">
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.firstName.label")}
@@ -69,7 +69,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder={t("modules.profile.fields.firstName.placeholder")}
           />
         </div>
-        
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.lastName.label")}
@@ -82,7 +82,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder={t("modules.profile.fields.lastName.placeholder")}
           />
         </div>
-        
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.dob.label")}
@@ -94,7 +94,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(date: string) => handleDateChange("dob", date)}
           />
         </div>
-        
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.email.label")}
@@ -108,7 +108,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder={t("modules.profile.fields.email.placeholder")}
           />
         </div>
-        
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.phone.label")}
@@ -142,7 +142,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder={t("modules.profile.fields.streetName.placeholder")}
           />
         </div>
-        
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.houseNumber.label")}
@@ -155,7 +155,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder={t("modules.profile.fields.houseNumber.placeholder")}
           />
         </div>
-        
+
         <SearchableSelect
           label={t("modules.profile.fields.country.label")}
           placeholder={t("modules.profile.fields.country.placeholder")}
@@ -189,7 +189,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder={t("modules.profile.fields.state.placeholder")}
           />
         </div>
-        
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.postalCode.label")}
@@ -201,7 +201,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder={t("modules.profile.fields.postalCode.placeholder")}
           />
         </div>
-        
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.profile.fields.extraAddressDetails.label")}
@@ -212,13 +212,23 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) =>
               handleInputChange("extraAddressDetails", e.target.value)
             }
-            placeholder={t("modules.profile.fields.extraAddressDetails.placeholder")}
+            placeholder={t(
+              "modules.profile.fields.extraAddressDetails.placeholder"
+            )}
           />
         </div>
 
-        <div className="md:col-span-2 flex flex-col gap-2">
+        <div className="md:col-span-1 flex flex-col gap-2">
           <Label>{t("modules.profile.fields.gender.label")}</Label>
-          <div className="flex items-center gap-2">
+          <RadioInput
+            options={genderOptions}
+            selectedValue={formData.gender}
+            onSelectValue={(value: string) =>
+              handleInputChange("gender", value)
+            }
+            disabled={!editMode}
+          />
+          {/* <div className="flex items-center gap-2">
             {genderOptions?.map((genderOption: any) => (
               <button
                 key={genderOption.value}
@@ -243,11 +253,11 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                 {genderOption.label}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
   );
 };
 
-export default PersonalInfoForm; 
+export default PersonalInfoForm;

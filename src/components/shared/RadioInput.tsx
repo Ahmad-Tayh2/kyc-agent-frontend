@@ -1,46 +1,38 @@
-import React from "react";
+import { cn } from "@/lib/utils";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
-import { cn } from "@/lib/utils";
 
-type OptionType = {
-  label: string;
-  value: string | number;
-};
-
-type CustomRadioProps = {
-  options: OptionType[];
-  selectedValue: string | number | null;
-  onChange: (value: string | number) => void;
-  className?: string;
-};
-
-const RadioInput: React.FC<CustomRadioProps> = ({
-  options,
-  selectedValue,
-  onChange,
-  className,
-}) => {
+export default function (props: any) {
+  const {
+    options,
+    disabled,
+    onSelectValue,
+    selectedValue,
+    className = "",
+  } = props;
   return (
-    <div className={`flex items-center gap-2 ${className ?? ""}`}>
-      {options.map((option: OptionType) => (
+    <div className="flex items-center gap-1">
+      {options?.map((optionItem: any) => (
         <button
-          key={option.value}
+          key={optionItem.value}
           type="button"
           className={cn(
+            className,
             "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-            "border-gray-200 bg-white"
+            "border-gray-200 bg-white",
+            disabled && "opacity-50"
           )}
-          onClick={() => {
-            onChange(option.value);
-          }}
+          onClick={() => onSelectValue(optionItem.value)}
+          disabled={disabled}
         >
-          {selectedValue === option.value ? <CheckedIcon /> : <UncheckedIcon />}
-          {option.label}
+          {selectedValue === optionItem.value ? (
+            <CheckedIcon />
+          ) : (
+            <UncheckedIcon />
+          )}
+          {optionItem.label}
         </button>
       ))}
     </div>
   );
-};
-
-export default RadioInput;
+}

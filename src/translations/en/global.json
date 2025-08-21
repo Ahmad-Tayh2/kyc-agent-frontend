@@ -470,6 +470,19 @@
         "identity": {
           "label": "$t(common.fields.identity.label)"
         },
+        "houseNumber": {
+          "label": "$t(common.fields.houseNumber.label)"
+        },
+        "country": {
+          "label": "$t(common.fields.country.label)"
+        },
+        "postalCode": {
+          "label": "$t(common.fields.postalCode.label)"
+        },
+        "extraAddressDetails": {
+          "label": "$t(common.fields.extraAddressDetails.label)"
+        },
+
         "businessName": {
           "label": "$t(common.fields.businessName.label)",
           "placeholder": "$t(common.fields.businessName.placeholder)",
