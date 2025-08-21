@@ -1,0 +1,26 @@
+{
+  "modules": {
+    "register": {
+      "success": {
+        "title": "Inscription Terminée !",
+        "registrationStatus": "Statut d'Inscription",
+        "registrationSuccess": "Votre compte a été créé avec succès !",
+        "registrationPartial": "Compte créé mais quelques problèmes sont survenus.",
+        "registrationError": "La création du compte a échoué. Veuillez réessayer.",
+        "uploadStatus": "Statut des Fichiers d'Identité",
+        "uploadSuccess": "Tous les fichiers d'identité ont été téléchargés avec succès !",
+        "uploadPartial": "Certains fichiers ont été téléchargés avec des problèmes.",
+        "uploadError": "Le téléchargement des fichiers a échoué. Vous pouvez ajouter les fichiers d'identité plus tard dans votre profil.",
+        "identityFileInfo": {
+          "title": "Fichiers d'Identité",
+          "message": "Vous pouvez ajouter vos fichiers d'identité après vous être connecté via les paramètres de votre profil."
+        },
+        "goToLogin": "Aller à la Connexion",
+        "resendVerification": "Renvoyer l'Email de Vérification",
+        "resendingVerification": "Envoi en cours...",
+        "verificationEmailSent": "Email de vérification envoyé avec succès !",
+        "verificationEmailError": "Échec de l'envoi de l'email de vérification. Veuillez réessayer."
+      }
+    }
+  }
+}

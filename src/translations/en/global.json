@@ -263,6 +263,23 @@
       "partnerTitle": "Register As Business Partner",
       "requiredDetails": "Required Details For Registration",
       "businessDetails": "Business Details",
+      "success": {
+        "title": "Registration Complete!",
+        "registrationStatus": "Registration Status",
+        "registrationSuccess": "Your account has been created successfully!",
+        "registrationPartial": "Account created but some issues occurred.",
+        "registrationError": "Account creation failed. Please try again.",
+        "uploadStatus": "Identity Files Status",
+        "uploadSuccess": "All identity files uploaded successfully!",
+        "uploadPartial": "Some files uploaded with issues.",
+        "uploadError": "File upload failed. You can add identity files later in your profile.",
+
+        "goToLogin": "Go to Login",
+        "resendVerification": "Resend Verification Email",
+        "resendingVerification": "Resending...",
+        "verificationEmailSent": "Verification email sent successfully!",
+        "verificationEmailError": "Failed to send verification email. Please try again."
+      },
       "businessType": {
         "title": "What best describes your business status",
         "salesPerson": "I am a Sales Person",

@@ -13,6 +13,7 @@ export function useRegisterAndUpload() {
       console.log("Data to send =", { payload, files });
 
       try {
+        // Step 1: Register the user
         const registerResponse = await authService.register(payload);
         const registerData = await registerResponse.json();
 
@@ -27,23 +28,39 @@ export function useRegisterAndUpload() {
           throw new Error("Agent ID not found in registration response");
         }
 
-        const formData = new FormData();
-        files.forEach((file) => {
-          formData.append("files", file);
-        });
+        // Step 2: Upload files if provided
+        let uploadResult = null;
+        if (files && files.length > 0) {
+          try {
+            const formData = new FormData();
+            files.forEach((file) => {
+              formData.append("files", file);
+            });
 
-        const uploadResponse = await authService.uploadFiles(agentId, formData);
-        if (!uploadResponse.ok) {
-          throw new Error(
-            `File upload failed with status ${uploadResponse.status}`
-          );
+            const uploadResponse = await authService.uploadFiles(agentId, formData);
+            if (uploadResponse.ok) {
+              uploadResult = await uploadResponse.json();
+            } else {
+              // Upload failed but registration succeeded
+              console.warn("File upload failed:", uploadResponse.status);
+              uploadResult = {
+                status: "error",
+                message: `Upload failed with status ${uploadResponse.status}`,
+              };
+            }
+          } catch (uploadError) {
+            console.warn("File upload error:", uploadError);
+            uploadResult = {
+              status: "error",
+              message: "File upload failed due to network or server error",
+            };
+          }
         }
-
-        const uploadResult = await uploadResponse.json();
 
         return {
           registration: registerData,
           upload: uploadResult,
+          success: true,
         };
       } catch (error) {
         // Log and re-throw so react-query can handle the error properly
@@ -85,6 +102,12 @@ export function useResetPassword() {
       password: string;
       confirmPassword: string;
     }) => authService.resetPassword(token, email, password, confirmPassword),
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: authService.resendVerification,
   });
 }
 

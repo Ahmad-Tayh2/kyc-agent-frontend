@@ -1,0 +1,26 @@
+{
+  "modules": {
+    "register": {
+      "success": {
+        "title": "اكتمل التسجيل!",
+        "registrationStatus": "حالة التسجيل",
+        "registrationSuccess": "تم إنشاء حسابك بنجاح!",
+        "registrationPartial": "تم إنشاء الحساب ولكن حدثت بعض المشاكل.",
+        "registrationError": "فشل في إنشاء الحساب. يرجى المحاولة مرة أخرى.",
+        "uploadStatus": "حالة ملفات الهوية",
+        "uploadSuccess": "تم رفع جميع ملفات الهوية بنجاح!",
+        "uploadPartial": "تم رفع بعض الملفات مع وجود مشاكل.",
+        "uploadError": "فشل في رفع الملفات. يمكنك إضافة ملفات الهوية لاحقاً في ملفك الشخصي.",
+        "identityFileInfo": {
+          "title": "ملفات الهوية",
+          "message": "يمكنك إضافة ملفات الهوية بعد تسجيل الدخول من خلال إعدادات ملفك الشخصي."
+        },
+        "goToLogin": "الذهاب إلى تسجيل الدخول",
+        "resendVerification": "إعادة إرسال بريد التحقق",
+        "resendingVerification": "جاري الإرسال...",
+        "verificationEmailSent": "تم إرسال بريد التحقق بنجاح!",
+        "verificationEmailError": "فشل في إرسال بريد التحقق. يرجى المحاولة مرة أخرى."
+      }
+    }
+  }
+}

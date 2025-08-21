@@ -217,3 +217,27 @@ export async function resetPassword(
     throw error;
   }
 }
+
+export async function resendVerification(email: string) {
+  try {
+    const res = await fetch(API_URLS.auth.resendVerification, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      const errorMessage = response.message || "Failed to resend verification email";
+      throw new Error(errorMessage);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Resend verification error:", error);
+    throw error;
+  }
+}
