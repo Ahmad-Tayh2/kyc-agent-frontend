@@ -65,7 +65,7 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
         cell: ({ row }) => {
           return (
             <div className="capitalize">
-              {row.original?.country_phone_code} {row.original.phone_number}
+              +{row.original?.country_phone_code} {row.original.phone_number}
             </div>
           );
         },
