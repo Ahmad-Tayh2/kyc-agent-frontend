@@ -11,7 +11,6 @@ import CustomerFilters from "@/components/customers/CustomerFilters";
 import { customerColumns } from "@/components/customers/CustomerTableColumns";
 import { useCustomerFilters } from "@/hooks/data/useCustomerFilters";
 import { ROUTES } from "@/constants/routes";
-import { usePagination } from "@/hooks/utils/usePagination";
 
 const CustomersPage: React.FC = () => {
   const [t] = useTranslation("global");

@@ -80,18 +80,7 @@ export function DataTable({
   React.useEffect(() => {
     setCurrentPage(1);
   }, [data?.length]);
-  // const totalPages = Math.ceil(data.length / rowsPerPage);
 
-  // // Slice data for current page
-  // const paginatedData = data.slice(
-  //   (currentPage - 1) * rowsPerPage,
-  //   currentPage * rowsPerPage
-  // );
-  const totalPages = pagination?.per_page
-    ? Math.ceil((data?.length || 0) / pagination?.per_page)
-    : 1;
-
-  // Slice data for current page
   const paginatedData = React.useMemo(() => {
     if (!pagination?.per_page) return data;
     if (!data || data.length === 0) return [];
@@ -102,9 +91,6 @@ export function DataTable({
   }, [data, currentPage, pagination?.per_page]);
 
   // Handlers for pagination
-  const handlePageChange = React.useCallback((page: number) => {
-    setCurrentPage(page);
-  }, []);
 
   const table = useReactTable({
     data: paginatedData,

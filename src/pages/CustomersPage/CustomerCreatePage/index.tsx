@@ -154,7 +154,6 @@ const CustomerCreatePage: React.FC = () => {
               <DataTable
                 data={searchResults}
                 columns={columns}
-                enablePagination={false}
                 isLoading={false}
               />
             </div>

@@ -68,7 +68,6 @@ const RecipientsPage: React.FC = () => {
         <DataTable
           data={recipientsData}
           columns={columns}
-          enablePagination={true}
           isLoading={isLoading}
           error={error}
         />
