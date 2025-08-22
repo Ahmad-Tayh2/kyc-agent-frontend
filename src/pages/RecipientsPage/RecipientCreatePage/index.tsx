@@ -31,10 +31,7 @@ const RecipientCreatePage: React.FC = () => {
   const columns = recipientsColumns();
 
   const handleSearch = async () => {
-    if (
-      !searchForm.phone_number &&
-      !searchForm.name
-    ) {
+    if (!searchForm.phone_number && !searchForm.name) {
       return;
     }
 
@@ -92,12 +89,9 @@ const RecipientCreatePage: React.FC = () => {
               id="name"
               placeholder="Enter recipient name"
               value={searchForm.name}
-              onChange={(e) =>
-                handleInputChange("name", e.target.value)
-              }
+              onChange={(e) => handleInputChange("name", e.target.value)}
             />
           </div>
-
 
           <div className="text-gray-500 mb-3">or</div>
 
@@ -106,11 +100,13 @@ const RecipientCreatePage: React.FC = () => {
               Phone number
             </Label>
             <Input
-            type="number"
+              type="number"
               id="phone_number"
               placeholder="Enter your phone number"
               value={searchForm.phone_number}
-              onChange={(e) => handleInputChange("phone_number", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("phone_number", e.target.value)
+              }
             />
           </div>
 
@@ -134,7 +130,6 @@ const RecipientCreatePage: React.FC = () => {
               <DataTable
                 data={searchResults}
                 columns={columns}
-                enablePagination={false}
                 isLoading={false}
               />
             </div>
