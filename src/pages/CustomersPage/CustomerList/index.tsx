@@ -11,6 +11,7 @@ import CustomerFilters from "@/components/customers/CustomerFilters";
 import { customerColumns } from "@/components/customers/CustomerTableColumns";
 import { useCustomerFilters } from "@/hooks/data/useCustomerFilters";
 import { ROUTES } from "@/constants/routes";
+import { usePagination } from "@/hooks/utils/usePagination";
 
 const CustomersPage: React.FC = () => {
   const [t] = useTranslation("global");
@@ -27,6 +28,7 @@ const CustomersPage: React.FC = () => {
     updateCountryIds,
     resetFilters,
     applyFilters,
+    updatePagination,
   } = useCustomerFilters();
 
   const { data: response, isLoading, error } = useGetCustomers(filtersString);
@@ -36,10 +38,28 @@ const CustomersPage: React.FC = () => {
     return response?.data || [];
   }, [response?.data]);
 
+  const customersMeta = useMemo(() => {
+    return response?.meta || [];
+  }, [response?.meta]);
+
   const handleAddCustomer = () => {
     navigate(ROUTES.CUSTOMERS.CREATE);
   };
-
+  const pagination = {
+    enable: true,
+    page: customersMeta?.current_page,
+    per_page: customersMeta?.per_page,
+    total: customersMeta?.total,
+    from: customersMeta?.from,
+    to: customersMeta?.to,
+    last_page: customersMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -64,9 +84,9 @@ const CustomersPage: React.FC = () => {
         <DataTable
           data={customersData}
           columns={columns}
-          enablePagination={true}
           isLoading={isLoading}
           error={error}
+          pagination={pagination}
         />
       </div>
     </div>
