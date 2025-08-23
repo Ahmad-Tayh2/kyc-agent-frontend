@@ -53,7 +53,7 @@ export const Sidebar: React.FC<{
     },
     {
       label: t("modules.navigation.transfers"),
-      to: ROUTES.TRANSFERS,
+      to: ROUTES.TRANSFERS.LIST,
       icon: <TransfersIcon color="inherit" />,
     },
     {

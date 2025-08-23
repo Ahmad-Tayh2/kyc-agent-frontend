@@ -14,7 +14,10 @@ export const ROUTES = {
     EDIT: (recipientId: string | number) => `/recipients/edit/${recipientId}`,
   },
   PAYOUT_LOCATIONS: "/payout-locations",
-  TRANSFERS: "/transfers",
+  TRANSFERS: {
+    LIST: "/transfers",
+    DETAILS: (transferId: string | number) => `/transfers/${transferId}`,
+  },
   COMMISSION_EARNED: "/commission-earned",
   MONEY_WITHDRAWALS: "/money-withdrawals",
   ADD_MONEY: "/add-money",
