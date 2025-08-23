@@ -6,7 +6,11 @@ import NextStepArrow from "@/assets/icons/next-step-arrow.svg?react";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
-import { useCountries, useCitiesByCountry, useStatesByCountry } from "@/hooks/data/useAddress";
+import {
+  useCountries,
+  useCitiesByCountry,
+  useStatesByCountry,
+} from "@/hooks/data/useAddress";
 import { useCreateRecipient } from "@/hooks/data/useRecipients";
 import { useCreateBankAccount } from "@/hooks/data/useBankAccounts";
 import { useCurrencies } from "@/hooks/data/useCurrency";
@@ -80,20 +84,21 @@ const RecipientCreateForm: React.FC = () => {
     },
   });
 
-  const { mutateAsync: createRecipient, isPending: isCreatingRecipient } = useCreateRecipient();
-  const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } = useCreateBankAccount();
+  const { mutateAsync: createRecipient, isPending: isCreatingRecipient } =
+    useCreateRecipient();
+  const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } =
+    useCreateBankAccount();
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(formData.country_id || "");
   const { data: states = [] } = useStatesByCountry(formData.country_id || null);
   const { data: currencies = [] } = useCurrencies();
-  const { data: customersResponse} = useGetCustomers("");
+  const { data: customersResponse } = useGetCustomers("");
 
   // Memoize customers data to prevent unnecessary re-renders
   const customersData = useMemo(() => {
     return customersResponse?.data || [];
   }, [customersResponse?.data]);
-
 
   const countryOptions =
     countries?.map((country: any) => ({
@@ -122,10 +127,11 @@ const RecipientCreateForm: React.FC = () => {
     })) || [];
 
   const customerOptions = [
-   ...customersData?.map((customer: any) => ({label: customer.full_name, value: customer.id}))
+    ...customersData?.map((customer: any) => ({
+      label: customer.full_name,
+      value: customer.id,
+    })),
   ];
-
-
 
   const accountTypeOptions = [
     { label: "Savings", value: "savings" },
@@ -199,8 +205,6 @@ const RecipientCreateForm: React.FC = () => {
     }
   };
 
-
-
   const handleSubmit = async () => {
     try {
       // Step 1: Create recipient with basic data (sync)
@@ -218,10 +222,16 @@ const RecipientCreateForm: React.FC = () => {
           postal_code: formData.postal_code,
           extra_address_details: formData.bank_details.extra_address_details,
           city_id: parseInt(formData.city_id),
-          state_id: formData.bank_details.state_id && formData.bank_details.state_id !== "" ? parseInt(formData.bank_details.state_id) : undefined,
+          state_id:
+            formData.bank_details.state_id &&
+            formData.bank_details.state_id !== ""
+              ? parseInt(formData.bank_details.state_id)
+              : undefined,
           country_id: parseInt(formData.country_id),
         },
-        customer_ids: formData.customer_id ? [parseInt(formData.customer_id)] : [],
+        customer_ids: formData.customer_id
+          ? [parseInt(formData.customer_id)]
+          : [],
         remittance_methods: [],
       });
 
@@ -231,7 +241,10 @@ const RecipientCreateForm: React.FC = () => {
       }
 
       // Step 2: Create bank account (async) - only if bank details are provided
-      if (formData.bank_details.bank_name && formData.bank_details.account_number) {
+      if (
+        formData.bank_details.bank_name &&
+        formData.bank_details.account_number
+      ) {
         const bankAccountData = {
           accountable_type: "Recipient" as const,
           accountable_id: recipientId,
@@ -242,7 +255,11 @@ const RecipientCreateForm: React.FC = () => {
           postal_code: formData.postal_code,
           extra_address_details: formData.bank_details.extra_address_details,
           city_id: parseInt(formData.city_id),
-          state_id: formData.bank_details.state_id && formData.bank_details.state_id !== "" ? parseInt(formData.bank_details.state_id) : undefined,
+          state_id:
+            formData.bank_details.state_id &&
+            formData.bank_details.state_id !== ""
+              ? parseInt(formData.bank_details.state_id)
+              : undefined,
           country_id: parseInt(formData.country_id),
           bank_name: formData.bank_details.bank_name,
           account_number: formData.bank_details.account_number,
@@ -330,7 +347,7 @@ const RecipientCreateForm: React.FC = () => {
 
       {/* Form Content */}
       <div className="bg-white rounded-lg border">
-        <div className="p-6 border-b-1">Add new customer details here.</div>
+        <div className="p-6 border-b-1">Add new recipient details here.</div>
 
         {/* Step Indicator */}
         {renderStepIndicator()}
@@ -360,7 +377,6 @@ const RecipientCreateForm: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex justify-end items-end gap-4 m-5 pt-5 border-t-1">
-       
           <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
 
           {currentStep === "bank" ? (

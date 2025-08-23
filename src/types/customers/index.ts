@@ -8,6 +8,7 @@ export type CustomerType = {
     name: string;
   };
   phone_number: string;
+  country_phone_code?: string;
   created_at: string;
   status: string;
 };

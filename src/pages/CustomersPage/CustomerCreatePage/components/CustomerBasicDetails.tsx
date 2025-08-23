@@ -8,7 +8,6 @@ import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { cn } from "@/lib/utils";
 import { useCitiesByCountry, useCountries } from "@/hooks/data/useAddress";
-import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
 const CustomerBasicDetails = (props: any) => {
   const {
@@ -21,10 +20,6 @@ const CustomerBasicDetails = (props: any) => {
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
   ];
-  const statusOptions = CUSTOMER_STATUSES.map((status) => ({
-    label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-    value: status,
-  }));
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(formData.country_id || null);
@@ -207,16 +202,6 @@ const CustomerBasicDetails = (props: any) => {
             onPhoneChange={(phoneNumber: string) =>
               handleInputChange("phone_number", phoneNumber)
             }
-            disabled={!editMode}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <SearchableSelect
-            label={"Status"}
-            options={statusOptions}
-            value={formData.status || ""}
-            onChange={(value) => handleInputChange("status", value.toString())}
-            required
             disabled={!editMode}
           />
         </div>

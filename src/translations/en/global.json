@@ -203,7 +203,6 @@
           "minLengthError": "$t(common.validation.minLength)"
         }
       },
-      "rememberMe": "Remember me",
       "forgotPassword": "Forgot password",
       "dontHaveAccount": "Don't have an account?",
       "becomePartner": "Become our business partner and",
@@ -264,6 +263,23 @@
       "partnerTitle": "Register As Business Partner",
       "requiredDetails": "Required Details For Registration",
       "businessDetails": "Business Details",
+      "success": {
+        "title": "Registration Complete!",
+        "registrationStatus": "Registration Status",
+        "registrationSuccess": "Your account has been created successfully!",
+        "registrationPartial": "Account created but some issues occurred.",
+        "registrationError": "Account creation failed. Please try again.",
+        "uploadStatus": "Identity Files Status",
+        "uploadSuccess": "All identity files uploaded successfully!",
+        "uploadPartial": "Some files uploaded with issues.",
+        "uploadError": "File upload failed. You can add identity files later in your profile.",
+
+        "goToLogin": "Go to Login",
+        "resendVerification": "Resend Verification Email",
+        "resendingVerification": "Resending...",
+        "verificationEmailSent": "Verification email sent successfully!",
+        "verificationEmailError": "Failed to send verification email. Please try again."
+      },
       "businessType": {
         "title": "What best describes your business status",
         "salesPerson": "I am a Sales Person",
@@ -468,6 +484,22 @@
           "male": "$t(common.fields.gender.male)",
           "female": "$t(common.fields.gender.female)"
         },
+        "identity": {
+          "label": "$t(common.fields.identity.label)"
+        },
+        "houseNumber": {
+          "label": "$t(common.fields.houseNumber.label)"
+        },
+        "country": {
+          "label": "$t(common.fields.country.label)"
+        },
+        "postalCode": {
+          "label": "$t(common.fields.postalCode.label)"
+        },
+        "extraAddressDetails": {
+          "label": "$t(common.fields.extraAddressDetails.label)"
+        },
+
         "businessName": {
           "label": "$t(common.fields.businessName.label)",
           "placeholder": "$t(common.fields.businessName.placeholder)",
@@ -476,6 +508,11 @@
         "businessStreetName": {
           "label": "$t(common.fields.businessStreetName.label)",
           "placeholder": "$t(common.fields.businessStreetName.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
+        "businessHouseNumber": {
+          "label": "$t(common.fields.businessHouseNumber.label)",
+          "placeholder": "$t(common.fields.businessHouseNumber.placeholder)",
           "error": "$t(common.validation.required)"
         },
         "businessCity": {
@@ -487,6 +524,18 @@
           "label": "$t(common.fields.businessCountry.label)",
           "placeholder": "$t(common.fields.businessCountry.placeholder)",
           "error": "$t(common.validation.required)"
+        },
+        "businessState": {
+          "label": "$t(common.fields.state.label)",
+          "placeholder": "$t(common.fields.state.placeholder)"
+        },
+        "businessPostalCode": {
+          "label": "$t(common.fields.postalCode.label)",
+          "placeholder": "$t(common.fields.postalCode.placeholder)"
+        },
+        "businessExtraAddressDetails": {
+          "label": "$t(common.fields.extraAddressDetails.label)",
+          "placeholder": "$t(common.fields.extraAddressDetails.placeholder)"
         }
       }
     },

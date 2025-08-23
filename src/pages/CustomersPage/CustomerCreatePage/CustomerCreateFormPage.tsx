@@ -249,6 +249,12 @@ const CustomerCreateFormPage: React.FC = () => {
     },
   ];
 
+  const documentExpiryEndMonth = new Date(
+    new Date().getFullYear() + 20,
+    11,
+    31
+  );
+
   const renderStepIndicator = () => (
     <div className="flex items-center justify-start p-5">
       <div className="flex items-center space-x-4">
@@ -344,6 +350,7 @@ const CustomerCreateFormPage: React.FC = () => {
             onChange={(date: string) =>
               handleIdentityChange("documentExpiryDate", date)
             }
+            endMonth={documentExpiryEndMonth}
           />
         </div>
       </div>

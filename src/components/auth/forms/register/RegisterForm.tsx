@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useRegisterAndUpload } from "@/hooks/data/useAuth";
 import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import RegistrationSuccessDialog from "./RegistrationSuccessDialog";
 
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
@@ -20,7 +20,6 @@ import DatePicker from "@/components/shared/DatePicker";
 import SearchableSelect from "@/components/ui/searchable-select";
 import PhoneInput from "@/components/shared/PhoneInput";
 import { cn } from "@/lib/utils";
-import { ROUTES } from "@/constants/routes";
 import { X } from "lucide-react";
 import { PasswordInput } from "@/components/ui/password-input";
 
@@ -145,6 +144,12 @@ const RegisterForm: React.FC<{
   }, [formData]);
   const [identityFiles, setIdentityFiles] = React.useState<File[]>([]);
   const [fileDragOver, setFileDragOver] = React.useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = React.useState(false);
+  const [registrationResult, setRegistrationResult] = React.useState<{
+    registrationStatus: "success" | "partial" | "error";
+    uploadStatus: "success" | "partial" | "error";
+    uploadMessage?: string;
+  } | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -222,7 +227,6 @@ const RegisterForm: React.FC<{
     status,
     error,
   } = useRegisterAndUpload();
-  const navigate = useNavigate();
   const [t] = useTranslation("global");
 
   const onFormSubmit = async (e: React.FormEvent) => {
@@ -297,7 +301,6 @@ const RegisterForm: React.FC<{
         last_name: formData.lastName,
         email: formData.email,
         password: formData.password,
-        date_of_birth: formData.dob,
         country_phone_code: formData.countryCode,
         phone_number: formData.phone,
         address: {
@@ -314,26 +317,63 @@ const RegisterForm: React.FC<{
       agent_type: step === "partner" ? "business_partner" : "sales_person",
       is_sending_partner: isSendingPartner,
       is_payout_partner: isPayoutPartner,
+      date_of_birth: formData.dob,
       gender: formData.gender,
     };
     if (step === "partner") {
       payload = {
         ...payload,
         business_name: formData.businessName,
-        business_street_name: formData.businessStreetName,
-        business_house_number: formData.businessHouseNumber,
-        business_postal_code: formData.businessPostalCode,
-        business_extra_address_details: formData.businessExtraAddressDetails,
-        business_country_id: formData.businessCountry,
-        business_city_id: formData.businessCity,
+        address: {
+          street_name: formData.businessStreetName,
+          house_number: formData.businessHouseNumber,
+          postal_code: formData.businessPostalCode,
+          extra_address_details: formData.businessExtraAddressDetails,
+          country_id: formData.businessCountry,
+          city_id: formData.businessCity,
+        },
       };
     }
     try {
       const result = await registerAndUpload({ payload, files: identityFiles });
       console.log("Registration result:", result);
-      navigate(ROUTES.AUTH.LOGIN);
+
+      // Determine registration and upload status
+      const registrationStatus: "success" | "partial" | "error" = "success";
+      let uploadStatus: "success" | "partial" | "error" = "success";
+      let uploadMessage: string | undefined;
+
+      // Check if files were provided and if upload was successful
+      if (identityFiles.length === 0) {
+        uploadStatus = "partial";
+        uploadMessage = "No identity files were provided during registration.";
+      } else if (result.upload && result.upload.status === "success") {
+        uploadStatus = "success";
+      } else if (result.upload && result.upload.status === "error") {
+        uploadStatus = "error";
+        uploadMessage =
+          result.upload.message ||
+          "File upload failed. You can add identity files later in your profile.";
+      } else {
+        uploadStatus = "partial";
+        uploadMessage =
+          "File upload status unclear. You can add identity files later in your profile.";
+      }
+
+      setRegistrationResult({
+        registrationStatus,
+        uploadStatus,
+        uploadMessage,
+      });
+      setShowSuccessDialog(true);
     } catch (error) {
       console.error("Registration error in form:", error);
+      setRegistrationResult({
+        registrationStatus: "error",
+        uploadStatus: "error",
+        uploadMessage: "Registration failed. Please try again.",
+      });
+      setShowSuccessDialog(true);
     }
   };
   const handleDateChange = (date: string) => {
@@ -839,6 +879,18 @@ const RegisterForm: React.FC<{
         <div className="text-destructive text-sm mt-2">
           {(error as Error).message}
         </div>
+      )}
+
+      {/* Registration Success Dialog */}
+      {registrationResult && (
+        <RegistrationSuccessDialog
+          isOpen={showSuccessDialog}
+          onClose={() => setShowSuccessDialog(false)}
+          registrationStatus={registrationResult.registrationStatus}
+          uploadStatus={registrationResult.uploadStatus}
+          uploadMessage={registrationResult.uploadMessage}
+          userEmail={formData.email}
+        />
       )}
     </form>
   );

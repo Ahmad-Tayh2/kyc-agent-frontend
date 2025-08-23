@@ -6,13 +6,19 @@ import {
 } from "@/utils/filterHelpers";
 import { useDebounce } from "../utils/useDebounce";
 
+export type paginationProps = {
+  page?: number;
+  per_page?: number;
+};
 export interface CustomerFilterState {
   search?: string;
   reference_number?: string;
   status?: string[];
-  country_ids?: number[];
+  countries?: number[];
   date_from?: string;
   date_to?: string;
+  page?: number;
+  per_page?: number;
 }
 
 export const useCustomerFilters = () => {
@@ -20,9 +26,12 @@ export const useCustomerFilters = () => {
     search: "",
     reference_number: "",
     status: [],
-    country_ids: [],
+    countries: [],
     date_from: "",
     date_to: "",
+    //pagination
+    page: 1,
+    per_page: 1,
   });
   const debouncedSearch = useDebounce(filters?.search);
 
@@ -30,7 +39,7 @@ export const useCustomerFilters = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, filters?.per_page, filters?.page]);
 
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
@@ -56,8 +65,8 @@ export const useCustomerFilters = () => {
     []
   );
 
-  const updateCountryIds = useCallback((country_ids: number[]) => {
-    setFilters((prev) => ({ ...prev, country_ids }));
+  const updateCountryIds = useCallback((countries: number[]) => {
+    setFilters((prev) => ({ ...prev, countries }));
   }, []);
 
   const resetFilters = useCallback(
@@ -78,6 +87,18 @@ export const useCustomerFilters = () => {
     [filters]
   );
 
+  const updatePagination = (pagination: paginationProps) => {
+    let updatedFilters: paginationProps = {};
+    if (pagination?.page !== undefined) {
+      updatedFilters.page = Number(pagination?.page);
+    }
+    if (pagination?.per_page !== undefined) {
+      updatedFilters.per_page = Number(pagination?.per_page);
+      updatedFilters.page = 1;
+    }
+    setFilters((prev) => ({ ...prev, ...updatedFilters }));
+  };
+
   return {
     filters,
     filtersString,
@@ -89,5 +110,6 @@ export const useCustomerFilters = () => {
     resetFilters,
     applyFilters,
     hasActiveFilters,
+    updatePagination,
   };
 };

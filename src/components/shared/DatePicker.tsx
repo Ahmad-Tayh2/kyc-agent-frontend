@@ -14,6 +14,8 @@ interface DatePickerProps {
   value: string;
   onChange: any;
   disabled?: boolean;
+  startMonth?: Date;
+  endMonth?: Date;
 }
 
 function formatDate(date: Date | undefined) {
@@ -39,6 +41,8 @@ export default function DatePicker({
   value,
   onChange,
   disabled,
+  startMonth,
+  endMonth,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -122,6 +126,8 @@ export default function DatePicker({
             month={month}
             onMonthChange={setMonth}
             onSelect={handleDateSelect}
+            startMonth={startMonth}
+            endMonth={endMonth}
           />
         </PopoverContent>
       </Popover>

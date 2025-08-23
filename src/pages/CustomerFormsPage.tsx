@@ -270,8 +270,6 @@ const CustomerFormsPage: React.FC = () => {
         <DataTable
           data={customerFormData}
           columns={columns}
-          enablePagination={true}
-          rowsPerPage={10}
           tableTitle={t("modules.pages.customerForm.title")}
         />
       </div>

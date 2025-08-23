@@ -108,7 +108,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
             </Label>
             <DatePicker
               value={formData.date_of_birth || ""}
-              onChange={(date: string) => handleDateChange("date_of_birth", date)}
+              onChange={(date: string) =>
+                handleDateChange("date_of_birth", date)
+              }
             />
           </div>
 
@@ -136,7 +138,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
             <PhoneInput
               phoneNumber={formData.phone_number || ""}
               selectedCountry={formData.country_phone_code || ""}
-              onPhoneChange={(phone) => handleInputChange("phone_number", phone)}
+              onPhoneChange={(phone) =>
+                handleInputChange("phone_number", phone)
+              }
               onCountryChange={(countryCode) =>
                 handleInputChange("country_phone_code", countryCode)
               }
@@ -174,13 +178,15 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               name="house_number"
               placeholder="Enter house number"
               value={formData.house_number || ""}
-              onChange={(e) => handleInputChange("house_number", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("house_number", e.target.value)
+              }
             />
           </div>
 
           <div className="flex flex-col gap-1">
             <Label className="text-[14px]" htmlFor="postal_code">
-              Postal Code<span className="text-red-500">*</span>
+              Postal Code
             </Label>
             <Input
               id="postal_code"

@@ -4,7 +4,6 @@ import { z } from "zod";
 // import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
@@ -57,13 +56,7 @@ const LoginForm: React.FC<{
         setErrors(loginErrors);
       }
     };
-  const handleRememberChange = (checked: boolean) => {
-    setData((prev) => ({ ...prev, remember: !!checked }));
-    if (hasSubmitted) {
-      const { errors: loginErrors } = validate(loginSchema, data);
-      setErrors(loginErrors);
-    }
-  };
+    
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setHasSubmitted(true);
@@ -148,21 +141,11 @@ const LoginForm: React.FC<{
         <ErrorField errors={errors?.password} />
       </div>
 
-      {/* Remember Me & Forgot Password */}
-      <div className="flex items-center justify-between">
-        <Label className="flex items-center gap-2 text-sm cursor-pointer">
-          <Checkbox
-            checked={data.remember}
-            onCheckedChange={(checked: boolean) =>
-              handleRememberChange(!!checked)
-            }
-          />
-          {t("modules.login.rememberMe")}
-        </Label>
+      <div className="flex items-center justify-between ">
         <button
           type="button"
           onClick={onForgotPassword}
-          className="text-primary text-sm hover:underline"
+          className="text-primary text-sm hover:underline ml-auto"
         >
           {t("modules.login.forgotPassword")}
         </button>
