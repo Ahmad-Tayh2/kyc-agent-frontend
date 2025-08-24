@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { useTranslation } from "react-i18next";
 import { useGetTransfers } from "@/hooks/data/useTransfers";
@@ -9,6 +9,7 @@ import PageTitle from "@/components/shared/PageTitle";
 import TransferFilters from "@/components/transfers/TransferFilters";
 import { transferColumns } from "@/components/transfers/TransferTableColumns";
 import { useTransferFilters } from "@/hooks/data/useTransferFilters";
+import ConfirmationDialog from "@/components/shared/ConfirmationDialog";
 
 const TransferList: React.FC = () => {
   const [t] = useTranslation("global");
@@ -57,7 +58,6 @@ const TransferList: React.FC = () => {
   //     updatePagination({ page: value });
   //   },
   // };
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -67,6 +67,14 @@ const TransferList: React.FC = () => {
           icon={<SendRemittanceIcon />}
           onClick={handleCreateTransfer}
         />
+        <ConfirmationDialog
+          trigger={<div>open it</div>}
+          title="tttt"
+          showCloseIcon
+          onConfirm={() => console.log(" confirmmmmm ")}
+        >
+          <div>Hi here is the popup children</div>
+        </ConfirmationDialog>
       </div>
       <TransferFilters
         filters={filters}
