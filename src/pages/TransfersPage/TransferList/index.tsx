@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { useTranslation } from "react-i18next";
 import { useGetTransfers } from "@/hooks/data/useTransfers";
