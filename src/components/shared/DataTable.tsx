@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { SingleSelectDropdown } from "./SingleSelectDropdown";
 import { paginationsPagesOptions } from "@/constants/options";
+import { cn } from "@/lib/utils";
 
 // interface PaginationObject {
 //   per_page: number;
@@ -55,6 +56,7 @@ interface DataTableProps {
   tableTitle?: string;
   isLoading?: boolean;
   error?: any;
+  className?: string;
 }
 
 export function DataTable({
@@ -63,6 +65,7 @@ export function DataTable({
   tableTitle,
   pagination,
   isLoading = false,
+  className,
   error,
 }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -142,7 +145,9 @@ export function DataTable({
 
   return (
     <div>
-      <div className="w-full rounded-md bg-white overflow-hidden">
+      <div
+        className={cn("w-full rounded-md bg-white overflow-hidden", className)}
+      >
         {tableTitle && (
           <h1 className="p-5 text-2xl font-semibold">{tableTitle}</h1>
         )}
