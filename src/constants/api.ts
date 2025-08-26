@@ -46,6 +46,11 @@ export const API_URLS = {
     update: (id: string | number) => `${baseUrl}/recipients/${id}`,
   },
 
+  transfers: {
+    get: (filters: string) => `${baseUrl}/transactions${filters}`,
+    getById: (id: string | number) => `${baseUrl}/transactions/${id}`,
+  },
+
   bankAccounts: {
     create: `${baseUrl}/bank-accounts`,
   },

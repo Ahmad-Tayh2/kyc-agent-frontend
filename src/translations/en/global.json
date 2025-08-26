@@ -169,7 +169,8 @@
       "resetPassword": "Reset Password",
       "sendResetLink": "SEND RESET LINK",
       "backToLogin": "Back to login",
-      "tryAgain": "Try again"
+      "tryAgain": "Try again",
+      "print": "Print"
     },
     "messages": {
       "loading": "Loading...",
@@ -613,7 +614,10 @@
       },
       "transfers": {
         "title": "Transfers",
-        "content": "Transfers content goes here."
+        "content": "Transfers content goes here.",
+        "details": {
+          "title": "Transfers Details"
+        }
       },
       "myWallet": {
         "title": "My Wallet",

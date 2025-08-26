@@ -40,7 +40,10 @@ const RecipientCreatePage = lazy(
   () => import("../pages/RecipientsPage/RecipientCreatePage")
 );
 const PayoutLocationsPage = lazy(() => import("../pages/PayoutLocationsPage"));
-const TransfersPage = lazy(() => import("../pages/TransfersPage"));
+const TransfersPage = lazy(() => import("../pages/TransfersPage/TransferList"));
+const TransfersDetailsPage = lazy(
+  () => import("../pages/TransfersPage/TransfersDetails")
+);
 const CommissionEarnedPage = lazy(
   () => import("../pages/CommissionEarnedPage")
 );
@@ -114,7 +117,12 @@ export const AppRoutes = () => (
             path={ROUTES.PAYOUT_LOCATIONS}
             element={<PayoutLocationsPage />}
           />
-          <Route path={ROUTES.TRANSFERS} element={<TransfersPage />} />
+          <Route path={ROUTES.TRANSFERS.LIST} element={<TransfersPage />} />
+          <Route
+            path={ROUTES.TRANSFERS.DETAILS(":id")}
+            element={<TransfersDetailsPage />}
+          />
+
           <Route
             path={ROUTES.COMMISSION_EARNED}
             element={<CommissionEarnedPage />}
