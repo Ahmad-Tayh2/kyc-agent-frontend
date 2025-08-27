@@ -5,6 +5,7 @@ import {
   createHasActiveFilters,
 } from "@/utils/filterHelpers";
 import { useDebounce } from "../utils/useDebounce";
+import type { paginationProps } from "@/types/shared/pagination";
 
 export interface RecipientsFilterState {
   search?: string;
@@ -13,6 +14,9 @@ export interface RecipientsFilterState {
   remittance_method_ids?: string[];
   ids?: string[];
   added_by?: number;
+  //pagination
+  page?: number;
+  per_page?: number;
 }
 
 export const useRecipientsFilters = () => {
@@ -23,6 +27,9 @@ export const useRecipientsFilters = () => {
     remittance_method_ids: [],
     ids: [],
     added_by: undefined,
+    //pagination
+    page: 1,
+    per_page: 1,
   });
   const debouncedSearch = useDebounce(filters?.search);
 
@@ -30,7 +37,7 @@ export const useRecipientsFilters = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, filters?.per_page, filters?.page]);
 
   const updateSearchTerm = useCallback((term: string) => {
     setFilters((prev) => ({ ...prev, search: term }));
@@ -74,6 +81,17 @@ export const useRecipientsFilters = () => {
     [filters]
   );
 
+  const updatePagination = (pagination: paginationProps) => {
+    let updatedFilters: paginationProps = {};
+    if (pagination?.page !== undefined) {
+      updatedFilters.page = Number(pagination?.page);
+    }
+    if (pagination?.per_page !== undefined) {
+      updatedFilters.per_page = Number(pagination?.per_page);
+      updatedFilters.page = 1;
+    }
+    setFilters((prev) => ({ ...prev, ...updatedFilters }));
+  };
   return {
     filters,
     filtersString,
@@ -86,5 +104,6 @@ export const useRecipientsFilters = () => {
     resetFilters,
     applyFilters,
     hasActiveFilters,
+    updatePagination,
   };
 };

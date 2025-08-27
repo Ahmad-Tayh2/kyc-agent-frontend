@@ -27,6 +27,7 @@ const RecipientsPage: React.FC = () => {
     updateRemittanceMethodIds,
     resetFilters,
     applyFilters,
+    updatePagination,
   } = useRecipientsFilters();
 
   const { data: response, isLoading, error } = useRecipients(filtersString);
@@ -36,12 +37,32 @@ const RecipientsPage: React.FC = () => {
     return response?.data || [];
   }, [response?.data]);
 
+  const recipientsMeta = useMemo(() => {
+    return response?.meta || [];
+  }, [response?.meta]);
+
   const customersData = useMemo(() => {
     return CustomersResponse?.data || [];
   }, [CustomersResponse?.data]);
 
   const handleAddRecipient = () => {
     navigate(ROUTES.RECIPIENTS.CREATE);
+  };
+
+  const pagination = {
+    enable: true,
+    page: recipientsMeta?.current_page,
+    per_page: recipientsMeta?.per_page,
+    total: recipientsMeta?.total,
+    from: recipientsMeta?.from,
+    to: recipientsMeta?.to,
+    last_page: recipientsMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
   };
 
   return (
@@ -70,6 +91,7 @@ const RecipientsPage: React.FC = () => {
           columns={columns}
           isLoading={isLoading}
           error={error}
+          pagination={pagination}
         />
       </div>
     </div>
