@@ -33,7 +33,7 @@ export interface Transfer {
   updated_at: string;
 }
 
-export type TransferStatus = 
+export type TransferStatus =
   | "pending"
   | "processing"
   | "completed"
@@ -41,7 +41,7 @@ export type TransferStatus =
   | "cancelled"
   | "refunded";
 
-export type PaymentMethod = 
+export type PaymentMethod =
   | "bank_transfer"
   | "cash_pickup"
   | "mobile_money"
@@ -75,4 +75,6 @@ export interface TransferFilters {
   receive_currency?: string;
   page?: number;
   per_page?: number;
-} 
+}
+
+export interface TransactionCreateDataType {}
