@@ -14,4 +14,4 @@ export function useGetTransfer(id: string | number) {
     queryFn: () => transfersService.getTransferById(id),
     enabled: !!id,
   });
-} 
+}

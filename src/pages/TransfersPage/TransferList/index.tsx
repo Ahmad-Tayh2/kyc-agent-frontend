@@ -67,14 +67,6 @@ const TransferList: React.FC = () => {
           icon={<SendRemittanceIcon />}
           onClick={handleCreateTransfer}
         />
-        <ConfirmationDialog
-          trigger={<div>open it</div>}
-          title="tttt"
-          showCloseIcon
-          onConfirm={() => console.log(" confirmmmmm ")}
-        >
-          <div>Hi here is the popup children</div>
-        </ConfirmationDialog>
       </div>
       <TransferFilters
         filters={filters}
