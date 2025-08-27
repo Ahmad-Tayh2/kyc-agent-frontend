@@ -5,11 +5,8 @@ import {
   createHasActiveFilters,
 } from "@/utils/filterHelpers";
 import { useDebounce } from "../utils/useDebounce";
+import type { paginationProps } from "@/types/shared/pagination";
 
-export type paginationProps = {
-  page?: number;
-  per_page?: number;
-};
 export interface CustomerFilterState {
   search?: string;
   reference_number?: string;
@@ -17,6 +14,7 @@ export interface CustomerFilterState {
   countries?: number[];
   date_from?: string;
   date_to?: string;
+  //pagination
   page?: number;
   per_page?: number;
 }

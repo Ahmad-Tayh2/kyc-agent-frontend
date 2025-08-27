@@ -27,7 +27,7 @@ export function SingleSelectDropdown(props: SingleSelectDropdownProps) {
       </SelectTrigger>
       <SelectContent>
         {options?.map((option: Option) => (
-          <SelectItem value={option.value}>{option.label}</SelectItem>
+          <SelectItem value={option.value} key={option.value}>{option.label}</SelectItem>
         ))}
       </SelectContent>
     </Select>

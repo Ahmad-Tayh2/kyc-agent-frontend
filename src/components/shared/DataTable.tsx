@@ -19,7 +19,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -52,7 +53,6 @@ interface DataTableProps {
     onChangeRowsPerPage: (value: number) => void;
     setPage: (p: number) => void;
   };
-  onUpdatePagination?: (obj: any) => void;
   tableTitle?: string;
   isLoading?: boolean;
   error?: any;
@@ -114,6 +114,42 @@ export function DataTable({
     },
   });
 
+  const pagesLength = React.useMemo(() => {
+    if (pagination?.last_page && pagination?.last_page > 0)
+      return pagination?.last_page;
+    return 0;
+  }, [pagination?.last_page]);
+
+  const pagesNumberToShow = React.useMemo(() => {
+    let display: (number | string)[] = [];
+    if (pagination?.last_page && pagesLength) {
+      if (pagesLength < 7) {
+        // Show all pages
+        display = Array.from({ length: pagesLength }, (_, i) => i + 1);
+      } else {
+        // pagesLength >= 7 : defining the start and the end of the middle pages range
+        const windowStart = Math.max(pagination?.page - 1, 2);
+        const windowEnd = Math.min(pagination?.page + 1, pagesLength - 1);
+        display.push(1);
+
+        // first gap
+        if (windowStart > 2) display.push("...");
+
+        // middle window
+        for (let p = windowStart; p <= windowEnd; p++) {
+          display.push(p);
+        }
+
+        // second gap
+        if (windowEnd < pagesLength - 1) display.push("...");
+
+        // last page
+        display.push(pagesLength);
+      }
+    }
+    return display;
+  }, [pagesLength, pagination?.page]);
+
   // Show loading state
   if (isLoading) {
     return (
@@ -122,8 +158,7 @@ export function DataTable({
           <h1 className="p-5 text-2xl font-semibold">{tableTitle}</h1>
         )}
         <div className="flex items-center justify-center h-32">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <span className="ml-2">Loading...</span>
+          <Loader size="50px" className="h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -142,7 +177,6 @@ export function DataTable({
       </div>
     );
   }
-
   return (
     <div>
       <div
@@ -225,26 +259,32 @@ export function DataTable({
 
               {/* Page Numbers */}
               <div className="flex justify-between items-center gap-1">
-                {Array.from({ length: pagination?.total }, (_, index) => (
-                  <PaginationItem key={index + 1}>
-                    <PaginationLink
-                      className="hover:primary/10"
-                      onClick={() => pagination.setPage(index + 1)}
-                      isActive={pagination?.page === index + 1}
-                      href="#"
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
+                {pagesNumberToShow?.map((page: string | number, index) => {
+                  if (page === "...") {
+                    return (
+                      <PaginationItem key={index + 1}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
+                  } else {
+                    let isActive = pagination?.page === page;
+                    return (
+                      <PaginationItem key={index + 1}>
+                        <PaginationLink
+                          className={cn(
+                            "border-none cursor-pointer",
+                            isActive && "bg-primary/20"
+                          )}
+                          onClick={() => pagination.setPage(Number(page))}
+                          isActive={isActive}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+                })}
               </div>
-
-              {/* Optional Ellipsis for large page numbers */}
-              {pagination?.total > 5 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
 
               {/* Next Button */}
               <PaginationItem className="flex items-center gap-2">
@@ -258,7 +298,7 @@ export function DataTable({
                 )}
                 <Button
                   variant="outline"
-                  disabled={pagination?.page === pagination?.total}
+                  disabled={pagination?.page === pagesLength}
                   onClick={() => pagination.setPage(pagination.page + 1)}
                   className="cursor-pointer hover:bg-primary/10"
                 >
