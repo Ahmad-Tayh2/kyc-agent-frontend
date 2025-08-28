@@ -23,7 +23,7 @@ const TransferList: React.FC = () => {
     updateReceiveCurrency,
     resetFilters,
     applyFilters,
-    // updatePagination,
+    updatePagination,
   } = useTransferFilters();
 
   const { data: response, isLoading, error } = useGetTransfers(filtersString);
@@ -33,30 +33,30 @@ const TransferList: React.FC = () => {
     return response?.data || [];
   }, [response?.data]);
 
-  // const transfersMeta = useMemo(() => {
-  //   return response?.meta || [];
-  // }, [response?.meta]);
+  const transfersMeta: any = useMemo(() => {
+    return response?.meta || [];
+  }, [response?.meta]);
 
   const handleCreateTransfer = () => {
     // TODO: Implement transfer creation
     console.log("Create transfer clicked");
   };
 
-  // const pagination = {
-  //   enable: true,
-  //   page: transfersMeta?.current_page,
-  //   per_page: transfersMeta?.per_page,
-  //   total: transfersMeta?.total,
-  //   from: transfersMeta?.from,
-  //   to: transfersMeta?.to,
-  //   last_page: transfersMeta?.last_page,
-  //   onChangeRowsPerPage: (value: number) => {
-  //     updatePagination({ per_page: value });
-  //   },
-  //   setPage: (value: number) => {
-  //     updatePagination({ page: value });
-  //   },
-  // };
+  const pagination = {
+    enable: true,
+    page: transfersMeta?.current_page,
+    per_page: transfersMeta?.per_page,
+    total: transfersMeta?.total,
+    from: transfersMeta?.from,
+    to: transfersMeta?.to,
+    last_page: transfersMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -82,7 +82,7 @@ const TransferList: React.FC = () => {
           columns={columns}
           isLoading={isLoading}
           error={error}
-          // pagination={pagination}
+          pagination={pagination}
         />
       </div>
     </div>
