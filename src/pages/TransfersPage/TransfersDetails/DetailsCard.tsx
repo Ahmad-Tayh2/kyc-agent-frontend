@@ -1,46 +1,70 @@
 import ActionButton from "@/components/shared/ActionButton";
 import { cn } from "@/lib/utils";
+import type { GetTransfersDataProps } from "@/types/transfers";
+import type { ReactNode } from "react";
 
-const DetailsCard = (props: any) => {
+interface DetailsCardProps {
+  transfer: GetTransfersDataProps;
+}
+
+interface CardContentProps {
+  transfer: GetTransfersDataProps;
+}
+
+interface MiniCardLayoutProps {
+  title?: string;
+  children?: ReactNode;
+}
+const DetailsCard = (props: DetailsCardProps) => {
   const { transfer } = props;
-  console.log("transfer = ", transfer);
   return (
     <div className="bg-white rounded-md border-1 border-gray-200">
-      <CardContent />
+      <CardContent transfer={transfer} />
       <CardFooter />
     </div>
   );
 };
 
-const CardContent = () => {
+const CardContent = (props: CardContentProps) => {
+  const { transfer } = props;
+
   const transfersDetails = [
-    { label: "Transfer Number", value: "8374-84256712" },
-    { label: "Send On", value: "13/09/2023" },
-    { label: "Delivery", value: "mobile" },
-    { label: "Pickup location", value: "N/A" },
-    { label: "Transfer Reason", value: "Family support" },
-    { label: "Transfer Tmer", value: "15 minutes" },
-    { label: "Send On", value: "13/09/2023" },
-    { label: "Delivery", value: "mobile" },
-    { label: "Pickup location", value: "N/A" },
-    { label: "Pickup location", value: "N/A" },
-    { label: "Transfer Reason", value: "Family support" },
-    { label: "Transfer Tmer", value: "15 minutes" },
-    { label: "Send On", value: "13/09/2023" },
+    { label: "Transfer Number", value: "" },
+    { label: "Send On", value: "" },
+    { label: "Delivery", value: "" },
+    { label: "Pickup location", value: "" },
+    { label: "Transfer Reason", value: "" },
+    { label: "Transfer Time", value: "" },
+    { label: "Payment Method", value: transfer.payment_method },
+    { label: "Amount Sent", value: "" },
+    { label: "Transfer Fee", value: transfer.extra_fees_amount },
+    { label: "Agent Total Commission/Profit", value: "" },
+    { label: "Total Amout Paid", value: "" },
+    { label: "Recipient Gets", value: transfer.payout_amount },
+    { label: "Equivalent", value: "" },
+    { label: "Reference Notes", value: "" },
   ];
   return (
     <div className="flex flex-row gap-5 p-5">
       <div className="flex flex-col gap-5 w-1/3">
         <MiniCardLayout title={"Sender Details"}>
           <div className="p-5">
-            <div className="font-bold">Hassan Ali</div>
-            <div>21, town, 12354 mummff jjj</div>
+            <div className="font-bold">
+              {transfer?.customer?.first_name +
+                " " +
+                transfer?.customer?.last_name}
+            </div>
+            <div>Address should appear here</div>
           </div>
         </MiniCardLayout>
         <MiniCardLayout title={"Recipient Details"}>
           <div className="p-5">
-            <div className="font-bold">Hassan Ali</div>
-            <div>21, town, 12354 mummff jjj</div>
+            <div className="font-bold">
+              {transfer?.recipient?.first_name +
+                " " +
+                transfer?.recipient?.last_name}
+            </div>
+            <div>Address should appear here</div>
           </div>
         </MiniCardLayout>
       </div>
@@ -72,7 +96,7 @@ const CardFooter = () => {
   );
 };
 
-const MiniCardLayout = (props: any) => {
+const MiniCardLayout = (props: MiniCardLayoutProps) => {
   const { title, children } = props;
   return (
     <div className="border-1 border-gray-200 rounded-md shadow-[0px_2px_0px_0px_rgba(0,0,0,0.05)]">
