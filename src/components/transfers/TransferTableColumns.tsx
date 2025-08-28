@@ -1,6 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import StatusLabel from "@/components/shared/StatusLabel";
 // import { formatCurrency, formatDate } from "@/lib/utils";
@@ -9,7 +8,6 @@ import { Link } from "react-router-dom";
 
 export const transferColumns = (): ColumnDef<Transfer>[] => {
   const [t] = useTranslation("global");
-  const navigate = useNavigate();
 
   return [
     {
