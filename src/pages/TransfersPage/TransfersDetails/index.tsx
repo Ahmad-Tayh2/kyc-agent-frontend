@@ -9,13 +9,14 @@ import PrintIcon from "@/assets/icons/print.svg?react";
 import { useGetTransfer } from "@/hooks/data/useTransfers";
 // import Loader from "@/components/shared/Loader";
 import DetailsCard from "./DetailsCard";
+import Loader from "@/components/shared/Loader";
 
 const TransfersDetails: React.FC = () => {
   const { t } = useTranslation("global");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  const { data: response /*isLoading, error*/ } = useGetTransfer(id!);
+  const { data: response, isLoading, error } = useGetTransfer(id!);
 
   const handleBack = () => {
     navigate(ROUTES.TRANSFERS.LIST);
@@ -26,32 +27,28 @@ const TransfersDetails: React.FC = () => {
     console.log("Print transfer details");
   };
 
-  //   if (isLoading) {
-  //     return (
-  //       <div className="flex justify-center items-center p-8">
-  //         <Loader />
-  //       </div>
-  //     );
-  //   }
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader />
+      </div>
+    );
+  }
 
-  //   if (error || !response?.data) {
-  //     return (
-  //       <div className="p-8 text-center">
-  //         <div className="text-red-500 text-lg font-medium">
-  //           {t("modules.pages.transfers.details.error_loading")}
-  //         </div>
-  //         <Button
-  //           onClick={handleBack}
-  //           variant="outline"
-  //           className="mt-4"
-  //         >
-  //           {t("common.back")}
-  //         </Button>
-  //       </div>
-  //     );
-  //   }
+  if (error || !response?.data) {
+    return (
+      <div className="p-8 text-center">
+        <div className="text-red-500 text-lg font-medium">
+          {t("modules.pages.transfers.details.error_loading")}
+        </div>
+        <Button onClick={handleBack} variant="outline" className="mt-4">
+          {t("common.back")}
+        </Button>
+      </div>
+    );
+  }
 
-  const transfer = response?.data;
+  const transfer: any = response?.data;
 
   return (
     <div className="space-y-4">
