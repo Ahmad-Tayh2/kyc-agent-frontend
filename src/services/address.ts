@@ -1,24 +1,6 @@
 import { API_URLS } from '@/constants/api';
-
-export interface Country {
-  id: number;
-  name: string;
-  code: string;
-  phone_code: string;
-  iso2: string;
-}
-
-export interface City {
-  id: number;
-  name: string;
-  country_id: number;
-}
-
-export interface State {
-  id: number;
-  name: string;
-  country_id: number;
-}
+import type { City, Country, State } from '@/types/shared/location';
+export type { City, Country, State };
 
 export const addressService = {
   // Get all countries

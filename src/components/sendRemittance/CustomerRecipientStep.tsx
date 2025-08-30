@@ -1,82 +1,307 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronUpIcon, ChevronDownIcon } from 'lucide-react';
 import SearchableSelect from '@/components/ui/searchable-select';
-import { useGetCustomers } from '@/hooks/data/useCustomers';
-import { useRecipients } from '@/hooks/data/useRecipients';
-import { useCountries } from '@/hooks/data/useAddress';
-import { useRemittanceMethods } from '@/hooks/data/useRemittanceMethod';
-import { useCustomerFilters } from '@/hooks/data/useCustomerFilters';
-import { useRecipientsFilters } from '@/hooks/data/useRecipientsFilters';
 import { ROUTES } from '@/constants/routes';
+import { useGetCountryAllowedCurrencies } from '@/hooks/data/useCountryAllowedCurrency';
+import {
+  useAttachRecipientToCustomer,
+  useGetCustomerRecipients,
+  useGetCustomers,
+} from '@/hooks/data/useCustomers';
+import { useSearchRecipient } from '@/hooks/data/useRecipients';
+import { useRemittanceMethods } from '@/hooks/data/useRemittanceMethod';
+import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
 import type { CustomerType } from '@/types/customers';
-import type { Country } from '@/services/address';
+import type { CustomerRecipient } from '@/types/customers/recipients';
+import type { RecipientDataType } from '@/types/recipients';
+import type { RemittanceMethod } from '@/types/remittanceMethod/RemittanceMethod';
+import type { CountryAllowedCurrency } from '@/types/shared/countryAllowedCurrency';
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CustomerRecipientStep: React.FC = () => {
   const navigate = useNavigate();
   const [isExpandedText, setIsExpandedText] = useState(false);
+  const [customerSearchTerm, setCustomerSearchTerm] = useState('');
 
-  // Form state
-  const [customerSender, setCustomerSender] = useState<string | number>('');
-  const [recipient, setRecipient] = useState<string | number>('');
-  const [sendingCountry, setSendingCountry] = useState<string | number>('');
-  const [receivingCountry, setReceivingCountry] = useState<string | number>('');
-  const [remittanceMethods, setRemittanceMethods] = useState<string | number>(
-    ''
+  // Store state and actions
+  const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
+  const setCustomer = useSendRemittanceStore((state) => state.setCustomer);
+  const setRecipient = useSendRemittanceStore((state) => state.setRecipient);
+  const setSendCountry = useSendRemittanceStore(
+    (state) => state.setSendCountry
+  );
+  const setReceiveCountry = useSendRemittanceStore(
+    (state) => state.setReceiveCountry
+  );
+  const setRemittanceMethod = useSendRemittanceStore(
+    (state) => state.setRemittanceMethod
+  );
+  const markStepCompleted = useSendRemittanceStore(
+    (state) => state.markStepCompleted
+  );
+  const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
+
+  // API hooks
+  const { data: customersData, isLoading: customersLoading } = useGetCustomers(
+    customerSearchTerm ? `?search=${customerSearchTerm}` : undefined
   );
 
-  // Customer filters
-  const {
-    filtersString: customerSearchFilter,
-    updateSearchTerm: updateCustomerSearchTerm,
-  } = useCustomerFilters();
+  // Only call useGetCustomerRecipients when we have a customer selected
+  const { data: recipientsData, isLoading: recipientsLoading } =
+    useGetCustomerRecipients(
+      stepOne.customer?.id ? stepOne.customer.id.toString() : ''
+    );
 
-  // Recipient filters
-  const {
-    filtersString: recipientSearchFilter,
-    updateSearchTerm: updateRecipientSearchTerm,
-  } = useRecipientsFilters();
-
-  // Data hooks with search filters
-  const { data: customers, isLoading: customersLoading } =
-    useGetCustomers(customerSearchFilter);
-  const { data: recipients, isLoading: recipientsLoading } = useRecipients(
-    recipientSearchFilter
+  const { data: sendCountriesData } = useGetCountryAllowedCurrencies(
+    '?role=send&distinct_countries=true'
   );
-  const { data: countries } = useCountries();
+  const { data: receiveCountriesData } = useGetCountryAllowedCurrencies(
+    '?role=receive&distinct_countries=true'
+  );
+
   const { data: remittanceMethodsData } = useRemittanceMethods();
 
-  // Transform data for dropdowns
-  const customerOptions =
-    customers?.data?.map((customer: CustomerType) => ({
-      label: `${customer.first_name} ${customer.last_name}`,
-      value: customer.id.toString(),
-    })) || [];
+  const searchRecipientMutation = useSearchRecipient();
+  const attachRecipientMutation = useAttachRecipientToCustomer();
 
-  const recipientOptions =
-    recipients?.data?.map(
-      (recipient: { id: string; first_name: string; last_name: string }) => ({
+  // Memoized options
+  const customerOptions = useMemo(
+    () =>
+      customersData?.data?.map((customer: CustomerType) => ({
+        label: customer.full_name,
+        value: customer.id,
+      })) || [],
+    [customersData]
+  );
+
+  const recipientOptions = useMemo(() => {
+    const recipients = recipientsData as CustomerRecipient[] | undefined;
+    return (
+      recipients?.map((recipient: CustomerRecipient) => ({
         label: `${recipient.first_name} ${recipient.last_name}`,
-        value: recipient.id.toString(),
-      })
-    ) || [];
+        value: recipient.id,
+      })) || []
+    );
+  }, [recipientsData]);
 
-  const countryOptions =
-    countries?.map((country: Country) => ({
-      label: country.name,
-      value: country.id.toString(),
-    })) || [];
+  const sendCountryOptions = useMemo(() => {
+    return (
+      sendCountriesData?.map((item: CountryAllowedCurrency) => ({
+        label: item.country.name,
+        value: item.country.id,
+      })) || []
+    );
+  }, [sendCountriesData]);
 
-  const remittanceMethodOptions =
-    remittanceMethodsData?.data?.map(
-      (method: { id: string | number; name: string }) => ({
-        label: method.name,
-        value: method.id.toString(),
-      })
-    ) || [];
+  const receiveCountryOptions = useMemo(() => {
+    return (
+      receiveCountriesData?.map((item: CountryAllowedCurrency) => ({
+        label: item.country.name,
+        value: item.country.id,
+      })) || []
+    );
+  }, [receiveCountriesData]);
+
+  // Get recipient's remittance methods
+  const remittanceMethodOptions = useMemo(() => {
+    if (!stepOne.recipient || !remittanceMethodsData?.data) {
+      return [];
+    }
+
+    // Since CustomerRecipient doesn't include remittance methods,
+    // we'll show all available remittance methods for now
+    // TODO: Filter based on recipient's country and available methods
+    return remittanceMethodsData.data.map((method: RemittanceMethod) => ({
+      label: method.name,
+      value: method.id,
+      description: method.description,
+    }));
+  }, [stepOne.recipient, remittanceMethodsData]);
+
+  // Auto-validate step when all required fields are filled
+  useEffect(() => {
+    const stepIsValid =
+      stepOne.customer &&
+      stepOne.recipient &&
+      stepOne.sendCountry &&
+      stepOne.receiveCountry &&
+      stepOne.remittanceMethod;
+
+    if (stepIsValid) {
+      markStepCompleted('customer');
+    }
+  }, [
+    stepOne.customer,
+    stepOne.recipient,
+    stepOne.sendCountry,
+    stepOne.receiveCountry,
+    stepOne.remittanceMethod,
+    markStepCompleted,
+  ]);
+
+  // Handler functions
+  const handleCustomerSelect = (customerId: string | number) => {
+    const customer = customersData?.data?.find(
+      (c: CustomerType) => c.id.toString() === customerId.toString()
+    );
+    if (customer) {
+      setRecipient(null);
+      setReceiveCountry(null);
+
+      setCustomer({
+        id: parseInt(customer.id),
+        firstName: customer.first_name,
+        lastName: customer.last_name,
+        fullName: customer.full_name,
+        countryId: 0, // Will be updated when we set send country
+        countryIso3: '',
+        countryName: customer.country.name,
+      });
+
+      // Auto-set send country based on customer's country if available in allowed countries
+      const customerCountryInAllowed = (
+        sendCountriesData as CountryAllowedCurrency[]
+      )?.find(
+        (item: CountryAllowedCurrency) =>
+          item.country.name === customer.country.name
+      );
+      if (customerCountryInAllowed) {
+        setSendCountry({
+          id:
+            typeof customerCountryInAllowed.country.id === 'string'
+              ? parseInt(customerCountryInAllowed.country.id)
+              : customerCountryInAllowed.country.id,
+          name: customerCountryInAllowed.country.name,
+          iso3: customerCountryInAllowed.country.iso3 || '',
+        });
+      }
+    }
+  };
+
+  const handleRecipientSelect = (recipientId: string | number) => {
+    const recipients = recipientsData as CustomerRecipient[] | undefined;
+    const recipient = recipients?.find(
+      (r: CustomerRecipient) => r.id.toString() === recipientId.toString()
+    );
+    if (recipient) {
+      setRecipient({
+        id: recipient.id,
+        firstName: recipient.first_name,
+        lastName: recipient.last_name,
+        fullName: `${recipient.first_name} ${recipient.last_name}`,
+        countryId: 0, // Will be updated when we set receive country
+        countryIso3: '',
+        countryName: '',
+        countryPhoneCode: recipient.country_phone_code,
+        phoneNumber: recipient.phone_number,
+        email: recipient.email,
+        address: {
+          streetName: recipient.address.street || '',
+          houseNumber: '', // Not available in current API response
+          postalCode: recipient.address.postal_code || '',
+          extraDetails: '', // Not available in current API response
+          city: recipient.address.city?.name || '',
+          state: recipient.address.state?.name || '',
+          country: recipient.address.country?.name || '',
+        },
+      });
+
+      // Auto-set receive country based on recipient's country if available in allowed countries
+      if (recipient.address.country?.name) {
+        const recipientCountryInAllowed = receiveCountriesData?.find(
+          (item: CountryAllowedCurrency) =>
+            item.country.name === recipient.address.country.name
+        );
+        if (recipientCountryInAllowed) {
+          setReceiveCountry({
+            id:
+              typeof recipientCountryInAllowed.country.id === 'string'
+                ? parseInt(recipientCountryInAllowed.country.id)
+                : recipientCountryInAllowed.country.id,
+            name: recipientCountryInAllowed.country.name,
+            iso3: recipientCountryInAllowed.country.iso3 || '',
+          });
+        }
+      }
+    }
+  };
+
+  const handleRecipientSearch = (searchTerm: string) => {
+    if (searchTerm && stepOne.customer) {
+      searchRecipientMutation.mutate({
+        name: searchTerm,
+      });
+    }
+  };
+
+  const handleAttachRecipient = (recipientId: string | number) => {
+    if (stepOne.customer) {
+      attachRecipientMutation.mutate(
+        {
+          customerId: stepOne.customer.id.toString(),
+          recipientId: recipientId.toString(),
+        },
+        {
+          onSuccess: () => {
+            // The mutation should automatically invalidate the customer recipients query
+            console.log('Recipient attached successfully');
+          },
+          onError: (error) => {
+            console.error('Failed to attach recipient:', error);
+          },
+        }
+      );
+    }
+  };
 
   const handleCreateRecipient = () => {
     navigate(ROUTES.RECIPIENTS.CREATE_FORM);
+  };
+
+  const handleSendCountrySelect = (countryId: string | number) => {
+    const countryItem = sendCountriesData?.find(
+      (item: CountryAllowedCurrency) => item.country.id === countryId
+    );
+    if (countryItem) {
+      setSendCountry({
+        id:
+          typeof countryItem.country.id === 'string'
+            ? parseInt(countryItem.country.id)
+            : countryItem.country.id,
+        name: countryItem.country.name,
+        iso3: countryItem.country.iso3 || '',
+      });
+    }
+  };
+
+  const handleReceiveCountrySelect = (countryId: string | number) => {
+    const countryItem = receiveCountriesData?.find(
+      (item: CountryAllowedCurrency) =>
+        item.country.id.toString() === countryId.toString()
+    );
+    if (countryItem) {
+      setReceiveCountry({
+        id:
+          typeof countryItem.country.id === 'string'
+            ? parseInt(countryItem.country.id)
+            : countryItem.country.id,
+        name: countryItem.country.name,
+        iso3: countryItem.country.iso3 || '',
+      });
+    }
+  };
+
+  const handleRemittanceMethodSelect = (methodId: string | number) => {
+    const method = remittanceMethodsData?.data?.find(
+      (m: RemittanceMethod) => m.id.toString() === methodId.toString()
+    );
+    if (method) {
+      setRemittanceMethod({
+        id: method.id,
+        name: method.name,
+        description: method.description,
+      });
+    }
   };
 
   return (
@@ -90,12 +315,12 @@ const CustomerRecipientStep: React.FC = () => {
           </label>
           <SearchableSelect
             options={customerOptions}
-            value={customerSender}
-            onChange={setCustomerSender}
+            value={stepOne.customer?.id || ''}
+            onChange={handleCustomerSelect}
             placeholder='Select an existing customer'
             loading={customersLoading}
             enableBackendSearch={true}
-            onSearch={updateCustomerSearchTerm}
+            onSearch={setCustomerSearchTerm}
           />
         </div>
 
@@ -114,15 +339,15 @@ const CustomerRecipientStep: React.FC = () => {
           </div>
           <SearchableSelect
             options={recipientOptions}
-            value={recipient}
-            onChange={setRecipient}
+            value={stepOne.recipient?.id || ''}
+            onChange={handleRecipientSelect}
             placeholder='Select an existing recipient'
             loading={recipientsLoading}
-            enableBackendSearch={true}
-            onSearch={updateRecipientSearchTerm}
+            disabled={!stepOne.customer}
+            enableBackendSearch={false}
           />
 
-          {/* Expandable Text Section - directly under recipient field */}
+          {/* Expandable Text Section - Search recipients from other customers */}
           <div className='mt-2'>
             <button
               onClick={() => setIsExpandedText(!isExpandedText)}
@@ -139,31 +364,94 @@ const CustomerRecipientStep: React.FC = () => {
               )}
             </button>
 
-            {isExpandedText && (
-              <div className='mt-3 pt-3 border-gray-200'>
-                <p className='text-sm text-gray-600'>
-                  This functionality will allow you to search for recipients
-                  from other customers and add them to the currently selected
-                  customer. This feature will be implemented later.
-                </p>
+            {isExpandedText && stepOne.customer && (
+              <div className='mt-3 pt-3 border-t border-gray-200'>
+                <div className='mb-3'>
+                  <SearchableSelect
+                    options={[]}
+                    value={''}
+                    onChange={() => {}}
+                    placeholder='Search recipient by name or phone...'
+                    loading={searchRecipientMutation.isPending}
+                    enableBackendSearch={true}
+                    onSearch={handleRecipientSearch}
+                  />
+                </div>
+
+                {/* Show search results */}
+                {searchRecipientMutation.data?.data &&
+                searchRecipientMutation.data.data.length > 0 ? (
+                  <div className='space-y-2'>
+                    <p className='text-sm text-gray-600 font-medium'>
+                      Search Results:
+                    </p>
+                    {searchRecipientMutation.data.data.map(
+                      (recipient: RecipientDataType) => (
+                        <div
+                          key={recipient.id}
+                          className='flex justify-between items-center p-3 border border-gray-200 rounded-md bg-white'
+                        >
+                          <div>
+                            <span className='font-medium'>
+                              {recipient.first_name} {recipient.last_name}
+                            </span>
+                            <span className='text-gray-500 ml-2'>
+                              - {recipient.phone_number}
+                            </span>
+                          </div>
+                          {recipientOptions.some(
+                            (r) => r.value === recipient.id
+                          ) ? (
+                            <span className='text-green-600 text-sm font-medium'>
+                              Already Attached
+                            </span>
+                          ) : (
+                            <button
+                              className='text-teal-600 text-sm hover:text-teal-700 px-3 py-1 border border-teal-600 rounded hover:bg-teal-50'
+                              onClick={() =>
+                                handleAttachRecipient(recipient.id)
+                              }
+                              disabled={attachRecipientMutation.isPending}
+                            >
+                              {attachRecipientMutation.isPending
+                                ? 'Adding...'
+                                : 'Add'}
+                            </button>
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : searchRecipientMutation.data?.data &&
+                  searchRecipientMutation.data.data.length === 0 ? (
+                  <p className='text-sm text-gray-500 text-center py-3'>
+                    No recipients found. Try a different search term.
+                  </p>
+                ) : (
+                  <p className='text-sm text-gray-500 text-center py-3'>
+                    Type in the search box above to find recipients from other
+                    customers.
+                  </p>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Sending Country and Receiving Country Row */}
+      {/* Send and Receive Countries - User can select any country */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Sending Country */}
         <div className='space-y-2'>
           <label className='block text-sm font-medium text-gray-700'>
-            Sending country
+            Sending Country
           </label>
           <SearchableSelect
-            options={countryOptions}
-            value={sendingCountry}
-            onChange={setSendingCountry}
+            options={sendCountryOptions}
+            value={stepOne.sendCountry?.id || ''}
+            onChange={handleSendCountrySelect}
             placeholder='Select sending country'
+            loading={false}
           />
         </div>
 
@@ -173,10 +461,11 @@ const CustomerRecipientStep: React.FC = () => {
             Receiving Country
           </label>
           <SearchableSelect
-            options={countryOptions}
-            value={receivingCountry}
-            onChange={setReceivingCountry}
-            placeholder='Serbia'
+            options={receiveCountryOptions}
+            value={stepOne.receiveCountry?.id || ''}
+            onChange={handleReceiveCountrySelect}
+            placeholder='Select receiving country'
+            loading={false}
           />
         </div>
       </div>
@@ -188,11 +477,21 @@ const CustomerRecipientStep: React.FC = () => {
         </label>
         <SearchableSelect
           options={remittanceMethodOptions}
-          value={remittanceMethods}
-          onChange={setRemittanceMethods}
+          value={stepOne.remittanceMethod?.id || ''}
+          onChange={handleRemittanceMethodSelect}
           placeholder='Select recipient remittance methods'
+          disabled={!stepOne.recipient}
         />
       </div>
+
+      {/* Step Validation Info */}
+      {isStepValid('customer') && (
+        <div className='mt-4 p-3 bg-green-50 border border-green-200 rounded-md'>
+          <p className='text-sm text-green-800 font-medium'>
+            ✅ Step completed! You can now proceed to the next step.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,13 +1,13 @@
-import { API_URLS } from "@/constants/api";
-import apiClient from "@/lib/axiosInstance";
+import { API_URLS } from '@/constants/api';
+import apiClient from '@/lib/axiosInstance';
 import type {
   TransactionCreateDataType,
   TransferResponse,
   TransfersListResponse,
-} from "@/types/transfers";
+} from '@/types/transfers';
 
 export const transfersService = {
-  getTransfers: async (filters: string = "") => {
+  getTransfers: async (filters: string = '') => {
     const response = await apiClient.get<TransfersListResponse>(
       API_URLS.transfers.get(filters)
     );
@@ -30,7 +30,7 @@ export const transfersService = {
     id: string | number,
     data: Partial<TransactionCreateDataType>
   ) => {
-    const response = await apiClient.put(API_URLS.transfers.update(id), data);
+    const response = await apiClient.patch(API_URLS.transfers.update(id), data);
     return response.data;
   },
 };
