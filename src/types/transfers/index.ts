@@ -152,3 +152,28 @@ export type GetTransfersDataProps = {
   created_at: string;
   updated_at: string;
 };
+export interface TransactionCreateDataType {
+  customer_id: number;
+  recipient_id: number;
+  remittance_method_id: number;
+  send_country_id: number;
+  receive_country_id: number;
+  remittance_purpose_id: number;
+  source_income_id: number;
+  payment_method?: string;
+  comment?: string;
+  send_currency: string;
+  receive_currency: string;
+  sent_amount_in_send_currency: number;
+  sent_amount_in_default_currency: number;
+  receive_amount_in_send_currency: number;
+  receive_amount_in_default_currency?: number;
+  sending_agent_commission_currency?: string;
+  payout_agent_commission_percent?: number;
+  payout_agent_commission_amount?: number;
+  payout_agent_commission_currency?: string;
+  nomadrem_commission_amount?: number;
+  extra_fees_amount?: number;
+  total_commission_amount?: number;
+  payout_amount: number;
+}
