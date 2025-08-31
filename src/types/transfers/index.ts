@@ -78,3 +78,52 @@ export interface TransferFilters {
 }
 
 export interface TransactionCreateDataType {}
+
+// get transfer by id
+type UserName = {
+  id: number;
+  first_name: string;
+  last_name: string;
+};
+
+type IdName = {
+  id: number;
+  name: string;
+  iso2?: string;
+};
+
+// Main type
+export type GetTransfersDataProps = {
+  id: number;
+  created_by: UserName;
+  customer: UserName;
+  recipient: UserName;
+  remittance_method_id: IdName;
+  send_country_id: IdName;
+  receive_country_id: IdName;
+  status: string;
+  isPaid: boolean;
+  payment_method: string;
+  comment: string;
+  send_currency: string;
+  receive_currency: string;
+  default_currency: string;
+  sent_amount_in_send_currency: number;
+  sent_amount_in_default_currency: number;
+  receive_amount_in_send_currency: number;
+  receive_amount_in_default_currency: number;
+  platform_exchange_rate: number;
+  api_exchange_rate: number;
+  sending_agent_commission_percent: number;
+  sending_agent_commission_amount: number;
+  sending_agent_commission_currency: string;
+  payout_agent_commission_percent: number;
+  payout_agent_commission_amount: number;
+  payout_agent_commission_currency: string;
+  nomadrem_commission_amount: number;
+  extra_fees_amount: number;
+  total_commission_amount: number;
+  payout_amount: number;
+  created_at: string;
+  updated_at: string;
+};

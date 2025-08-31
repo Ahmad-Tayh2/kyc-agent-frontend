@@ -615,6 +615,27 @@
       "transfers": {
         "title": "Transfers",
         "content": "Transfers content goes here.",
+        "table": {
+          "columns": {
+            "id": "Tr. #",
+            "sending_date": "Sending Date",
+            "remittance_method": "Remittance Method",
+            "customer": "Customer",
+            "recipient": "Recipient",
+            "send_currency": "Sending currency",
+            "send_country": "Sending country",
+            "receive_country": "Destination country",
+            "sending_amount": "Sent Amount",
+            "total_commission_amount": "Comm.",
+            "extra_fees_amount": "Extra Fees",
+            "payout_amount": "Payable Amount",
+            "status": "Status",
+            "payment_method": "Payment Method",
+            "actions": "Actions"
+          },
+          "actions": {}
+        },
+
         "details": {
           "title": "Transfers Details"
         }

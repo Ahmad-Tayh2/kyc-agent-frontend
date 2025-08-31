@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import {
   createFilterApply,
   createFilterReset,
@@ -6,6 +6,8 @@ import {
 } from "@/utils/filterHelpers";
 import type { BaseFilterState } from "@/utils/filterHelpers";
 import type { TransferStatus } from "@/types/transfers";
+import type { paginationProps } from "@/types/shared/pagination";
+import { useDebounce } from "@/hooks/utils/useDebounce";
 
 export type TransferPaginationProps = {
   page?: number;
@@ -16,6 +18,7 @@ export interface TransferFilterState extends BaseFilterState {
   status?: TransferStatus[];
   sending_date?: string;
   receive_currency?: string;
+  //pagination
   page?: number;
   per_page?: number;
 }
@@ -26,12 +29,17 @@ export const useTransferFilters = () => {
     status: [],
     sending_date: "",
     receive_currency: "",
+    //pagination
     page: 1,
-    per_page: 20,
+    per_page: 1,
   });
 
   const [filtersString, setFilterString] = useState<string>("");
+  const debouncedSearch = useDebounce(filters?.search);
 
+  useEffect(() => {
+    applyFilters();
+  }, [debouncedSearch, filters?.per_page, filters?.page]);
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search }));
@@ -55,8 +63,8 @@ export const useTransferFilters = () => {
   );
 
   const applyFilters = useCallback(
-    createFilterApply(filters, setFilterString),
-    [filters]
+    createFilterApply({ ...filters, search: debouncedSearch }, setFilterString),
+    [filters, debouncedSearch]
   );
 
   const hasActiveFilters = useMemo(
@@ -64,8 +72,9 @@ export const useTransferFilters = () => {
     [filters]
   );
 
-  const updatePagination = (pagination: TransferPaginationProps) => {
-    let updatedFilters: TransferPaginationProps = {};
+  const updatePagination = (pagination: paginationProps) => {
+    console.log(" paggination   = ", pagination);
+    let updatedFilters: paginationProps = {};
     if (pagination?.page !== undefined) {
       updatedFilters.page = Number(pagination?.page);
     }
@@ -88,4 +97,4 @@ export const useTransferFilters = () => {
     hasActiveFilters,
     updatePagination,
   };
-}; 
+};
