@@ -10,7 +10,7 @@ import type { ExchangePreviewPayload } from "@/types/currency";
 import type { WalletCurrency } from "@/types/wallet";
 import Loader from "@/components/shared/Loader";
 import { Label } from "@/components/ui/label";
-import SummaryCard from "./SummaryCard";
+// import SummaryCard from "./SummaryCard";
 import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
 import { useGetCountrySendingCurrencies } from "@/hooks/data/useCountryAllowedCurrency";
 
@@ -22,9 +22,9 @@ const CurrenciesAmountStep: React.FC = () => {
   const sendCurrency = useSendRemittanceStore(
     (state) => state.data.stepTwo.sendCurrency
   );
-  const sendAmount = useSendRemittanceStore(
-    (state) => state.data.stepTwo.sendAmount
-  );
+  // const sendAmount = useSendRemittanceStore(
+  //   (state) => state.data.stepTwo.sendAmount
+  // );
   const setSendCurrency = useSendRemittanceStore(
     (state) => state.setSendCurrency
   );
@@ -32,7 +32,7 @@ const CurrenciesAmountStep: React.FC = () => {
   // Form state
   const [fromCurrencyId, setFromCurrencyId] = useState<number>(0);
   const [toCurrencyId, setToCurrencyId] = useState<number>(0);
-  const [fromAmount, setFromAmount] = useState<number>(0);
+  const [fromAmount /*, setFromAmount*/] = useState<number>(0);
 
   // Data hooks
   const { data: wallet } = useWallet(agentId);
@@ -42,13 +42,13 @@ const CurrenciesAmountStep: React.FC = () => {
     stepOne?.sendCountry?.id ?? ""
   );
 
-  // Get wallet currencies
+  // Get wallet currenciesey
   const walletCurrencies = wallet?.wallet_currencies || [];
 
   useEffect(() => {
-    console.log(" sendingCurrencies == ", sendingCurrencies);
-    console.log(" walletCurrencies == ", walletCurrencies);
-    console.log(" sendingCurrencies length == ", sendingCurrencies?.length);
+    // console.log(" sendingCurrencies == ", sendingCurrencies);
+    // console.log(" walletCurrencies == ", walletCurrencies);
+    // console.log(" sendingCurrencies length == ", sendingCurrencies?.length);
 
     if (sendingCurrencies?.length) {
       const defaultCurrency = sendingCurrencies?.[0]?.currency;

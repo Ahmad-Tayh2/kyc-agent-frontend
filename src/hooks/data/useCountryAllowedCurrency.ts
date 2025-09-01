@@ -1,7 +1,7 @@
 import {
   countryAllowedCurrencyService,
   type CountryAllowedCurrency,
-  type CountryCurrenciesResponse,
+  // type CountryCurrenciesResponse,
   type CurrencyCountriesResponse,
 } from "@/services/countryAllowedCurrency";
 import { useQuery } from "@tanstack/react-query";
@@ -20,7 +20,7 @@ export function useGetCountryCurrencies(
   countryId: string | number,
   filters?: string
 ) {
-  return useQuery<CountryCurrenciesResponse>({
+  return useQuery<any /*CountryCurrenciesResponse*/>({
     queryKey: ["country-currencies", countryId, filters],
     queryFn: () =>
       countryAllowedCurrencyService.getCountryCurrencies(
