@@ -3,15 +3,15 @@ import {
   type CountryAllowedCurrency,
   type CountryCurrenciesResponse,
   type CurrencyCountriesResponse,
-} from '@/services/countryAllowedCurrency';
-import { useQuery } from '@tanstack/react-query';
+} from "@/services/countryAllowedCurrency";
+import { useQuery } from "@tanstack/react-query";
 
 // Hook to get all country-allowed-currencies with filters
 export function useGetCountryAllowedCurrencies(filters?: string) {
   return useQuery<CountryAllowedCurrency[]>({
-    queryKey: ['country-allowed-currencies', filters],
+    queryKey: ["country-allowed-currencies", filters],
     queryFn: () =>
-      countryAllowedCurrencyService.getCountryAllowedCurrencies(filters || ''),
+      countryAllowedCurrencyService.getCountryAllowedCurrencies(filters || ""),
   });
 }
 
@@ -21,11 +21,11 @@ export function useGetCountryCurrencies(
   filters?: string
 ) {
   return useQuery<CountryCurrenciesResponse>({
-    queryKey: ['country-currencies', countryId, filters],
+    queryKey: ["country-currencies", countryId, filters],
     queryFn: () =>
       countryAllowedCurrencyService.getCountryCurrencies(
         countryId,
-        filters || ''
+        filters || ""
       ),
     enabled: !!countryId,
   });
@@ -37,11 +37,11 @@ export function useGetCurrencyCountries(
   filters?: string
 ) {
   return useQuery<CurrencyCountriesResponse>({
-    queryKey: ['currency-countries', currencyId, filters],
+    queryKey: ["currency-countries", currencyId, filters],
     queryFn: () =>
       countryAllowedCurrencyService.getCurrencyCountries(
         currencyId,
-        filters || ''
+        filters || ""
       ),
     enabled: !!currencyId,
   });
@@ -52,35 +52,36 @@ export function useGetCurrencyCountries(
 // Get sending currencies for all countries
 export function useGetSendingCurrencies(distinctCountries?: boolean) {
   const filters = `?role=send${
-    distinctCountries ? '&distinct_countries=true' : ''
+    distinctCountries ? "&distinct_countries=true" : ""
   }`;
+
   return useGetCountryAllowedCurrencies(filters);
 }
 
 // Get receiving currencies for all countries
 export function useGetReceivingCurrencies(distinctCountries?: boolean) {
   const filters = `?role=receive${
-    distinctCountries ? '&distinct_countries=true' : ''
+    distinctCountries ? "&distinct_countries=true" : ""
   }`;
   return useGetCountryAllowedCurrencies(filters);
 }
 
 // Get sending currencies for a specific country
 export function useGetCountrySendingCurrencies(countryId: string | number) {
-  return useGetCountryCurrencies(countryId, '?role=send');
+  return useGetCountryCurrencies(countryId, "?role=send");
 }
 
 // Get receiving currencies for a specific country
 export function useGetCountryReceivingCurrencies(countryId: string | number) {
-  return useGetCountryCurrencies(countryId, '?role=receive');
+  return useGetCountryCurrencies(countryId, "?role=receive");
 }
 
 // Get countries that can send a specific currency
 export function useGetCurrencySendingCountries(currencyId: string | number) {
-  return useGetCurrencyCountries(currencyId, '?role=send');
+  return useGetCurrencyCountries(currencyId, "?role=send");
 }
 
 // Get countries that can receive a specific currency
 export function useGetCurrencyReceivingCountries(currencyId: string | number) {
-  return useGetCurrencyCountries(currencyId, '?role=receive');
+  return useGetCurrencyCountries(currencyId, "?role=receive");
 }

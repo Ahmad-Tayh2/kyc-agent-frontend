@@ -5,17 +5,17 @@ import {
   ReviewStep,
   StepIndicator,
   type Step,
-} from '@/components/sendRemittance';
-import ActionButton from '@/components/shared/ActionButton';
-import PageTitle from '@/components/shared/PageTitle';
-import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
-import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+} from "@/components/sendRemittance";
+import ActionButton from "@/components/shared/ActionButton";
+import PageTitle from "@/components/shared/PageTitle";
+import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
+import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
-type StepName = 'customer' | 'currencies' | 'review' | 'pay';
+type StepName = "customer" | "currencies" | "review" | "pay";
 
 const SendRemittancePage: React.FC = () => {
-  const { t } = useTranslation('global');
+  const { t } = useTranslation("global");
 
   // Use the store state directly without the complex helper hook
   const currentStep = useSendRemittanceStore((state) => state.currentStep);
@@ -38,7 +38,7 @@ const SendRemittancePage: React.FC = () => {
 
   // Initialize store for create mode when component mounts
   useEffect(() => {
-    setMode('create');
+    setMode("create");
     resetStore();
   }, [setMode, resetStore]);
 
@@ -47,36 +47,36 @@ const SendRemittancePage: React.FC = () => {
     if (isStepValid(step)) return null;
 
     switch (step) {
-      case 'customer':
-        if (!stepOneData.customer) return 'Please select a customer';
-        if (!stepOneData.recipient) return 'Please select a recipient';
-        if (!stepOneData.sendCountry) return 'Please select sending country';
+      case "customer":
+        if (!stepOneData.customer) return "Please select a customer";
+        if (!stepOneData.recipient) return "Please select a recipient";
+        if (!stepOneData.sendCountry) return "Please select sending country";
         if (!stepOneData.receiveCountry)
-          return 'Please select receiving country';
+          return "Please select receiving country";
         if (!stepOneData.remittanceMethod)
-          return 'Please select remittance method';
-        return 'Please complete all required fields';
+          return "Please select remittance method";
+        return "Please complete all required fields";
 
-      case 'currencies':
-        if (!stepTwoData.sendCurrency) return 'Please select send currency';
+      case "currencies":
+        if (!stepTwoData.sendCurrency) return "Please select send currency";
         if (!stepTwoData.receiveCurrency)
-          return 'Please select receive currency';
+          return "Please select receive currency";
         if (stepTwoData.sendAmount <= 0)
-          return 'Please enter a valid send amount';
+          return "Please enter a valid send amount";
         if (!stepTwoData.exchangeDetails)
-          return 'Please get exchange rate details';
-        return 'Please complete currency and amount information';
+          return "Please get exchange rate details";
+        return "Please complete currency and amount information";
 
-      case 'review':
+      case "review":
         if (!stepThreeData.sourceOfIncome)
-          return 'Please select source of income';
+          return "Please select source of income";
         if (!stepThreeData.remittancePurpose)
-          return 'Please select remittance purpose';
-        return 'Please complete review information';
+          return "Please select remittance purpose";
+        return "Please complete review information";
 
-      case 'pay':
-        if (!stepFourData.paymentMethod) return 'Please select payment method';
-        return 'Please complete payment information';
+      case "pay":
+        if (!stepFourData.paymentMethod) return "Please select payment method";
+        return "Please complete payment information";
 
       default:
         return null;
@@ -86,42 +86,42 @@ const SendRemittancePage: React.FC = () => {
   const steps: Step[] = [
     {
       number: 1,
-      title: 'Customer/Recipient',
-      name: 'customer',
+      title: "Customer/Recipient",
+      name: "customer",
     },
     {
       number: 2,
-      title: 'Currencies/Amount',
-      name: 'currencies',
+      title: "Currencies/Amount",
+      name: "currencies",
     },
     {
       number: 3,
-      title: 'Review',
-      name: 'review',
+      title: "Review",
+      name: "review",
     },
     {
       number: 4,
-      title: 'Pay',
-      name: 'pay',
+      title: "Pay",
+      name: "pay",
     },
   ];
 
   const canNavigateToStep = (step: StepName): boolean => {
     switch (step) {
-      case 'customer':
+      case "customer":
         return true; // Always accessible
-      case 'currencies':
-        return completedSteps.includes('customer');
-      case 'review':
+      case "currencies":
+        return completedSteps.includes("customer");
+      case "review":
         return (
-          completedSteps.includes('customer') &&
-          completedSteps.includes('currencies')
+          completedSteps.includes("customer") &&
+          completedSteps.includes("currencies")
         );
-      case 'pay':
+      case "pay":
         return (
-          completedSteps.includes('customer') &&
-          completedSteps.includes('currencies') &&
-          completedSteps.includes('review')
+          completedSteps.includes("customer") &&
+          completedSteps.includes("currencies") &&
+          completedSteps.includes("review")
         );
       default:
         return false;
@@ -149,14 +149,14 @@ const SendRemittancePage: React.FC = () => {
 
     // Navigate to next step
     switch (currentStep) {
-      case 'customer':
-        setCurrentStep('currencies');
+      case "customer":
+        setCurrentStep("currencies");
         break;
-      case 'currencies':
-        setCurrentStep('review');
+      case "currencies":
+        setCurrentStep("review");
         break;
-      case 'review':
-        setCurrentStep('pay');
+      case "review":
+        setCurrentStep("pay");
         break;
       default:
         break;
@@ -165,14 +165,14 @@ const SendRemittancePage: React.FC = () => {
 
   const handleBack = () => {
     switch (currentStep) {
-      case 'currencies':
-        setCurrentStep('customer');
+      case "currencies":
+        setCurrentStep("customer");
         break;
-      case 'review':
-        setCurrentStep('currencies');
+      case "review":
+        setCurrentStep("currencies");
         break;
-      case 'pay':
-        setCurrentStep('review');
+      case "pay":
+        setCurrentStep("review");
         break;
       default:
         break;
@@ -181,13 +181,13 @@ const SendRemittancePage: React.FC = () => {
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 'customer':
+      case "customer":
         return <CustomerRecipientStep />;
-      case 'currencies':
+      case "currencies":
         return <CurrenciesAmountStep />;
-      case 'review':
+      case "review":
         return <ReviewStep />;
-      case 'pay':
+      case "pay":
         return <PayStep />;
       default:
         return <CustomerRecipientStep />;
@@ -198,12 +198,12 @@ const SendRemittancePage: React.FC = () => {
     const validationMessage = getValidationMessage(currentStep);
 
     switch (currentStep) {
-      case 'customer':
+      case "customer":
         // CONTINUE (one button)
         return (
-          <div className='flex flex-col gap-2 m-5 pt-5'>
+          <div className="flex flex-col gap-2 m-5 pt-5">
             {validationMessage && (
-              <div className='text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200'>
+              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
                 <strong>Required:</strong> {validationMessage}
               </div>
             )}
@@ -212,35 +212,35 @@ const SendRemittancePage: React.FC = () => {
               }`}
             >
               <ActionButton
-                title='Continue'
+                title="Continue"
                 onClick={handleNext}
                 buttonProps={{
-                  disabled: !isStepValid('customer'),
+                  disabled: !isStepValid("customer"),
                 }}
               />
             </div>
           </div>
         );
 
-      case 'currencies':
+      case "currencies":
         // BACK and SAVE & CONTINUE (or just show Continue if step is completed)
         return (
-          <div className='flex flex-col gap-2 m-5 pt-5'>
-            {validationMessage && !completedSteps.includes('currencies') && (
-              <div className='text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200'>
+          <div className="flex flex-col gap-2 m-5 pt-5">
+            {validationMessage && !completedSteps.includes("currencies") && (
+              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
                 <strong>Required:</strong> {validationMessage}
               </div>
             )}
-            <div className='flex justify-end items-end gap-4'>
-              <ActionButton title='Back' onClick={handleBack} type='cancel' />
-              {completedSteps.includes('currencies') ? (
-                <ActionButton title='Continue' onClick={handleNext} />
+            <div className="flex justify-end items-end gap-4">
+              <ActionButton title="Back" onClick={handleBack} type="cancel" />
+              {completedSteps.includes("currencies") ? (
+                <ActionButton title="Continue" onClick={handleNext} />
               ) : (
                 <ActionButton
-                  title='Save & Continue'
+                  title="Save & Continue"
                   onClick={handleNext}
                   buttonProps={{
-                    disabled: !isStepValid('currencies'),
+                    disabled: !isStepValid("currencies"),
                   }}
                 />
               )}
@@ -248,33 +248,33 @@ const SendRemittancePage: React.FC = () => {
           </div>
         );
 
-      case 'review':
+      case "review":
         // BACK and SAVE & CONTINUE
         return (
-          <div className='flex flex-col gap-2 m-5 pt-5'>
+          <div className="flex flex-col gap-2 m-5 pt-5">
             {validationMessage && (
-              <div className='text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200'>
+              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
                 <strong>Required:</strong> {validationMessage}
               </div>
             )}
-            <div className='flex justify-end items-end gap-4'>
-              <ActionButton title='Back' onClick={handleBack} type='cancel' />
+            <div className="flex justify-end items-end gap-4">
+              <ActionButton title="Back" onClick={handleBack} type="cancel" />
               <ActionButton
-                title='Save & Continue'
+                title="Save & Continue"
                 onClick={handleNext}
                 buttonProps={{
-                  disabled: !isStepValid('review'),
+                  disabled: !isStepValid("review"),
                 }}
               />
             </div>
           </div>
         );
 
-      case 'pay':
+      case "pay":
         // BACK
         return (
-          <div className='flex justify-end items-end gap-4 m-5 pt-5'>
-            <ActionButton title='Back' onClick={handleBack} type='cancel' />
+          <div className="flex justify-end items-end gap-4 m-5 pt-5">
+            <ActionButton title="Back" onClick={handleBack} type="cancel" />
           </div>
         );
 
@@ -284,14 +284,14 @@ const SendRemittancePage: React.FC = () => {
   };
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
       {/* Header */}
-      <div className='flex justify-between items-center'>
-        <PageTitle title={t('modules.pages.sendRemittance.title')} />
+      <div className="flex justify-between items-center">
+        <PageTitle title={t("modules.pages.sendRemittance.title")} />
       </div>
 
       {/* Form Content */}
-      <div className='bg-white rounded-lg border'>
+      <div className="bg-white rounded-lg border">
         {/* Step Indicator */}
         <StepIndicator
           steps={steps}
@@ -301,13 +301,13 @@ const SendRemittancePage: React.FC = () => {
         />
 
         {/* Separator line after step indicator */}
-        <hr className='border-gray-200' />
+        <hr className="border-gray-200" />
 
         {/* Current Step Content */}
         {renderCurrentStep()}
 
         {/* Separator line before action buttons */}
-        <hr className='border-gray-200' />
+        <hr className="border-gray-200" />
 
         {/* Action Buttons */}
         {renderActionButtons()}
