@@ -19,7 +19,7 @@ import type { RecipientDataType } from "@/types/recipients";
 import type { RemittanceMethod } from "@/types/remittanceMethod/RemittanceMethod";
 import type { CountryAllowedCurrency } from "@/types/shared/countryAllowedCurrency";
 import { ChevronDownIcon, ChevronUpIcon, Search } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 
@@ -41,9 +41,6 @@ const CustomerRecipientStep: React.FC = () => {
   );
   const setRemittanceMethod = useSendRemittanceStore(
     (state) => state.setRemittanceMethod
-  );
-  const markStepCompleted = useSendRemittanceStore(
-    (state) => state.markStepCompleted
   );
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
 
@@ -121,25 +118,25 @@ const CustomerRecipientStep: React.FC = () => {
   }, [stepOne.recipient, remittanceMethodsData]);
 
   // Auto-validate step when all required fields are filled
-  useEffect(() => {
-    const stepIsValid =
-      stepOne.customer &&
-      stepOne.recipient &&
-      stepOne.sendCountry &&
-      stepOne.receiveCountry &&
-      stepOne.remittanceMethod;
+  // useEffect(() => {
+  //   const stepIsValid =
+  //     stepOne.customer &&
+  //     stepOne.recipient &&
+  //     stepOne.sendCountry &&
+  //     stepOne.receiveCountry &&
+  //     stepOne.remittanceMethod;
 
-    if (stepIsValid) {
-      markStepCompleted("customer");
-    }
-  }, [
-    stepOne.customer,
-    stepOne.recipient,
-    stepOne.sendCountry,
-    stepOne.receiveCountry,
-    stepOne.remittanceMethod,
-    markStepCompleted,
-  ]);
+  //   if (stepIsValid) {
+  //     markStepCompleted("customer");
+  //   }
+  // }, [
+  //   stepOne.customer,
+  //   stepOne.recipient,
+  //   stepOne.sendCountry,
+  //   stepOne.receiveCountry,
+  //   stepOne.remittanceMethod,
+  //   markStepCompleted,
+  // ]);
 
   // Handler functions
   const handleCustomerSelect = (customerId: string | number) => {

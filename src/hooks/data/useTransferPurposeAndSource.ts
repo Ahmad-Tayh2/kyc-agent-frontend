@@ -4,24 +4,24 @@ import {
   type RemittancePurposesResponse,
   type SourceIncomeResponse,
   type SourceIncomesResponse,
-} from '@/services/transferPurposeAndSource';
-import { useQuery } from '@tanstack/react-query';
+} from "@/services/transferPurposeAndSource";
+import { useQuery } from "@tanstack/react-query";
 
 // Remittance Purposes Hooks
 
-// Hook to get all remittance purposes with filters
+// Hook to get all remittance purposes with filters => reasons
 export function useGetRemittancePurposes(filters?: string) {
   return useQuery<RemittancePurposesResponse>({
-    queryKey: ['remittance-purposes', filters],
+    queryKey: ["remittance-purposes", filters],
     queryFn: () =>
-      transferPurposeAndSourceService.getRemittancePurposes(filters || ''),
+      transferPurposeAndSourceService.getRemittancePurposes(filters || ""),
   });
 }
 
 // Hook to get a specific remittance purpose by ID
 export function useGetRemittancePurpose(id: string | number) {
   return useQuery<RemittancePurposeResponse>({
-    queryKey: ['remittance-purpose', id],
+    queryKey: ["remittance-purpose", id],
     queryFn: () => transferPurposeAndSourceService.getRemittancePurposeById(id),
     enabled: !!id,
   });
@@ -29,19 +29,19 @@ export function useGetRemittancePurpose(id: string | number) {
 
 // Source Incomes Hooks
 
-// Hook to get all source incomes with filters
+// Hook to get all source incomes with filters => fund
 export function useGetSourceIncomes(filters?: string) {
   return useQuery<SourceIncomesResponse>({
-    queryKey: ['source-incomes', filters],
+    queryKey: ["source-incomes", filters],
     queryFn: () =>
-      transferPurposeAndSourceService.getSourceIncomes(filters || ''),
+      transferPurposeAndSourceService.getSourceIncomes(filters || ""),
   });
 }
 
 // Hook to get a specific source income by ID
 export function useGetSourceIncome(id: string | number) {
   return useQuery<SourceIncomeResponse>({
-    queryKey: ['source-income', id],
+    queryKey: ["source-income", id],
     queryFn: () => transferPurposeAndSourceService.getSourceIncomeById(id),
     enabled: !!id,
   });

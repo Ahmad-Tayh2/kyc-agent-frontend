@@ -8,6 +8,7 @@ import {
 } from "@/components/sendRemittance";
 import ActionButton from "@/components/shared/ActionButton";
 import PageTitle from "@/components/shared/PageTitle";
+import { useCreateTransfer } from "@/hooks/data/useTransfers";
 import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -19,6 +20,7 @@ const SendRemittancePage: React.FC = () => {
 
   // Use the store state directly without the complex helper hook
   const currentStep = useSendRemittanceStore((state) => state.currentStep);
+
   const completedSteps = useSendRemittanceStore(
     (state) => state.completedSteps
   );
@@ -31,6 +33,9 @@ const SendRemittancePage: React.FC = () => {
     (state) => state.markStepCompleted
   );
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
+  const isStepCompleted = useSendRemittanceStore(
+    (state) => state.isStepCompleted
+  );
   const stepOneData = useSendRemittanceStore((state) => state.data.stepOne);
   const stepTwoData = useSendRemittanceStore((state) => state.data.stepTwo);
   const stepThreeData = useSendRemittanceStore((state) => state.data.stepThree);
@@ -135,25 +140,59 @@ const SendRemittancePage: React.FC = () => {
       setCurrentStep(step);
     }
   };
-
+  const { mutateAsync: createDraftTransfer } = useCreateTransfer(() => {
+    if (!isStepCompleted("currencies")) {
+      markStepCompleted("currencies");
+    }
+    setCurrentStep("review");
+  });
+  const handleCurrenciesValidation = () => {
+    const transferDraftPayload: any = {
+      created_by: 2, // TODO: should got from the auth data, also should be fixed in send remittance step
+      customer_id: stepOneData?.customer?.id,
+      recipient_id: stepOneData?.recipient?.id,
+      remittance_method_id: stepOneData?.remittanceMethod?.id,
+      send_country_id: stepOneData?.sendCountry?.id,
+      receive_country_id: stepOneData?.receiveCountry?.id,
+      // remittance_purpose_id: 1,
+      // source_income_id: 1,
+      // payment_method: "bank_transfer",
+      comment: "Test 2",
+      send_currency: stepTwoData?.sendCurrency?.code,
+      receive_currency: stepTwoData?.receiveCurrency?.code,
+      sent_amount_in_send_currency: stepTwoData?.sendAmount,
+      // sent_amount_in_default_currency: 100.5,
+      receive_amount_in_send_currency: stepTwoData?.receiveAmount,
+      // receive_amount_in_default_currency: 95,
+      // sending_agent_commission_currency: "USD",
+      // payout_agent_commission_percent: 1,
+      // payout_agent_commission_amount: 1,
+      // payout_agent_commission_currency: "EUR",
+      // nomadrem_commission_amount: 1,
+      // extra_fees_amount: 0,
+      // total_commission_amount: 4,
+      // payout_amount: 95,
+    };
+    createDraftTransfer(transferDraftPayload);
+  };
   const handleNext = () => {
     // Only proceed if current step is valid
     if (!isStepValid(currentStep)) {
       return;
     }
-
     // Mark current step as completed
-    if (!completedSteps.includes(currentStep)) {
-      markStepCompleted(currentStep);
-    }
 
     // Navigate to next step
     switch (currentStep) {
       case "customer":
         setCurrentStep("currencies");
+        if (!isStepCompleted(currentStep)) {
+          markStepCompleted(currentStep);
+        }
         break;
       case "currencies":
-        setCurrentStep("review");
+        //here the api call
+        handleCurrenciesValidation();
         break;
       case "review":
         setCurrentStep("pay");
@@ -233,15 +272,13 @@ const SendRemittancePage: React.FC = () => {
             )}
             <div className="flex justify-end items-end gap-4">
               <ActionButton title="Back" onClick={handleBack} type="cancel" />
-              {completedSteps.includes("currencies") ? (
+              {isStepCompleted("currencies") ? (
                 <ActionButton title="Continue" onClick={handleNext} />
               ) : (
                 <ActionButton
                   title="Save & Continue"
                   onClick={handleNext}
-                  buttonProps={{
-                    disabled: !isStepValid("currencies"),
-                  }}
+                  disabled={!isStepValid("currencies")}
                 />
               )}
             </div>
@@ -299,16 +336,12 @@ const SendRemittancePage: React.FC = () => {
           completedSteps={completedSteps}
           onStepClick={handleStepClick}
         />
-
         {/* Separator line after step indicator */}
         <hr className="border-gray-200" />
-
         {/* Current Step Content */}
         {renderCurrentStep()}
-
         {/* Separator line before action buttons */}
         <hr className="border-gray-200" />
-
         {/* Action Buttons */}
         {renderActionButtons()}
       </div>
