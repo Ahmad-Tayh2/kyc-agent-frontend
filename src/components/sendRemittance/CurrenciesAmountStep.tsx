@@ -220,8 +220,8 @@ const CurrenciesAmountStep: React.FC = () => {
   };
 
   // Calculate fees and total payable amount using real exchange data
-  const feesAndCharges = conversionInfo ? conversionInfo.charges + 1 : 10; // margin fee + $1 fixed fee
-  const totalPayableAmount = fromAmount + feesAndCharges;
+  // const feesAndCharges = conversionInfo ? conversionInfo.charges + 1 : 10; // margin fee + $1 fixed fee
+  // const totalPayableAmount = fromAmount + feesAndCharges;
 
   const availableBalance = useMemo(() => {
     if (!sendCurrency) return undefined;

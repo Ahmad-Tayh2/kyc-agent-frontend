@@ -1,9 +1,9 @@
 import {
   transferPurposeAndSourceService,
   type RemittancePurposeResponse,
-  type RemittancePurposesResponse,
+  // type RemittancePurposesResponse,
   type SourceIncomeResponse,
-  type SourceIncomesResponse,
+  // type SourceIncomesResponse,
 } from "@/services/transferPurposeAndSource";
 import { useQuery } from "@tanstack/react-query";
 

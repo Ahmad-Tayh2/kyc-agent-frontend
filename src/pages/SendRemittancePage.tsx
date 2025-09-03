@@ -174,6 +174,9 @@ const SendRemittancePage: React.FC = () => {
       // extra_fees_amount: 0,
       // total_commission_amount: 4,
       // payout_amount: 95,
+
+      sending_commission_currency: "USD",
+      payout_commission_currency: "USD",
     };
     createDraftTransfer(transferDraftPayload);
   };
@@ -194,11 +197,11 @@ const SendRemittancePage: React.FC = () => {
         break;
       case "currencies":
         //here the api call
-        // handleCurrenciesValidation();
-        if (!isStepCompleted("currencies")) {
-          markStepCompleted("currencies");
-        }
-        setCurrentStep("review");
+        handleCurrenciesValidation();
+        // if (!isStepCompleted("currencies")) {
+        //   markStepCompleted("currencies");
+        // }
+        // setCurrentStep("review");
         break;
       case "review":
         if (!isStepCompleted("review")) {

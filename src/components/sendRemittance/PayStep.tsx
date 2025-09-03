@@ -9,26 +9,46 @@ import {
   Copy,
   Plus,
 } from "lucide-react";
-import SummaryCard from "./SummaryCard";
+import SummaryCard, { type SummaryData } from "./SummaryCard";
 import { Button } from "@/components/ui/button";
+import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
 
 const PayStep: React.FC = () => {
   // const [paymentMethod, setPaymentMethod] = useState<string>('customer');
 
   // Mock data - should come from previous steps
-  const summaryData = {
-    sendingCustomer: "John Doe",
-    sendingCountryIso: "USA",
-    recipient: "Mohammad Imran",
-    recipientCountryIso: "USA",
-    remittanceMethod: "Cash Pickup",
-    sendingCountry: "USA",
-    receivingCountry: "Europe",
-    sendingAmount: "500.00 USD",
-    exchangeRate: "1 USD = 0.95 EUR",
-    feesAndCharges: "10.00 USD",
-    recipientGets: "476.00 EUR",
-    totalPayableAmount: "511.00 USD",
+  // const summaryData = {
+  //   sendingCustomer: "John Doe",
+  //   sendingCountryIso: "USA",
+  //   recipient: "Mohammad Imran",
+  //   recipientCountryIso: "USA",
+  //   remittanceMethod: "Cash Pickup",
+  //   sendingCountry: "USA",
+  //   receivingCountry: "Europe",
+  //   sendingAmount: "500.00 USD",
+  //   exchangeRate: "1 USD = 0.95 EUR",
+  //   feesAndCharges: "10.00 USD",
+  //   recipientGets: "476.00 EUR",
+  //   totalPayableAmount: "511.00 USD",
+  // };
+  const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
+  const stepTwo = useSendRemittanceStore((state) => state.data.stepTwo);
+  const customer = { ...stepOne?.customer };
+  const summaryData: SummaryData = {
+    sendingCustomer: customer?.fullName,
+    sendingCountryIso: stepOne?.sendCountry?.iso3,
+    recipient: stepOne?.recipient?.fullName,
+    recipientCountryIso: stepOne?.receiveCountry?.iso3,
+    remittanceMethod: stepOne?.remittanceMethod?.name,
+    sendingCountry: stepOne?.sendCountry?.name,
+    receivingCountry: stepOne?.receiveCountry?.name,
+    sendingAmount: stepTwo?.sendAmount,
+    // exchangeRate: "",
+    // feesAndCharges: "",
+    // commission: "",
+    // extraFees: "",
+    // recipientGets: "",
+    // totalPayableAmount: "",
   };
 
   const totalAmount = "511 USD";

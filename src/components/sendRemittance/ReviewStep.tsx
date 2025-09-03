@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import SearchableSelect from "@/components/ui/searchable-select";
 // import { Textarea } from "@/components/ui/textarea";
 // import { Input } from "@/components/ui/input";
@@ -59,6 +59,8 @@ const ReviewStep: React.FC = () => {
   };
 
   const { data: reasonForTransferData } = useGetRemittancePurposes();
+  const { data: sourceIncomesData } = useGetSourceIncomes();
+
   const reasonForTransferOptions = useMemo(() => {
     if (reasonForTransferData?.length) {
       return reasonForTransferData?.map((item: any) => ({
@@ -68,6 +70,16 @@ const ReviewStep: React.FC = () => {
     }
     return [];
   }, [reasonForTransferData]);
+  const sourceIncomesOptions = useMemo(() => {
+    if (sourceIncomesData?.length) {
+      return sourceIncomesData?.map((item: any) => ({
+        label: item?.formal_name,
+        value: item?.id,
+      }));
+    }
+    return [];
+  }, [sourceIncomesData]);
+
   const handleChangeRemittancePurpose = (id: string | number) => {
     const selectedPurpose =
       reasonForTransferOptions?.find(
@@ -78,17 +90,7 @@ const ReviewStep: React.FC = () => {
       id: selectedPurpose?.value,
     });
   };
-  const { data: sourceIncomesData } = useGetSourceIncomes();
 
-  const sourceIncomesOptions = useMemo(() => {
-    if (sourceIncomesData?.length) {
-      return sourceIncomesData?.map((item: any) => ({
-        label: item?.formal_name,
-        value: item?.id,
-      }));
-    }
-    return [];
-  }, [sourceIncomesData]);
   const handleChangeSourceIncomes = (id: string | number) => {
     const selectedPurpose =
       sourceIncomesOptions?.find(
@@ -99,15 +101,6 @@ const ReviewStep: React.FC = () => {
       id: selectedPurpose?.value,
     });
   };
-
-  // Options for dropdowns
-  const sourceOfFundOptions = [
-    { value: "salary", label: "Salary" },
-    { value: "business", label: "Business Income" },
-    { value: "savings", label: "Savings" },
-    { value: "investment", label: "Investment Returns" },
-    { value: "other", label: "Other" },
-  ];
 
   const handleEditRecipient = () => {
     stepOne?.recipient?.id &&
