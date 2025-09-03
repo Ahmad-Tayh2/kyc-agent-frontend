@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 
 // Hook to get all remittance purposes with filters => reasons
 export function useGetRemittancePurposes(filters?: string) {
-  return useQuery<RemittancePurposesResponse>({
+  return useQuery<any /*RemittancePurposesResponse*/>({
     queryKey: ["remittance-purposes", filters],
     queryFn: () =>
       transferPurposeAndSourceService.getRemittancePurposes(filters || ""),
@@ -31,7 +31,7 @@ export function useGetRemittancePurpose(id: string | number) {
 
 // Hook to get all source incomes with filters => fund
 export function useGetSourceIncomes(filters?: string) {
-  return useQuery<SourceIncomesResponse>({
+  return useQuery<any /*SourceIncomesResponse*/>({
     queryKey: ["source-incomes", filters],
     queryFn: () =>
       transferPurposeAndSourceService.getSourceIncomes(filters || ""),

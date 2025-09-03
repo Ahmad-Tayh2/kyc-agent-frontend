@@ -50,27 +50,29 @@ export interface SendRemittanceMethod {
 
 export interface SendRemittanceSourceIncome {
   id: number;
-  formal_name: string;
+  formalName: string;
 }
 
 export interface SendRemittancePurpose {
   id: number;
-  formal_name: string;
+  formalName: string;
 }
 
 export type PaymentMethod =
-  | "remittance_cart"
-  | "payment_link"
-  | "wallet"
-  | "credit_card";
+  | 'remittance_cart'
+  | 'payment_link'
+  | 'wallet'
+  | 'credit_card';
 
 export interface SendRemittanceExchangeDetails {
-  applied_exchange_rate?: number;
-  from_amount?: number;
-  to_amount?: number;
-  margin_amount?: number;
-  margin_percentage?: number;
-  market_rate?: number;
+  rate: number;
+  convertedAmount: number;
+  charges: number;
+  total: number;
+  extraFeesPercentage: number;
+  extraFeesAmountInSendingCurrency: number;
+  sendingAgentCommissionPercentage: number;
+  sendingAgentCommissionInSendingCurrency: number;
 }
 
 // Step 1 Data
@@ -115,10 +117,10 @@ export interface SendRemittanceData {
 
 // Store State
 export interface SendRemittanceState {
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   remittanceId?: number;
-  currentStep: "customer" | "currencies" | "review" | "pay";
-  completedSteps: ("customer" | "currencies" | "review" | "pay")[];
+  currentStep: 'customer' | 'currencies' | 'review' | 'pay';
+  completedSteps: ('customer' | 'currencies' | 'review' | 'pay')[];
   data: SendRemittanceData;
   isLoading: boolean;
   errors: Record<string, string>;
@@ -128,11 +130,11 @@ export interface SendRemittanceState {
 // Store Actions
 export interface SendRemittanceActions {
   // Mode and navigation
-  setMode: (mode: "create" | "edit") => void;
+  setMode: (mode: 'create' | 'edit') => void;
   setRemittanceId: (id?: number) => void;
-  setCurrentStep: (step: "customer" | "currencies" | "review" | "pay") => void;
+  setCurrentStep: (step: 'customer' | 'currencies' | 'review' | 'pay') => void;
   markStepCompleted: (
-    step: "customer" | "currencies" | "review" | "pay"
+    step: 'customer' | 'currencies' | 'review' | 'pay'
   ) => void;
   resetCompletedSteps: () => void;
 
@@ -169,12 +171,12 @@ export interface SendRemittanceActions {
 
   // Navigation helpers
   canNavigateToStep: (
-    step: "customer" | "currencies" | "review" | "pay"
+    step: 'customer' | 'currencies' | 'review' | 'pay'
   ) => boolean;
   isStepCompleted: (
-    step: "customer" | "currencies" | "review" | "pay"
+    step: 'customer' | 'currencies' | 'review' | 'pay'
   ) => boolean;
-  isStepValid: (step: "customer" | "currencies" | "review" | "pay") => boolean;
+  isStepValid: (step: 'customer' | 'currencies' | 'review' | 'pay') => boolean;
 }
 
 export type SendRemittanceStore = SendRemittanceState & SendRemittanceActions;

@@ -17,6 +17,8 @@ import {
   useGetCountrySendingCurrencies,
   useGetCountryReceivingCurrencies,
 } from "@/hooks/data/useCountryAllowedCurrency";
+import SummaryCard, { type SummaryData } from "./SummaryCard";
+import type { SendRemittanceExchangeDetails } from "@/types/sendRemittance";
 
 const CurrenciesAmountStep: React.FC = () => {
   // For now, we'll use a placeholder agent ID. In a real app, this would come from auth context
@@ -44,6 +46,10 @@ const CurrenciesAmountStep: React.FC = () => {
   const setSendAmount = useSendRemittanceStore((state) => state.setSendAmount);
   const setReceiveAmount = useSendRemittanceStore(
     (state) => state.setReceiveAmount
+  );
+
+  const setExchangeDetails = useSendRemittanceStore(
+    (state) => state.setExchangeDetails
   );
   // Form state
   const [toCurrencyId, setToCurrencyId] = useState<number>(0);
@@ -167,7 +173,21 @@ const CurrenciesAmountStep: React.FC = () => {
   // Prepare conversion info for display
   const conversionInfo = useMemo(() => {
     if (!previewData?.exchange_details) return null;
-
+    console.log(
+      " previewData?.exchange_details = ",
+      previewData?.exchange_details
+    );
+    // const {
+    //   applied_exchange_rate,
+    //   from_amount,
+    //   to_amount,
+    //   margin_amount,
+    //   margin_percentage,
+    //   market_rate,
+    // } = previewData?.exchange_details;
+    setExchangeDetails(
+      previewData?.exchange_details as SendRemittanceExchangeDetails
+    );
     const total =
       previewData.exchange_details.to_amount -
       previewData.exchange_details.margin_amount;
@@ -182,14 +202,21 @@ const CurrenciesAmountStep: React.FC = () => {
 
   // TODO: Get real data from previous step context/state
   // For now using mock data, but this should come from CustomerRecipientStep selections
-  const summaryData = {
+  const summaryData: SummaryData = {
     sendingCustomer: stepOne?.customer?.fullName,
-    // sendingCountryIso: "USA",
+    sendingCountryIso: stepOne?.sendCountry?.iso3,
     recipient: stepOne?.recipient?.fullName,
-    // recipientCountryIso: "RUS",
+    recipientCountryIso: stepOne?.receiveCountry?.iso3,
     remittanceMethod: stepOne?.remittanceMethod?.name,
-    sendingCountry: stepOne?.sendCountry?.iso3,
-    receivingCountry: stepOne?.receiveCountry?.iso3,
+    sendingCountry: stepOne?.sendCountry?.name,
+    receivingCountry: stepOne?.receiveCountry?.name,
+    sendingAmount: sendAmount,
+    // exchangeRate: "",
+    // feesAndCharges: "",
+    // commission: "",
+    // extraFees: "",
+    // recipientGets: "",
+    // totalPayableAmount: "",
   };
 
   // Calculate fees and total payable amount using real exchange data
@@ -207,18 +234,7 @@ const CurrenciesAmountStep: React.FC = () => {
   }, [walletCurrencies, sendCurrency]);
   const currentStep = useSendRemittanceStore((state) => state.currentStep);
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
-  // Auto-validate step when all required fields are filled
-  // useEffect(() => {
-  //   if (isStepValid(currentStep)) {
-  //     markStepCompleted(currentStep);
-  //   }
-  // }, [
-  //   sendCurrency,
-  //   sendAmount,
-  //   receiveCurrency,
-  //   receiveAmount,
-  //   markStepCompleted,
-  // ]);
+
   return (
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -271,22 +287,6 @@ const CurrenciesAmountStep: React.FC = () => {
                 <CurrencyInput
                   placeholder="Select target currency"
                   amountPlaceholder="Amount to receive"
-                  // currencyOptions={allCurrencies
-                  //   .filter((currency) => {
-                  //     // Find the selected wallet currency
-                  //     const fromWalletCurrency = walletCurrencies.find(
-                  //       (wc: WalletCurrency) => wc.id === fromCurrencyId
-                  //     );
-                  //     // Filter out the currency that's already selected in the "from" dropdown
-                  //     return fromWalletCurrency
-                  //       ? currency.id !== fromWalletCurrency.currency.id
-                  //       : true;
-                  //   })
-                  //   .map((currency) => ({
-                  //     id: currency.id,
-                  //     code: currency.code,
-                  //     name: currency.name,
-                  //   }))}
                   currencyOptions={receivingCurrencies?.map((item: any) => {
                     return {
                       id: item?.currency?.id,
@@ -295,7 +295,6 @@ const CurrenciesAmountStep: React.FC = () => {
                     };
                   })}
                   selectedCurrencyId={receiveCurrency?.id || undefined}
-                  // amount={conversionInfo ? conversionInfo.total : 0}
                   amount={receiveAmount}
                   onCurrencyChange={(currencyId) => setToCurrencyId(currencyId)}
                   // onAmountChange={() => {}} // Read-only for "to" currency
@@ -332,7 +331,7 @@ const CurrenciesAmountStep: React.FC = () => {
           </div>
           <div className="border-[#E7EFEF] border-b-1 pb-5">
             <span>Your commission: 30% =</span>
-            <span className="font-semibold">10uudd</span>
+            <span className="font-semibold">10 USD</span>
           </div>
           <div className="pb-5">
             <div>Add your extra fees percentage (Max 2.5%)</div>
@@ -342,124 +341,9 @@ const CurrenciesAmountStep: React.FC = () => {
           </div>
         </div>
 
-        {/* Summary Card */}
+        {/* Summary Card - Right Side */}
         <div className="lg:col-span-1">
-          <div className="bg-[#E4F2F2] rounded-lg border p-6 space-y-4 sticky top-6">
-            <h3 className="text-lg font-semibold text-gray-900">Summary</h3>
-            <hr />
-
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Sending Customer</span>
-                <span className="font-medium">
-                  {summaryData.sendingCustomer}
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Recipient</span>
-                <span className="font-medium">{summaryData.recipient}</span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Remittance Method</span>
-                <span className="font-medium flex items-center">
-                  {summaryData.remittanceMethod}
-                  <Info className="w-3 h-3 ml-1 text-gray-400" />
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Sending Country</span>
-                <span className="font-medium">
-                  {summaryData.sendingCountry}
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Receiver Country</span>
-                <span className="font-medium">
-                  {summaryData.receivingCountry}
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Sending Amount</span>
-                <span className="font-medium">
-                  {sendAmount > 0 &&
-                    `${sendAmount.toFixed(2)} ${sendCurrency?.code || "USD"}`}
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Exchange Rate</span>
-                <span className="font-medium">
-                  {/* {conversionInfo?.rate} */}
-                  {conversionInfo &&
-                    sendCurrency &&
-                    receiveCurrency &&
-                    `1 ${sendCurrency.code} = ${conversionInfo?.rate.toFixed(
-                      2
-                    )} ${receiveCurrency.code}`}
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Fees and Charges</span>
-                <span className="font-medium">
-                  {conversionInfo?.charges?.toFixed(2)} {sendCurrency?.code}
-                  {/* {fromAmount > 0 && conversionInfo && selectedFromCurrency
-                    ? `${feesAndCharges.toFixed(2)} ${
-                        selectedFromCurrency.currency.code
-                      }`
-                    : "10.00 USD"} */}
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between">
-                <span className="text-gray-600">Recipient Gets</span>
-                <span className="font-medium">
-                  {conversionInfo?.total?.toFixed(2)} {sendCurrency?.code}
-                  {/* {conversionInfo && selectedToCurrency
-                    ? `${conversionInfo.total.toFixed(2)} ${
-                        selectedToCurrency.code
-                      }`
-                    : "476.00 EUR"} */}
-                </span>
-              </div>
-
-              <hr className="my-3" />
-
-              <div className="flex justify-between text-base font-semibold text-teal-600">
-                <span>Total Payable Amount</span>
-                <span>
-                  {conversionInfo?.convertedAmount?.toFixed(2)}{" "}
-                  {sendCurrency?.code} or {totalPayableAmount}
-                  {/* {fromAmount > 0 && selectedFromCurrency
-                    ? `${totalPayableAmount.toFixed(2)} ${
-                        selectedFromCurrency.currency.code
-                      }`
-                    : "511.00 USD"} */}
-                </span>
-              </div>
-            </div>
-          </div>
+          <SummaryCard data={summaryData} />
         </div>
       </div>
       {/* Step Validation Info */}

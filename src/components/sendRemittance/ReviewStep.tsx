@@ -1,211 +1,255 @@
-import React, { useState } from 'react';
-import { Edit } from 'lucide-react';
-import SearchableSelect from '@/components/ui/searchable-select';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import SummaryCard from './SummaryCard';
+import React, { useState, useMemo } from "react";
+import SearchableSelect from "@/components/ui/searchable-select";
+// import { Textarea } from "@/components/ui/textarea";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+import SummaryCard, { type SummaryData } from "./SummaryCard";
+import EditSectionCard from "../shared/EditSectionCard";
+import { ROUTES } from "@/constants/routes";
+import { useNavigate } from "react-router-dom";
+import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
+import {
+  useGetRemittancePurposes,
+  useGetSourceIncomes,
+} from "@/hooks/data/useTransferPurposeAndSource";
 
 const ReviewStep: React.FC = () => {
-  // Form state
-  const [sourceOfFund, setSourceOfFund] = useState<string | number>('');
-  const [reasonForTransfer, setReasonForTransfer] = useState<string | number>(
-    ''
-  );
-  const [extraDetails, setExtraDetails] = useState('');
-  const [transactionReference, setTransactionReference] = useState('');
+  // const [extraDetails, setExtraDetails] = useState("");
+  // const [transactionReference, setTransactionReference] = useState("");
 
-  // Mock data - this should come from previous steps
-  const recipientData = {
-    name: 'Mohammad Imran',
-    phone: '+91 7064137339',
-    email: 'imran@gmail.com',
-    address: 'Rajgangpur, 770017',
-    country: 'India',
-  };
+  const navigate = useNavigate();
+  const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
+  const stepTwo = useSendRemittanceStore((state) => state.data.stepTwo);
+
+  const remittancePurpose = useSendRemittanceStore(
+    (state) => state.data.stepThree?.remittancePurpose
+  );
+  const sourceOfIncome = useSendRemittanceStore(
+    (state) => state.data.stepThree?.sourceOfIncome
+  );
+  const setRemittancePurpose = useSendRemittanceStore(
+    (state) => state.setRemittancePurpose
+  );
+  const setSourceOfIncome = useSendRemittanceStore(
+    (state) => state.setSourceOfIncome
+  );
 
   const deliveryData = {
-    method: 'Cash Pickup',
-    pickupLocation: '323, Metro line 3, New Delhi',
+    method: stepOne?.remittanceMethod?.name,
+    pickupLocation: "323, Metro line 3, New Delhi (fake data)",
+  };
+  const customer = { ...stepOne?.customer };
+  const recipient = { ...stepOne?.recipient };
+
+  const summaryData: SummaryData = {
+    sendingCustomer: customer?.fullName,
+    sendingCountryIso: stepOne?.sendCountry?.iso3,
+    recipient: stepOne?.recipient?.fullName,
+    recipientCountryIso: stepOne?.receiveCountry?.iso3,
+    remittanceMethod: stepOne?.remittanceMethod?.name,
+    sendingCountry: stepOne?.sendCountry?.name,
+    receivingCountry: stepOne?.receiveCountry?.name,
+    sendingAmount: stepTwo?.sendAmount,
+    // exchangeRate: "",
+    // feesAndCharges: "",
+    // commission: "",
+    // extraFees: "",
+    // recipientGets: "",
+    // totalPayableAmount: "",
   };
 
-  const summaryData = {
-    sendingCustomer: 'John Doe',
-    sendingCountryIso: 'USA',
-    recipient: 'Mohammad Imran',
-    recipientCountryIso: 'USA',
-    remittanceMethod: 'Cash Pickup',
-    sendingCountry: 'USA',
-    receivingCountry: 'Europe',
-    sendingAmount: '500.00 USD',
-    exchangeRate: '1 USD = 0.95 EUR',
-    feesAndCharges: '10.00 USD',
-    commission: '10.00 USD',
-    extraFees: '10.00 USD',
-    recipientGets: '476.00 EUR',
-    totalPayableAmount: '511.00 USD',
+  const { data: reasonForTransferData } = useGetRemittancePurposes();
+  const reasonForTransferOptions = useMemo(() => {
+    if (reasonForTransferData?.length) {
+      return reasonForTransferData?.map((item: any) => ({
+        label: item?.formal_name,
+        value: item?.id,
+      }));
+    }
+    return [];
+  }, [reasonForTransferData]);
+  const handleChangeRemittancePurpose = (id: string | number) => {
+    const selectedPurpose =
+      reasonForTransferOptions?.find(
+        (item: { label: string; value: string | number }) => item?.value === id
+      ) ?? null;
+    setRemittancePurpose({
+      formal_name: selectedPurpose?.label,
+      id: selectedPurpose?.value,
+    });
+  };
+  const { data: sourceIncomesData } = useGetSourceIncomes();
+
+  const sourceIncomesOptions = useMemo(() => {
+    if (sourceIncomesData?.length) {
+      return sourceIncomesData?.map((item: any) => ({
+        label: item?.formal_name,
+        value: item?.id,
+      }));
+    }
+    return [];
+  }, [sourceIncomesData]);
+  const handleChangeSourceIncomes = (id: string | number) => {
+    const selectedPurpose =
+      sourceIncomesOptions?.find(
+        (item: { label: string; value: string | number }) => item?.value === id
+      ) ?? null;
+    setSourceOfIncome({
+      formal_name: selectedPurpose?.label,
+      id: selectedPurpose?.value,
+    });
   };
 
   // Options for dropdowns
   const sourceOfFundOptions = [
-    { value: 'salary', label: 'Salary' },
-    { value: 'business', label: 'Business Income' },
-    { value: 'savings', label: 'Savings' },
-    { value: 'investment', label: 'Investment Returns' },
-    { value: 'other', label: 'Other' },
+    { value: "salary", label: "Salary" },
+    { value: "business", label: "Business Income" },
+    { value: "savings", label: "Savings" },
+    { value: "investment", label: "Investment Returns" },
+    { value: "other", label: "Other" },
   ];
 
-  const reasonForTransferOptions = [
-    { value: 'family_support', label: 'Family Support' },
-    { value: 'education', label: 'Education' },
-    { value: 'medical', label: 'Medical Expenses' },
-    { value: 'business', label: 'Business Purpose' },
-    { value: 'investment', label: 'Investment' },
-    { value: 'other', label: 'Other' },
-  ];
+  const handleEditRecipient = () => {
+    stepOne?.recipient?.id &&
+      navigate(ROUTES.RECIPIENTS.EDIT(stepOne?.recipient?.id));
+  };
 
   return (
-    <div className='p-6 space-y-6'>
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+    <div className="p-6 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content - Left Side */}
-        <div className='lg:col-span-2 space-y-6'>
+        <div className="lg:col-span-2 space-y-6">
           {/* Recipient Details and Delivery Options Row */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Recipient Details Card */}
-            <div className='bg-white rounded-lg border p-6'>
-              <div className='flex items-center justify-between mb-4'>
-                <h3 className='text-lg font-semibold text-gray-900'>
-                  Recipient Details
-                </h3>
-                <button className='flex items-center text-teal-600 hover:text-teal-700 text-sm font-medium cursor-pointer'>
-                  <Edit className='w-4 h-4 mr-1' />
-                  Edit
-                </button>
-              </div>
+            <EditSectionCard
+              sectionTitle="Recipient Details"
+              editMode={false}
+              setEditMode={handleEditRecipient}
+            >
+              <div className="p-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Name</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.fullName}
+                    </span>
+                  </div>
 
-              <hr className='my-3' />
+                  <hr className="my-3" />
 
-              <div className='space-y-3'>
-                <div className='flex justify-between'>
-                  <span className='text-gray-600 text-sm'>Name</span>
-                  <span className='font-medium text-sm'>
-                    {recipientData.name}
-                  </span>
-                </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Phone</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.phoneNumber}
+                    </span>
+                  </div>
 
-                <hr className='my-3' />
+                  <hr className="my-3" />
 
-                <div className='flex justify-between'>
-                  <span className='text-gray-600 text-sm'>Phone</span>
-                  <span className='font-medium text-sm'>
-                    {recipientData.phone}
-                  </span>
-                </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Email</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.email}
+                    </span>
+                  </div>
 
-                <hr className='my-3' />
+                  <hr className="my-3" />
 
-                <div className='flex justify-between'>
-                  <span className='text-gray-600 text-sm'>Email</span>
-                  <span className='font-medium text-sm'>
-                    {recipientData.email}
-                  </span>
-                </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Address</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.address?.city}
+                    </span>
+                  </div>
 
-                <hr className='my-3' />
+                  <hr className="my-3" />
 
-                <div className='flex justify-between'>
-                  <span className='text-gray-600 text-sm'>Address</span>
-                  <span className='font-medium text-sm'>
-                    {recipientData.address}
-                  </span>
-                </div>
-
-                <hr className='my-3' />
-
-                <div className='flex justify-between'>
-                  <span className='text-gray-600 text-sm'>Country</span>
-                  <span className='font-medium text-sm'>
-                    {recipientData.country}
-                  </span>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Country</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.address?.country}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-
+            </EditSectionCard>
             {/* Delivery Options Card */}
-            <div className='bg-white rounded-lg border p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>
-                Delivery Options
-              </h3>
-              <hr className='my-3 full-width' />
-              <div className='space-y-3'>
-                <div className='flex justify-between'>
-                  <span className='text-gray-600 text-sm'>Method</span>
-                  <span className='font-medium text-sm'>
-                    {deliveryData.method}
-                  </span>
-                </div>
 
-                <hr className='my-3' />
+            <EditSectionCard sectionTitle="Delivery Options" editMode={false}>
+              <div className="p-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Method</span>
+                    <span className="font-medium text-sm">
+                      {deliveryData.method}
+                    </span>
+                  </div>
 
-                <div className='flex justify-between'>
-                  <span className='text-gray-600 text-sm'>Pickup Location</span>
-                  <span className='font-medium text-sm'>
-                    {deliveryData.pickupLocation}
-                  </span>
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">
+                      Pickup Location
+                    </span>
+                    <span className="font-medium text-sm">
+                      {deliveryData.pickupLocation}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </EditSectionCard>
           </div>
 
           {/* Source of Fund and Reason for Transfer Row */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Source of Fund */}
             <div>
               <SearchableSelect
-                label='Source of fund'
-                placeholder='Selected fund'
-                options={sourceOfFundOptions}
-                value={sourceOfFund}
-                onChange={setSourceOfFund}
+                label="Source of fund"
+                placeholder="Selected fund"
+                options={sourceIncomesOptions}
+                value={sourceOfIncome?.id ?? ""}
+                onChange={handleChangeSourceIncomes}
               />
             </div>
 
             {/* Reason for Transfer */}
             <div>
               <SearchableSelect
-                label='Reason for transfer'
-                placeholder='Selected reason'
+                label="Reason for transfer"
+                placeholder="Selected reason"
                 options={reasonForTransferOptions}
-                value={reasonForTransfer}
-                onChange={setReasonForTransfer}
+                value={remittancePurpose?.id ?? ""}
+                onChange={handleChangeRemittancePurpose}
               />
             </div>
           </div>
 
           {/* Extra Details */}
-          <div className='space-y-4'>
-            <Label className='text-sm font-medium'>Extra details</Label>
+          {/* <div className="space-y-4">
+            <Label className="text-sm font-medium">Extra details</Label>
             <Textarea
-              placeholder='Write here'
+              placeholder="Write here"
               value={extraDetails}
               onChange={(e) => setExtraDetails(e.target.value)}
-              className='min-h-[120px] resize-none'
+              className="min-h-[120px] resize-none"
             />
-          </div>
+          </div> */}
 
           {/* Transaction Reference */}
-          <div className='space-y-4'>
+          {/* <div className="space-y-4">
             <Input
-              placeholder='Enter description or reference for this transaction (optional)'
+              placeholder="Enter description or reference for this transaction (optional)"
               value={transactionReference}
               onChange={(e) => setTransactionReference(e.target.value)}
-              className='w-full'
+              className="w-full"
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Summary Card - Right Side */}
-        <div className='lg:col-span-1'>
+        <div className="lg:col-span-1">
           <SummaryCard data={summaryData} />
         </div>
       </div>

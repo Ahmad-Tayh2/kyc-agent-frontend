@@ -173,9 +173,9 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       setExchangeDetails: (details) =>
         set((state) => {
           state.data.stepTwo.exchangeDetails = details;
-          if (details) {
-            state.data.stepTwo.receiveAmount = details.total;
-          }
+          // if (details) {
+          //   state.data.stepTwo.receiveAmount = details.total;
+          // }
         }),
 
       // Step 3 Actions

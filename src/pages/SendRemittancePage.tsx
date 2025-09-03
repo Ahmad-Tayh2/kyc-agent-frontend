@@ -147,8 +147,10 @@ const SendRemittancePage: React.FC = () => {
     setCurrentStep("review");
   });
   const handleCurrenciesValidation = () => {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+
     const transferDraftPayload: any = {
-      created_by: 2, // TODO: should got from the auth data, also should be fixed in send remittance step
+      created_by: user?.agent?.id,
       customer_id: stepOneData?.customer?.id,
       recipient_id: stepOneData?.recipient?.id,
       remittance_method_id: stepOneData?.remittanceMethod?.id,
@@ -185,16 +187,23 @@ const SendRemittancePage: React.FC = () => {
     // Navigate to next step
     switch (currentStep) {
       case "customer":
-        setCurrentStep("currencies");
         if (!isStepCompleted(currentStep)) {
           markStepCompleted(currentStep);
         }
+        setCurrentStep("currencies");
         break;
       case "currencies":
         //here the api call
-        handleCurrenciesValidation();
+        // handleCurrenciesValidation();
+        if (!isStepCompleted("currencies")) {
+          markStepCompleted("currencies");
+        }
+        setCurrentStep("review");
         break;
       case "review":
+        if (!isStepCompleted("review")) {
+          markStepCompleted("review");
+        }
         setCurrentStep("pay");
         break;
       default:
