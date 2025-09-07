@@ -2,6 +2,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster, type ToasterProps } from "sonner";
+import { SessionProvider } from "@/components/shared/SessionProvider";
 
 // Create a client outside the component to prevent recreation on every render
 const queryClient = new QueryClient({
@@ -26,8 +27,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <AppRoutes />
-        <Toaster {...ToasterPropss} />
+        <SessionProvider>
+          <AppRoutes />
+          <Toaster {...ToasterPropss} />
+        </SessionProvider>
       </Router>
     </QueryClientProvider>
   );

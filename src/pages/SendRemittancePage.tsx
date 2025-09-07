@@ -148,7 +148,7 @@ const SendRemittancePage: React.FC = () => {
   });
   const handleCurrenciesValidation = () => {
     const user = JSON.parse(localStorage.getItem("user") || "null");
-
+    //function to create payload before sending it (may be in utils)
     const transferDraftPayload: any = {
       created_by: user?.agent?.id,
       customer_id: stepOneData?.customer?.id,
@@ -334,27 +334,20 @@ const SendRemittancePage: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <PageTitle title={t("modules.pages.sendRemittance.title")} />
       </div>
-
-      {/* Form Content */}
       <div className="bg-white rounded-lg border">
-        {/* Step Indicator */}
         <StepIndicator
           steps={steps}
           currentStep={currentStep}
           completedSteps={completedSteps}
           onStepClick={handleStepClick}
         />
-        {/* Separator line after step indicator */}
         <hr className="border-gray-200" />
-        {/* Current Step Content */}
+        {/* TODO: changes the renders function into components */}
         {renderCurrentStep()}
-        {/* Separator line before action buttons */}
         <hr className="border-gray-200" />
-        {/* Action Buttons */}
         {renderActionButtons()}
       </div>
     </div>

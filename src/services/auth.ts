@@ -231,7 +231,33 @@ export async function resendVerification(email: string) {
     const response = await res.json();
 
     if (!res.ok) {
-      const errorMessage = response.message || "Failed to resend verification email";
+      const errorMessage =
+        response.message || "Failed to resend verification email";
+      throw new Error(errorMessage);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Resend verification error:", error);
+    throw error;
+  }
+}
+
+export async function refreshToken() {
+  try {
+    const res = await fetch(API_URLS.auth.refresh, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      const errorMessage =
+        response.message || "Failed to resend verification email";
       throw new Error(errorMessage);
     }
 
