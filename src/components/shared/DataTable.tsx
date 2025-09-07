@@ -201,7 +201,7 @@ export function DataTable({
                           : flexRender(
                               header.column.columnDef.header,
                               header.getContext()
-                            )}
+                            )}{" "}
                       </TableHead>
                     );
                   })}

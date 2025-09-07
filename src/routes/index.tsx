@@ -48,8 +48,13 @@ const CommissionEarnedPage = lazy(
   () => import("../pages/CommissionEarnedPage")
 );
 const MoneyWithdrawalsPage = lazy(
-  () => import("../pages/MoneyWithdrawalsPage")
+  () => import("../pages/MoneyWithdrawalsPage/MoneyWithdrawalList")
 );
+
+const RequestMoneyWithdrawalsPage = lazy(
+  () => import("../pages/MoneyWithdrawalsPage/RequestMoneyWithdrawalsPage")
+);
+
 const AddMoneyPage = lazy(() => import("../pages/AddMoneyPage"));
 const AccountStatementsPage = lazy(
   () => import("../pages/AccountStatementsPage")
@@ -128,8 +133,12 @@ export const AppRoutes = () => (
             element={<CommissionEarnedPage />}
           />
           <Route
-            path={ROUTES.MONEY_WITHDRAWALS}
+            path={ROUTES.MONEY_WITHDRAWALS.LIST}
             element={<MoneyWithdrawalsPage />}
+          />
+          <Route
+            path={ROUTES.MONEY_WITHDRAWALS.REQUEST}
+            element={<RequestMoneyWithdrawalsPage />}
           />
           <Route path={ROUTES.ADD_MONEY} element={<AddMoneyPage />} />
           <Route
