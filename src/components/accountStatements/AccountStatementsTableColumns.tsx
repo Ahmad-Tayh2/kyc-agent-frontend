@@ -9,12 +9,12 @@ import StatusLabel from "@/components/shared/StatusLabel";
 // import { ROUTES } from "@/constants/routes";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 
-export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
+export const AccountStatementsTableColumns = (): ColumnDef<any>[] => {
   return useMemo(
     () => [
       {
         accessorKey: "reference_number",
-        header: "Transaction Number",
+        header: "Tr. #",
       },
 
       {
@@ -23,16 +23,25 @@ export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
       },
       {
         accessorKey: "",
-        header: "Currency",
+        header: "Type",
       },
       {
         accessorKey: "",
-        header: "Amount",
+        header: "Comment",
       },
       {
         accessorKey: "",
-        header: "Payment Method",
+        header: "Debit",
       },
+      {
+        accessorKey: "",
+        header: "Credit",
+      },
+      {
+        accessorKey: "",
+        header: "Balance After",
+      },
+
       {
         accessorKey: "status",
         header: "Status",
