@@ -663,7 +663,8 @@
         "title": "Payout Locations"
       },
       "addMoney": {
-        "title": "Add Money"
+        "title": "Add Money",
+        "historyTitle": "Add Money History"
       },
       "commissionEarned": {
         "title": "Commission Earned",

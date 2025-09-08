@@ -40,7 +40,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
             key={index}
             onClick={option.onClick}
             className={cn(
-              "text-primary font-semibold rounded-none ",
+              "text-primary font-semibold rounded-none p-3",
               index !== 0 && "border-t-1 border-gray-200"
             )}
           >
