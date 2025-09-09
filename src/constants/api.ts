@@ -1,4 +1,4 @@
-const baseUrl = "https://amazing-agileteam.com/api";
+const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
 
 export const API_URLS = {
   auth: {
