@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import * as authService from "@/services/auth";
 import { ROUTES } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
@@ -137,8 +137,6 @@ export function useRefreshToken() {
   return useMutation({
     mutationFn: async () => {
       const response = await authService.refreshToken();
-      console.log(" response of refresh *********** ", response);
-
       // Update token and user data
       if (response?.data.access_token) {
         localStorage.setItem("token", response?.data.access_token);
@@ -151,5 +149,12 @@ export function useRefreshToken() {
 
       return response?.data;
     },
+  });
+}
+
+export function useCheckAuth() {
+  return useQuery({
+    queryKey: ["auth-user"],
+    queryFn: () => authService.getAuthUser(),
   });
 }

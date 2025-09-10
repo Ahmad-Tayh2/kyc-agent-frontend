@@ -267,3 +267,24 @@ export async function refreshToken() {
     throw error;
   }
 }
+
+// export const getAuthUser = async (): Promise<ApiResponse<LoginResponse>> => {
+//   return authenticatedApiRequest<LoginResponse>({
+//     method: "GET",
+//     url: API_ENDPOINTS,
+//   });
+// };
+
+export const getAuthUser = async () => {
+  const res = await fetch(API_URLS.auth.user, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  const response = await res.json();
+  // const response = await apiClient.get(API_URLS.auth.user);
+  return response;
+};

@@ -9,6 +9,7 @@ export const API_URLS = {
     resetPassword: `${baseUrl}/auth/reset-password`,
     resendVerification: `${baseUrl}/auth/agents/send-verification-email`,
     refresh: `${baseUrl}/auth/refresh`,
+    user: `${baseUrl}/auth/user`,
   },
   otp: {
     verify: `${baseUrl}/auth/otp/verify`,

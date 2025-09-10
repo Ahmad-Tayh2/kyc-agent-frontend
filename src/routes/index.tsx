@@ -2,7 +2,6 @@ import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 import PrivateRoute from "./PrivateRoute";
-import PublicRoute from "./PublicRoute";
 
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import AuthPage from "@/pages/AuthPage";
@@ -73,14 +72,12 @@ export const AppRoutes = () => (
       {/* Public customer form route */}
       <Route path="/customer-form/:token" element={<CustomerFormPage />} />
 
-      <Route element={<PublicRoute />}>
-        <Route path={ROUTES.AUTH.LOGIN} element={<AuthPage />} />
-        <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
-        <Route
-          path={ROUTES.AUTH.RESET_PASSWORD}
-          element={<ResetPasswordPage />}
-        />
-      </Route>
+      <Route path={ROUTES.AUTH.LOGIN} element={<AuthPage />} />
+      <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
+      <Route
+        path={ROUTES.AUTH.RESET_PASSWORD}
+        element={<ResetPasswordPage />}
+      />
       <Route element={<PrivateRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
@@ -154,10 +151,10 @@ export const AppRoutes = () => (
           <Route path={ROUTES.PAYMENT_LINKS} element={<PaymentLinksPage />} />
           <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
           <Route path={ROUTES.HELP} element={<HelpPage />} />
-          <Route
+          {/* <Route
             path="*"
             element={<Navigate to={ROUTES.DASHBOARD} replace />}
-          />
+          /> */}
         </Route>
       </Route>
     </Routes>
