@@ -8,3 +8,8 @@ export const paginationsPagesOptions = [
   { label: "50 / page", value: "50" },
   { label: "100 / page", value: "100" },
 ];
+
+export const genderOptions = [
+  { label: "Male", value: "male" },
+  { label: "Female", value: "female" },
+];

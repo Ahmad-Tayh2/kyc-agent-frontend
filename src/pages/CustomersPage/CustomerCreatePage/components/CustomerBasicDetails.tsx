@@ -7,7 +7,13 @@ import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { cn } from "@/lib/utils";
-import { useCitiesByCountry, useCountries } from "@/hooks/data/useAddress";
+import {
+  useCitiesByCountry,
+  useCountries,
+  useStatesByCountry,
+} from "@/hooks/data/useAddress";
+import { genderOptions } from "@/constants/options";
+import RadioInput from "@/components/shared/RadioInput";
 
 const CustomerBasicDetails = (props: any) => {
   const {
@@ -16,13 +22,11 @@ const CustomerBasicDetails = (props: any) => {
     handleDateChange,
     editMode = true,
   } = props;
-  const genderOptions = [
-    { label: "Male", value: "male" },
-    { label: "Female", value: "female" },
-  ];
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(formData.country_id || null);
+  const { data: states = [] } = useStatesByCountry(formData.country_id || null);
+
   const countryOptions =
     countries?.map((country: any) => ({
       value: country.id,
@@ -34,7 +38,11 @@ const CustomerBasicDetails = (props: any) => {
       value: city.id,
       label: city.name,
     })) || [];
-
+  const stateOptions =
+    states?.map((state) => ({
+      value: state.id.toString(),
+      label: state.name,
+    })) || [];
   const countryPhoneOptions =
     countries?.map((country: any) => ({
       value: country.phone_code,
@@ -147,6 +155,13 @@ const CustomerBasicDetails = (props: any) => {
           disabled={!formData.country_id || !editMode}
           required
         />
+        <SearchableSelect
+          label={"State"}
+          options={stateOptions}
+          value={formData.state_id}
+          onChange={(value) => handleInputChange("state_id", value)}
+          disabled={!formData.country_id || !editMode}
+        />
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="postal_code">
             Postal Code
@@ -161,8 +176,19 @@ const CustomerBasicDetails = (props: any) => {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">Gender</Label>
-          <div className="flex items-center gap-1">
+          <Label className="text-[14px]">
+            Gender
+            <span className="text-red-500">*</span>
+          </Label>
+          <RadioInput
+            options={genderOptions}
+            selectedValue={formData.gender}
+            onSelectValue={(value: string) =>
+              handleInputChange("gender", value)
+            }
+            // disabled={!editMode}
+          />
+          {/* <div className="flex items-center gap-1">
             {genderOptions?.map((genderOption: any) => (
               <button
                 key={genderOption.value}
@@ -185,7 +211,7 @@ const CustomerBasicDetails = (props: any) => {
                 {genderOption.label}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="phone_number">
