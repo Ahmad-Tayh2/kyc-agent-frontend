@@ -3,10 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PhoneInput from "@/components/shared/PhoneInput";
 import DatePicker from "@/components/shared/DatePicker";
-import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
-import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
-import { cn } from "@/lib/utils";
 import {
   useCitiesByCountry,
   useCountries,
