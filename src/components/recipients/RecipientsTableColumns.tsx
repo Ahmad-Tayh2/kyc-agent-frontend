@@ -8,6 +8,7 @@ import SendMoneyIcon from "@/assets/icons/send-money.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
+import { Link } from "react-router-dom";
 
 export type Recipient = {
   id: string;
@@ -84,8 +85,33 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         },
       },
       {
-        accessorKey: "customer",
+        accessorKey: "customers",
         header: "Customers",
+        cell: ({ row }) => {
+          const customers: { full_name: string; id: number }[] =
+            row.getValue("customers");
+
+          return (
+            <div className="flex flex-wrap">
+              {customers?.map(
+                (
+                  customer: { full_name: string; id: number },
+                  index: number
+                ) => (
+                  <div key={customer.id}>
+                    {index !== 0 && ", "}
+                    <Link
+                      to={ROUTES.CUSTOMERS.EDIT(customer.id)}
+                      className="hover:underline"
+                    >
+                      {customer.full_name}
+                    </Link>
+                  </div>
+                )
+              )}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "remittance",
