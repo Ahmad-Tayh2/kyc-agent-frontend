@@ -10,11 +10,11 @@ export interface SummaryData {
   sendingCountry?: string;
   receivingCountry?: string;
   sendingAmount?: number;
-  exchangeRate?: number;
+  exchangeRate?: number | string;
   feesAndCharges?: number;
   commission?: number;
   extraFees?: number;
-  recipientGets?: number;
+  recipientGets?: number | string;
   totalPayableAmount?: number;
 }
 

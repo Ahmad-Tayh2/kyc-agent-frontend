@@ -51,6 +51,9 @@ const CurrenciesAmountStep: React.FC = () => {
   const setExchangeDetails = useSendRemittanceStore(
     (state) => state.setExchangeDetails
   );
+  const exchangeDetails = useSendRemittanceStore(
+    (state) => state.data.stepTwo?.exchangeDetails
+  );
   // Form state
   const [toCurrencyId, setToCurrencyId] = useState<number>(0);
   const [fromAmount /*, setFromAmount*/] = useState<number>(0);
@@ -177,26 +180,26 @@ const CurrenciesAmountStep: React.FC = () => {
       " previewData?.exchange_details = ",
       previewData?.exchange_details
     );
-    // const {
-    //   applied_exchange_rate,
-    //   from_amount,
-    //   to_amount,
-    //   margin_amount,
-    //   margin_percentage,
-    //   market_rate,
-    // } = previewData?.exchange_details;
+    const {
+      applied_exchange_rate,
+      from_amount,
+      to_amount,
+      margin_amount,
+      margin_percentage,
+      market_rate,
+    } = previewData?.exchange_details;
     setExchangeDetails(
       previewData?.exchange_details as SendRemittanceExchangeDetails
     );
-    const total =
-      previewData.exchange_details.to_amount -
-      previewData.exchange_details.margin_amount;
-    setReceiveAmount(total);
+    // const total =
+    //   previewData.exchange_details.to_amount -
+    //   previewData.exchange_details.margin_amount;
+    setReceiveAmount(to_amount);
     return {
       rate: previewData.exchange_details.applied_exchange_rate,
       convertedAmount: previewData.exchange_details.to_amount,
       charges: previewData.exchange_details.margin_amount,
-      total,
+      // total,
     };
   }, [previewData]);
 
@@ -211,11 +214,15 @@ const CurrenciesAmountStep: React.FC = () => {
     sendingCountry: stepOne?.sendCountry?.name,
     receivingCountry: stepOne?.receiveCountry?.name,
     sendingAmount: sendAmount,
-    // exchangeRate: "",
+    exchangeRate: `1${
+      sendCurrency?.code
+    } = ${exchangeDetails?.applied_exchange_rate?.toFixed(2)} ${
+      receiveCurrency?.code
+    }`, //applied_exchange_rate,
     // feesAndCharges: "",
     // commission: "",
     // extraFees: "",
-    // recipientGets: "",
+    recipientGets: `${exchangeDetails?.to_amount}${receiveCurrency?.code}`,
     // totalPayableAmount: "",
   };
 

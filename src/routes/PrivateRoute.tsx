@@ -7,8 +7,6 @@ import Loader from "@/components/shared/Loader";
 const PrivateRoute = () => {
   const { data, isLoading } = useCheckAuth();
   const isAuthorized = useMemo(() => {
-    console.log(" check auth PrivateRoute");
-
     if (isLoading) return false;
     return data.status;
   }, [isLoading, data]);
