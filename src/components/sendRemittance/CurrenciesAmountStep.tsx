@@ -181,12 +181,12 @@ const CurrenciesAmountStep: React.FC = () => {
       previewData?.exchange_details
     );
     const {
-      applied_exchange_rate,
-      from_amount,
+      // applied_exchange_rate,
+      // from_amount,
       to_amount,
-      margin_amount,
-      margin_percentage,
-      market_rate,
+      // margin_amount,
+      // margin_percentage,
+      // market_rate,
     } = previewData?.exchange_details;
     setExchangeDetails(
       previewData?.exchange_details as SendRemittanceExchangeDetails
