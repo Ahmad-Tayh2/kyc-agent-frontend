@@ -1,13 +1,13 @@
-import { API_URLS } from '@/constants/api';
-import apiClient from '@/lib/axiosInstance';
-import { handleApiResponse } from '@/lib/handleApiResponse';
+import { API_URLS } from "@/constants/api";
+import apiClient from "@/lib/axiosInstance";
+import { handleApiResponse } from "@/lib/handleApiResponse";
 import type {
   CustomerCreateData,
   CustomerIdentityFileData,
   CustomerIncomeFileData,
   CustomerRecipientsResponse,
   CustomerSearchParams,
-} from '@/types/customers';
+} from "@/types/customers";
 
 // Re-export types for backwards compatibility
 export type {
@@ -16,10 +16,10 @@ export type {
   CustomerIncomeFileData,
   CustomerRecipientsResponse,
   CustomerSearchParams,
-} from '@/types/customers';
+} from "@/types/customers";
 
 export const customersService = {
-  getCustomers: async (filters: string = '') => {
+  getCustomers: async (filters: string = "") => {
     const response = await apiClient.get(API_URLS.customers.get(filters));
     return response.data;
   },
@@ -41,10 +41,10 @@ export const customersService = {
     const queryParams = new URLSearchParams();
 
     if (params.customerNumber)
-      queryParams.append('customer_number', params.customerNumber);
-    if (params.email) queryParams.append('email', params.email);
+      queryParams.append("reference_number", params.customerNumber);
+    if (params.email) queryParams.append("email", params.email);
     if (params.phoneNumber)
-      queryParams.append('phone_number', params.phoneNumber);
+      queryParams.append("phone_number", params.phoneNumber);
 
     const response = await apiClient.get(
       `${API_URLS.customers.search}?${queryParams.toString()}`
@@ -82,20 +82,20 @@ export const customersService = {
     data: CustomerIdentityFileData
   ) => {
     const formData = new FormData();
-    formData.append('document_type', data.documentType);
-    formData.append('document_number', data.documentNumber);
-    formData.append('document_issue_date', data.documentIssueDate);
-    formData.append('document_expiry_date', data.documentExpiryDate);
+    formData.append("document_type", data.documentType);
+    formData.append("document_number", data.documentNumber);
+    formData.append("document_issue_date", data.documentIssueDate);
+    formData.append("document_expiry_date", data.documentExpiryDate);
     if (data.frontDocument)
-      formData.append('front_document', data.frontDocument);
-    if (data.backDocument) formData.append('back_document', data.backDocument);
+      formData.append("front_document", data.frontDocument);
+    if (data.backDocument) formData.append("back_document", data.backDocument);
 
     const response = await apiClient.post(
       API_URLS.customers.uploadIdentityDocuments(id),
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
     );
@@ -115,7 +115,7 @@ export const customersService = {
     });
     if (data.extraDocumentsDescription) {
       formData.append(
-        'extra_documents_description',
+        "extra_documents_description",
         data.extraDocumentsDescription
       );
     }
@@ -125,7 +125,7 @@ export const customersService = {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
     );

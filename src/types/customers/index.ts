@@ -11,6 +11,7 @@ export type CustomerType = {
   country_phone_code?: string;
   created_at: string;
   status: string;
+  belongs_to_current_agent?: boolean;
 };
 
 // Re-export customer recipients types for easy access
@@ -18,7 +19,7 @@ export type {
   CustomerRecipient,
   CustomerRecipientsResponse,
   CustomerRecipientSummary,
-} from './recipients';
+} from "./recipients";
 
 // Re-export customer form types for easy access
 export type {
@@ -26,4 +27,4 @@ export type {
   CustomerIdentityFileData,
   CustomerIncomeFileData,
   CustomerSearchParams,
-} from './forms';
+} from "./forms";
