@@ -73,6 +73,7 @@ export const useTransferFilters = () => {
   );
 
   const updatePagination = (pagination: paginationProps) => {
+
     let updatedFilters: paginationProps = {};
     if (pagination?.page !== undefined) {
       updatedFilters.page = Number(pagination?.page);
