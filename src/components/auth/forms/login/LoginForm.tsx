@@ -56,7 +56,7 @@ const LoginForm: React.FC<{
         setErrors(loginErrors);
       }
     };
-    
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setHasSubmitted(true);
@@ -68,17 +68,23 @@ const LoginForm: React.FC<{
       return;
     }
     // Proceed with login if no validation errors
-
+    console.log(" before login");
     try {
       const response = await loginAsync({
         email: data.email,
         password: data.password,
         remember: data.remember,
       });
+
+      console.log(" got response = ", response);
+
       if (response.data && response.data.access_token) {
         localStorage.setItem("token", response.data.access_token);
+        console.log(" setting token = ", response.data.access_token);
+
         if (response.data.user) {
           localStorage.setItem("user", JSON.stringify(response.data.user));
+          console.log(" setting user = ", response.data.user);
         }
         navigate(ROUTES.DASHBOARD);
       } else {

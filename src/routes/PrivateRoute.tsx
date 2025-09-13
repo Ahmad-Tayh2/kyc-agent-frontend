@@ -8,7 +8,8 @@ const PrivateRoute = () => {
   const { data, isLoading } = useCheckAuth();
   const isAuthorized = useMemo(() => {
     if (isLoading) return false;
-    return data.status;
+    if (data.status !== undefined) return data.status;
+    return false;
   }, [isLoading, data]);
 
   if (isLoading) {

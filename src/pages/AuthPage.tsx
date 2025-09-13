@@ -37,26 +37,25 @@ const AuthPage = () => {
 
   return (
     <AuthLayout>
-      {step === "login" && (
+      {step === "login" ? (
         <LoginForm
           onSuccess={handleLoginSuccess}
           onForgotPassword={handleForgotPassword}
         />
-      )}
-      {step === "otp" && (
+      ) : step === "otp" ? (
         <TwoFactorForm onVerify={handleOtpVerify} phoneOrEmail={phoneOrEmail} />
-      )}
-      {step === "forgot-password" && (
+      ) : step === "forgot-password" ? (
         <ForgotPasswordForm
           onBack={handleBackToLogin}
           onSuccess={handleForgotPasswordSuccess}
         />
-      )}
-      {step === "forgot-password-success" && (
-        <ForgotPasswordSuccess
-          onBack={handleBackToLogin}
-          email={forgotPasswordEmail}
-        />
+      ) : (
+        step === "forgot-password-success" && (
+          <ForgotPasswordSuccess
+            onBack={handleBackToLogin}
+            email={forgotPasswordEmail}
+          />
+        )
       )}
     </AuthLayout>
   );

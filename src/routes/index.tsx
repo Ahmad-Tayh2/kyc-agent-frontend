@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 import PrivateRoute from "./PrivateRoute";
 
@@ -151,10 +151,10 @@ export const AppRoutes = () => (
           <Route path={ROUTES.PAYMENT_LINKS} element={<PaymentLinksPage />} />
           <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
           <Route path={ROUTES.HELP} element={<HelpPage />} />
-          {/* <Route
+          <Route
             path="*"
             element={<Navigate to={ROUTES.DASHBOARD} replace />}
-          /> */}
+          />
         </Route>
       </Route>
     </Routes>
