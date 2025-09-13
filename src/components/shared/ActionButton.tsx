@@ -7,6 +7,7 @@ interface ActionButtonProps {
   icon?: ReactNode;
   className?: string;
   onClick?: any;
+  disabled?: boolean;
   buttonProps?: any;
   type?: "link" | "cancel" | "action";
 }
@@ -17,6 +18,7 @@ export default function ActionButton(props: ActionButtonProps) {
     icon,
     className,
     onClick,
+    disabled,
     ...buttonProps
   } = props;
   let baseClass = "text-[13px] uppercase cursor-pointer w-fit p-5 ";
@@ -33,6 +35,7 @@ export default function ActionButton(props: ActionButtonProps) {
       variant={type === "link" ? "link" : "default"}
       className={cn(baseClass, className)}
       onClick={onClick}
+      disabled={disabled}
       {...buttonProps}
     >
       {icon && <span>{icon}</span>}

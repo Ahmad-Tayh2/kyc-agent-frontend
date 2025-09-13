@@ -323,14 +323,17 @@ const RegisterForm: React.FC<{
     if (step === "partner") {
       payload = {
         ...payload,
-        business_name: formData.businessName,
-        address: {
-          street_name: formData.businessStreetName,
-          house_number: formData.businessHouseNumber,
-          postal_code: formData.businessPostalCode,
-          extra_address_details: formData.businessExtraAddressDetails,
-          country_id: formData.businessCountry,
-          city_id: formData.businessCity,
+
+        business_details: {
+          business_name: formData.businessName,
+          address: {
+            street_name: formData.businessStreetName,
+            house_number: formData.businessHouseNumber,
+            postal_code: formData.businessPostalCode,
+            extra_address_details: formData.businessExtraAddressDetails,
+            country_id: formData.businessCountry,
+            city_id: formData.businessCity,
+          },
         },
       };
     }

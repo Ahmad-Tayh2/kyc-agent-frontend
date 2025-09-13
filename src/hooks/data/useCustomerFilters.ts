@@ -1,11 +1,11 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import type { paginationProps } from '@/types/shared/pagination';
 import {
   createFilterApply,
   createFilterReset,
   createHasActiveFilters,
-} from "@/utils/filterHelpers";
-import { useDebounce } from "../utils/useDebounce";
-import type { paginationProps } from "@/types/shared/pagination";
+} from '@/utils/filterHelpers';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDebounce } from '../utils/useDebounce';
 
 export interface CustomerFilterState {
   search?: string;
@@ -21,19 +21,19 @@ export interface CustomerFilterState {
 
 export const useCustomerFilters = () => {
   const [filters, setFilters] = useState<CustomerFilterState>({
-    search: "",
-    reference_number: "",
+    search: '',
+    reference_number: '',
     status: [],
     countries: [],
-    date_from: "",
-    date_to: "",
+    date_from: '',
+    date_to: '',
     //pagination
     page: 1,
-    per_page: 1,
+    per_page: 15,
   });
   const debouncedSearch = useDebounce(filters?.search);
 
-  const [filtersString, setFilterString] = useState<string>("");
+  const [filtersString, setFilterString] = useState<string>('');
 
   useEffect(() => {
     applyFilters();
@@ -56,8 +56,8 @@ export const useCustomerFilters = () => {
     (dateRange: { startDate: string | null; endDate: string | null }) => {
       setFilters((prev) => ({
         ...prev,
-        date_from: dateRange.startDate || "",
-        date_to: dateRange.endDate || "",
+        date_from: dateRange.startDate || '',
+        date_to: dateRange.endDate || '',
       }));
     },
     []
@@ -69,8 +69,8 @@ export const useCustomerFilters = () => {
 
   const resetFilters = useCallback(
     createFilterReset(filters, setFilters, setFilterString, [
-      "search",
-      "reference_number",
+      'search',
+      'reference_number',
     ]),
     [filters]
   );
@@ -81,12 +81,12 @@ export const useCustomerFilters = () => {
   );
 
   const hasActiveFilters = useMemo(
-    () => createHasActiveFilters(filters, ["search", "reference_number"]),
+    () => createHasActiveFilters(filters, ['search', 'reference_number']),
     [filters]
   );
 
   const updatePagination = (pagination: paginationProps) => {
-    let updatedFilters: paginationProps = {};
+    const updatedFilters: paginationProps = {};
     if (pagination?.page !== undefined) {
       updatedFilters.page = Number(pagination?.page);
     }

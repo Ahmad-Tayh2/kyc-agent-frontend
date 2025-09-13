@@ -63,7 +63,7 @@ export const Sidebar: React.FC<{
     },
     {
       label: t("modules.navigation.moneyWithdrawals"),
-      to: ROUTES.MONEY_WITHDRAWALS,
+      to: ROUTES.MONEY_WITHDRAWALS.LIST,
       icon: <MoneyWithdrawalsIcon color="inherit" />,
     },
     {

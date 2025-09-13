@@ -11,6 +11,7 @@ import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 import type { CustomerType } from "@/types/customers";
+import ActionButton from "../shared/ActionButton";
 
 const menu = (customerId: string | number) => {
   return [
@@ -114,6 +115,66 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
                   <MoreHorizontal />
                 </Button>
               }
+            />
+          );
+        },
+      },
+    ],
+    []
+  );
+};
+const handleAddCustomerToAgent = (customerId: number | string) => {
+  console.log(" customerId = ", customerId);
+};
+export const searchCustomerColumns = (): ColumnDef<CustomerType>[] => {
+  return useMemo(
+    () => [
+      {
+        accessorKey: "reference_number",
+        header: "Customer no.",
+      },
+      {
+        accessorKey: "first_name",
+        header: "First Name",
+      },
+      {
+        accessorKey: "last_name",
+        header: "Last Name",
+      },
+      {
+        accessorKey: "address",
+        header: "Address",
+      },
+      {
+        accessorKey: "phone_number",
+        header: "Mobile Number",
+        cell: ({ row }) => {
+          return (
+            <div className="capitalize">
+              +{row.original?.country_phone_code} {row.original.phone_number}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const customer = row.original;
+          // console.log(" cussttt ", customer);
+          // if (customer?.belongs_to_current_agent) {
+          //   return null;
+          // }
+          return (
+            <ActionButton
+              type="link"
+              title="Add customer"
+              onClick={() => handleAddCustomerToAgent(customer?.id)}
             />
           );
         },

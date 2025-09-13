@@ -1,5 +1,6 @@
 import { API_URLS } from '@/constants/api';
 import { handleApiResponse } from '@/lib/handleApiResponse';
+import apiClient from '@/lib/axiosInstance';
 import type {
   Currency,
   CurrenciesResponse,
@@ -8,6 +9,7 @@ import type {
   ExchangePreviewPayload,
   ExchangePreviewData,
   ExchangePreviewResponse,
+  ExchangePreviewAnyPayload,
 } from '@/types/currency';
 
 export async function getCurrencies(): Promise<Currency[]> {
@@ -80,4 +82,18 @@ export async function previewExchangeMoney(
 
   const data: ExchangePreviewResponse = await response.json();
   return handleApiResponse(data);
+}
+
+export async function previewAnyExchange(
+  payload: ExchangePreviewAnyPayload
+): Promise<ExchangePreviewData> {
+  const queryParams = new URLSearchParams({
+    from_currency_id: payload.from_currency_id.toString(),
+    to_currency_id: payload.to_currency_id.toString(),
+    from_amount: payload.from_amount.toString(),
+  });
+  const response = await apiClient.get(
+    API_URLS.currencies.previewAnyExchange() + `?${queryParams}`
+  );
+  return handleApiResponse(response.data);
 }

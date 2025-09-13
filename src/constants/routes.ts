@@ -19,7 +19,10 @@ export const ROUTES = {
     DETAILS: (transferId: string | number) => `/transfers/${transferId}`,
   },
   COMMISSION_EARNED: "/commission-earned",
-  MONEY_WITHDRAWALS: "/money-withdrawals",
+  MONEY_WITHDRAWALS: {
+    LIST: "/money-withdrawals",
+    REQUEST: "/money-withdrawals/request",
+  },
   ADD_MONEY: "/add-money",
   ACCOUNT_STATEMENTS: "/account-statements",
   MY_WALLET: "/my-wallet",

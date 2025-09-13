@@ -1,5 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import * as authService from "@/services/auth";
+import { ROUTES } from "@/constants/routes";
+import { useNavigate } from "react-router-dom";
 
 export function useLogin() {
   return useMutation({
@@ -37,7 +39,10 @@ export function useRegisterAndUpload() {
               formData.append("files", file);
             });
 
-            const uploadResponse = await authService.uploadFiles(agentId, formData);
+            const uploadResponse = await authService.uploadFiles(
+              agentId,
+              formData
+            );
             if (uploadResponse.ok) {
               uploadResult = await uploadResponse.json();
             } else {
@@ -78,8 +83,13 @@ export function useVerifyOtp() {
 }
 
 export function useLogout() {
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: authService.logout,
+    onSuccess: () => {
+      navigate(ROUTES.AUTH.LOGIN);
+    },
   });
 }
 
@@ -122,3 +132,29 @@ export function useResendVerification() {
 //     },
 //   });
 // };
+
+export function useRefreshToken() {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await authService.refreshToken();
+      // Update token and user data
+      if (response?.data.access_token) {
+        localStorage.setItem("token", response?.data.access_token);
+        localStorage.setItem("user", JSON.stringify(response?.data.user));
+
+        // Store new token expiration time
+        const expirationTime = Date.now() + response?.data.expires_in * 1000;
+        localStorage.setItem("tokenExpiration", expirationTime.toString());
+      }
+
+      return response?.data;
+    },
+  });
+}
+
+export function useCheckAuth() {
+  return useQuery({
+    queryKey: ["auth-user"],
+    queryFn: () => authService.getAuthUser(),
+  });
+}

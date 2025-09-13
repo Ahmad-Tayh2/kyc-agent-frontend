@@ -183,7 +183,7 @@ export function DataTable({
         className={cn("w-full rounded-md bg-white overflow-hidden", className)}
       >
         {tableTitle && (
-          <h1 className="p-5 text-2xl font-semibold">{tableTitle}</h1>
+          <h1 className="p-5 text-[18px] font-semibold">{tableTitle}</h1>
         )}
         <div className=" bg-white border-b border-b-1 border-[#E4E7EC]">
           <Table>
@@ -201,7 +201,7 @@ export function DataTable({
                           : flexRender(
                               header.column.columnDef.header,
                               header.getContext()
-                            )}
+                            )}{" "}
                       </TableHead>
                     );
                   })}

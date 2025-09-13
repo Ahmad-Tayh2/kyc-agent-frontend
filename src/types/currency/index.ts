@@ -40,6 +40,12 @@ export interface ExchangePreviewPayload {
   from_amount: number;
 }
 
+export interface ExchangePreviewAnyPayload {
+  from_currency_id: number;
+  to_currency_id: number;
+  from_amount: number;
+}
+
 export interface ExchangePreviewCurrency {
   id: number;
   code: string;

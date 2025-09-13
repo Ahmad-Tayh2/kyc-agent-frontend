@@ -20,6 +20,8 @@ interface SearchableSelectProps {
   disabled?: boolean;
   loading?: boolean;
   required?: boolean;
+  onSearch?: (searchTerm: string) => void; // New prop for backend search
+  enableBackendSearch?: boolean; // Flag to enable backend search
 }
 
 const SearchableSelect: React.FC<SearchableSelectProps> = ({
@@ -32,6 +34,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   disabled = false,
   loading = false,
   required = false,
+  onSearch,
+  enableBackendSearch = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,10 +49,19 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
     setSelectedOption(option || null);
   }, [value, options]);
 
-  // Filter options based on search term
-  const filteredOptions = options?.filter((option) =>
-    option?.label?.toLowerCase()?.includes(searchTerm.toLowerCase())
-  );
+  // Filter options based on search term (local or backend search)
+  const filteredOptions = enableBackendSearch
+    ? options // When using backend search, show all options returned from API
+    : options?.filter((option) =>
+        option?.label?.toLowerCase()?.includes(searchTerm.toLowerCase())
+      );
+
+  // Trigger backend search when search term changes (with backend search enabled)
+  useEffect(() => {
+    if (enableBackendSearch && onSearch) {
+      onSearch(searchTerm);
+    }
+  }, [searchTerm, enableBackendSearch, onSearch]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

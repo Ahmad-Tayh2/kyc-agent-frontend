@@ -25,11 +25,11 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   title,
 }) => {
   const { t } = useTranslation("global");
-  
+
   return (
     <Popover>
       <PopoverTrigger>
-        <Button variant="outline" onClick={onClick} className="h-[40px]">
+        <Button variant="outline" onClick={onClick} className="h-[45px]">
           <FilterIcon />
           {title || t("modules.components.filterButton.defaultTitle")}
         </Button>

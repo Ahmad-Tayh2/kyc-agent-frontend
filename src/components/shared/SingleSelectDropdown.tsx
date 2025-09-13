@@ -22,12 +22,14 @@ export function SingleSelectDropdown(props: SingleSelectDropdownProps) {
     props;
   return (
     <Select onValueChange={onValueChange} value={selectedValue}>
-      <SelectTrigger className={cn("w-[180px]", className)}>
+      <SelectTrigger className={cn("w-full !h-[45px]", className)}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {options?.map((option: Option) => (
-          <SelectItem value={option.value} key={option.value}>{option.label}</SelectItem>
+          <SelectItem value={option.value} key={option.value}>
+            {option.label}
+          </SelectItem>
         ))}
       </SelectContent>
     </Select>

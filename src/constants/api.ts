@@ -1,4 +1,4 @@
-const baseUrl = "https://amazing-agileteam.com/api";
+const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
 
 export const API_URLS = {
   auth: {
@@ -8,6 +8,8 @@ export const API_URLS = {
     forgotPassword: `${baseUrl}/auth/forgot-password`,
     resetPassword: `${baseUrl}/auth/reset-password`,
     resendVerification: `${baseUrl}/auth/agents/send-verification-email`,
+    refresh: `${baseUrl}/auth/refresh`,
+    user: `${baseUrl}/auth/user`,
   },
   otp: {
     verify: `${baseUrl}/auth/otp/verify`,
@@ -37,6 +39,14 @@ export const API_URLS = {
       `${baseUrl}/customers/${id}/upload-identity-documents`,
     uploadIncomeDocuments: (id: string | number) =>
       `${baseUrl}/customers/${id}/upload-income-documents`,
+
+    // Customer Recipients endpoints
+    getRecipients: (customerId: string | number) =>
+      `${baseUrl}/customers/${customerId}/recipients`,
+    attachRecipient: (
+      customerId: string | number,
+      recipientId: string | number
+    ) => `${baseUrl}/customers/${customerId}/recipients/${recipientId}`,
   },
   recipients: {
     get: (filters: string) => `${baseUrl}/recipients${filters}`,
@@ -83,5 +93,22 @@ export const API_URLS = {
     get: () => `${baseUrl}/currencies`,
     exchange: () => `${baseUrl}/exchange-money-transactions`,
     preview: () => `${baseUrl}/exchange-money-transactions/preview`,
+    previewAnyExchange: () =>
+      `${baseUrl}/exchange-money-transactions/preview-any`,
+  },
+  countryAllowedCurrencies: {
+    get: (filters: string) => `${baseUrl}/country-allowed-currencies${filters}`,
+    getByCountry: (countryId: string | number, filters: string) =>
+      `${baseUrl}/countries/${countryId}/currencies${filters}`,
+    getByCurrency: (currencyId: string | number, filters: string) =>
+      `${baseUrl}/currencies/${currencyId}/countries${filters}`,
+  },
+  remittancePurposes: {
+    get: (filters: string) => `${baseUrl}/remittance-purposes${filters}`,
+    getById: (id: string | number) => `${baseUrl}/remittance-purposes/${id}`,
+  },
+  sourceIncomes: {
+    get: (filters: string) => `${baseUrl}/source-incomes${filters}`,
+    getById: (id: string | number) => `${baseUrl}/source-incomes/${id}`,
   },
 };

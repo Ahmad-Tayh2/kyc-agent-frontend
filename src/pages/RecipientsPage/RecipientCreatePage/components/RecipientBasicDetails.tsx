@@ -4,6 +4,8 @@ import { Label } from "@/components/ui/label";
 import SearchableSelect from "@/components/ui/searchable-select";
 import PhoneInput from "@/components/shared/PhoneInput";
 import DatePicker from "@/components/shared/DatePicker";
+import { genderOptions } from "@/constants/options";
+import RadioInput from "@/components/shared/RadioInput";
 
 interface RecipientBasicDetailsProps {
   formData: {
@@ -115,19 +117,16 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="text-[14px]" htmlFor="gender">
+            <Label className="text-[14px]">
               Gender<span className="text-red-500">*</span>
             </Label>
-            <SearchableSelect
-              label=""
-              options={[
-                { label: "Male", value: "male" },
-                { label: "Female", value: "female" },
-              ]}
-              value={formData.gender || ""}
-              onChange={(value) => handleInputChange("gender", value)}
-              placeholder="Select gender"
-              required
+            <RadioInput
+              options={genderOptions}
+              selectedValue={formData.gender}
+              onSelectValue={(value: string) =>
+                handleInputChange("gender", value)
+              }
+              // disabled={!editMode}
             />
           </div>
 
