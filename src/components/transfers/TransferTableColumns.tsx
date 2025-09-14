@@ -5,9 +5,30 @@ import StatusLabel from "@/components/shared/StatusLabel";
 // import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Transfer } from "@/types/transfers";
 import { Link } from "react-router-dom";
+import { Button } from "../ui/button";
+import { MoreHorizontal } from "lucide-react";
+import DropdownMenuOptions from "@/components/shared/DropdownMenu";
+import EditIcon from "@/assets/icons/edit.svg?react";
+import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 
 export const transferColumns = (): ColumnDef<Transfer>[] => {
   const [t] = useTranslation("global");
+  const menu = (transferId: string | number) => {
+    return [
+      {
+        label: "View Details",
+        icon: <ViewDetailsIcon />,
+        onClick: () => {},
+        link: ROUTES.TRANSFERS.DETAILS(transferId),
+      },
+      {
+        label: "Edit",
+        icon: <EditIcon />,
+        onClick: () => {},
+        link: ROUTES.SEND_REMITTANCE.EDIT(transferId),
+      },
+    ];
+  };
 
   return [
     {
@@ -153,6 +174,20 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
     {
       id: "actions",
       header: t("modules.pages.transfers.table.columns.actions"),
+      enableHiding: false,
+      cell: ({ row }) => {
+        const recipient = row.original;
+        return (
+          <DropdownMenuOptions
+            menu={menu(recipient.id)}
+            trigger={
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal />
+              </Button>
+            }
+          />
+        );
+      },
     },
   ];
 };

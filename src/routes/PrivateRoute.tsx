@@ -5,10 +5,11 @@ import { useCheckAuth } from "@/hooks/data/useAuth";
 import Loader from "@/components/shared/Loader";
 
 const PrivateRoute = () => {
-  const { data, isLoading } = useCheckAuth();
+  const token = localStorage.getItem("token") ?? "";
+  const { data, isLoading } = useCheckAuth(token);
   const isAuthorized = useMemo(() => {
     if (isLoading) return false;
-    if (data.status !== undefined) return data.status;
+    if (data?.status !== undefined) return data?.status;
     return false;
   }, [isLoading, data]);
 

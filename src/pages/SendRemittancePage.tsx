@@ -8,15 +8,71 @@ import {
 } from "@/components/sendRemittance";
 import ActionButton from "@/components/shared/ActionButton";
 import PageTitle from "@/components/shared/PageTitle";
-import { useCreateTransfer } from "@/hooks/data/useTransfers";
+import {
+  useCreateTransfer,
+  useUpdateTransfer,
+  useGetTransfer,
+  useGetTransfers,
+} from "@/hooks/data/useTransfers";
 import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
-import React, { useEffect } from "react";
+import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
+
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+import { DataTable } from "@/components/shared/DataTable";
+import { draftTransfersTableColum } from "@/components/transfers/DraftTransfersTableColum";
+import { useTransferFilters } from "@/hooks/data/useTransferFilters";
 
 type StepName = "customer" | "currencies" | "review" | "pay";
-
-const SendRemittancePage: React.FC = () => {
+interface SendRemittancePageProps {
+  mode?: "create" | "edit";
+}
+const SendRemittancePage = (props: SendRemittancePageProps) => {
+  const { mode = "create" } = props;
   const { t } = useTranslation("global");
+  const navigate = useNavigate();
+  const columns = draftTransfersTableColum();
+
+  const { id } = useParams<{ id: string }>();
+  const { data: response } = useGetTransfer(id!);
+
+  const { filtersString, updateStatus, updatePagination } =
+    useTransferFilters();
+
+  const {
+    data: draftTransfersResponse,
+    isLoading: draftTransfersLoading,
+    error: draftTransfersError,
+  } = useGetTransfers(filtersString);
+
+  // Memoize transfers data to prevent unnecessary re-renders
+  const draftTransfersData = useMemo(() => {
+    return draftTransfersResponse?.data || [];
+  }, [draftTransfersResponse?.data]);
+  const transfersMeta: any = useMemo(() => {
+    return draftTransfersResponse?.meta || {};
+  }, [response]);
+  const transferData: any = useMemo(() => {
+    return response?.data || {};
+  }, [response]);
+
+  const pagination = {
+    enable: true,
+    page: transfersMeta?.current_page,
+    per_page: transfersMeta?.per_page,
+    total: transfersMeta?.total,
+    from: transfersMeta?.from,
+    to: transfersMeta?.to,
+    last_page: transfersMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
 
   // Use the store state directly without the complex helper hook
   const currentStep = useSendRemittanceStore((state) => state.currentStep);
@@ -41,11 +97,66 @@ const SendRemittancePage: React.FC = () => {
   const stepThreeData = useSendRemittanceStore((state) => state.data.stepThree);
   const stepFourData = useSendRemittanceStore((state) => state.data.stepFour);
 
+  //actions
+  const setCustomer = useSendRemittanceStore((state) => state.setCustomer);
+  const setSendCountry = useSendRemittanceStore(
+    (state) => state.setSendCountry
+  );
+  const setRecipient = useSendRemittanceStore((state) => state.setRecipient);
+  const setReceiveCountry = useSendRemittanceStore(
+    (state) => state.setReceiveCountry
+  );
+  const setRemittanceMethod = useSendRemittanceStore(
+    (state) => state.setRemittanceMethod
+  );
+  //step 2
+  const setSendAmount = useSendRemittanceStore((state) => state.setSendAmount);
+  const setReceiveAmount = useSendRemittanceStore(
+    (state) => state.setReceiveAmount
+  );
+  //step 2
+  const setSourceOfIncome = useSendRemittanceStore(
+    (state) => state.setSourceOfIncome
+  );
+  const setRemittancePurpose = useSendRemittanceStore(
+    (state) => state.setRemittancePurpose
+  );
+  // const setExchangeDetails = useSendRemittanceStore(
+  //   (state) => state.setExchangeDetails
+  // );
+
+  useEffect(() => {
+    if (transferData) {
+      console.log(" show transfer transferData ", transferData);
+      //set step 1 data
+      setCustomer(transferData?.customer);
+      setSendCountry(transferData?.send_country);
+      setRecipient(transferData?.recipient);
+      setReceiveCountry(transferData?.receive_country);
+      setRemittanceMethod(transferData?.remittance_method);
+
+      //set step 2 data
+      setSendAmount(transferData?.sent_amount_in_send_currency);
+      setReceiveAmount(transferData?.receive_amount_in_send_currency);
+
+      //setStep 3 data
+      setSourceOfIncome(transferData?.source_income);
+      setRemittancePurpose(transferData?.remittance_purpose);
+    }
+  }, [transferData]);
+
   // Initialize store for create mode when component mounts
   useEffect(() => {
-    setMode("create");
     resetStore();
-  }, [setMode, resetStore]);
+    if (mode === "edit") {
+      markStepCompleted("customer");
+      markStepCompleted("currencies");
+      setCurrentStep("review");
+    } else if (mode === "create") {
+      updateStatus(["draft"]);
+    }
+    setMode(mode);
+  }, [mode]);
 
   // Helper function to get validation message for current step
   const getValidationMessage = (step: StepName): string | null => {
@@ -110,42 +221,13 @@ const SendRemittancePage: React.FC = () => {
       name: "pay",
     },
   ];
-
-  const canNavigateToStep = (step: StepName): boolean => {
-    switch (step) {
-      case "customer":
-        return true; // Always accessible
-      case "currencies":
-        return completedSteps.includes("customer");
-      case "review":
-        return (
-          completedSteps.includes("customer") &&
-          completedSteps.includes("currencies")
-        );
-      case "pay":
-        return (
-          completedSteps.includes("customer") &&
-          completedSteps.includes("currencies") &&
-          completedSteps.includes("review")
-        );
-      default:
-        return false;
-    }
-  };
-
-  const handleStepClick = (stepName: string) => {
-    const step = stepName as StepName;
-    // Allow clicking on completed steps or the next available step
-    if (completedSteps.includes(step) || canNavigateToStep(step)) {
-      setCurrentStep(step);
-    }
-  };
   const { mutateAsync: createDraftTransfer } = useCreateTransfer(() => {
     if (!isStepCompleted("currencies")) {
       markStepCompleted("currencies");
     }
     setCurrentStep("review");
   });
+  const { mutateAsync: editTransfer } = useUpdateTransfer(id!);
   const handleCurrenciesValidation = () => {
     const user = JSON.parse(localStorage.getItem("user") || "null");
     //function to create payload before sending it (may be in utils)
@@ -156,8 +238,6 @@ const SendRemittancePage: React.FC = () => {
       remittance_method_id: stepOneData?.remittanceMethod?.id,
       send_country_id: stepOneData?.sendCountry?.id,
       receive_country_id: stepOneData?.receiveCountry?.id,
-      // remittance_purpose_id: 1,
-      // source_income_id: 1,
       // payment_method: "bank_transfer",
       comment: "Test 2",
       send_currency: stepTwoData?.sendCurrency?.code,
@@ -244,9 +324,85 @@ const SendRemittancePage: React.FC = () => {
         return <CustomerRecipientStep />;
     }
   };
+  const handleUpdateTransfer = () => {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    //function to create payload before sending it (may be in utils)
+    const transferDraftPayload: any = {
+      created_by: user?.agent?.id,
+      customer_id: stepOneData?.customer?.id,
+      recipient_id: stepOneData?.recipient?.id,
+      remittance_method_id: stepOneData?.remittanceMethod?.id,
+      send_country_id: stepOneData?.sendCountry?.id,
+      receive_country_id: stepOneData?.receiveCountry?.id,
+      remittance_purpose_id: stepThreeData?.remittancePurpose?.id,
+      source_income_id: stepThreeData?.sourceOfIncome?.id,
+      // payment_method: "bank_transfer",
+      comment: "Test 2",
+      send_currency: stepTwoData?.sendCurrency?.code,
+      receive_currency: stepTwoData?.receiveCurrency?.code,
+      sent_amount_in_send_currency: stepTwoData?.sendAmount,
+      // sent_amount_in_default_currency: 100.5,
+      receive_amount_in_send_currency: stepTwoData?.receiveAmount,
+      // receive_amount_in_default_currency: 95,
+      sending_agent_commission_currency: "USD",
+      // payout_agent_commission_percent: 1,
+      // payout_agent_commission_amount: 1,
+      payout_agent_commission_currency: "EUR",
+      // nomadrem_commission_amount: 1,
+      // extra_fees_amount: 0,
+      // total_commission_amount: 4,
+      // payout_amount: 95,
 
+      sending_commission_currency: "USD",
+      payout_commission_currency: "USD",
+    };
+    const res = editTransfer(transferDraftPayload);
+    console.log(" update resssssssssssssss = ", res);
+  };
+  const handleBackAndUpdate = () => {
+    //update
+    handleUpdateTransfer();
+    //back
+    handleBack();
+  };
+  const handleNextAndUpdate = () => {
+    //update
+    handleUpdateTransfer();
+
+    //next
+    handleNext();
+  };
   const renderActionButtons = () => {
     const validationMessage = getValidationMessage(currentStep);
+    if (mode === "edit") {
+      return (
+        <div className="flex flex-col gap-2 m-5 pt-5">
+          {validationMessage && (
+            <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+              <strong>Required:</strong> {validationMessage}
+            </div>
+          )}
+          <div className="flex justify-end items-end gap-4">
+            {currentStep !== "customer" && (
+              <ActionButton
+                type="cancel"
+                title="Back"
+                onClick={handleBackAndUpdate}
+                disabled={!isStepValid(currentStep)}
+              />
+            )}
+
+            {currentStep !== "pay" && (
+              <ActionButton
+                title="Save & Continue"
+                onClick={handleNextAndUpdate}
+                disabled={!isStepValid(currentStep)}
+              />
+            )}
+          </div>
+        </div>
+      );
+    }
 
     switch (currentStep) {
       case "customer":
@@ -265,9 +421,7 @@ const SendRemittancePage: React.FC = () => {
               <ActionButton
                 title="Continue"
                 onClick={handleNext}
-                buttonProps={{
-                  disabled: !isStepValid("customer"),
-                }}
+                disabled={!isStepValid(currentStep)}
               />
             </div>
           </div>
@@ -277,20 +431,20 @@ const SendRemittancePage: React.FC = () => {
         // BACK and SAVE & CONTINUE (or just show Continue if step is completed)
         return (
           <div className="flex flex-col gap-2 m-5 pt-5">
-            {validationMessage && !completedSteps.includes("currencies") && (
+            {validationMessage && !completedSteps.includes(currentStep) && (
               <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
                 <strong>Required:</strong> {validationMessage}
               </div>
             )}
             <div className="flex justify-end items-end gap-4">
               <ActionButton title="Back" onClick={handleBack} type="cancel" />
-              {isStepCompleted("currencies") ? (
+              {isStepCompleted(currentStep) ? (
                 <ActionButton title="Continue" onClick={handleNext} />
               ) : (
                 <ActionButton
                   title="Save & Continue"
                   onClick={handleNext}
-                  disabled={!isStepValid("currencies")}
+                  disabled={!isStepValid(currentStep)}
                 />
               )}
             </div>
@@ -311,9 +465,7 @@ const SendRemittancePage: React.FC = () => {
               <ActionButton
                 title="Save & Continue"
                 onClick={handleNext}
-                buttonProps={{
-                  disabled: !isStepValid("review"),
-                }}
+                disabled={!isStepValid(currentStep)}
               />
             </div>
           </div>
@@ -332,9 +484,22 @@ const SendRemittancePage: React.FC = () => {
     }
   };
 
+  const handleBackToTransfers = () => {
+    navigate(ROUTES.TRANSFERS.LIST);
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-start items-center gap-3">
+        {mode === "edit" && (
+          <button
+            onClick={handleBackToTransfers}
+            className="text-primary top-1 cursor-pointer hover:text-primary/80 transition-colors"
+            aria-label={t("common.back")}
+          >
+            <BackArrowIcon width={30} height={30} />
+          </button>
+        )}
         <PageTitle title={t("modules.pages.sendRemittance.title")} />
       </div>
       <div className="bg-white rounded-lg border">
@@ -342,7 +507,6 @@ const SendRemittancePage: React.FC = () => {
           steps={steps}
           currentStep={currentStep}
           completedSteps={completedSteps}
-          onStepClick={handleStepClick}
         />
         <hr className="border-gray-200" />
         {/* TODO: changes the renders function into components */}
@@ -350,6 +514,18 @@ const SendRemittancePage: React.FC = () => {
         <hr className="border-gray-200" />
         {renderActionButtons()}
       </div>
+      {mode === "create" && (
+        <div className="bg-white rounded-lg border">
+          <DataTable
+            tableTitle="Draft Transfers"
+            data={draftTransfersData}
+            columns={columns}
+            isLoading={draftTransfersLoading}
+            error={draftTransfersError}
+            pagination={pagination}
+          />
+        </div>
+      )}
     </div>
   );
 };

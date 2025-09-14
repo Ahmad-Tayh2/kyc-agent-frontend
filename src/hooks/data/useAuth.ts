@@ -152,9 +152,9 @@ export function useRefreshToken() {
   });
 }
 
-export function useCheckAuth() {
+export function useCheckAuth(token?: string) {
   return useQuery({
     queryKey: ["auth-user"],
-    queryFn: () => authService.getAuthUser(),
+    queryFn: () => authService.getAuthUser(token),
   });
 }

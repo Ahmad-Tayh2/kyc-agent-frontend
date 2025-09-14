@@ -43,7 +43,7 @@ const CustomerRecipientStep: React.FC = () => {
     (state) => state.setRemittanceMethod
   );
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
-
+  const mode = useSendRemittanceStore((state) => state.mode);
   // API hooks
   const { data: customersData, isLoading: customersLoading } = useGetCustomers(
     customerSearchTerm ? `?search=${customerSearchTerm}` : undefined
@@ -302,7 +302,6 @@ const CustomerRecipientStep: React.FC = () => {
       });
     }
   };
-
   return (
     <div className="p-6 space-y-6">
       {/* Customer/Sender and Recipient Row */}
@@ -320,6 +319,7 @@ const CustomerRecipientStep: React.FC = () => {
             loading={customersLoading}
             enableBackendSearch={true}
             onSearch={setCustomerSearchTerm}
+            disabled={mode === "edit"}
           />
         </div>
 
@@ -471,6 +471,7 @@ const CustomerRecipientStep: React.FC = () => {
             onChange={handleSendCountrySelect}
             placeholder="Select sending country"
             loading={false}
+            disabled={mode === "edit"}
           />
         </div>
 

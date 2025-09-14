@@ -1,6 +1,9 @@
 export const ROUTES = {
   DASHBOARD: "/dashboard",
-  SEND_REMITTANCE: "/send-remittance",
+  SEND_REMITTANCE: {
+    CREATE: "/send-remittance",
+    EDIT: (transferId: string | number) => `/send-remittance/${transferId}`,
+  },
   CUSTOMERS: {
     LIST: "/customers",
     CREATE: "/customers/create",

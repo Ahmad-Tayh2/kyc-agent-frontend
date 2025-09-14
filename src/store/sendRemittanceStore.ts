@@ -50,7 +50,10 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       // Mode and Navigation Actions
       setMode: (mode) =>
         set((state) => {
+          console.log(" here to et the mode = ", mode);
+          console.log(" mode before = ", state.mode);
           state.mode = mode;
+          console.log(" mode after = ", state.mode);
           if (mode === "create") {
             state.remittanceId = undefined;
             state.data = createInitialData();
@@ -69,6 +72,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       setCurrentStep: (step) =>
         set((state) => {
           const { canNavigateToStep } = get();
+          console.log(" get = ", get);
           if (canNavigateToStep(step)) {
             state.currentStep = step;
           }

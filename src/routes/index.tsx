@@ -83,8 +83,12 @@ export const AppRoutes = () => (
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.PROFILE} element={<UserProfilePage />} />
           <Route
-            path={ROUTES.SEND_REMITTANCE}
-            element={<SendRemittancePage />}
+            path={ROUTES.SEND_REMITTANCE.CREATE}
+            element={<SendRemittancePage mode={"create"} />}
+          />
+          <Route
+            path={ROUTES.SEND_REMITTANCE.EDIT(":id")}
+            element={<SendRemittancePage mode={"edit"} />}
           />
           {/* customers routes */}
           <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
