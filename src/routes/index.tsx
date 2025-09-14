@@ -1,79 +1,79 @@
-import { Suspense, lazy } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { ROUTES } from "../constants/routes";
-import PrivateRoute from "./PrivateRoute";
+import { Suspense, lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { ROUTES } from '../constants/routes';
+import PrivateRoute from './PrivateRoute';
 
-import { DashboardLayout } from "../layouts/DashboardLayout";
-import AuthPage from "@/pages/AuthPage";
-import RegisterPage from "@/pages/RegisterPage";
-import ResetPasswordPage from "@/pages/ResetPasswordPage";
-import UserProfilePage from "@/pages/UserProfilePage";
-import Loader from "@/components/shared/Loader";
-import CustomerFormPage from "@/pages/CustomerFormPage";
+import Loader from '@/components/shared/Loader';
+import AuthPage from '@/pages/AuthPage';
+import CustomerFormPage from '@/pages/CustomerFormPage';
+import RegisterPage from '@/pages/RegisterPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
+import UserProfilePage from '@/pages/UserProfilePage';
+import { DashboardLayout } from '../layouts/DashboardLayout';
 
-const DashboardPage = lazy(() => import("../pages/DashboardPage"));
-const SendRemittancePage = lazy(() => import("../pages/SendRemittancePage"));
-const CustomersPage = lazy(() => import("../pages/CustomersPage/CustomerList"));
+const DashboardPage = lazy(() => import('../pages/DashboardPage'));
+const SendRemittancePage = lazy(() => import('../pages/SendRemittancePage'));
+const CustomersPage = lazy(() => import('../pages/CustomersPage/CustomerList'));
 const CustomerEditPage = lazy(
-  () => import("../pages/CustomersPage/CustomerEditPage/CustomerEditPage")
+  () => import('../pages/CustomersPage/CustomerEditPage/CustomerEditPage')
 );
 const CustomerCreatePage = lazy(
-  () => import("../pages/CustomersPage/CustomerCreatePage")
+  () => import('../pages/CustomersPage/CustomerCreatePage')
 );
 const CustomerCreateFormPage = lazy(
   () =>
-    import("../pages/CustomersPage/CustomerCreatePage/CustomerCreateFormPage")
+    import('../pages/CustomersPage/CustomerCreatePage/CustomerCreateFormPage')
 );
 
 const RecipientCreateFormPage = lazy(
   () =>
-    import("../pages/RecipientsPage/RecipientCreatePage/RecipientCreateForm")
+    import('../pages/RecipientsPage/RecipientCreatePage/RecipientCreateForm')
 );
 const RecipientsPage = lazy(
-  () => import("../pages/RecipientsPage/RecipientList")
+  () => import('../pages/RecipientsPage/RecipientList')
 );
 const RecipientEditPage = lazy(
-  () => import("../pages/RecipientsPage/RecipientEditPage")
+  () => import('../pages/RecipientsPage/RecipientEditPage')
 );
 const RecipientCreatePage = lazy(
-  () => import("../pages/RecipientsPage/RecipientCreatePage")
+  () => import('../pages/RecipientsPage/RecipientCreatePage')
 );
-const PayoutLocationsPage = lazy(() => import("../pages/PayoutLocationsPage"));
-const TransfersPage = lazy(() => import("../pages/TransfersPage/TransferList"));
+const PayoutLocationsPage = lazy(() => import('../pages/PayoutLocationsPage'));
+const TransfersPage = lazy(() => import('../pages/TransfersPage/TransferList'));
 const TransfersDetailsPage = lazy(
-  () => import("../pages/TransfersPage/TransfersDetails")
+  () => import('../pages/TransfersPage/TransfersDetails')
 );
 const CommissionEarnedPage = lazy(
-  () => import("../pages/CommissionEarnedPage")
+  () => import('../pages/CommissionEarnedPage')
 );
 const MoneyWithdrawalsPage = lazy(
-  () => import("../pages/MoneyWithdrawalsPage/MoneyWithdrawalList")
+  () => import('../pages/MoneyWithdrawalsPage/MoneyWithdrawalList')
 );
 
 const RequestMoneyWithdrawalsPage = lazy(
-  () => import("../pages/MoneyWithdrawalsPage/RequestMoneyWithdrawalsPage")
+  () => import('../pages/MoneyWithdrawalsPage/RequestMoneyWithdrawalsPage')
 );
 
-const AddMoneyPage = lazy(() => import("../pages/AddMoneyPage"));
+const AddMoneyPage = lazy(() => import('../pages/AddMoneyPage'));
 const AccountStatementsPage = lazy(
-  () => import("../pages/AccountStatementsPage")
+  () => import('../pages/AccountStatementsPage')
 );
-const MyWalletPage = lazy(() => import("../pages/MyWalletPage"));
-const RemittanceCartPage = lazy(() => import("../pages/RemittanceCartPage"));
-const CustomerFormsPage = lazy(() => import("../pages/CustomerFormsPage"));
-
-const PaymentLinksPage = lazy(() => import("../pages/PaymentLinksPage"));
+const MyWalletPage = lazy(() => import('../pages/MyWalletPage'));
+const RemittanceCartPage = lazy(() => import('../pages/RemittanceCartPage'));
+const CustomerFormsPage = lazy(() => import('../pages/CustomerFormsPage'));
+const PaymentPage = lazy(() => import('../pages/PaymentPage'));
+const PaymentLinksPage = lazy(() => import('../pages/PaymentLinksPage'));
 const PaymentLinkValidationPage = lazy(
-  () => import("../pages/PaymentLinkValidation")
+  () => import('../pages/PaymentLinkValidation')
 );
-const SupportPage = lazy(() => import("../pages/SupportPage"));
-const HelpPage = lazy(() => import("../pages/HelpPage"));
+const SupportPage = lazy(() => import('../pages/SupportPage'));
+const HelpPage = lazy(() => import('../pages/HelpPage'));
 
 export const AppRoutes = () => (
-  <Suspense fallback={<Loader className="h-screen w-screen" />}>
+  <Suspense fallback={<Loader className='h-screen w-screen' />}>
     <Routes>
       {/* Public customer form route */}
-      <Route path="/customer-form/:token" element={<CustomerFormPage />} />
+      <Route path='/customer-form/:token' element={<CustomerFormPage />} />
 
       <Route path={ROUTES.AUTH.LOGIN} element={<AuthPage />} />
       <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
@@ -81,8 +81,15 @@ export const AppRoutes = () => (
         path={ROUTES.AUTH.RESET_PASSWORD}
         element={<ResetPasswordPage />}
       />
+
+      {/* Payment routes - These should be public or protected based on your requirements */}
       <Route
-        path={ROUTES.PAYMENT_LINKS.VALIDATION(":token")}
+        path='/payment/transaction/:transactionId'
+        element={<PaymentPage />}
+      />
+
+      <Route
+        path={ROUTES.PAYMENT_LINKS.VALIDATION(':token')}
         element={<PaymentLinkValidationPage />}
       />
       <Route element={<PrivateRoute />}>
@@ -91,16 +98,16 @@ export const AppRoutes = () => (
           <Route path={ROUTES.PROFILE} element={<UserProfilePage />} />
           <Route
             path={ROUTES.SEND_REMITTANCE.CREATE}
-            element={<SendRemittancePage mode={"create"} />}
+            element={<SendRemittancePage mode={'create'} />}
           />
           <Route
-            path={ROUTES.SEND_REMITTANCE.EDIT(":id")}
-            element={<SendRemittancePage mode={"edit"} />}
+            path={ROUTES.SEND_REMITTANCE.EDIT(':id')}
+            element={<SendRemittancePage mode={'edit'} />}
           />
           {/* customers routes */}
           <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
           <Route
-            path={ROUTES.CUSTOMERS.EDIT(":id")}
+            path={ROUTES.CUSTOMERS.EDIT(':id')}
             element={<CustomerEditPage />}
           />
           <Route
@@ -114,7 +121,7 @@ export const AppRoutes = () => (
           {/* recipients routes */}
           <Route path={ROUTES.RECIPIENTS.LIST} element={<RecipientsPage />} />
           <Route
-            path={ROUTES.RECIPIENTS.EDIT(":id")}
+            path={ROUTES.RECIPIENTS.EDIT(':id')}
             element={<RecipientEditPage />}
           />
           <Route
@@ -132,7 +139,7 @@ export const AppRoutes = () => (
           />
           <Route path={ROUTES.TRANSFERS.LIST} element={<TransfersPage />} />
           <Route
-            path={ROUTES.TRANSFERS.DETAILS(":id")}
+            path={ROUTES.TRANSFERS.DETAILS(':id')}
             element={<TransfersDetailsPage />}
           />
 
@@ -167,7 +174,7 @@ export const AppRoutes = () => (
           <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
           <Route path={ROUTES.HELP} element={<HelpPage />} />
           <Route
-            path="*"
+            path='*'
             element={<Navigate to={ROUTES.DASHBOARD} replace />}
           />
         </Route>
