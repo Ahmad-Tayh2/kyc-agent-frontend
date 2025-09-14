@@ -8,14 +8,7 @@ import type { TransferFilterState } from "@/hooks/data/useTransferFilters";
 import type { TransferStatus } from "@/types/transfers";
 import { CURRENCY_COUNTRY_CODE } from "@/constants/currencies";
 
-const TRANSFER_STATUSES: TransferStatus[] = [
-  "pending",
-  "processing",
-  "completed",
-  "failed",
-  "cancelled",
-  "refunded",
-];
+const TRANSFER_STATUSES: TransferStatus[] = ["pending", "draft"];
 
 const statusOptions = TRANSFER_STATUSES.map((status) => ({
   value: status,
