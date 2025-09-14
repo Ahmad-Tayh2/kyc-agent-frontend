@@ -62,6 +62,20 @@ export const API_URLS = {
     create: `${baseUrl}/transactions`,
     update: (id: string | number) => `${baseUrl}/transactions/${id}`,
   },
+  remittanceCart: {
+    get: `${baseUrl}/remittance-carts?customer_id=6`,
+    create: `${baseUrl}/remittance-carts`,
+    update: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}`,
+    getById: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}`,
+    delete: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}`,
+    addTransaction: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}/add-transaction`,
+    removeTransaction: (transactionId: string | number) =>
+      `${baseUrl}/remittance-carts/transactions/${transactionId}/remove`,
+  },
 
   bankAccounts: {
     create: `${baseUrl}/bank-accounts`,
