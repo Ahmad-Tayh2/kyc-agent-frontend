@@ -31,7 +31,10 @@ export const ROUTES = {
   MY_WALLET: "/my-wallet",
   REMITTANCE_CART: "/remittance-cart",
   CUSTOMER_FORMS: "/customer-forms",
-  PAYMENT_LINKS: "/payment-links",
+  PAYMENT_LINKS: {
+    LIST: "/payment-links",
+    VALIDATION: (token: string) => `/payment-links/validate/${token}`,
+  },
   SUPPORT: "/support",
   HELP: "/help",
   PROFILE: "/profile",

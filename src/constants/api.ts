@@ -51,6 +51,7 @@ export const API_URLS = {
   paymentLinks: {
     get: (filters: string) => `${baseUrl}/payment-links${filters}`,
     create: `${baseUrl}/payment-links`,
+    validate: (token: string) => `${baseUrl}/payment-links/token/${token}`,
   },
   recipients: {
     get: (filters: string) => `${baseUrl}/recipients${filters}`,

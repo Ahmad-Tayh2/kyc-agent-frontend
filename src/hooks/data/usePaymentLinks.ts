@@ -20,3 +20,11 @@ export function useCreatePaymentLink() {
     },
   });
 }
+
+export function useCheckPaymentLinkValidation(token: string) {
+  return useQuery({
+    queryKey: ["get-payment-link-validation", token],
+    queryFn: () => paymentLinksService.getPaymentLinkValidation(token),
+    enabled: !!token,
+  });
+}

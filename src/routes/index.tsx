@@ -63,6 +63,9 @@ const RemittanceCartPage = lazy(() => import("../pages/RemittanceCartPage"));
 const CustomerFormsPage = lazy(() => import("../pages/CustomerFormsPage"));
 
 const PaymentLinksPage = lazy(() => import("../pages/PaymentLinksPage"));
+const PaymentLinkValidationPage = lazy(
+  () => import("../pages/PaymentLinkValidation")
+);
 const SupportPage = lazy(() => import("../pages/SupportPage"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
 
@@ -77,6 +80,10 @@ export const AppRoutes = () => (
       <Route
         path={ROUTES.AUTH.RESET_PASSWORD}
         element={<ResetPasswordPage />}
+      />
+      <Route
+        path={ROUTES.PAYMENT_LINKS.VALIDATION(":token")}
+        element={<PaymentLinkValidationPage />}
       />
       <Route element={<PrivateRoute />}>
         <Route element={<DashboardLayout />}>
@@ -152,7 +159,11 @@ export const AppRoutes = () => (
             element={<RemittanceCartPage />}
           />
           <Route path={ROUTES.CUSTOMER_FORMS} element={<CustomerFormsPage />} />
-          <Route path={ROUTES.PAYMENT_LINKS} element={<PaymentLinksPage />} />
+          <Route
+            path={ROUTES.PAYMENT_LINKS.LIST}
+            element={<PaymentLinksPage />}
+          />
+
           <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
           <Route path={ROUTES.HELP} element={<HelpPage />} />
           <Route

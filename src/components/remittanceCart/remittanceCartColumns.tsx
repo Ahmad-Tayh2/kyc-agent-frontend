@@ -71,11 +71,11 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
         },
       },
       {
-        accessorKey: "phone_number",
+        accessorKey: "send_amount",
         header: "Sent Amount",
       },
       {
-        accessorKey: "created_at",
+        accessorKey: "receive_amount",
         header: "Received Amount",
         // cell: ({ row }) => {
         //   const value: string = row.getValue("created_at");
@@ -85,11 +85,11 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
         // },
       },
       {
-        accessorKey: "transactions",
+        accessorKey: "commission",
         header: "Comm.",
       },
       {
-        accessorKey: "recipient_count",
+        accessorKey: "total_to_pay",
         header: "Total To Pay",
       },
 

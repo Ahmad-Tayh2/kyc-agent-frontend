@@ -21,6 +21,7 @@ import {
   useGetRemittanceCarts,
   useCreateRemittanceCart,
 } from "@/hooks/data/useRemittanceCarts";
+import { ROUTES } from "@/constants/routes";
 interface PayStepProps {
   transferId?: number | string;
 }
@@ -113,7 +114,7 @@ const PayStep = (props: PayStepProps) => {
 
   const handleCopyPaymentLink = () => {
     copyToClipboard(
-      stepFour?.paymentLink?.token,
+      ROUTES.PAYMENT_LINKS.VALIDATION(stepFour?.paymentLink?.token),
       "Payment link copied to clipboard!"
     );
   };

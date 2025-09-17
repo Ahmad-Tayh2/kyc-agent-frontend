@@ -18,7 +18,7 @@ const RemittanceCartPage: React.FC = () => {
         <PageTitle title="Remittance Cart" />
       </div>
       {remittanceCartsData?.map((cartData: any) => {
-        const { customer, created_at, total_amount } = cartData;
+        const { customer, created_at, total_amount, payment_links } = cartData;
         return (
           <div className="bg-white rounded-md overflow-auto" key={cartData?.id}>
             <div className="p-5">
@@ -26,6 +26,8 @@ const RemittanceCartPage: React.FC = () => {
                 customer={customer}
                 date={created_at}
                 totalPayableAmount={total_amount}
+                paymentLinkData={payment_links?.[0]}
+                cartId={cartData?.id}
               />
             </div>
             <DataTable

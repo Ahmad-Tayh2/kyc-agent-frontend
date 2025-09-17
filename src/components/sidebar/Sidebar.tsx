@@ -93,7 +93,7 @@ export const Sidebar: React.FC<{
     },
     {
       label: t("modules.navigation.paymentLinks"),
-      to: ROUTES.PAYMENT_LINKS,
+      to: ROUTES.PAYMENT_LINKS.LIST,
       icon: <PaymentLinksIcon color="inherit" />,
     },
     {
