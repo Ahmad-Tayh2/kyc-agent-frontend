@@ -188,7 +188,7 @@ export function DataTable({
         <div className=" bg-white border-b border-b-1 border-[#E4E7EC]">
           <Table>
             <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
+              {table.getHeaderGroups()?.map((headerGroup) => (
                 <TableRow
                   key={headerGroup.id}
                   className="border-b-1 border-primary bg-primary/10 hover:bg-primary/10"

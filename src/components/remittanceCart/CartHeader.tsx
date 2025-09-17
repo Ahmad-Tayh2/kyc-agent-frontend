@@ -2,6 +2,11 @@ import { cn } from "@/lib/utils";
 import ActionButton from "../shared/ActionButton";
 import StatusLabel from "../shared/StatusLabel";
 import CopyLinkIcon from "@/assets/icons/copy-link.svg?react";
+import { format } from "date-fns";
+import { copyToClipboard } from "@/helpers/text";
+import { useCreatePaymentLink } from "@/hooks/data/usePaymentLinks";
+import { useState, useEffect } from "react";
+import { ROUTES } from "@/constants/routes";
 
 interface CartItemProps {
   title: string;
@@ -9,30 +14,70 @@ interface CartItemProps {
   valueClassName?: string;
   className?: string;
 }
-const CartHeader = () => {
+interface CartHeaderProps {
+  customer: { id: number; first_name: string; last_name: string };
+  date: string;
+  totalPayableAmount: number | string;
+  paymentLinkData?: any;
+  cartId?: number;
+}
+const CartHeader = (props: CartHeaderProps) => {
+  const { customer, date, totalPayableAmount, paymentLinkData, cartId } = props;
+  const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
+  const [paymentLink, setPaymentLink] = useState(paymentLinkData);
+  useEffect(() => {
+    if (paymentLinkData) {
+      setPaymentLink(paymentLinkData);
+    }
+  }, [paymentLinkData]);
+  const handleSendPaymentLink = async () => {
+    const response = await createPaymentLink({
+      payable_type: "RemittanceCart",
+      payable_id: cartId,
+    });
+    setPaymentLink(response?.data);
+  };
+  const handleCopyLink = () => {
+    paymentLink?.token;
+    copyToClipboard(
+      ROUTES.PAYMENT_LINKS.VALIDATION(paymentLink?.token),
+      "Payment link copied to clipboard!"
+    );
+  };
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center">
         <CartItem
           title="Customer"
-          value="Mohamed Imran"
+          value={`${customer?.first_name} ${customer?.last_name}`}
           className="border-none"
         />
-        <CartItem title="Date" value="30-Sep-2024 6:30" />
+        <CartItem
+          title="Date"
+          value={format(date, "PPpp")}
+          // value="30-Sep-2024 6:30"
+        />
         <CartItem
           title="Total Payable Amount"
-          value="16,000.00 USD"
+          value={`${totalPayableAmount}USD`}
           valueClassName="text-primary"
         />
       </div>
       <div className="flex items-center gap-0">
-        <StatusLabel value="status" color="#ff0000" />
-        <ActionButton type="link" title="resend" />
+        {paymentLink?.status && (
+          <StatusLabel value={paymentLink?.status} color="#ff0000" />
+        )}
+        <ActionButton
+          type="link"
+          title="resend"
+          onClick={handleSendPaymentLink}
+        />
         <ActionButton
           type="link"
           title="copy link"
           icon={<CopyLinkIcon />}
           className="p-1"
+          onClick={handleCopyLink}
         />
       </div>
     </div>

@@ -33,7 +33,7 @@ export const Sidebar: React.FC<{
     },
     {
       label: t("modules.navigation.sendRemittance"),
-      to: ROUTES.SEND_REMITTANCE,
+      to: ROUTES.SEND_REMITTANCE.CREATE,
       icon: <SendRemittanceIcon color="inherit" />,
     },
     {
@@ -93,7 +93,7 @@ export const Sidebar: React.FC<{
     },
     {
       label: t("modules.navigation.paymentLinks"),
-      to: ROUTES.PAYMENT_LINKS,
+      to: ROUTES.PAYMENT_LINKS.LIST,
       icon: <PaymentLinksIcon color="inherit" />,
     },
     {

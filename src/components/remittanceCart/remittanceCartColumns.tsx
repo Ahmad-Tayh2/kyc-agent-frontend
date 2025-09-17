@@ -1,47 +1,66 @@
 import { useMemo } from "react";
-import { parseISO, format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import EditIcon from "@/assets/icons/edit.svg?react";
-import DeleteIcon from "@/assets/icons/delete.svg";
+import DeleteIcon from "@/assets/icons/delete.svg?react";
 
 import type { CustomerType } from "@/types/customers";
-
-const menu = (remittanceCartId: string | number) => {
-  console.log("remittanceCartId = ", remittanceCartId);
-  return [
-    {
-      label: "Edit",
-      icon: <EditIcon />,
-      onClick: () => {},
-    },
-    {
-      label: "Delete",
-      icon: <DeleteIcon />,
-      onClick: () => {},
-    },
-  ];
-};
+import { useRemoveTransactionFromCart } from "@/hooks/data/useRemittanceCarts";
+import { ROUTES } from "@/constants/routes";
 
 export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
+  const { mutateAsync: removeTransactionFromCart } =
+    useRemoveTransactionFromCart();
+  const menu = (transferId: number) => {
+    return [
+      {
+        label: "Edit",
+        icon: <EditIcon />,
+        onClick: () => {},
+        link: ROUTES.SEND_REMITTANCE.EDIT(transferId),
+      },
+      // {
+      //   label: "Delete",
+      //   icon: <DeleteIcon />,
+      //   onClick: () => {},
+      // },
+      {
+        label: "Remove From Cart",
+        icon: <DeleteIcon />,
+        onClick: () => {
+          console.log(" start removing");
+          removeTransactionFromCart(transferId);
+        },
+      },
+    ];
+  };
   return useMemo(
     () => [
       {
-        accessorKey: "reference_number",
+        accessorKey: "id",
         header: "Tr. #",
       },
       {
-        accessorKey: "first_name",
+        accessorKey: "recipient",
         header: "Recipient",
-      },
-      {
-        accessorKey: "last_name",
-        header: "Destination country",
+        cell: ({ row }) => {
+          const recipient: any = row.getValue("recipient");
+
+          return (
+            <div className="capitalize">
+              {recipient?.first_name + " " + recipient?.last_name}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "country",
+        header: "Destination country",
+      },
+      {
+        accessorKey: "country22",
         header: "Remittance Method",
         cell: ({ row }) => {
           const country: {
@@ -52,32 +71,25 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
         },
       },
       {
-        accessorKey: "phone_number",
+        accessorKey: "send_amount",
         header: "Sent Amount",
-        cell: ({ row }) => {
-          return (
-            <div className="capitalize">
-              +{row.original?.country_phone_code} {row.original.phone_number}
-            </div>
-          );
-        },
       },
       {
-        accessorKey: "created_at",
+        accessorKey: "receive_amount",
         header: "Received Amount",
-        cell: ({ row }) => {
-          const value: string = row.getValue("created_at");
-          const date = parseISO(value);
-          const formattedDate = format(date, "dd-MM-yyyy");
-          return formattedDate;
-        },
+        // cell: ({ row }) => {
+        //   const value: string = row.getValue("created_at");
+        //   const date = parseISO(value);
+        //   const formattedDate = format(date, "dd-MM-yyyy");
+        //   return formattedDate;
+        // },
       },
       {
-        accessorKey: "transactions",
+        accessorKey: "commission",
         header: "Comm.",
       },
       {
-        accessorKey: "recipient_count",
+        accessorKey: "total_to_pay",
         header: "Total To Pay",
       },
 
@@ -86,10 +98,10 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
         header: "Actions",
         enableHiding: false,
         cell: ({ row }) => {
-          const remittanceCart = row.original;
+          const transfer = row.original;
           return (
             <DropdownMenuOptions
-              menu={menu(remittanceCart.id)}
+              menu={menu(Number(transfer.id))}
               trigger={
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <MoreHorizontal />

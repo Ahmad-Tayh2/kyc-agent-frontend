@@ -152,9 +152,13 @@ export function useRefreshToken() {
   });
 }
 
-export function useCheckAuth() {
+export function useCheckAuth(token?: string) {
   return useQuery({
-    queryKey: ["auth-user"],
-    queryFn: () => authService.getAuthUser(),
+    queryKey: ["auth-user", token], // include token so changes invalidate and refetch appropriately
+    queryFn: () => authService.getAuthUser(token),
+    staleTime: 0, // data is considered stale immediately
+    // cacheTime: 0, // do not keep data in cache
+    refetchOnWindowFocus: false,
+    retry: false,
   });
 }

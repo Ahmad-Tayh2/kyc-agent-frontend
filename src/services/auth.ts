@@ -144,7 +144,9 @@ export async function logout() {
 
       if (response.status === true) {
         localStorage.removeItem("token");
+        localStorage.removeItem("tokenExpiration");
         localStorage.removeItem("user");
+
         return { success: true };
       } else {
         const errorMessage =
@@ -275,12 +277,12 @@ export async function refreshToken() {
 //   });
 // };
 
-export const getAuthUser = async () => {
+export const getAuthUser = async (token?: string) => {
   const res = await fetch(API_URLS.auth.user, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 

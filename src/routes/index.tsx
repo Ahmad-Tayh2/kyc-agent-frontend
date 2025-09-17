@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 import PrivateRoute from "./PrivateRoute";
 
@@ -63,6 +63,9 @@ const RemittanceCartPage = lazy(() => import("../pages/RemittanceCartPage"));
 const CustomerFormsPage = lazy(() => import("../pages/CustomerFormsPage"));
 
 const PaymentLinksPage = lazy(() => import("../pages/PaymentLinksPage"));
+const PaymentLinkValidationPage = lazy(
+  () => import("../pages/PaymentLinkValidation")
+);
 const SupportPage = lazy(() => import("../pages/SupportPage"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
 
@@ -78,13 +81,21 @@ export const AppRoutes = () => (
         path={ROUTES.AUTH.RESET_PASSWORD}
         element={<ResetPasswordPage />}
       />
+      <Route
+        path={ROUTES.PAYMENT_LINKS.VALIDATION(":token")}
+        element={<PaymentLinkValidationPage />}
+      />
       <Route element={<PrivateRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.PROFILE} element={<UserProfilePage />} />
           <Route
-            path={ROUTES.SEND_REMITTANCE}
-            element={<SendRemittancePage />}
+            path={ROUTES.SEND_REMITTANCE.CREATE}
+            element={<SendRemittancePage mode={"create"} />}
+          />
+          <Route
+            path={ROUTES.SEND_REMITTANCE.EDIT(":id")}
+            element={<SendRemittancePage mode={"edit"} />}
           />
           {/* customers routes */}
           <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
@@ -148,13 +159,17 @@ export const AppRoutes = () => (
             element={<RemittanceCartPage />}
           />
           <Route path={ROUTES.CUSTOMER_FORMS} element={<CustomerFormsPage />} />
-          <Route path={ROUTES.PAYMENT_LINKS} element={<PaymentLinksPage />} />
+          <Route
+            path={ROUTES.PAYMENT_LINKS.LIST}
+            element={<PaymentLinksPage />}
+          />
+
           <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
           <Route path={ROUTES.HELP} element={<HelpPage />} />
-          {/* <Route
+          <Route
             path="*"
             element={<Navigate to={ROUTES.DASHBOARD} replace />}
-          /> */}
+          />
         </Route>
       </Route>
     </Routes>

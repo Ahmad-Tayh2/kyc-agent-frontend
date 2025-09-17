@@ -31,9 +31,11 @@ export const useTransferFilters = () => {
     receive_currency: "",
     //pagination
     page: 1,
-    per_page: 1,
+    per_page: 15,
   });
-
+  useEffect(() => {
+    console.log(" the filter update = ", filters);
+  }, [filters]);
   const [filtersString, setFilterString] = useState<string>("");
   const debouncedSearch = useDebounce(filters?.search);
 
@@ -73,7 +75,6 @@ export const useTransferFilters = () => {
   );
 
   const updatePagination = (pagination: paginationProps) => {
-
     let updatedFilters: paginationProps = {};
     if (pagination?.page !== undefined) {
       updatedFilters.page = Number(pagination?.page);

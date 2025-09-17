@@ -205,8 +205,9 @@ export function useSessionManager(config: Partial<SessionConfig> = {}) {
           if (expirationTime > Date.now()) {
             tokenExpirationTimeRef.current = expirationTime;
           } else {
-            // Token has expired, logout user
-            handleLogout();
+            // Token has expired, clear storage
+            // localStorage.removeItem("token");
+            // localStorage.removeItem("user");
             return;
           }
         } catch (error) {

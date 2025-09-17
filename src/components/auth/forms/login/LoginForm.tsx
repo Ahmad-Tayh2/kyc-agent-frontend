@@ -56,7 +56,7 @@ const LoginForm: React.FC<{
         setErrors(loginErrors);
       }
     };
-    
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setHasSubmitted(true);
@@ -68,7 +68,6 @@ const LoginForm: React.FC<{
       return;
     }
     // Proceed with login if no validation errors
-
     try {
       const response = await loginAsync({
         email: data.email,

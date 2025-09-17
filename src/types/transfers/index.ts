@@ -33,13 +33,7 @@ export interface Transfer {
   updated_at: string;
 }
 
-export type TransferStatus =
-  | "pending"
-  | "processing"
-  | "completed"
-  | "failed"
-  | "cancelled"
-  | "refunded";
+export type TransferStatus = "draft" | "pending";
 
 export type PaymentMethod =
   | "bank_transfer"
@@ -103,7 +97,6 @@ export interface TransactionCreateDataType {
   payout_amount: number;
 }
 
-
 // get transfer by id
 type UserName = {
   id: number;
@@ -152,5 +145,3 @@ export type GetTransfersDataProps = {
   created_at: string;
   updated_at: string;
 };
-
-

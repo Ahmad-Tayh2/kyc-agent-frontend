@@ -30,7 +30,8 @@ const createInitialData = (): SendRemittanceData => ({
   },
   stepFour: {
     paymentMethod: null,
-    paymentLink: undefined,
+    paymentLink: null,
+    cartAddedTo: null,
   },
 });
 
@@ -213,7 +214,10 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
         set((state) => {
           state.data.stepFour.paymentLink = link;
         }),
-
+      setCartAddedTo: (cart: any) =>
+        set((state) => {
+          state.data.stepFour.cartAddedTo = cart;
+        }),
       setTransferCreated: (created: boolean) =>
         set((state) => {
           state.transferCreated = created;
@@ -390,6 +394,7 @@ export const useSendRemittanceActions = () => {
     setDescriptionOrReference: state.setDescriptionOrReference,
     setPaymentMethod: state.setPaymentMethod,
     setPaymentLink: state.setPaymentLink,
+    setCartAddedTo: state.setCartAddedTo,
     clearErrors: state.clearErrors,
     setError: state.setError,
     setTransferCreated: state.setTransferCreated,

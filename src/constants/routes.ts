@@ -1,6 +1,9 @@
 export const ROUTES = {
   DASHBOARD: "/dashboard",
-  SEND_REMITTANCE: "/send-remittance",
+  SEND_REMITTANCE: {
+    CREATE: "/send-remittance",
+    EDIT: (transferId: string | number) => `/send-remittance/${transferId}`,
+  },
   CUSTOMERS: {
     LIST: "/customers",
     CREATE: "/customers/create",
@@ -28,7 +31,10 @@ export const ROUTES = {
   MY_WALLET: "/my-wallet",
   REMITTANCE_CART: "/remittance-cart",
   CUSTOMER_FORMS: "/customer-forms",
-  PAYMENT_LINKS: "/payment-links",
+  PAYMENT_LINKS: {
+    LIST: "/payment-links",
+    VALIDATION: (token: string) => `/payment-links/validate/${token}`,
+  },
   SUPPORT: "/support",
   HELP: "/help",
   PROFILE: "/profile",

@@ -48,6 +48,11 @@ export const API_URLS = {
       recipientId: string | number
     ) => `${baseUrl}/customers/${customerId}/recipients/${recipientId}`,
   },
+  paymentLinks: {
+    get: (filters: string) => `${baseUrl}/payment-links${filters}`,
+    create: `${baseUrl}/payment-links`,
+    validate: (token: string) => `${baseUrl}/payment-links/token/${token}`,
+  },
   recipients: {
     get: (filters: string) => `${baseUrl}/recipients${filters}`,
     search: (query: string) => `${baseUrl}/recipients/search?${query}`,
@@ -61,6 +66,20 @@ export const API_URLS = {
     getById: (id: string | number) => `${baseUrl}/transactions/${id}`,
     create: `${baseUrl}/transactions`,
     update: (id: string | number) => `${baseUrl}/transactions/${id}`,
+  },
+  remittanceCart: {
+    get: (filters: string) => `${baseUrl}/remittance-carts${filters}`,
+    create: `${baseUrl}/remittance-carts`,
+    update: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}`,
+    getById: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}`,
+    delete: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}`,
+    addTransaction: (cartId: string | number) =>
+      `${baseUrl}/remittance-carts/${cartId}/add-transaction`,
+    removeTransaction: (transactionId: string | number) =>
+      `${baseUrl}/remittance-carts/transactions/${transactionId}/remove`,
   },
 
   bankAccounts: {

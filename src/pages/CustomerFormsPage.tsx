@@ -12,6 +12,8 @@ import CustomerFormDialogWrapper from "@/components/customerForm/CustomerFormDia
 import CustomerFormFilters from "@/components/customerForm/CustomerFormFilters";
 import { useCustomerFormFilters } from "@/hooks/data/useCustomerFormFilters";
 
+import { copyToClipboard } from "@/helpers/text";
+
 type CustomerFormTableData = {
   id: number;
   fullName: string;
@@ -34,17 +36,6 @@ const CustomerFormsPage: React.FC = () => {
 
   const { data: customerForms } = useCustomerForm(filtersString);
   const [previewToken, setPreviewToken] = useState<string | null>(null);
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-
-      // You could add a toast notification here if you have a toast system
-      console.log("URL copied to clipboard");
-    } catch (err) {
-      console.error("Failed to copy URL:", err);
-    }
-  };
 
   // Prepare the data for the table
   const customerFormData: CustomerFormTableData[] = Array.isArray(customerForms)
