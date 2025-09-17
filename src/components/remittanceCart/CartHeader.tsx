@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import ActionButton from "../shared/ActionButton";
 import StatusLabel from "../shared/StatusLabel";
 import CopyLinkIcon from "@/assets/icons/copy-link.svg?react";
+import { format } from "date-fns";
 
 interface CartItemProps {
   title: string;
@@ -9,24 +10,34 @@ interface CartItemProps {
   valueClassName?: string;
   className?: string;
 }
-const CartHeader = () => {
+interface CartHeaderProps {
+  customer: { id: number; first_name: string; last_name: string };
+  date: string;
+  totalPayableAmount: number | string;
+}
+const CartHeader = (props: CartHeaderProps) => {
+  const { customer, date, totalPayableAmount } = props;
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center">
         <CartItem
           title="Customer"
-          value="Mohamed Imran"
+          value={`${customer?.first_name} ${customer?.last_name}`}
           className="border-none"
         />
-        <CartItem title="Date" value="30-Sep-2024 6:30" />
+        <CartItem
+          title="Date"
+          value={format(date, "PPpp")}
+          // value="30-Sep-2024 6:30"
+        />
         <CartItem
           title="Total Payable Amount"
-          value="16,000.00 USD"
+          value={`${totalPayableAmount}USD`}
           valueClassName="text-primary"
         />
       </div>
       <div className="flex items-center gap-0">
-        <StatusLabel value="status" color="#ff0000" />
+        <StatusLabel value="Link Status" color="#ff0000" />
         <ActionButton type="link" title="resend" />
         <ActionButton
           type="link"

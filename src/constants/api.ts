@@ -48,6 +48,10 @@ export const API_URLS = {
       recipientId: string | number
     ) => `${baseUrl}/customers/${customerId}/recipients/${recipientId}`,
   },
+  paymentLinks: {
+    get: (filters: string) => `${baseUrl}/payment-links${filters}`,
+    create: `${baseUrl}/payment-links`,
+  },
   recipients: {
     get: (filters: string) => `${baseUrl}/recipients${filters}`,
     search: (query: string) => `${baseUrl}/recipients/search?${query}`,
@@ -63,7 +67,7 @@ export const API_URLS = {
     update: (id: string | number) => `${baseUrl}/transactions/${id}`,
   },
   remittanceCart: {
-    get: `${baseUrl}/remittance-carts?customer_id=6`,
+    get: (filters: string) => `${baseUrl}/remittance-carts${filters}`,
     create: `${baseUrl}/remittance-carts`,
     update: (cartId: string | number) =>
       `${baseUrl}/remittance-carts/${cartId}`,

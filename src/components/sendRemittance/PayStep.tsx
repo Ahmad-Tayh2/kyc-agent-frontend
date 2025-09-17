@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import {
   Info,
   AlertCircle,
@@ -9,11 +9,23 @@ import {
   Copy,
   Plus,
 } from "lucide-react";
+import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
+
 import SummaryCard, { type SummaryData } from "./SummaryCard";
 import { Button } from "@/components/ui/button";
 import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
-
-const PayStep: React.FC = () => {
+import { useCreatePaymentLink } from "@/hooks/data/usePaymentLinks";
+import { copyToClipboard } from "@/helpers/text";
+import {
+  useAddTransactionToCart,
+  useGetRemittanceCarts,
+  useCreateRemittanceCart,
+} from "@/hooks/data/useRemittanceCarts";
+interface PayStepProps {
+  transferId?: number | string;
+}
+const PayStep = (props: PayStepProps) => {
+  const { transferId } = props;
   // const [paymentMethod, setPaymentMethod] = useState<string>('customer');
 
   // Mock data - should come from previous steps
@@ -33,6 +45,13 @@ const PayStep: React.FC = () => {
   // };
   const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
   const stepTwo = useSendRemittanceStore((state) => state.data.stepTwo);
+  const stepFour = useSendRemittanceStore((state) => state.data.stepFour);
+  const setPaymentLink = useSendRemittanceStore(
+    (state) => state.setPaymentLink
+  );
+  const setCartAddedTo = useSendRemittanceStore(
+    (state) => state.setCartAddedTo
+  );
   const customer = { ...stepOne?.customer };
   const summaryData: SummaryData = {
     sendingCustomer: customer?.fullName,
@@ -51,7 +70,53 @@ const PayStep: React.FC = () => {
     // totalPayableAmount: "",
   };
 
-  const totalAmount = "511 USD";
+  const totalAmount = "0 USD";
+  const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
+  const { mutateAsync: createRemittanceCart } = useCreateRemittanceCart();
+  const { data: remittanceCartsResponse } = useGetRemittanceCarts(
+    `?customer_id=${stepOne?.customer?.id}&currency=USD`
+  );
+  const existedRemittanceCart = useMemo(() => {
+    return remittanceCartsResponse?.data?.data?.[0] ?? null;
+  }, [remittanceCartsResponse]);
+  const { mutateAsync: addTransationToCart } = useAddTransactionToCart();
+  const handleAddToRemittanceCart = async () => {
+    let cartId = existedRemittanceCart?.id ?? null;
+    if (!cartId) {
+      //create a cart
+      const createResponse = await createRemittanceCart({
+        customer_id: stepOne?.customer?.id,
+        currency: "USD",
+      });
+      cartId = createResponse?.data?.id ?? null;
+    }
+    if (cartId) {
+      const addingTransactionToCartResponse: any = await addTransationToCart({
+        cartId,
+        transaction_id: Number(transferId),
+      });
+      setCartAddedTo(addingTransactionToCartResponse?.data);
+    }
+  };
+  const handleSendPaymentLink = async () => {
+    const response = await createPaymentLink({
+      payable_type: stepFour?.cartAddedTo?.id
+        ? "RemittanceCart"
+        : "Transaction",
+      payable_id: stepFour?.cartAddedTo?.id
+        ? stepFour?.cartAddedTo?.id
+        : Number(transferId),
+    });
+
+    setPaymentLink(response?.data);
+  };
+
+  const handleCopyPaymentLink = () => {
+    copyToClipboard(
+      stepFour?.paymentLink?.token,
+      "Payment link copied to clipboard!"
+    );
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -103,13 +168,24 @@ const PayStep: React.FC = () => {
                 </p>
               </div>
 
-              <Button
-                variant="outline"
-                className="border-teal-500 text-teal-600 hover:bg-teal-50"
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                ADD TO REMITTANCE CART
-              </Button>
+              {stepFour?.cartAddedTo?.id ? (
+                <Button
+                  variant="outline"
+                  className="border-green-500 text-green-600 hover:text-green-600 cursor-default hover:bg-white"
+                >
+                  <CheckedIcon />
+                  ADDED TO REMITTANCE CART
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="border-teal-500 text-teal-600 hover:bg-teal-50"
+                  onClick={handleAddToRemittanceCart}
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  ADD TO REMITTANCE CART
+                </Button>
+              )}
             </div>
 
             <hr className="my-3" />
@@ -120,15 +196,18 @@ const PayStep: React.FC = () => {
                 <h4 className="font-medium text-gray-900">
                   Customer will pay for this transfer
                 </h4>
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="link"
-                    className="text-teal-600 hover:text-teal-700 p-0 h-auto text-sm cursor-pointer"
-                  >
-                    <Copy className="w-4 h-4" />
-                    COPY PAYMENT LINK
-                  </Button>
-                </div>
+                {stepFour?.paymentLink && (
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      variant="link"
+                      className="text-teal-600 hover:text-teal-700 p-0 h-auto text-sm cursor-pointer"
+                      onClick={handleCopyPaymentLink}
+                    >
+                      <Copy className="w-4 h-4" />
+                      COPY PAYMENT LINK
+                    </Button>
+                  </div>
+                )}
               </div>
               <p className="text-sm text-gray-600">
                 We will send the payment link to selected customer email and
@@ -149,6 +228,7 @@ const PayStep: React.FC = () => {
                 <Button
                   variant="outline"
                   className="border-teal-500 text-teal-600 hover:bg-teal-50"
+                  onClick={handleSendPaymentLink}
                 >
                   <Link className="w-4 h-4 mr-2" />
                   SEND PAYMENT LINK

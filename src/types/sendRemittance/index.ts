@@ -102,7 +102,8 @@ export interface SendRemittanceStepThree {
 // Step 4 Data (Pay step)
 export interface SendRemittanceStepFour {
   paymentMethod: PaymentMethod | null;
-  paymentLink?: string;
+  paymentLink?: any;
+  cartAddedTo?: any;
 }
 
 // Complete Send Remittance Data
@@ -158,7 +159,8 @@ export interface SendRemittanceActions {
 
   // Step 4 actions
   setPaymentMethod: (method: PaymentMethod | null) => void;
-  setPaymentLink: (link?: string) => void;
+  setPaymentLink: (link?: any) => void;
+  setCartAddedTo: (cart?: any) => void;
 
   // Utility actions
   clearErrors: () => void;

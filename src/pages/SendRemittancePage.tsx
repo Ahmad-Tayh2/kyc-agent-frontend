@@ -319,7 +319,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       case "review":
         return <ReviewStep />;
       case "pay":
-        return <PayStep />;
+        return <PayStep transferId={id} />;
       default:
         return <CustomerRecipientStep />;
     }
