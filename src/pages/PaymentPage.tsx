@@ -2,6 +2,7 @@ import PaymentMethodSelector from '@/components/payment/PaymentMethodSelector';
 import StripePaymentForm from '@/components/payment/StripePaymentForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { useGetTransfer } from '@/hooks/data/useTransfers';
 import getStripe from '@/lib/stripe';
 import type {
   PaymentData,
@@ -32,12 +33,15 @@ export default function PaymentPage() {
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(
     null
   );
+  const { data: transferData } = useGetTransfer(
+    transactionId ? parseInt(transactionId) : ''
+  );
 
   // Sample payment info - in real app, this would come from API
   const [paymentInfo] = useState({
-    amount: 49.99,
-    currency: 'USD',
-    description: 'Payment for Order #1234',
+    amount: transferData?.data?.payout_amount || 0,
+    currency: transferData?.data?.send_currency || 'USD',
+    description: `Payment for transaction #${transactionId}`,
   });
 
   useEffect(() => {
