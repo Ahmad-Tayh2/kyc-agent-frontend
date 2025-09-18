@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { SearchInput } from "@/components/shared/SearchInput";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
@@ -7,17 +7,13 @@ import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
 import type { TransferFilterState } from "@/hooks/data/useTransferFilters";
 import type { TransferStatus } from "@/types/transfers";
 import { CURRENCY_COUNTRY_CODE } from "@/constants/currencies";
+import { useCurrencies } from "@/hooks/data/useCurrency";
 
 const TRANSFER_STATUSES: TransferStatus[] = ["pending", "draft"];
 
 const statusOptions = TRANSFER_STATUSES.map((status) => ({
   value: status,
   label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-}));
-
-const currencyOptions = Object.keys(CURRENCY_COUNTRY_CODE).map((currency) => ({
-  value: currency,
-  label: currency,
 }));
 
 interface TransferFiltersProps {
@@ -39,6 +35,18 @@ const TransferFilters: React.FC<TransferFiltersProps> = ({
   onResetFilters,
   onApplyFilters,
 }) => {
+  const { data: currencies = [] } = useCurrencies();
+  const currencyOptions = useMemo(() => {
+    return currencies?.map((currency) => ({
+      value: currency?.code,
+      label: `${currency?.name} (${currency?.code})`,
+    }));
+  }, [currencies]);
+
+  Object.keys(CURRENCY_COUNTRY_CODE).map((currency) => ({
+    value: currency,
+    label: currency,
+  }));
   return (
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
@@ -62,10 +70,12 @@ const TransferFilters: React.FC<TransferFiltersProps> = ({
               showSelectAll
             />
             <DatePicker
+              label="Date"
               value={filters.sending_date || ""}
               onChange={onUpdateSendingDate}
             />
             <SingleSelectDropdown
+              label="Currency"
               options={currencyOptions}
               selectedValue={filters.receive_currency || ""}
               onValueChange={onUpdateReceiveCurrency}

@@ -4,6 +4,8 @@ import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import {
   Popover,
   PopoverContent,
@@ -11,6 +13,7 @@ import {
 } from "@/components/ui/popover";
 
 interface DatePickerProps {
+  label?: string;
   value: string;
   onChange: any;
   disabled?: boolean;
@@ -38,6 +41,7 @@ function isValidDate(date: Date | undefined) {
 }
 
 export default function DatePicker({
+  label,
   value,
   onChange,
   disabled,
@@ -75,12 +79,17 @@ export default function DatePicker({
   };
 
   return (
-    <div className="relative flex gap-2">
+    <div className="relative">
+      {label && (
+        <Label className="block text-sm font-medium text-gray-700">
+          {label}
+        </Label>
+      )}
       <Input
         id="date"
         value={displayValue}
         placeholder="June 01, 2025"
-        className="bg-background pr-10"
+        className="bg-background pr-10 h-[40px]"
         onChange={(e) => {
           console.log(" value ", e.target.value);
           const newValue = e.target.value;
