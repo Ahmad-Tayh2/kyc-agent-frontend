@@ -7,7 +7,10 @@ import { useTranslation } from "react-i18next";
 import PageTitle from "@/components/shared/PageTitle";
 import PaymentLinksFilters from "@/components/paymentLinks/PaymentLinksFilters";
 import { paymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
-import { useCustomerFilters } from "@/hooks/data/useCustomerFilters";
+import { usePaymentLinksFilters } from "@/hooks/data/usePaymentLinksFilters";
+import { useGetPaymentLinks } from "@/hooks/data/usePaymentLinks";
+import { useMemo } from "react";
+import { useGetCustomers } from "@/hooks/data/useCustomers";
 // import { ROUTES } from "@/constants/routes";
 
 const PaymentLinksPage: React.FC = () => {
@@ -17,65 +20,71 @@ const PaymentLinksPage: React.FC = () => {
 
   const {
     filters,
-    // filtersString,
-    // updateSearchTerm,
-    // updateReferenceNumber,
+    filtersString,
     updateStatus,
     updateDateRange,
-    // updateCustomersIds,
+    updateCustomersIds,
     resetFilters,
     applyFilters,
-    // updatePagination,
-  } = useCustomerFilters();
+    updatePagination,
+  } = usePaymentLinksFilters();
 
-  //   const { data: response, isLoading, error } = useGetCustomers(filtersString);
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useGetPaymentLinks(filtersString);
 
-  // Memoize customers data to prevent unnecessary re-renders
-  //   const customersData = useMemo(() => {
-  //     return response?.data || [];
-  //   }, [response?.data]);
+  const paymentLinksData = useMemo(() => {
+    return response?.data?.data || [];
+  }, [response?.data?.data]);
 
-  //   const customersMeta = useMemo(() => {
-  //     return response?.meta || [];
-  //   }, [response?.meta]);
+  const paymentLinksMeta = useMemo(() => {
+    return response?.data?.meta || [];
+  }, [response?.data?.meta]);
 
-  //   const pagination = {
-  //     enable: true,
-  //     page: customersMeta?.current_page,
-  //     per_page: customersMeta?.per_page,
-  //     total: customersMeta?.total,
-  //     from: customersMeta?.from,
-  //     to: customersMeta?.to,
-  //     last_page: customersMeta?.last_page,
-  //     onChangeRowsPerPage: (value: number) => {
-  //       updatePagination({ per_page: value });
-  //     },
-  //     setPage: (value: number) => {
-  //       updatePagination({ page: value });
-  //     },
-  //   };
+  const { data: CustomersResponse } = useGetCustomers("");
+
+  const customersData = useMemo(() => {
+    return CustomersResponse?.data || [];
+  }, [CustomersResponse?.data]);
+
+  const pagination = {
+    enable: true,
+    page: paymentLinksMeta?.current_page,
+    per_page: paymentLinksMeta?.per_page,
+    total: paymentLinksMeta?.total,
+    from: paymentLinksMeta?.from,
+    to: paymentLinksMeta?.to,
+    last_page: paymentLinksMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <PageTitle title={t("modules.pages.paymentLinks.title")} />
         <PaymentLinksFilters
           filters={filters}
-          // onUpdateReferenceNumber={updateReferenceNumber}
+          customers={customersData}
           onUpdateStatus={updateStatus}
           onUpdateDateRange={updateDateRange}
-          // onUpdateCustomersIds={updateCustomersIds}
-          onUpdateCustomersIds={() => {}}
+          onUpdateCustomersIds={updateCustomersIds}
           onResetFilters={resetFilters}
           onApplyFilters={applyFilters}
         />
       </div>
       <div>
         <DataTable
-          data={[]}
+          data={paymentLinksData}
           columns={columns}
-          //   isLoading={isLoading}
-          //   error={error}
-          //   pagination={pagination}
+          isLoading={isLoading}
+          error={error}
+          pagination={pagination}
         />
       </div>
     </div>

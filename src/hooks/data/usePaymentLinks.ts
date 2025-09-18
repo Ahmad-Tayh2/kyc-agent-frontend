@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { paymentLinksService } from "@/services/paymentLinks";
 
-export function useGetPaymentLink(filters?: string) {
+export function useGetPaymentLinks(filters?: string) {
   return useQuery({
     queryKey: ["get-payment-links", filters],
     queryFn: () => paymentLinksService.getPaymentLinks(filters),

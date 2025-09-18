@@ -1,36 +1,62 @@
 import { useMemo } from "react";
-// import { parseISO, format } from "date-fns";
+import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
-// import StatusLabel from "@/components/shared/StatusLabel";
-// import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 import type { CustomerType } from "@/types/customers";
+import StatusLabel from "../shared/StatusLabel";
 
 export const paymentLinksColumns = (): ColumnDef<CustomerType>[] => {
   return useMemo(
     () => [
       {
-        accessorKey: "reference_number",
+        accessorKey: "customer",
         header: "Customer",
       },
       {
-        accessorKey: "first_name",
-        header: "Date",
+        accessorKey: "created_at",
+        header: "Date Created",
+        cell: ({ row }) => {
+          const date: string = row.getValue("created_at");
+          return <div className="capitalize">{format(date, "dd-MM-yyyy")}</div>;
+        },
       },
       {
-        accessorKey: "last_name",
+        accessorKey: "transactions_count",
         header: "Transactions",
+        cell: ({ row }) => {
+          const payable: { transactions_count?: number } =
+            row.getValue("payable");
+
+          return (
+            <div className="capitalize">{payable?.transactions_count}</div>
+          );
+        },
       },
       {
-        accessorKey: "last_name",
+        accessorKey: "payable_type",
         header: "Type",
       },
       {
-        accessorKey: "last_name",
+        accessorKey: "final_amount",
         header: "Amount To Pay",
+        cell: ({ row }) => {
+          const payable: { final_amount?: number; currency?: string } =
+            row.getValue("payable");
+
+          return (
+            <div className="capitalize">
+              {payable?.final_amount} {payable?.currency}
+            </div>
+          );
+        },
       },
       {
-        accessorKey: "last_name",
+        accessorKey: "status",
         header: "Status",
+        cell: ({ row }) => {
+          const status: string = row.getValue("status");
+
+          return <StatusLabel value={status} color="#00ff00" />;
+        },
       },
       {
         accessorKey: "last_name",
