@@ -91,6 +91,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       setCustomer: (customer) =>
         set((state) => {
           state.data.stepOne.customer = customer;
+
           // Reset recipient when customer changes
           if (customer?.id !== state.data.stepOne.customer?.id) {
             state.data.stepOne.recipient = null;

@@ -19,11 +19,12 @@ import type { RecipientDataType } from "@/types/recipients";
 import type { RemittanceMethod } from "@/types/remittanceMethod/RemittanceMethod";
 import type { CountryAllowedCurrency } from "@/types/shared/countryAllowedCurrency";
 import { ChevronDownIcon, ChevronUpIcon, Search } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 
-const CustomerRecipientStep: React.FC = () => {
+const CustomerRecipientStep = (props: any) => {
+  const { customerId, recipientId } = props;
   const navigate = useNavigate();
   const [isExpandedText, setIsExpandedText] = useState(false);
   const [customerSearchTerm, setCustomerSearchTerm] = useState("");
@@ -63,17 +64,51 @@ const CustomerRecipientStep: React.FC = () => {
   const searchRecipientMutation = useSearchRecipient();
   const attachRecipientMutation = useAttachRecipientToCustomer();
 
-  // Memoized options
-  const customerOptions = useMemo(
-    () =>
+  const customerOptions = useMemo(() => {
+    //if there is a default customer, it should not be changed
+    if (stepOne?.customer?.id && customerId) {
+      return [
+        {
+          label: `${stepOne?.customer.firstName} ${stepOne?.customer.lastName}`,
+          value: stepOne?.customer?.id,
+        },
+      ];
+    }
+    //if there is a default recipient, we should chow the recipient customers onlly
+    if (stepOne?.recipient?.id && recipientId) {
+      return (
+        stepOne?.recipient?.customers?.map((customer) => ({
+          label: customer.full_name,
+          value: customer.id,
+        })) || []
+      );
+    }
+    //normal case
+    return (
       customersData?.data?.map((customer: CustomerType) => ({
         label: customer.full_name,
         value: customer.id,
-      })) || [],
-    [customersData]
-  );
+      })) || []
+    );
+  }, [
+    customersData,
+    customerId,
+    stepOne?.recipient?.id,
+    recipientId,
+    stepOne?.customer?.id,
+  ]);
 
   const recipientOptions = useMemo(() => {
+    //if there is a default recipient we should not should anyone else
+    if (stepOne?.recipient?.id && recipientId) {
+      return [
+        {
+          label: `${stepOne?.recipient.firstName} ${stepOne?.recipient.lastName}`,
+          value: stepOne?.recipient?.id,
+        },
+      ];
+    }
+    //normal case
     const recipients = recipientsData as CustomerRecipient[] | undefined;
     return (
       recipients?.map((recipient: CustomerRecipient) => ({
@@ -81,7 +116,7 @@ const CustomerRecipientStep: React.FC = () => {
         value: recipient.id,
       })) || []
     );
-  }, [recipientsData]);
+  }, [recipientsData, stepOne?.recipient?.id, recipientId]);
 
   const sendCountryOptions = useMemo(() => {
     return (
@@ -106,7 +141,6 @@ const CustomerRecipientStep: React.FC = () => {
     if (!stepOne.recipient || !remittanceMethodsData?.data) {
       return [];
     }
-
     // Since CustomerRecipient doesn't include remittance methods,
     // we'll show all available remittance methods for now
     // TODO: Filter based on recipient's country and available methods
@@ -117,26 +151,33 @@ const CustomerRecipientStep: React.FC = () => {
     }));
   }, [stepOne.recipient, remittanceMethodsData]);
 
-  // Auto-validate step when all required fields are filled
-  // useEffect(() => {
-  //   const stepIsValid =
-  //     stepOne.customer &&
-  //     stepOne.recipient &&
-  //     stepOne.sendCountry &&
-  //     stepOne.receiveCountry &&
-  //     stepOne.remittanceMethod;
-
-  //   if (stepIsValid) {
-  //     markStepCompleted("customer");
-  //   }
-  // }, [
-  //   stepOne.customer,
-  //   stepOne.recipient,
-  //   stepOne.sendCountry,
-  //   stepOne.receiveCountry,
-  //   stepOne.remittanceMethod,
-  //   markStepCompleted,
-  // ]);
+  useEffect(() => {
+    if (stepOne?.customer?.id) {
+      const customer = customersData?.data?.find(
+        (c: CustomerType) =>
+          c.id.toString() === stepOne?.customer?.id.toString()
+      );
+      if (customer) {
+        // Auto-set send country based on customer's country if available in allowed countries
+        const customerCountryInAllowed = (
+          sendCountriesData as CountryAllowedCurrency[]
+        )?.find(
+          (item: CountryAllowedCurrency) =>
+            item.country.name === customer.country.name
+        );
+        if (customerCountryInAllowed) {
+          setSendCountry({
+            id:
+              typeof customerCountryInAllowed.country.id === "string"
+                ? parseInt(customerCountryInAllowed.country.id)
+                : customerCountryInAllowed.country.id,
+            name: customerCountryInAllowed.country.name,
+            iso3: customerCountryInAllowed.country.iso3 || "",
+          });
+        }
+      }
+    }
+  }, [stepOne.customer]);
 
   // Handler functions
   const handleCustomerSelect = (customerId: string | number) => {
@@ -144,8 +185,11 @@ const CustomerRecipientStep: React.FC = () => {
       (c: CustomerType) => c.id.toString() === customerId.toString()
     );
     if (customer) {
-      setRecipient(null);
-      setReceiveCountry(null);
+      // reset the recipient if there is not a default one
+      if (!recipientId) {
+        setRecipient(null);
+        setReceiveCountry(null);
+      }
 
       setCustomer({
         id: parseInt(customer.id),
@@ -156,24 +200,6 @@ const CustomerRecipientStep: React.FC = () => {
         countryIso3: "",
         countryName: customer.country.name,
       });
-
-      // Auto-set send country based on customer's country if available in allowed countries
-      const customerCountryInAllowed = (
-        sendCountriesData as CountryAllowedCurrency[]
-      )?.find(
-        (item: CountryAllowedCurrency) =>
-          item.country.name === customer.country.name
-      );
-      if (customerCountryInAllowed) {
-        setSendCountry({
-          id:
-            typeof customerCountryInAllowed.country.id === "string"
-              ? parseInt(customerCountryInAllowed.country.id)
-              : customerCountryInAllowed.country.id,
-          name: customerCountryInAllowed.country.name,
-          iso3: customerCountryInAllowed.country.iso3 || "",
-        });
-      }
     }
   };
 
@@ -203,6 +229,7 @@ const CustomerRecipientStep: React.FC = () => {
           state: recipient.address.state?.name || "",
           country: recipient.address.country?.name || "",
         },
+        customers: recipient?.customers,
       });
 
       // Auto-set receive country based on recipient's country if available in allowed countries
@@ -302,6 +329,7 @@ const CustomerRecipientStep: React.FC = () => {
       });
     }
   };
+
   return (
     <div className="p-6 space-y-6">
       {/* Customer/Sender and Recipient Row */}
@@ -319,7 +347,7 @@ const CustomerRecipientStep: React.FC = () => {
             loading={customersLoading}
             enableBackendSearch={true}
             onSearch={setCustomerSearchTerm}
-            disabled={mode === "edit"}
+            disabled={mode === "edit" || customerId} //when we are in edit mode or there is a default customer
           />
         </div>
 
@@ -329,12 +357,14 @@ const CustomerRecipientStep: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">
               Recipient
             </label>
-            <button
-              onClick={handleCreateRecipient}
-              className="text-sm text-teal-600 hover:text-teal-700 font-medium underline cursor-pointer"
-            >
-              CREATE A RECIPIENT
-            </button>
+            {!recipientId && (
+              <button
+                onClick={handleCreateRecipient}
+                className="text-sm text-teal-600 hover:text-teal-700 font-medium underline cursor-pointer"
+              >
+                CREATE A RECIPIENT
+              </button>
+            )}
           </div>
           <SearchableSelect
             options={recipientOptions}
@@ -342,12 +372,12 @@ const CustomerRecipientStep: React.FC = () => {
             onChange={handleRecipientSelect}
             placeholder="Select an existing recipient"
             loading={recipientsLoading}
-            disabled={!stepOne.customer}
+            disabled={!stepOne.customer || recipientId}
             enableBackendSearch={false}
           />
 
           {/* Expandable Text Section - Search recipients from other customers */}
-          {stepOne.customer && (
+          {stepOne.customer && !recipientId && (
             <div className="mt-2">
               <button
                 onClick={() => setIsExpandedText(!isExpandedText)}

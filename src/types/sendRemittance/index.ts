@@ -28,6 +28,7 @@ export interface SendRemittanceRecipient {
     state: string;
     country: string;
   };
+  customers: { id: number; full_name: string }[];
 }
 
 export interface SendRemittanceCountry {

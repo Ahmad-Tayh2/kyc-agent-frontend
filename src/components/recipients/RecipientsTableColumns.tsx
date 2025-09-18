@@ -29,6 +29,7 @@ const menu = (recipientId: string | number) => {
       label: "Send Remittance",
       icon: <SendMoneyIcon />,
       onClick: () => {},
+      link: ROUTES.SEND_REMITTANCE.CREATE(`?recipient=${recipientId}`),
     },
     {
       label: "Edit Recipient",
