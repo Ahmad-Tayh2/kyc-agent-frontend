@@ -33,7 +33,7 @@ export const ROUTES = {
   CUSTOMER_FORMS: "/customer-forms",
   PAYMENT_LINKS: {
     LIST: "/payment-links",
-    VALIDATION: (token: string) => `/payment-links/validate/${token}`,
+    VALIDATION: (token: string) => `/pay/${token}`,
   },
   SUPPORT: "/support",
   HELP: "/help",

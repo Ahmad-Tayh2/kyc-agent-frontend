@@ -1,12 +1,24 @@
 import { useCheckPaymentLinkValidation } from "@/hooks/data/usePaymentLinks";
 import { cn } from "@/lib/utils";
-// import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 const PaymentLinkValidation = () => {
   const { token } = useParams<{ token: string }>();
-  const { data: paymentValidationResponse } = useCheckPaymentLinkValidation(
-    token!
-  );
+  const { data: paymentValidationResponse, isSuccess } =
+    useCheckPaymentLinkValidation(token!);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (
+      isSuccess &&
+      paymentValidationResponse?.status &&
+      paymentValidationResponse?.data?.payable_id
+    ) {
+      navigate(
+        `/payment/transaction/${paymentValidationResponse?.data?.payable_id}`,
+        { replace: true }
+      );
+    }
+  }, [paymentValidationResponse?.status, isSuccess]);
   return (
     <div className="space-y-4 h-screen w-screen p-5">
       <div
