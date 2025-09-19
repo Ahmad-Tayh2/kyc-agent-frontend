@@ -119,13 +119,18 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   const setReceiveAmount = useSendRemittanceStore(
     (state) => state.setReceiveAmount
   );
-  //step 2
+  //step 3
   const setSourceOfIncome = useSendRemittanceStore(
     (state) => state.setSourceOfIncome
   );
   const setRemittancePurpose = useSendRemittanceStore(
     (state) => state.setRemittancePurpose
   );
+  //step 4
+  const setCartAddedTo = useSendRemittanceStore(
+    (state) => state.setCartAddedTo
+  );
+
   // const setExchangeDetails = useSendRemittanceStore(
   //   (state) => state.setExchangeDetails
   // );
@@ -144,7 +149,6 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   useEffect(() => {
     if (transferData?.id) {
-      console.log(" show transfer transferData ", transferData);
       //set step 1 data
       setCustomer(transferData?.customer);
       setSendCountry(transferData?.send_country);
@@ -159,6 +163,11 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       //setStep 3 data
       setSourceOfIncome(transferData?.source_income);
       setRemittancePurpose(transferData?.remittance_purpose);
+
+      //step 4 data
+      if (transferData?.remittance_cart_id) {
+        setCartAddedTo(transferData?.remittance_cart_id);
+      }
     }
   }, [transferData]);
 

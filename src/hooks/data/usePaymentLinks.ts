@@ -9,6 +9,13 @@ export function useGetPaymentLinks(filters?: string) {
   });
 }
 
+export function useGetPaymentLinkByCart(cartId: string) {
+  return useQuery({
+    queryKey: ["get-payment-link-by-Cart", cartId],
+    queryFn: () => paymentLinksService.getPaymentLinkByCart(cartId),
+    enabled: !!cartId,
+  });
+}
 export function useCreatePaymentLink() {
   return useMutation({
     mutationFn: (data: any) => paymentLinksService.createPaymentLinks(data),

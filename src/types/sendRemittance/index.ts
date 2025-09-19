@@ -104,7 +104,7 @@ export interface SendRemittanceStepThree {
 export interface SendRemittanceStepFour {
   paymentMethod: PaymentMethod | null;
   paymentLink?: any;
-  cartAddedTo?: any;
+  remittance_cart_id?: string;
 }
 
 // Complete Send Remittance Data

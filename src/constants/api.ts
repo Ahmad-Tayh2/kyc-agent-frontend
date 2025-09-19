@@ -52,6 +52,10 @@ export const API_URLS = {
     get: (filters: string) => `${baseUrl}/payment-links${filters}`,
     create: `${baseUrl}/payment-links`,
     validate: (token: string) => `${baseUrl}/payment-links/token/${token}`,
+    getByTransaction: (transactionId: string) =>
+      `${baseUrl}/payment-links/transaction/${transactionId}`,
+    getByCart: (cartId: string) =>
+      `${baseUrl}/payment-links/remittance-cart/${cartId}`,
   },
   recipients: {
     get: (filters: string) => `${baseUrl}/recipients${filters}`,
