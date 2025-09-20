@@ -20,6 +20,12 @@ export const transfersService = {
     );
     return response.data;
   },
+  getTransferById: async (id: number | string) => {
+    const response = await apiClient.get<TransferResponse>(
+      API_URLS.transfers.getById(id)
+    );
+    return response.data;
+  },
 
   createTransfer: async (data: TransactionCreateDataType) => {
     const response = await apiClient.post(API_URLS.transfers.create, data);

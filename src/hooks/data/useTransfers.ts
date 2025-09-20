@@ -17,6 +17,13 @@ export function useGetTransfer(ref: string) {
     enabled: !!ref,
   });
 }
+export function useGetTransferById(id: string | number) {
+  return useQuery({
+    queryKey: ["get-transfer-byId", id],
+    queryFn: () => transfersService.getTransferById(id),
+    enabled: !!id,
+  });
+}
 
 export function useCreateTransfer(onSuccess?: () => void) {
   return useMutation({
