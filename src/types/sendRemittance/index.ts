@@ -38,9 +38,9 @@ export interface SendRemittanceCountry {
 }
 
 export interface SendRemittanceCurrency {
-  id: number;
+  id?: number;
   code: string;
-  name: string;
+  name?: string;
 }
 
 export interface SendRemittanceMethod {

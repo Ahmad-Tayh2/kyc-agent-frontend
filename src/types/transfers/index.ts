@@ -1,5 +1,6 @@
 export interface Transfer {
   id: number;
+  reference_number: string;
   user_id: number;
   customer_id: number;
   recipient_id: number;

@@ -37,8 +37,8 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   const navigate = useNavigate();
   const columns = draftTransfersTableColum();
 
-  const { id } = useParams<{ id: string }>();
-  const { data: response } = useGetTransfer(id!);
+  const { reference_number } = useParams<{ reference_number: string }>();
+  const { data: response } = useGetTransfer(reference_number!);
 
   const [searchParams] = useSearchParams();
   const customerIdQuery = searchParams.get("customer");
@@ -119,6 +119,13 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   const setReceiveAmount = useSendRemittanceStore(
     (state) => state.setReceiveAmount
   );
+  const setSendCurrency = useSendRemittanceStore(
+    (state) => state.setSendCurrency
+  );
+  const setReceiveCurrency = useSendRemittanceStore(
+    (state) => state.setReceiveCurrency
+  );
+
   //step 3
   const setSourceOfIncome = useSendRemittanceStore(
     (state) => state.setSourceOfIncome
@@ -157,8 +164,10 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       setRemittanceMethod(transferData?.remittance_method);
 
       //set step 2 data
-      setSendAmount(transferData?.sent_amount_in_send_currency);
-      setReceiveAmount(transferData?.receive_amount_in_send_currency);
+      setSendAmount(transferData?.sent_amount);
+      setReceiveAmount(transferData?.receive_amount);
+      setSendCurrency({ code: transferData?.send_currency });
+      setReceiveCurrency({ code: transferData?.receive_currency });
 
       //setStep 3 data
       setSourceOfIncome(transferData?.source_income);
@@ -289,36 +298,28 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     }
     setCurrentStep("review");
   });
-  const { mutateAsync: editTransfer } = useUpdateTransfer(id!);
+  const { mutateAsync: editTransfer } = useUpdateTransfer(reference_number!);
   const handleCurrenciesValidation = () => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
     //function to create payload before sending it (may be in utils)
     const transferDraftPayload: any = {
-      created_by: user?.agent?.id,
-      customer_id: stepOneData?.customer?.id,
-      recipient_id: stepOneData?.recipient?.id,
-      remittance_method_id: stepOneData?.remittanceMethod?.id,
-      send_country_id: stepOneData?.sendCountry?.id,
-      receive_country_id: stepOneData?.receiveCountry?.id,
-      // payment_method: "bank_transfer",
-      comment: "Test 2",
-      send_currency: stepTwoData?.sendCurrency?.code,
-      receive_currency: stepTwoData?.receiveCurrency?.code,
-      sent_amount_in_send_currency: stepTwoData?.sendAmount,
-      // sent_amount_in_default_currency: 100.5,
-      receive_amount_in_send_currency: stepTwoData?.receiveAmount,
-      // receive_amount_in_default_currency: 95,
-      sending_agent_commission_currency: "USD",
-      // payout_agent_commission_percent: 1,
-      // payout_agent_commission_amount: 1,
-      payout_agent_commission_currency: "EUR",
-      // nomadrem_commission_amount: 1,
-      // extra_fees_amount: 0,
-      // total_commission_amount: 4,
-      // payout_amount: 95,
+      customer_id: stepOneData?.customer?.id, //*
+      recipient_id: stepOneData?.recipient?.id, //*
+      send_country_id: stepOneData?.sendCountry?.id, //*
+      receive_country_id: stepOneData?.receiveCountry?.id, //*
+      send_currency: stepTwoData?.sendCurrency?.code, //*
+      receive_currency: stepTwoData?.receiveCurrency?.code, //*
+      sent_amount: stepTwoData?.sendAmount, //*
+      total_payable_amount: stepTwoData?.sendAmount, //*
+      rm_sp_id: 1, //*  => should be got it later in step 1
+      comment: "Test new refactor",
 
-      sending_commission_currency: "USD",
-      payout_commission_currency: "USD",
+      // created_by: user?.agent?.id, //-----
+      // remittance_method_id: stepOneData?.remittanceMethod?.id, //---------
+      // receive_amount_in_send_currency: stepTwoData?.receiveAmount, //--------
+      // sending_agent_commission_currency: "USD", //--------
+      // payout_agent_commission_currency: "EUR", //----------
+      // sending_commission_currency: "USD", //----------
+      // payout_commission_currency: "USD", //----------
     };
     createDraftTransfer(transferDraftPayload);
   };
@@ -339,7 +340,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
         break;
       case "currencies":
         //here the api call
-        handleCurrenciesValidation();
+        mode === "create" && handleCurrenciesValidation();
         // if (!isStepCompleted("currencies")) {
         //   markStepCompleted("currencies");
         // }
@@ -386,45 +387,37 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       case "review":
         return <ReviewStep />;
       case "pay":
-        return <PayStep transferId={id} />;
+        return <PayStep transferId={transferData?.id} />;
       default:
         return <CustomerRecipientStep />;
     }
   };
-  const handleUpdateTransfer = () => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
+  const handleUpdateTransfer = async () => {
     //function to create payload before sending it (may be in utils)
     const transferDraftPayload: any = {
-      created_by: user?.agent?.id,
-      customer_id: stepOneData?.customer?.id,
-      recipient_id: stepOneData?.recipient?.id,
-      remittance_method_id: stepOneData?.remittanceMethod?.id,
-      send_country_id: stepOneData?.sendCountry?.id,
-      receive_country_id: stepOneData?.receiveCountry?.id,
+      customer_id: stepOneData?.customer?.id, //*
+      recipient_id: stepOneData?.recipient?.id, //*
+      send_country_id: stepOneData?.sendCountry?.id, //*
+      receive_country_id: stepOneData?.receiveCountry?.id, //*
+      send_currency: stepTwoData?.sendCurrency?.code, //*
+      receive_currency: stepTwoData?.receiveCurrency?.code, //*
+      sent_amount: stepTwoData?.sendAmount ?? 200, //*
+      total_payable_amount: stepTwoData?.sendAmount ?? 200, //*
+      rm_sp_id: 1, //*  => should be got it later in step 1
+      comment: "Test new refactor",
+
+      // created_by: user?.agent?.id, //-----
+      // remittance_method_id: stepOneData?.remittanceMethod?.id, //---------
+      // receive_amount_in_send_currency: stepTwoData?.receiveAmount, //--------
+      // sending_agent_commission_currency: "USD", //--------
+      // payout_agent_commission_currency: "EUR", //----------
+      // sending_commission_currency: "USD", //----------
+      // payout_commission_currency: "USD", //----------
+
       remittance_purpose_id: stepThreeData?.remittancePurpose?.id,
       source_income_id: stepThreeData?.sourceOfIncome?.id,
-      // payment_method: "bank_transfer",
-      comment: "Test 2",
-      send_currency: stepTwoData?.sendCurrency?.code,
-      receive_currency: stepTwoData?.receiveCurrency?.code,
-      sent_amount_in_send_currency: stepTwoData?.sendAmount,
-      // sent_amount_in_default_currency: 100.5,
-      receive_amount_in_send_currency: stepTwoData?.receiveAmount,
-      // receive_amount_in_default_currency: 95,
-      sending_agent_commission_currency: "USD",
-      // payout_agent_commission_percent: 1,
-      // payout_agent_commission_amount: 1,
-      payout_agent_commission_currency: "EUR",
-      // nomadrem_commission_amount: 1,
-      // extra_fees_amount: 0,
-      // total_commission_amount: 4,
-      // payout_amount: 95,
-
-      sending_commission_currency: "USD",
-      payout_commission_currency: "USD",
     };
-    const res = editTransfer(transferDraftPayload);
-    console.log(" update resssssssssssssss = ", res);
+    await editTransfer(transferDraftPayload);
   };
   const handleBackAndUpdate = () => {
     //update
@@ -469,85 +462,85 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           </div>
         </div>
       );
-    }
-
-    switch (currentStep) {
-      case "customer":
-        // CONTINUE (one button)
-        return (
-          <div className="flex flex-col gap-2 m-5 pt-5">
-            {validationMessage && (
-              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
-                <strong>Required:</strong> {validationMessage}
-              </div>
-            )}
-            <div
-              className={`flex justify-end items-end gap-4
+    } else {
+      switch (currentStep) {
+        case "customer":
+          // CONTINUE (one button)
+          return (
+            <div className="flex flex-col gap-2 m-5 pt-5">
+              {validationMessage && (
+                <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+                  <strong>Required:</strong> {validationMessage}
+                </div>
+              )}
+              <div
+                className={`flex justify-end items-end gap-4
               }`}
-            >
-              <ActionButton
-                title="Continue"
-                onClick={handleNext}
-                disabled={!isStepValid(currentStep)}
-              />
-            </div>
-          </div>
-        );
-
-      case "currencies":
-        // BACK and SAVE & CONTINUE (or just show Continue if step is completed)
-        return (
-          <div className="flex flex-col gap-2 m-5 pt-5">
-            {validationMessage && !completedSteps.includes(currentStep) && (
-              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
-                <strong>Required:</strong> {validationMessage}
+              >
+                <ActionButton
+                  title="Continue"
+                  onClick={handleNext}
+                  disabled={!isStepValid(currentStep)}
+                />
               </div>
-            )}
-            <div className="flex justify-end items-end gap-4">
-              <ActionButton title="Back" onClick={handleBack} type="cancel" />
-              {isStepCompleted(currentStep) ? (
-                <ActionButton title="Continue" onClick={handleNext} />
-              ) : (
+            </div>
+          );
+
+        case "currencies":
+          // BACK and SAVE & CONTINUE (or just show Continue if step is completed)
+          return (
+            <div className="flex flex-col gap-2 m-5 pt-5">
+              {validationMessage && !completedSteps.includes(currentStep) && (
+                <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+                  <strong>Required:</strong> {validationMessage}
+                </div>
+              )}
+              <div className="flex justify-end items-end gap-4">
+                <ActionButton title="Back" onClick={handleBack} type="cancel" />
+                {isStepCompleted(currentStep) ? (
+                  <ActionButton title="Continue" onClick={handleNext} />
+                ) : (
+                  <ActionButton
+                    title="Save & Continue"
+                    onClick={handleNext}
+                    disabled={!isStepValid(currentStep)}
+                  />
+                )}
+              </div>
+            </div>
+          );
+
+        case "review":
+          // BACK and SAVE & CONTINUE
+          return (
+            <div className="flex flex-col gap-2 m-5 pt-5">
+              {validationMessage && (
+                <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+                  <strong>Required:</strong> {validationMessage}
+                </div>
+              )}
+              <div className="flex justify-end items-end gap-4">
+                <ActionButton title="Back" onClick={handleBack} type="cancel" />
                 <ActionButton
                   title="Save & Continue"
                   onClick={handleNext}
                   disabled={!isStepValid(currentStep)}
                 />
-              )}
-            </div>
-          </div>
-        );
-
-      case "review":
-        // BACK and SAVE & CONTINUE
-        return (
-          <div className="flex flex-col gap-2 m-5 pt-5">
-            {validationMessage && (
-              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
-                <strong>Required:</strong> {validationMessage}
               </div>
-            )}
-            <div className="flex justify-end items-end gap-4">
-              <ActionButton title="Back" onClick={handleBack} type="cancel" />
-              <ActionButton
-                title="Save & Continue"
-                onClick={handleNext}
-                disabled={!isStepValid(currentStep)}
-              />
             </div>
-          </div>
-        );
+          );
 
-      case "pay":
-        // BACK
-        return (
-          <div className="flex justify-end items-end gap-4 m-5 pt-5">
-            <ActionButton title="Back" onClick={handleBack} type="cancel" />
-          </div>
-        );
+        case "pay":
+          // BACK
+          return (
+            <div className="flex justify-end items-end gap-4 m-5 pt-5">
+              <ActionButton title="Back" onClick={handleBack} type="cancel" />
+            </div>
+          );
 
-      default:
-        return null;
+        default:
+          return null;
+      }
     }
   };
 
