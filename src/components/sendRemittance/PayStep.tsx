@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Info,
   AlertCircle,
@@ -14,7 +14,10 @@ import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import SummaryCard, { type SummaryData } from "./SummaryCard";
 import { Button } from "@/components/ui/button";
 import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
-import { useCreatePaymentLink } from "@/hooks/data/usePaymentLinks";
+import {
+  useCreatePaymentLink,
+  useGetPaymentLinkByCart,
+} from "@/hooks/data/usePaymentLinks";
 import { copyToClipboard } from "@/helpers/text";
 import {
   useAddTransactionToCart,
@@ -22,6 +25,7 @@ import {
   useCreateRemittanceCart,
 } from "@/hooks/data/useRemittanceCarts";
 import { ROUTES } from "@/constants/routes";
+import StatusLabel from "../shared/StatusLabel";
 interface PayStepProps {
   transferId?: number | string;
 }
@@ -77,6 +81,15 @@ const PayStep = (props: PayStepProps) => {
   const { data: remittanceCartsResponse } = useGetRemittanceCarts(
     `?customer_id=${stepOne?.customer?.id}&currency=USD`
   );
+
+  const { data: paymentLinkResponse } = useGetPaymentLinkByCart(
+    stepFour?.remittance_cart_id!
+  );
+  useEffect(() => {
+    if (paymentLinkResponse?.data?.length) {
+      setPaymentLink(paymentLinkResponse?.data?.[0]);
+    }
+  }, [paymentLinkResponse]);
   const existedRemittanceCart = useMemo(() => {
     return remittanceCartsResponse?.data?.data?.[0] ?? null;
   }, [remittanceCartsResponse]);
@@ -96,16 +109,17 @@ const PayStep = (props: PayStepProps) => {
         cartId,
         transaction_id: Number(transferId),
       });
-      setCartAddedTo(addingTransactionToCartResponse?.data);
+      setCartAddedTo(addingTransactionToCartResponse?.data?.id);
     }
   };
+  // remittance_cart_id
   const handleSendPaymentLink = async () => {
     const response = await createPaymentLink({
-      payable_type: stepFour?.cartAddedTo?.id
+      payable_type: stepFour?.remittance_cart_id
         ? "RemittanceCart"
         : "Transaction",
-      payable_id: stepFour?.cartAddedTo?.id
-        ? stepFour?.cartAddedTo?.id
+      payable_id: stepFour?.remittance_cart_id
+        ? stepFour?.remittance_cart_id
         : Number(transferId),
     });
 
@@ -169,7 +183,7 @@ const PayStep = (props: PayStepProps) => {
                 </p>
               </div>
 
-              {stepFour?.cartAddedTo?.id ? (
+              {stepFour?.remittance_cart_id ? (
                 <Button
                   variant="outline"
                   className="border-green-500 text-green-600 hover:text-green-600 cursor-default hover:bg-white"
@@ -197,18 +211,6 @@ const PayStep = (props: PayStepProps) => {
                 <h4 className="font-medium text-gray-900">
                   Customer will pay for this transfer
                 </h4>
-                {stepFour?.paymentLink && (
-                  <div className="flex items-center space-x-4">
-                    <Button
-                      variant="link"
-                      className="text-teal-600 hover:text-teal-700 p-0 h-auto text-sm cursor-pointer"
-                      onClick={handleCopyPaymentLink}
-                    >
-                      <Copy className="w-4 h-4" />
-                      COPY PAYMENT LINK
-                    </Button>
-                  </div>
-                )}
               </div>
               <p className="text-sm text-gray-600">
                 We will send the payment link to selected customer email and
@@ -226,14 +228,31 @@ const PayStep = (props: PayStepProps) => {
               </div>
 
               <div className="flex items-center space-x-4">
-                <Button
-                  variant="outline"
-                  className="border-teal-500 text-teal-600 hover:bg-teal-50"
-                  onClick={handleSendPaymentLink}
-                >
-                  <Link className="w-4 h-4 mr-2" />
-                  SEND PAYMENT LINK
-                </Button>
+                {stepFour?.paymentLink &&
+                stepFour?.paymentLink?.status !== "expired_link" ? (
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      variant="link"
+                      className="text-teal-600 hover:text-teal-700 p-0 h-auto text-sm cursor-pointer"
+                      onClick={handleCopyPaymentLink}
+                    >
+                      <Copy className="w-4 h-4" />
+                      COPY PAYMENT LINK
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="border-teal-500 text-teal-600 hover:bg-teal-50"
+                    onClick={handleSendPaymentLink}
+                  >
+                    <Link className="w-4 h-4 mr-2" />
+                    SEND PAYMENT LINK
+                  </Button>
+                )}
+                {stepFour?.paymentLink?.status && (
+                  <StatusLabel value={stepFour?.paymentLink?.status} />
+                )}
               </div>
             </div>
             <hr className="my-3" />

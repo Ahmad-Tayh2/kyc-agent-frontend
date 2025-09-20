@@ -2,13 +2,20 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { paymentLinksService } from "@/services/paymentLinks";
 
-export function useGetPaymentLink(filters?: string) {
+export function useGetPaymentLinks(filters?: string) {
   return useQuery({
     queryKey: ["get-payment-links", filters],
     queryFn: () => paymentLinksService.getPaymentLinks(filters),
   });
 }
 
+export function useGetPaymentLinkByCart(cartId: string) {
+  return useQuery({
+    queryKey: ["get-payment-link-by-Cart", cartId],
+    queryFn: () => paymentLinksService.getPaymentLinkByCart(cartId),
+    enabled: !!cartId,
+  });
+}
 export function useCreatePaymentLink() {
   return useMutation({
     mutationFn: (data: any) => paymentLinksService.createPaymentLinks(data),

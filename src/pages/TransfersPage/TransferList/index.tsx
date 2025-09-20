@@ -9,6 +9,7 @@ import PageTitle from "@/components/shared/PageTitle";
 import TransferFilters from "@/components/transfers/TransferFilters";
 import { transferColumns } from "@/components/transfers/TransferTableColumns";
 import { useTransferFilters } from "@/hooks/data/useTransferFilters";
+import { useGetCustomers } from "@/hooks/data/useCustomers";
 
 const TransferList: React.FC = () => {
   const [t] = useTranslation("global");
@@ -19,6 +20,7 @@ const TransferList: React.FC = () => {
     filtersString,
     updateSearchTerm,
     updateStatus,
+    updateCustomersIds,
     updateSendingDate,
     updateReceiveCurrency,
     resetFilters,
@@ -36,6 +38,12 @@ const TransferList: React.FC = () => {
   const transfersMeta: any = useMemo(() => {
     return response?.meta || [];
   }, [response?.meta]);
+
+  const { data: CustomersResponse } = useGetCustomers(filtersString);
+
+  const customersData = useMemo(() => {
+    return CustomersResponse?.data || [];
+  }, [CustomersResponse?.data]);
 
   const handleCreateTransfer = () => {
     // TODO: Implement transfer creation
@@ -69,8 +77,10 @@ const TransferList: React.FC = () => {
       </div>
       <TransferFilters
         filters={filters}
+        customers={customersData}
         onUpdateSearchTerm={updateSearchTerm}
         onUpdateStatus={updateStatus}
+        onUpdateCustomersIds={updateCustomersIds}
         onUpdateSendingDate={updateSendingDate}
         onUpdateReceiveCurrency={updateReceiveCurrency}
         onResetFilters={resetFilters}

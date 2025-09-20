@@ -7,6 +7,20 @@ export const paymentLinksService = {
     return response.data;
   },
 
+  getPaymentLinkByCart: async (cartId: string) => {
+    const response = await apiClient.get(
+      API_URLS.paymentLinks.getByCart(cartId)
+    );
+    return response.data;
+  },
+
+  getPaymentLinkByTransaction: async (cartId: string) => {
+    const response = await apiClient.get(
+      API_URLS.paymentLinks.getByTransaction(cartId)
+    );
+    return response.data;
+  },
+
   createPaymentLinks: async (data: any) => {
     const response = await apiClient.post(API_URLS.paymentLinks.create, data);
     return response.data;

@@ -5,10 +5,11 @@ import { FilterButton } from "@/components/shared/FilterButton";
 // import DateRangeSelector from "@/components/shared/DateRangeSelector";
 // import CountrySelector from "@/components/shared/CountrySelector";
 // import { useCountries } from "@/hooks/data/useAddress";
-import type { CustomerFilterState } from "@/hooks/data/useCustomerFilters";
+import type { PaymentLinksFilterState } from "@/hooks/data/usePaymentLinksFilters";
 import DateRangeSelector from "../shared/DateRangeSelector";
 import MultiSelectDropdown from "../shared/MultiSelectDropdown";
 // import { CUSTOMER_STATUSES } from "@/constants/appConstants";
+import type { CustomerType } from "@/types/customers";
 
 // const statusOptions = CUSTOMER_STATUSES.map((status) => ({
 //   value: status,
@@ -16,39 +17,37 @@ import MultiSelectDropdown from "../shared/MultiSelectDropdown";
 // }));
 
 interface PaymentLinksFiltersProps {
-  filters: CustomerFilterState;
-  // onUpdateReferenceNumber: (reference_number: string) => void;
+  filters: PaymentLinksFilterState;
+  customers: CustomerType[];
   onUpdateStatus: (status: string[]) => void;
   onUpdateDateRange: (dateRange: {
     startDate: string | null;
     endDate: string | null;
   }) => void;
-  onUpdateCustomersIds: (countries: number[]) => void;
+  onUpdateCustomersIds: (customer_ids: string[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
 
 const PaymentLinksFilters: React.FC<PaymentLinksFiltersProps> = ({
   filters,
-  // onUpdateReferenceNumber,
+  customers,
   onUpdateStatus,
   onUpdateDateRange,
-  // onUpdateCustomersIds,
+  onUpdateCustomersIds,
   onResetFilters,
   onApplyFilters,
 }) => {
+  const customersOptions = [
+    ...customers?.map((customer: CustomerType) => ({
+      label: customer.full_name,
+      value: customer.id,
+    })),
+  ];
   const dateRangeValue = {
-    startDate: filters.date_from || null,
-    endDate: filters.date_to || null,
+    startDate: filters.created_from || null,
+    endDate: filters.created_to || null,
   };
-
-  // const customersOptions = [
-  //   ...customers?.map((customer: CustomerType) => ({
-  //     label: customer.full_name,
-  //     value: customer.id,
-  //   })),
-  // ];
-
   return (
     <div className="flex items-center justify-between flex-wrap">
       <div className="flex items-center justify-start w-fit gap-1 flex-wrap">
@@ -72,9 +71,9 @@ const PaymentLinksFilters: React.FC<PaymentLinksFiltersProps> = ({
             <MultiSelectDropdown
               label="Customers"
               placeholder="All"
-              options={[]}
-              value={[]}
-              onChange={() => {}}
+              options={customersOptions}
+              value={filters.customer_ids ?? []}
+              onChange={onUpdateCustomersIds}
               isSearchable
               checkboxPlacement="right"
             />
@@ -86,15 +85,6 @@ const PaymentLinksFilters: React.FC<PaymentLinksFiltersProps> = ({
               onChange={onUpdateStatus}
               showSelectAll
             />
-            {/* 
-        
-            <CountrySelector
-              label="Country"
-              placeholder="Select countries"
-              countries={countries}
-              value={filters.countries ?? []}
-              onChange={onUpdateCountryIds}
-            /> */}
           </div>
         </FilterButton>
       </div>

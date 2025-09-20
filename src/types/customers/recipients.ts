@@ -1,4 +1,4 @@
-import type { Address } from '@/types/shared/location';
+import type { Address } from "@/types/shared/location";
 
 export interface CustomerRecipient {
   id: number;
@@ -14,6 +14,7 @@ export interface CustomerRecipient {
   full_phone_number: string;
   created_at: string;
   updated_at: string;
+  customers: any[];
 }
 
 export interface CustomerRecipientsResponse {

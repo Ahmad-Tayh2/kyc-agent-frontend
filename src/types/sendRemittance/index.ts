@@ -28,6 +28,7 @@ export interface SendRemittanceRecipient {
     state: string;
     country: string;
   };
+  customers: { id: number; full_name: string }[];
 }
 
 export interface SendRemittanceCountry {
@@ -103,7 +104,7 @@ export interface SendRemittanceStepThree {
 export interface SendRemittanceStepFour {
   paymentMethod: PaymentMethod | null;
   paymentLink?: any;
-  cartAddedTo?: any;
+  remittance_cart_id?: string;
 }
 
 // Complete Send Remittance Data

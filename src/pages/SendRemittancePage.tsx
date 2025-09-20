@@ -19,11 +19,13 @@ import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { DataTable } from "@/components/shared/DataTable";
 import { draftTransfersTableColum } from "@/components/transfers/DraftTransfersTableColum";
 import { useTransferFilters } from "@/hooks/data/useTransferFilters";
+import { useGetCustomer } from "@/hooks/data/useCustomers";
+import { useGetRecipient } from "@/hooks/data/useRecipients";
 
 type StepName = "customer" | "currencies" | "review" | "pay";
 interface SendRemittancePageProps {
@@ -38,6 +40,9 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   const { id } = useParams<{ id: string }>();
   const { data: response } = useGetTransfer(id!);
 
+  const [searchParams] = useSearchParams();
+  const customerIdQuery = searchParams.get("customer");
+  const recipientIdQuery = searchParams.get("recipient");
   const { filtersString, updateStatus, updatePagination } =
     useTransferFilters();
 
@@ -114,20 +119,36 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   const setReceiveAmount = useSendRemittanceStore(
     (state) => state.setReceiveAmount
   );
-  //step 2
+  //step 3
   const setSourceOfIncome = useSendRemittanceStore(
     (state) => state.setSourceOfIncome
   );
   const setRemittancePurpose = useSendRemittanceStore(
     (state) => state.setRemittancePurpose
   );
+  //step 4
+  const setCartAddedTo = useSendRemittanceStore(
+    (state) => state.setCartAddedTo
+  );
+
   // const setExchangeDetails = useSendRemittanceStore(
   //   (state) => state.setExchangeDetails
   // );
+  // Initialize store for create mode when component mounts
+  useEffect(() => {
+    resetStore();
+    if (mode === "edit") {
+      markStepCompleted("customer");
+      markStepCompleted("currencies");
+      setCurrentStep("review");
+    } else if (mode === "create") {
+      updateStatus(["draft"]);
+    }
+    setMode(mode);
+  }, [mode]);
 
   useEffect(() => {
-    if (transferData) {
-      console.log(" show transfer transferData ", transferData);
+    if (transferData?.id) {
       //set step 1 data
       setCustomer(transferData?.customer);
       setSendCountry(transferData?.send_country);
@@ -142,21 +163,62 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       //setStep 3 data
       setSourceOfIncome(transferData?.source_income);
       setRemittancePurpose(transferData?.remittance_purpose);
+
+      //step 4 data
+      if (transferData?.remittance_cart_id) {
+        setCartAddedTo(transferData?.remittance_cart_id);
+      }
     }
   }, [transferData]);
 
-  // Initialize store for create mode when component mounts
+  const { data: customerData } = useGetCustomer(customerIdQuery!);
+  const { data: recipientData } = useGetRecipient(recipientIdQuery!);
   useEffect(() => {
-    resetStore();
-    if (mode === "edit") {
-      markStepCompleted("customer");
-      markStepCompleted("currencies");
-      setCurrentStep("review");
-    } else if (mode === "create") {
-      updateStatus(["draft"]);
+    const customer = customerData?.data;
+    if (customer?.id) {
+      setRecipient(null);
+      setReceiveCountry(null);
+      const payload: any = {
+        id: parseInt(customer.id),
+        firstName: customer.first_name,
+        lastName: customer.last_name,
+        fullName: customer.full_name,
+        countryId: 0, // Will be updated when we set send country
+        countryIso3: "",
+        countryName: customer.country.name,
+      };
+      setCustomer(payload);
     }
-    setMode(mode);
-  }, [mode]);
+  }, [customerData]);
+
+  useEffect(() => {
+    const recipient = recipientData?.data;
+    if (recipient?.id) {
+      console.log(" recipient = = iddd //*** ", recipient);
+      setRecipient({
+        id: recipient.id,
+        firstName: recipient.first_name,
+        lastName: recipient.last_name,
+        fullName: `${recipient.first_name} ${recipient.last_name}`,
+        countryId: 0, // Will be updated when we set receive country
+        countryIso3: "",
+        countryName: "",
+        countryPhoneCode: recipient.country_phone_code,
+        phoneNumber: recipient.phone_number,
+        email: recipient.email,
+        address: {
+          streetName: recipient.address.street || "",
+          houseNumber: "", // Not available in current API response
+          postalCode: recipient.address.postal_code || "",
+          extraDetails: "", // Not available in current API response
+          city: recipient.address.city?.name || "",
+          state: recipient.address.state?.name || "",
+          country: recipient.address.country?.name || "",
+        },
+        customers: recipient.customers,
+      });
+    }
+  }, [recipientData]);
 
   // Helper function to get validation message for current step
   const getValidationMessage = (step: StepName): string | null => {
@@ -313,7 +375,12 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   const renderCurrentStep = () => {
     switch (currentStep) {
       case "customer":
-        return <CustomerRecipientStep />;
+        return (
+          <CustomerRecipientStep
+            customerId={customerIdQuery}
+            recipientId={recipientIdQuery}
+          />
+        );
       case "currencies":
         return <CurrenciesAmountStep />;
       case "review":

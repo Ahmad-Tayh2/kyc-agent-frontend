@@ -15,6 +15,7 @@ export type TransferPaginationProps = {
 };
 
 export interface TransferFilterState extends BaseFilterState {
+  customer_ids?: string[];
   status?: TransferStatus[];
   sending_date?: string;
   receive_currency?: string;
@@ -27,6 +28,7 @@ export const useTransferFilters = () => {
   const [filters, setFilters] = useState<TransferFilterState>({
     search: "",
     status: [],
+    customer_ids: [],
     sending_date: "",
     receive_currency: "",
     //pagination
@@ -50,7 +52,9 @@ export const useTransferFilters = () => {
   const updateStatus = useCallback((status: TransferStatus[]) => {
     setFilters((prev) => ({ ...prev, status }));
   }, []);
-
+  const updateCustomersIds = useCallback((customer_ids: string[]) => {
+    setFilters((prev) => ({ ...prev, customer_ids }));
+  }, []);
   const updateSendingDate = useCallback((sending_date: string) => {
     setFilters((prev) => ({ ...prev, sending_date }));
   }, []);
@@ -91,6 +95,7 @@ export const useTransferFilters = () => {
     filtersString,
     updateSearchTerm,
     updateStatus,
+    updateCustomersIds,
     updateSendingDate,
     updateReceiveCurrency,
     resetFilters,

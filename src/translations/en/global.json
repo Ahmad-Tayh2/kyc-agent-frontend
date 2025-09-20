@@ -618,7 +618,7 @@
         "table": {
           "columns": {
             "id": "Tr. #",
-            "sending_date": "Sending Date",
+            "created_at": "Date",
             "remittance_method": "Remittance Method",
             "customer": "Customer",
             "recipient": "Recipient",

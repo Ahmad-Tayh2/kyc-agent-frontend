@@ -31,7 +31,7 @@ const createInitialData = (): SendRemittanceData => ({
   stepFour: {
     paymentMethod: null,
     paymentLink: null,
-    cartAddedTo: null,
+    remittance_cart_id: "",
   },
 });
 
@@ -91,6 +91,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       setCustomer: (customer) =>
         set((state) => {
           state.data.stepOne.customer = customer;
+
           // Reset recipient when customer changes
           if (customer?.id !== state.data.stepOne.customer?.id) {
             state.data.stepOne.recipient = null;
@@ -214,9 +215,9 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
         set((state) => {
           state.data.stepFour.paymentLink = link;
         }),
-      setCartAddedTo: (cart: any) =>
+      setCartAddedTo: (cartId: string) =>
         set((state) => {
-          state.data.stepFour.cartAddedTo = cart;
+          state.data.stepFour.remittance_cart_id = cartId;
         }),
       setTransferCreated: (created: boolean) =>
         set((state) => {

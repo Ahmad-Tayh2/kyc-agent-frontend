@@ -36,7 +36,8 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   loading = false,
 }) => {
   const { t } = useTranslation("global");
-  const defaultPlaceholder = placeholder || t("modules.components.phoneInput.defaultPlaceholder");
+  const defaultPlaceholder =
+    placeholder || t("modules.components.phoneInput.defaultPlaceholder");
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState<CountryOption | null>(
@@ -47,8 +48,15 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 
   // Find selected option based on selectedCountry
   useEffect(() => {
-    const option = countryOptions?.find((opt) => opt.value === selectedCountry);
-    setSelectedOption(option || null);
+    if (selectedCountry && countryOptions?.length) {
+      const countryPhoneCode = selectedCountry?.startsWith("+")
+        ? selectedCountry?.slice(1)
+        : selectedCountry;
+      const option = countryOptions?.find(
+        (opt) => opt.value === countryPhoneCode
+      );
+      setSelectedOption(option || null);
+    }
   }, [selectedCountry, countryOptions]);
 
   // Filter options based on search term

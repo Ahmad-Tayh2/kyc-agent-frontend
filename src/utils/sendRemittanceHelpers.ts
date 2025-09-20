@@ -60,6 +60,7 @@ export const mapCustomerRecipientToStoreFormat = (
     state: recipient.address.state?.name || "",
     country: recipient.address.country.name,
   },
+  customers: recipient?.customers,
 });
 
 export const mapCurrencyToStoreFormat = (

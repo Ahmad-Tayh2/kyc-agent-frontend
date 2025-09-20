@@ -10,6 +10,7 @@ import { MoreHorizontal } from "lucide-react";
 import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import EditIcon from "@/assets/icons/edit.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
+import { format } from "date-fns";
 
 export const transferColumns = (): ColumnDef<Transfer>[] => {
   const [t] = useTranslation("global");
@@ -39,8 +40,12 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       ),
     },
     {
-      accessorKey: "sending_date",
-      header: t("modules.pages.transfers.table.columns.sending_date"),
+      accessorKey: "created_at",
+      header: t("modules.pages.transfers.table.columns.created_at"),
+      cell: ({ row }) => {
+        const date = row.getValue("created_at") as string;
+        return <div>{format(date, "yyyy-MM-dd")}</div>;
+      },
     },
     {
       accessorKey: "remittance_method",
