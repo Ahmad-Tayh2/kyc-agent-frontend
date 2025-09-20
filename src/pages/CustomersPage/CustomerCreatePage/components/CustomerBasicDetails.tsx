@@ -183,7 +183,7 @@ const CustomerBasicDetails = (props: any) => {
             onSelectValue={(value: string) =>
               handleInputChange("gender", value)
             }
-            // disabled={!editMode}
+            disabled={!editMode}
           />
           {/* <div className="flex items-center gap-1">
             {genderOptions?.map((genderOption: any) => (

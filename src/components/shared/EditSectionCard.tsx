@@ -1,6 +1,7 @@
 import React, { type ReactNode } from "react";
 import EditIcon from "@/assets/icons/edit-icon.svg?react";
 import SaveIcon from "@/assets/icons/save-icon.svg?react";
+import { cn } from "@/lib/utils";
 
 interface EditSectionCardProps {
   sectionTitle?: string;
@@ -10,6 +11,7 @@ interface EditSectionCardProps {
   setEditMode?: (editMode: boolean) => void;
   checkOtherSectionEditMode?: boolean;
   children?: ReactNode;
+  className?: string;
 }
 
 const EditSectionCard: React.FC<EditSectionCardProps> = ({
@@ -20,10 +22,13 @@ const EditSectionCard: React.FC<EditSectionCardProps> = ({
   setEditMode,
   checkOtherSectionEditMode,
   children,
+  className,
 }) => {
   const handleEdit = () => !checkOtherSectionEditMode && setEditMode?.(true);
   return (
-    <div className="bg-white rounded-lg border border-[#E7EFEF]">
+    <div
+      className={cn(className, "bg-white rounded-lg border border-[#E7EFEF]")}
+    >
       <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] p-5">
         <h2 className="text-lg font-semibold">{sectionTitle}</h2>
         {setEditMode && (

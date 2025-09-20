@@ -16,7 +16,7 @@ export interface RecipientCreateData {
   gender: string;
   country_phone_code: string;
   phone_number: string;
-  
+
   // Address
   address: {
     street_name: string;
@@ -27,12 +27,20 @@ export interface RecipientCreateData {
     state_id?: number;
     country_id: number;
   };
-  
+
   // Customer IDs
   customer_ids: number[];
-  
+
   // Remittance Methods
-  remittance_methods: number[];
+  // remittance_methods: number[];
+  rm_service_providers: [
+    {
+      rm_sp_id: number;
+      account_number: string;
+      country_phone_code: string;
+      phone_number: string;
+    }
+  ];
 }
 
 export interface BankAccountCreateData {
@@ -94,7 +102,9 @@ export const recipientsService = {
       queryParams.append("phone_number", params.phone_number);
     if (params.name) queryParams.append("name", params.name);
 
-    const response = await apiClient.get(API_URLS.recipients.search(queryParams.toString()));
+    const response = await apiClient.get(
+      API_URLS.recipients.search(queryParams.toString())
+    );
     return response.data;
   },
   createRecipient: async (data: RecipientCreateData) => {

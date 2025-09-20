@@ -8,7 +8,9 @@ export const ROUTES = {
     LIST: "/customers",
     CREATE: "/customers/create",
     CREATE_FORM: "/customers/create/form",
-    EDIT: (customerId: string | number) => `/customers/edit/${customerId}`,
+    DETAILS: (customerId: string | number) =>
+      `/customers/${customerId}/details`,
+    EDIT: (customerId: string | number) => `/customers/${customerId}/edit`,
   },
   RECIPIENTS: {
     LIST: "/recipients",
