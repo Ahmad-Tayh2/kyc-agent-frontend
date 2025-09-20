@@ -14,19 +14,19 @@ import { format } from "date-fns";
 
 export const transferColumns = (): ColumnDef<Transfer>[] => {
   const [t] = useTranslation("global");
-  const menu = (transferId: string | number) => {
+  const menu = (transferRef: string) => {
     return [
       {
         label: "View Details",
         icon: <ViewDetailsIcon />,
         onClick: () => {},
-        link: ROUTES.TRANSFERS.DETAILS(transferId),
+        link: ROUTES.TRANSFERS.DETAILS(transferRef),
       },
       {
         label: "Edit",
         icon: <EditIcon />,
         onClick: () => {},
-        link: ROUTES.SEND_REMITTANCE.EDIT(transferId),
+        link: ROUTES.SEND_REMITTANCE.EDIT(transferRef),
       },
     ];
   };
@@ -104,7 +104,7 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       },
     },
     {
-      accessorKey: "sending_amount",
+      accessorKey: "sent_amount",
       header: t("modules.pages.transfers.table.columns.sending_amount"),
     },
     {
@@ -118,7 +118,7 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       header: t("modules.pages.transfers.table.columns.extra_fees_amount"),
     },
     {
-      accessorKey: "payout_amount",
+      accessorKey: "total_payable_amount",
       header: t("modules.pages.transfers.table.columns.payout_amount"),
     },
     // {
@@ -181,10 +181,10 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       header: t("modules.pages.transfers.table.columns.actions"),
       enableHiding: false,
       cell: ({ row }) => {
-        const recipient = row.original;
+        const transfer = row.original;
         return (
           <DropdownMenuOptions
-            menu={menu(recipient.id)}
+            menu={menu(transfer.reference_number)}
             trigger={
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <MoreHorizontal />

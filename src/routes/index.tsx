@@ -101,7 +101,7 @@ export const AppRoutes = () => (
             element={<SendRemittancePage mode={"create"} />}
           />
           <Route
-            path={ROUTES.SEND_REMITTANCE.EDIT(":id")}
+            path={ROUTES.SEND_REMITTANCE.EDIT(":reference_number")}
             element={<SendRemittancePage mode={"edit"} />}
           />
           {/* customers routes */}
