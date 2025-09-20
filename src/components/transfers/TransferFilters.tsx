@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { SearchInput } from "@/components/shared/SearchInput";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
@@ -6,8 +6,8 @@ import DatePicker from "@/components/shared/DatePicker";
 import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
 import type { TransferFilterState } from "@/hooks/data/useTransferFilters";
 import type { TransferStatus } from "@/types/transfers";
-import { CURRENCY_COUNTRY_CODE } from "@/constants/currencies";
 import { useCurrencies } from "@/hooks/data/useCurrency";
+import type { CustomerType } from "@/types/customers";
 
 const TRANSFER_STATUSES: TransferStatus[] = ["pending", "draft"];
 
@@ -18,8 +18,10 @@ const statusOptions = TRANSFER_STATUSES.map((status) => ({
 
 interface TransferFiltersProps {
   filters: TransferFilterState;
+  customers: CustomerType[];
   onUpdateSearchTerm: (search: string) => void;
   onUpdateStatus: (status: TransferStatus[]) => void;
+  onUpdateCustomersIds: (status: string[]) => void;
   onUpdateSendingDate: (date: string) => void;
   onUpdateReceiveCurrency: (currency: string) => void;
   onResetFilters: () => void;
@@ -28,7 +30,9 @@ interface TransferFiltersProps {
 
 const TransferFilters: React.FC<TransferFiltersProps> = ({
   filters,
+  customers,
   onUpdateSearchTerm,
+  onUpdateCustomersIds,
   onUpdateStatus,
   onUpdateSendingDate,
   onUpdateReceiveCurrency,
@@ -43,10 +47,12 @@ const TransferFilters: React.FC<TransferFiltersProps> = ({
     }));
   }, [currencies]);
 
-  Object.keys(CURRENCY_COUNTRY_CODE).map((currency) => ({
-    value: currency,
-    label: currency,
-  }));
+  const customersOptions = [
+    ...customers?.map((customer: CustomerType) => ({
+      label: customer.full_name,
+      value: customer.id,
+    })),
+  ];
   return (
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
@@ -61,6 +67,15 @@ const TransferFilters: React.FC<TransferFiltersProps> = ({
           onApplyFilters={onApplyFilters}
         >
           <div className="flex gap-2 w-fit">
+            <MultiSelectDropdown
+              label="Customers"
+              placeholder="All"
+              options={customersOptions}
+              value={filters.customer_ids ?? []}
+              onChange={onUpdateCustomersIds}
+              isSearchable
+              checkboxPlacement="right"
+            />
             <MultiSelectDropdown
               label="Status"
               placeholder="All"

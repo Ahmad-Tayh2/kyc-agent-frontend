@@ -4,8 +4,11 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 const PaymentLinkValidation = () => {
   const { token } = useParams<{ token: string }>();
-  const { data: paymentValidationResponse, isSuccess } =
-    useCheckPaymentLinkValidation(token!);
+  const {
+    data: paymentValidationResponse,
+    isSuccess,
+    isError,
+  } = useCheckPaymentLinkValidation(token!);
   const navigate = useNavigate();
   useEffect(() => {
     if (
@@ -27,7 +30,7 @@ const PaymentLinkValidation = () => {
           paymentValidationResponse?.status ? "text-green-500" : "text-red-500"
         )}
       >
-        {paymentValidationResponse?.message}
+        {isError && "Something goes wrong"}
       </div>
     </div>
   );

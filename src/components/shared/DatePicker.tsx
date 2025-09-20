@@ -79,67 +79,69 @@ export default function DatePicker({
   };
 
   return (
-    <div className="relative">
+    <div>
       {label && (
         <Label className="block text-sm font-medium text-gray-700">
           {label}
         </Label>
       )}
-      <Input
-        id="date"
-        value={displayValue}
-        placeholder="June 01, 2025"
-        className="bg-background pr-10 h-[40px]"
-        onChange={(e) => {
-          console.log(" value ", e.target.value);
-          const newValue = e.target.value;
-          setDisplayValue(newValue);
-          // Try to parse date from input (optional: you can enhance parsing)
-          const parsedDate = new Date(newValue);
-          if (isValidDate(parsedDate)) {
-            setDate(parsedDate);
-            setMonth(parsedDate);
-            onChange(DateTime.fromJSDate(parsedDate).toISODate());
-          }
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "ArrowDown") {
-            e.preventDefault();
-            setOpen(true);
-          }
-        }}
-        disabled={disabled}
-      />
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            id="date-picker"
-            variant="ghost"
-            className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
-            disabled={disabled}
+      <div className="flex items-center relative w-full">
+        <Input
+          id="date"
+          value={displayValue}
+          placeholder="Select a Date"
+          className="bg-background pr-10 h-[40px] "
+          onChange={(e) => {
+            console.log(" value ", e.target.value);
+            const newValue = e.target.value;
+            setDisplayValue(newValue);
+            // Try to parse date from input (optional: you can enhance parsing)
+            const parsedDate = new Date(newValue);
+            if (isValidDate(parsedDate)) {
+              setDate(parsedDate);
+              setMonth(parsedDate);
+              onChange(DateTime.fromJSDate(parsedDate).toISODate());
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              setOpen(true);
+            }
+          }}
+          disabled={disabled}
+        />
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              id="date-picker"
+              variant="ghost"
+              className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+              disabled={disabled}
+            >
+              <CalendarIcon className="size-3.5" />
+              <span className="sr-only">Select date</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto overflow-hidden p-0"
+            align="end"
+            alignOffset={-8}
+            sideOffset={10}
           >
-            <CalendarIcon className="size-3.5" />
-            <span className="sr-only">Select date</span>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          className="w-auto overflow-hidden p-0"
-          align="end"
-          alignOffset={-8}
-          sideOffset={10}
-        >
-          <Calendar
-            mode="single"
-            selected={date}
-            captionLayout="dropdown"
-            month={month}
-            onMonthChange={setMonth}
-            onSelect={handleDateSelect}
-            startMonth={startMonth}
-            endMonth={endMonth}
-          />
-        </PopoverContent>
-      </Popover>
+            <Calendar
+              mode="single"
+              selected={date}
+              captionLayout="dropdown"
+              month={month}
+              onMonthChange={setMonth}
+              onSelect={handleDateSelect}
+              startMonth={startMonth}
+              endMonth={endMonth}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
   );
 }
