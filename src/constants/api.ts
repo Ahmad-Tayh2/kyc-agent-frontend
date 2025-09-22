@@ -1,4 +1,4 @@
-const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
+const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
 
 export const API_URLS = {
   auth: {
@@ -67,9 +67,10 @@ export const API_URLS = {
 
   transfers: {
     get: (filters: string) => `${baseUrl}/transactions${filters}`,
-    getById: (id: string | number) => `${baseUrl}/transactions/${id}`,
+    getByRef: (ref: string) => `${baseUrl}/transactions/${ref}`,
+    getById: (id: number | string) => `${baseUrl}/transactions/get/${id}`,
     create: `${baseUrl}/transactions`,
-    update: (id: string | number) => `${baseUrl}/transactions/${id}`,
+    update: (ref: string) => `${baseUrl}/transactions/${ref}`,
   },
   remittanceCart: {
     get: (filters: string) => `${baseUrl}/remittance-carts${filters}`,
@@ -105,7 +106,7 @@ export const API_URLS = {
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
-    deleteCurrency: () => '', // URL not ready yet
+    deleteCurrency: () => "", // URL not ready yet
     addCurrency: (walletId: string | number) =>
       `${baseUrl}/wallets/${walletId}/currencies`,
   },

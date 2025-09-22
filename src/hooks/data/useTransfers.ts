@@ -10,9 +10,16 @@ export function useGetTransfers(filters?: string) {
   });
 }
 
-export function useGetTransfer(id: string | number) {
+export function useGetTransfer(ref: string) {
   return useQuery({
-    queryKey: ["get-transfer", id],
+    queryKey: ["get-transfer", ref],
+    queryFn: () => transfersService.getTransferByRef(ref),
+    enabled: !!ref,
+  });
+}
+export function useGetTransferById(id: string | number) {
+  return useQuery({
+    queryKey: ["get-transfer-byId", id],
     queryFn: () => transfersService.getTransferById(id),
     enabled: !!id,
   });
@@ -34,10 +41,10 @@ export function useCreateTransfer(onSuccess?: () => void) {
   });
 }
 
-export function useUpdateTransfer(id: string | number) {
+export function useUpdateTransfer(ref: string) {
   return useMutation({
     mutationFn: (data: Partial<TransactionCreateDataType>) =>
-      transfersService.updateTransfer(id, data),
+      transfersService.updateTransfer(ref, data),
 
     onSuccess: () => {
       toast.success("Transfer updated successfully!");

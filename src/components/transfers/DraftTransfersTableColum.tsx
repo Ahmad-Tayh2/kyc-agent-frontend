@@ -112,7 +112,9 @@ export const draftTransfersTableColum = (): ColumnDef<Transfer>[] => {
             type="link"
             title="Continue"
             onClick={() =>
-              navigate(ROUTES.SEND_REMITTANCE.EDIT(draftTransfer.id))
+              navigate(
+                ROUTES.SEND_REMITTANCE.EDIT(draftTransfer.reference_number)
+              )
             }
           />
         );

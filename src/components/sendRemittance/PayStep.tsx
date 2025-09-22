@@ -27,7 +27,7 @@ import {
 import { ROUTES } from "@/constants/routes";
 import StatusLabel from "../shared/StatusLabel";
 interface PayStepProps {
-  transferId?: number | string;
+  transferId?: string;
 }
 const PayStep = (props: PayStepProps) => {
   const { transferId } = props;
