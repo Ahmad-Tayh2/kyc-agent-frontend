@@ -108,7 +108,11 @@ export const AppRoutes = () => (
           <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
           <Route
             path={ROUTES.CUSTOMERS.EDIT(":id")}
-            element={<CustomerEditPage />}
+            element={<CustomerEditPage mode={"edit"} />}
+          />
+          <Route
+            path={ROUTES.CUSTOMERS.DETAILS(":id")}
+            element={<CustomerEditPage mode={"view"} />}
           />
           <Route
             path={ROUTES.CUSTOMERS.CREATE}

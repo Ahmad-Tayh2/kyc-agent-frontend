@@ -36,6 +36,14 @@ interface RecipientFormData {
   gender: string;
   country_phone_code: string;
   phone_number: string;
+  rm_service_providers: [
+    {
+      rm_sp_id: number;
+      account_number: string;
+      country_phone_code: string;
+      phone_number: string;
+    }
+  ];
 
   // Bank Details
   bank_details: {
@@ -82,6 +90,14 @@ const RecipientCreateForm: React.FC = () => {
       extra_address_details: "",
       state_id: "",
     },
+    rm_service_providers: [
+      {
+        rm_sp_id: 1,
+        account_number: "1234567890",
+        country_phone_code: "+1",
+        phone_number: "5551234567",
+      },
+    ],
   });
 
   const { mutateAsync: createRecipient, isPending: isCreatingRecipient } =
@@ -216,6 +232,7 @@ const RecipientCreateForm: React.FC = () => {
         gender: formData.gender,
         country_phone_code: formData.country_phone_code,
         phone_number: formData.phone_number,
+        rm_service_providers: formData.rm_service_providers,
         address: {
           street_name: formData.street_name,
           house_number: formData.house_number,
@@ -232,7 +249,6 @@ const RecipientCreateForm: React.FC = () => {
         customer_ids: formData.customer_id
           ? [parseInt(formData.customer_id)]
           : [],
-        remittance_methods: [],
       });
 
       const recipientId = recipientResponse.data?.id;

@@ -25,6 +25,7 @@ const menu = (customerId: string | number) => {
       label: "View Details",
       icon: <ViewDetailsIcon />,
       onClick: () => {},
+      link: ROUTES.CUSTOMERS.DETAILS(customerId),
     },
     {
       label: "Edit Customer",

@@ -1,23 +1,67 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import StatusLabel from "@/components/shared/StatusLabel";
-import { useGetCustomer, useUpdateCustomer } from "@/hooks/data/useCustomers";
+import {
+  useGetCustomer,
+  useGetCustomerRecipients,
+  useUpdateCustomer,
+} from "@/hooks/data/useCustomers";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 import EditSectionCard from "@/components/shared/EditSectionCard";
 import CustomerBasicDetails from "../CustomerCreatePage/components/CustomerBasicDetails";
+import { DataTable } from "@/components/shared/DataTable";
+import ActionButton from "@/components/shared/ActionButton";
+import { useGetTransfers } from "@/hooks/data/useTransfers";
+import { useGetPaymentLinks } from "@/hooks/data/usePaymentLinks";
+import { transferColumns } from "@/components/transfers/TransferTableColumns";
+import { recipientsColumns } from "@/components/recipients/RecipientsTableColumns";
+import { paymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
 
-const CustomerEditPage: React.FC = () => {
+interface CustomerEditPageProps {
+  mode: "view" | "edit";
+}
+const CustomerEditPage = (props: CustomerEditPageProps) => {
+  const { mode } = props;
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useGetCustomer(id!);
   const [formData, setFormData] = useState<any>({});
   const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
 
+  const transferCols = transferColumns();
+  const recipientsCols = recipientsColumns();
+  const paymentsCols = paymentLinksColumns();
+
   const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
     useUpdateCustomer(id!);
+  const {
+    data: transfersResponse,
+    isLoading: isTransfersLoading,
+    error: tansfersError,
+  } = useGetTransfers(`?customer_ids[]=${id}`);
+  const {
+    data: recipientsResponse,
+    isLoading: isRecipientLoading,
+    error: recipientError,
+  } = useGetCustomerRecipients(id!);
+  const {
+    data: paymentResponse,
+    isLoading: isPaymentsLoading,
+    error: paymentError,
+  } = useGetPaymentLinks(`?customer_ids[]=${id}`);
+
+  const transfersData = useMemo(() => {
+    return transfersResponse?.data || [];
+  }, [transfersResponse?.data]);
+  const recipientsData = useMemo(() => {
+    return recipientsResponse?.data || [];
+  }, [recipientsResponse?.data]);
+  const paymentData = useMemo(() => {
+    return paymentResponse?.data || [];
+  }, [paymentResponse?.data]);
 
   useEffect(() => {
     if (data && data.data) {
@@ -108,12 +152,13 @@ const CustomerEditPage: React.FC = () => {
           </div>
         )}
       </div>
+
       <EditSectionCard
         sectionTitle="Customer Bio"
         onSave={handleSave}
         loading={isUpdateCustomerPending}
         editMode={basicInfoEditMode}
-        setEditMode={setBasicInfoEditMode}
+        setEditMode={mode === "edit" ? setBasicInfoEditMode : undefined}
       >
         <CustomerBasicDetails
           formData={formData}
@@ -121,6 +166,54 @@ const CustomerEditPage: React.FC = () => {
           handleDateChange={handleDateChange}
           editMode={basicInfoEditMode}
         />
+      </EditSectionCard>
+      <EditSectionCard sectionTitle="Recent transactions">
+        <div className="p-5 flex flex-col gap-5">
+          <DataTable
+            data={transfersData}
+            columns={transferCols}
+            isLoading={isTransfersLoading}
+            error={tansfersError}
+          />
+          <ActionButton
+            title="see all transactions"
+            type="cancel"
+            className="m-auto"
+            onClick={() => navigate(ROUTES.TRANSFERS.LIST)}
+          />
+        </div>
+      </EditSectionCard>
+      <EditSectionCard sectionTitle="Recipients">
+        <div className="p-5 flex flex-col gap-5">
+          <DataTable
+            data={recipientsData}
+            columns={recipientsCols}
+            isLoading={isRecipientLoading}
+            error={recipientError}
+          />
+          <ActionButton
+            title="see all recipients"
+            type="cancel"
+            className="m-auto"
+            onClick={() => navigate(ROUTES.RECIPIENTS.LIST)}
+          />
+        </div>
+      </EditSectionCard>
+      <EditSectionCard sectionTitle="Pending Payments">
+        <div className="p-5 flex flex-col gap-5">
+          <DataTable
+            data={paymentData}
+            columns={paymentsCols}
+            isLoading={isPaymentsLoading}
+            error={paymentError}
+          />
+          <ActionButton
+            title="see all payment links"
+            type="cancel"
+            className="m-auto"
+            onClick={() => navigate(ROUTES.PAYMENT_LINKS.LIST)}
+          />
+        </div>
       </EditSectionCard>
     </div>
   );
