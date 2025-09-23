@@ -7,10 +7,10 @@ import {
   Withdrawals,
 } from "@/components/dashbord";
 import React from "react";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 
 const DashboardPage: React.FC = () => {
-  const [t] = useTranslation("global");
+  // const [t] = useTranslation("global");
 
   return (
     <div className="space-y-4 flex flex-col h-full">
