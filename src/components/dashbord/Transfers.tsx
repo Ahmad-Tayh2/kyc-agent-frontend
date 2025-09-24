@@ -5,11 +5,12 @@ export default function Transfers() {
   return (
     <div className="h-full ">
       <Card title="Transfers" sideComponent={<div>USD</div>}>
-        <div className="overflow-auto">
+        <div className="flex flex-col justify-center flex-1">
           <StatLine title={<StatStatus />} value="109" />
-          <StatLine title={<StatStatus />} value="109" />
-          <StatLine title={<StatStatus />} value="109" />
-          <StatLine title={<StatStatus />} value="109" />
+          <StatLine title={<StatStatus />} value="110" />
+          <StatLine title={<StatStatus />} value="111" />
+          <StatLine title={<StatStatus />} value="112" />
+          <StatLine title={<StatStatus />} value="113" />
         </div>
       </Card>
     </div>

@@ -5,11 +5,27 @@ export default function Profits() {
   return (
     <div className="h-full ">
       <Card title="My Profits" sideComponent={<div>USD</div>}>
-        <div className="overflow-auto">
-          <StatLine title="Today" value="$100" />
-          <StatLine title="Yesterday" value="$220" />
-          <StatLine title="This Month" value="$520" />
-          <StatLine title="Last Month" value="$1230" />
+        <div className="flex flex-col justify-center flex-1">
+          <StatLine
+            title="Today"
+            value={<span className="font-semibold text-primary">$100</span>}
+          />
+          <StatLine
+            title="Yesterday"
+            value={<span className="font-semibold text-primary">$100</span>}
+          />
+          <StatLine
+            title="This Month"
+            value={<span className="font-semibold text-primary">$100</span>}
+          />
+          <StatLine
+            title="Last Month"
+            value={<span className="font-semibold text-primary">$100</span>}
+          />
+          <StatLine
+            title="Year Till Date"
+            value={<span className="font-semibold text-primary">$100</span>}
+          />
         </div>
       </Card>
     </div>

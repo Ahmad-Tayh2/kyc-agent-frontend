@@ -7,9 +7,9 @@ interface StatLineProps {
 const StatLine = (props: StatLineProps) => {
   const { title, value } = props;
   return (
-    <div className="flex items-center justify-between p-5 border-b-1">
+    <div className="flex items-center justify-between flex-1 border-b-1 px-5">
       <div>{title}</div>
-      <div className="font-semibold text-primary">{value}</div>
+      <div>{value}</div>
     </div>
   );
 };
