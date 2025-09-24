@@ -299,7 +299,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     setCurrentStep("review");
   });
   const { mutateAsync: editTransfer } = useUpdateTransfer(reference_number!);
-  const handleCurrenciesValidation = () => {
+  const handleCurrenciesValidation = async () => {
     //function to create payload before sending it (may be in utils)
     const transferDraftPayload: any = {
       customer_id: stepOneData?.customer?.id, //*
@@ -321,7 +321,14 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       // sending_commission_currency: "USD", //----------
       // payout_commission_currency: "USD", //----------
     };
-    createDraftTransfer(transferDraftPayload);
+    const createTransferResponse = await createDraftTransfer(
+      transferDraftPayload
+    );
+    navigate(
+      ROUTES.SEND_REMITTANCE.EDIT(
+        createTransferResponse?.data?.reference_number
+      )
+    );
   };
   const handleNext = () => {
     // Only proceed if current step is valid

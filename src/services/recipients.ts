@@ -36,9 +36,9 @@ export interface RecipientCreateData {
   rm_service_providers: [
     {
       rm_sp_id: number;
-      account_number: string;
-      country_phone_code: string;
-      phone_number: string;
+      account_number?: string;
+      country_phone_code?: string;
+      phone_number?: string;
     }
   ];
 }
