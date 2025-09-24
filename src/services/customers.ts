@@ -5,7 +5,7 @@ import type {
   CustomerCreateData,
   CustomerIdentityFileData,
   CustomerIncomeFileData,
-  CustomerRecipientsResponse,
+  // CustomerRecipientsResponse,
   CustomerSearchParams,
 } from "@/types/customers";
 
