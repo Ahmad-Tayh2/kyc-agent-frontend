@@ -103,7 +103,7 @@ export const Sidebar: React.FC<{
     },
     {
       label: t("modules.navigation.support"),
-      to: ROUTES.SUPPORT,
+      to: ROUTES.SUPPORT.LIST,
       icon: <SupportIcon color="inherit" />,
     },
   ];
