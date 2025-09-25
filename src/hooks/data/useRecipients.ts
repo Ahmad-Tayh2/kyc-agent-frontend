@@ -3,11 +3,14 @@ import { toast } from "sonner";
 
 import { recipientsService } from "@/services/recipients";
 import type { RecipientUpdatedDataType } from "@/types/recipients";
-import type { RecipientCreateData, RecipientSearchParams } from "@/services/recipients";
+import type {
+  RecipientCreateData,
+  RecipientSearchParams,
+} from "@/services/recipients";
 import type { AxiosError } from "axios";
 import type { ErrorResponseData } from "@/lib/axiosInstance";
-// import { ROUTES } from "@/constants/routes";
-// import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+import { useNavigate } from "react-router-dom";
 
 export function useRecipients(filters: string) {
   return useQuery({
@@ -48,12 +51,14 @@ export function useSearchRecipient() {
 
 export function useCreateRecipient() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: (data: RecipientCreateData) =>
       recipientsService.createRecipient(data),
     onSuccess: () => {
       toast.success("Recipient created successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-recipients"] });
+      navigate(ROUTES.RECIPIENTS.LIST);
     },
     onError: (error: AxiosError<ErrorResponseData>) => {
       toast.error(error?.response?.data?.message);

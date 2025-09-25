@@ -5,7 +5,7 @@ import type {
   CustomerCreateData,
   CustomerIdentityFileData,
   CustomerIncomeFileData,
-  CustomerRecipientsResponse,
+  // CustomerRecipientsResponse,
   CustomerSearchParams,
 } from "@/types/customers";
 
@@ -60,11 +60,13 @@ export const customersService = {
   // Customer Recipients
   getCustomerRecipients: async (
     customerId: string | number
-  ): Promise<CustomerRecipientsResponse> => {
+  ) /*: Promise<CustomerRecipientsResponse> */ => {
     const response = await apiClient.get(
       API_URLS.customers.getRecipients(customerId)
     );
-    return handleApiResponse(response.data);
+    console.log(" getCustomerRecipients --------- ", response?.data);
+    return response?.data;
+    // return handleApiResponse(response.data);
   },
 
   attachRecipientToCustomer: async (

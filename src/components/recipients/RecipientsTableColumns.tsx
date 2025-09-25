@@ -144,3 +144,68 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
     []
   );
 };
+export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
+  return useMemo(
+    () => [
+      {
+        accessorKey: "reference_number",
+        header: "Recipient no.",
+      },
+      {
+        accessorKey: "first_name",
+        header: "First Name",
+      },
+      {
+        accessorKey: "last_name",
+        header: "Last Name",
+      },
+      {
+        accessorKey: "phone_number",
+        header: "Mobile Number",
+      },
+      {
+        accessorKey: "city",
+        header: "City",
+        cell: ({ row }) => {
+          const address: any = row.getValue("address");
+          return <div className="capitalize">{address?.city?.name}</div>;
+        },
+      },
+      {
+        accessorKey: "country",
+        header: "Country",
+        cell: ({ row }) => {
+          const address: any = row.getValue("address");
+          return <div className="capitalize">{address?.country?.name}</div>;
+        },
+      },
+      {
+        accessorKey: "remittance",
+        header: "Rem. Methods",
+      },
+      {
+        accessorKey: "transfer",
+        header: "Transfer",
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const recipient = row.original;
+          return (
+            <DropdownMenuOptions
+              menu={menu(recipient.id)}
+              trigger={
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <MoreHorizontal />
+                </Button>
+              }
+            />
+          );
+        },
+      },
+    ],
+    []
+  );
+};

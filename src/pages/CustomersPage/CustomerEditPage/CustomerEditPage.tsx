@@ -17,8 +17,8 @@ import ActionButton from "@/components/shared/ActionButton";
 import { useGetTransfers } from "@/hooks/data/useTransfers";
 import { useGetPaymentLinks } from "@/hooks/data/usePaymentLinks";
 import { transferColumns } from "@/components/transfers/TransferTableColumns";
-import { recipientsColumns } from "@/components/recipients/RecipientsTableColumns";
-import { paymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
+import { customerRecipientsColumns } from "@/components/recipients/RecipientsTableColumns";
+import { customerPaymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
 
 interface CustomerEditPageProps {
   mode: "view" | "edit";
@@ -32,8 +32,8 @@ const CustomerEditPage = (props: CustomerEditPageProps) => {
   const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
 
   const transferCols = transferColumns();
-  const recipientsCols = recipientsColumns();
-  const paymentsCols = paymentLinksColumns();
+  const recipientsCols = customerRecipientsColumns();
+  const paymentsCols = customerPaymentLinksColumns();
 
   const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
     useUpdateCustomer(id!);
@@ -51,16 +51,16 @@ const CustomerEditPage = (props: CustomerEditPageProps) => {
     data: paymentResponse,
     isLoading: isPaymentsLoading,
     error: paymentError,
-  } = useGetPaymentLinks(`?customer_ids[]=${id}`);
-
+  } = useGetPaymentLinks(`?customer_ids[]=${id}&status[]=valid_link`);
+  const recipientsData = useMemo(() => {
+    return recipientsResponse?.data || [];
+  }, [recipientsResponse]);
   const transfersData = useMemo(() => {
     return transfersResponse?.data || [];
   }, [transfersResponse?.data]);
-  const recipientsData = useMemo(() => {
-    return recipientsResponse?.data || [];
-  }, [recipientsResponse?.data]);
+
   const paymentData = useMemo(() => {
-    return paymentResponse?.data || [];
+    return paymentResponse?.data?.data || [];
   }, [paymentResponse?.data]);
 
   useEffect(() => {
@@ -186,7 +186,7 @@ const CustomerEditPage = (props: CustomerEditPageProps) => {
       <EditSectionCard sectionTitle="Recipients">
         <div className="p-5 flex flex-col gap-5">
           <DataTable
-            data={recipientsData}
+            data={recipientsData as any}
             columns={recipientsCols}
             isLoading={isRecipientLoading}
             error={recipientError}

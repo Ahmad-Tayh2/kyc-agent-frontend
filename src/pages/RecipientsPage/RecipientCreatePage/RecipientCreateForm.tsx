@@ -39,9 +39,9 @@ interface RecipientFormData {
   rm_service_providers: [
     {
       rm_sp_id: number;
-      account_number: string;
-      country_phone_code: string;
-      phone_number: string;
+      account_number?: string;
+      country_phone_code?: string;
+      phone_number?: string;
     }
   ];
 
@@ -93,9 +93,9 @@ const RecipientCreateForm: React.FC = () => {
     rm_service_providers: [
       {
         rm_sp_id: 1,
-        account_number: "1234567890",
-        country_phone_code: "+1",
-        phone_number: "5551234567",
+        // account_number: "1234567890",
+        // country_phone_code: "+1",
+        // phone_number: "5551234567",
       },
     ],
   });

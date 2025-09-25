@@ -51,10 +51,14 @@ const CustomerRecipientStep = (props: any) => {
   );
 
   // Only call useGetCustomerRecipients when we have a customer selected
-  const { data: recipientsData, isLoading: recipientsLoading } =
+  const { data: recipientsResponse, isLoading: recipientsLoading } =
     useGetCustomerRecipients(
       stepOne.customer?.id ? stepOne.customer.id.toString() : ""
     );
+
+  const recipientsData = useMemo(() => {
+    return recipientsResponse?.data || [];
+  }, [recipientsResponse?.data]);
 
   const { data: sendCountriesData } = useGetSendingCurrencies(true);
   const { data: receiveCountriesData } = useGetReceivingCurrencies(false);
