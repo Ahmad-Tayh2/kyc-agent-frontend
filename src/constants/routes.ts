@@ -37,7 +37,10 @@ export const ROUTES = {
     LIST: "/payment-links",
     VALIDATION: (token: string) => `/pay/${token}`,
   },
-  SUPPORT: "/support",
+  SUPPORT: {
+    LIST: "/support",
+    ISSUE: (id: string[number]) => `/support/issue/${id}`,
+  },
   HELP: "/help",
   PROFILE: "/profile",
   AUTH: {

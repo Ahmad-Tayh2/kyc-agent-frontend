@@ -66,7 +66,8 @@ const PaymentLinksPage = lazy(() => import("../pages/PaymentLinksPage"));
 const PaymentLinkValidationPage = lazy(
   () => import("../pages/PaymentLinkValidation")
 );
-const SupportPage = lazy(() => import("../pages/SupportPage"));
+const SupportPage = lazy(() => import("../pages/SupportPage/IssueList"));
+const SupportIssuePage = lazy(() => import("../pages/SupportPage/Issue"));
 const HelpPage = lazy(() => import("../pages/HelpPage"));
 
 export const AppRoutes = () => (
@@ -175,7 +176,12 @@ export const AppRoutes = () => (
             element={<PaymentLinksPage />}
           />
 
-          <Route path={ROUTES.SUPPORT} element={<SupportPage />} />
+          <Route path={ROUTES.SUPPORT.LIST} element={<SupportPage />} />
+          <Route
+            path={ROUTES.SUPPORT.ISSUE(":id")}
+            element={<SupportIssuePage />}
+          />
+
           <Route path={ROUTES.HELP} element={<HelpPage />} />
           <Route
             path="*"
