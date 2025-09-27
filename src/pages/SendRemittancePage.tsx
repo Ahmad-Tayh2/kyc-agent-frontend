@@ -520,17 +520,6 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     navigate(ROUTES.TRANSFERS.LIST);
   };
 
-  const stepMap = {
-    customer: () => (
-      <CustomerRecipientStep
-        customerId={customerIdQuery}
-        recipientId={recipientIdQuery}
-      />
-    ),
-    currencies: () => <CurrenciesAmountStep />,
-    review: () => <ReviewStep />,
-    pay: () => <PayStep transferId={transferData?.id} />,
-  };
   return (
     <div className="space-y-4">
       <div className="flex justify-start items-center gap-3">
