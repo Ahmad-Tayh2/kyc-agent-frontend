@@ -24,7 +24,7 @@ export interface TransferFilterState extends BaseFilterState {
   per_page?: number;
 }
 
-export const useTransferFilters = () => {
+export const useTransferFilters = (initFilters?: TransferFilterState) => {
   const [filters, setFilters] = useState<TransferFilterState>({
     search: "",
     status: [],
@@ -34,16 +34,14 @@ export const useTransferFilters = () => {
     //pagination
     page: 1,
     per_page: 15,
+    ...initFilters,
   });
-  useEffect(() => {
-    console.log(" the filter update = ", filters);
-  }, [filters]);
   const [filtersString, setFilterString] = useState<string>("");
   const debouncedSearch = useDebounce(filters?.search);
 
   useEffect(() => {
     applyFilters();
-  }, [debouncedSearch, filters?.per_page, filters?.page]);
+  }, [filters, debouncedSearch, filters?.per_page, filters?.page]);
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search }));
