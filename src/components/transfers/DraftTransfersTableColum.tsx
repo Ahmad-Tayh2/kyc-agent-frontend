@@ -76,8 +76,8 @@ export const draftTransfersTableColum = (): ColumnDef<Transfer>[] => {
     },
 
     {
-      accessorKey: "sending_amount",
-      header: t("modules.pages.transfers.table.columns.sending_amount"),
+      accessorKey: "sent_amount",
+      header: "Total to send",
     },
     {
       accessorKey: "recipient-get",
