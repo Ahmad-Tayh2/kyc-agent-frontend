@@ -1,5 +1,5 @@
-const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
-
+//const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
+const baseUrl = 'http://localhost:8000/api';
 export const API_URLS = {
   auth: {
     login: `${baseUrl}/auth/login`,
@@ -92,9 +92,28 @@ export const API_URLS = {
   },
   remittanceMethods: {
     get: () => `${baseUrl}/remittance-methods`,
+    verifyAccountInfo: () =>
+      `${baseUrl}/remittance-methods/verify-account-info`,
+  },
+  recipientRemittanceMethods: {
+    get: () => `${baseUrl}/recipient-remittance-method`,
+    create: () => `${baseUrl}/recipient-remittance-method`,
+    getById: (id: string | number) =>
+      `${baseUrl}/recipient-remittance-method/${id}`,
+    update: (id: string | number) =>
+      `${baseUrl}/recipient-remittance-method/${id}`,
+    delete: (id: string | number) =>
+      `${baseUrl}/recipient-remittance-method/${id}`,
   },
   payoutLocations: {
     get: () => `${baseUrl}/payout-agents`,
+  },
+  recipientPayouts: {
+    get: () => `${baseUrl}/recipient-payout-agents`,
+    create: () => `${baseUrl}/recipient-payout-agents`,
+    getById: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
+    update: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
+    delete: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
   },
   customerForms: {
     get: () => `${baseUrl}/customer-forms`,
@@ -106,7 +125,7 @@ export const API_URLS = {
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
-    deleteCurrency: () => "", // URL not ready yet
+    deleteCurrency: () => '', // URL not ready yet
     addCurrency: (walletId: string | number) =>
       `${baseUrl}/wallets/${walletId}/currencies`,
   },

@@ -1,9 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { remittanceMethodService } from '@/services/remittanceMethod';
+import type { AccountVerificationRequest } from '@/types/remittanceMethod/RemittanceMethod';
 
 export function useRemittanceMethods() {
   return useQuery({
     queryKey: ['remittance-methods'],
     queryFn: remittanceMethodService.getRemittanceMethods,
+  });
+}
+
+export function useVerifyAccountInfo() {
+  return useMutation({
+    mutationFn: (data: AccountVerificationRequest) =>
+      remittanceMethodService.verifyAccountInfo(data),
   });
 }
