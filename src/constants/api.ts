@@ -96,14 +96,14 @@ export const API_URLS = {
       `${baseUrl}/remittance-methods/verify-account-info`,
   },
   recipientRemittanceMethods: {
-    get: () => `${baseUrl}/recipient-remittance-method`,
-    create: () => `${baseUrl}/recipient-remittance-method`,
+    get: () => `${baseUrl}/recipient-remittance-methods`,
+    create: () => `${baseUrl}/recipient-remittance-methods`,
     getById: (id: string | number) =>
-      `${baseUrl}/recipient-remittance-method/${id}`,
+      `${baseUrl}/recipient-remittance-methods/${id}`,
     update: (id: string | number) =>
-      `${baseUrl}/recipient-remittance-method/${id}`,
+      `${baseUrl}/recipient-remittance-methods/${id}`,
     delete: (id: string | number) =>
-      `${baseUrl}/recipient-remittance-method/${id}`,
+      `${baseUrl}/recipient-remittance-methods/${id}`,
   },
   payoutLocations: {
     get: () => `${baseUrl}/payout-agents`,
@@ -111,7 +111,8 @@ export const API_URLS = {
   recipientPayouts: {
     get: () => `${baseUrl}/recipient-payout-agents`,
     create: () => `${baseUrl}/recipient-payout-agents`,
-    getById: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
+    getById: (id: string | number) =>
+      `${baseUrl}/recipient-payout-agents/${id}`,
     update: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
     delete: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
   },

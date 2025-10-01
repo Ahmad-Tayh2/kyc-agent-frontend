@@ -127,10 +127,13 @@ const PayStep = (props: PayStepProps) => {
   };
 
   const handleCopyPaymentLink = () => {
-    copyToClipboard(
-      ROUTES.PAYMENT_LINKS.VALIDATION(stepFour?.paymentLink?.token),
-      "Payment link copied to clipboard!"
-    );
+    const token = typeof stepFour?.paymentLink === 'object' ? stepFour?.paymentLink?.token : undefined;
+    if (token) {
+      copyToClipboard(
+        ROUTES.PAYMENT_LINKS.VALIDATION(token),
+        "Payment link copied to clipboard!"
+      );
+    }
   };
 
   return (
@@ -229,6 +232,7 @@ const PayStep = (props: PayStepProps) => {
 
               <div className="flex items-center space-x-4">
                 {stepFour?.paymentLink &&
+                typeof stepFour?.paymentLink === 'object' &&
                 stepFour?.paymentLink?.status !== "expired_link" ? (
                   <div className="flex items-center space-x-4">
                     <Button
@@ -250,7 +254,7 @@ const PayStep = (props: PayStepProps) => {
                     SEND PAYMENT LINK
                   </Button>
                 )}
-                {stepFour?.paymentLink?.status && (
+                {typeof stepFour?.paymentLink === 'object' && stepFour?.paymentLink?.status && (
                   <StatusLabel value={stepFour?.paymentLink?.status} />
                 )}
               </div>

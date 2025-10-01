@@ -262,10 +262,11 @@ const RecipientCreateForm: React.FC = () => {
         if (method.id === id) {
           if (field.includes('.')) {
             const [parentField, childField] = field.split('.');
+            const parentValue = method[parentField as keyof typeof method];
             return {
               ...method,
               [parentField]: {
-                ...method[parentField as keyof typeof method],
+                ...(parentValue && typeof parentValue === 'object' ? parentValue as Record<string, unknown> : {}),
                 [childField]: value,
               },
             };
@@ -314,18 +315,7 @@ const RecipientCreateForm: React.FC = () => {
     }));
   };
 
-  const handleUpdatePayoutAgent = (
-    id: string,
-    field: string,
-    value: string
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      payout_agents: prev.payout_agents.map((agent) =>
-        agent.id === id ? { ...agent, [field]: value } : agent
-      ),
-    }));
-  };
+
 
   const handleRemovePayoutAgent = (id: string) => {
     setFormData((prev) => ({
@@ -425,10 +415,10 @@ const RecipientCreateForm: React.FC = () => {
       const remittanceMethodsForAPI = formData.remittance_methods
         .filter((method) => method.added_to_recipient)
         .map((method) => ({
-          remittance_method_id: method.remittance_method_id,
-          account_number: method.account_number || null,
-          country_phone_code: method.service_data?.country_phone_code || null,
-          phone_number: method.service_data?.phone_number || null,
+          rm_sp_id: method.remittance_method_id,
+          account_number: method.account_number || undefined,
+          country_phone_code: method.service_data?.country_phone_code || undefined,
+          phone_number: method.service_data?.phone_number || undefined,
         }));
 
       // Step 1: Create recipient with basic data and remittance methods
@@ -456,7 +446,7 @@ const RecipientCreateForm: React.FC = () => {
         customer_ids: formData.customer_id
           ? [parseInt(formData.customer_id)]
           : [],
-        remittance_methods: remittanceMethodsForAPI,
+        rm_service_providers: remittanceMethodsForAPI,
       });
 
       const recipientId = recipientResponse.data?.id;
@@ -613,7 +603,6 @@ const RecipientCreateForm: React.FC = () => {
             onRemoveRemittanceMethod={handleRemoveRemittanceMethod}
             onAddMethodToRecipient={handleAddMethodToRecipient}
             onAddPayoutAgent={handleAddPayoutAgent}
-            onUpdatePayoutAgent={handleUpdatePayoutAgent}
             onRemovePayoutAgent={handleRemovePayoutAgent}
             isVerifying={isVerifying}
           />

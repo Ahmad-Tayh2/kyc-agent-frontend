@@ -5,6 +5,23 @@ export type RecipientRemittanceMethod = {
   account_number?: string;
   country_phone_code?: string;
   phone_number?: string;
+  formatted_phone?: string;
+  recipient?: {
+    id: number;
+    reference_number: string;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    email: string;
+    country_phone_code: string;
+    phone_number: string;
+  };
+  remittance_method?: {
+    id: number;
+    name: string;
+    description: string;
+    enabled: boolean;
+  };
   created_at?: string;
   updated_at?: string;
 };

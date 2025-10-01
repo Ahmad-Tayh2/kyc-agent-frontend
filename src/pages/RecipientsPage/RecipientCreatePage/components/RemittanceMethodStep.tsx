@@ -59,12 +59,11 @@ interface RemittanceMethodStepProps {
     countryCode: string;
   }>;
   onAddRemittanceMethod: (methodId: number) => void;
-  onUpdateRemittanceMethod: (id: string, field: string, value: any) => void;
+  onUpdateRemittanceMethod: (id: string, field: string, value: unknown) => void;
   onVerifyAccount: (id: string) => void;
   onRemoveRemittanceMethod: (id: string) => void;
   onAddMethodToRecipient: (id: string) => void;
   onAddPayoutAgent: (payoutAgentId: number) => void;
-  onUpdatePayoutAgent: (id: string, field: string, value: string) => void;
   onRemovePayoutAgent: (id: string) => void;
   isVerifying: boolean;
 }
@@ -80,7 +79,6 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
   onRemoveRemittanceMethod,
   onAddMethodToRecipient,
   onAddPayoutAgent,
-  onUpdatePayoutAgent,
   onRemovePayoutAgent,
   isVerifying,
 }) => {
