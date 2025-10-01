@@ -1,5 +1,5 @@
-//const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
-const baseUrl = 'http://localhost:8000/api';
+const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
+//const baseUrl = 'http://localhost:8000/api';
 export const API_URLS = {
   auth: {
     login: `${baseUrl}/auth/login`,
