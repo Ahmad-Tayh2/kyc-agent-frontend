@@ -7,7 +7,6 @@ import StatusLabel from "@/components/shared/StatusLabel";
 import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import SendMoneyIcon from "@/assets/icons/send-money.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
-import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 import type { CustomerType } from "@/types/customers";

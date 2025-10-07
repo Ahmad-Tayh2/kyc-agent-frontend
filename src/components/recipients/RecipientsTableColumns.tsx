@@ -1,16 +1,13 @@
 import { useMemo } from "react";
-import { parseISO, format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import SendMoneyIcon from "@/assets/icons/send-money.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
-import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { Link } from "react-router-dom";
 import ActionButton from "../shared/ActionButton";
-import { useAttachRecipientToCustomer } from "@/hooks/data/useCustomers";
 
 export type Recipient = {
   id: string;
