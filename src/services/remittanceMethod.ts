@@ -1,5 +1,8 @@
 import { API_URLS } from '@/constants/api';
-import type { AccountVerificationRequest, AccountVerificationResponse } from '@/types/remittanceMethod/RemittanceMethod';
+import type {
+  AccountVerificationRequest,
+  AccountVerificationResponse,
+} from '@/types/remittanceMethod/RemittanceMethod';
 
 function getHeaders(): HeadersInit {
   const token = localStorage.getItem('token');
@@ -26,7 +29,9 @@ export const remittanceMethodService = {
     return handleResponse(res);
   },
 
-  async verifyAccountInfo(data: AccountVerificationRequest): Promise<AccountVerificationResponse> {
+  async verifyAccountInfo(
+    data: AccountVerificationRequest
+  ): Promise<AccountVerificationResponse> {
     const res = await fetch(API_URLS.remittanceMethods.verifyAccountInfo(), {
       method: 'POST',
       headers: getHeaders(),

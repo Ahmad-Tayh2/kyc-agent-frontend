@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
 import { payoutLocationService } from '@/services/payoutLocation';
+import { useQuery } from '@tanstack/react-query';
 
-export const usePayoutLocations = () => {
+export const usePayoutLocations = (filtersString?: string) => {
   return useQuery({
-    queryKey: ['payoutLocations'],
-    queryFn: payoutLocationService.getPayoutLocations,
+    queryKey: ['payoutLocations', filtersString],
+    queryFn: () => payoutLocationService.getPayoutLocations(filtersString),
   });
 };

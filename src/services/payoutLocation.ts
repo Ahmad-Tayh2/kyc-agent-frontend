@@ -17,8 +17,12 @@ async function handleResponse(res: Response) {
 }
 
 export const payoutLocationService = {
-  async getPayoutLocations() {
-    const res = await fetch(API_URLS.payoutLocations.get(), {
+  async getPayoutLocations(filtersString?: string) {
+    const url = filtersString
+      ? `${API_URLS.payoutLocations.get()}?${filtersString}`
+      : API_URLS.payoutLocations.get();
+
+    const res = await fetch(url, {
       method: 'GET',
       headers: getHeaders(),
     });

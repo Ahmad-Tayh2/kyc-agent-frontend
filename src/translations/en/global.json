@@ -580,7 +580,8 @@
           "resend": "Resend Link",
           "generateNewLink": "Generate New Link",
           "customerDetails": "Customer Details",
-          "view": "View"
+          "view": "View",
+          "goHome": "Go Home"
         },
         "buttons": {
           "generateNewLink": "Generate New Link"
