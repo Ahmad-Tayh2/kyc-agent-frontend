@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Share2 } from "lucide-react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Share2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import PhoneInput from "@/components/shared/PhoneInput";
-import { useCountries } from "@/hooks/data/useAddress";
-import { useCreateCustomerForm } from "@/hooks/data/useCustomerForm";
-import type { CreateCustomerFormRequest } from "@/types/customerForm/CreateCustomerFormRequest";
-import type { Country } from "@/services/address";
+import PhoneInput from '@/components/shared/PhoneInput';
+import { useCountries } from '@/hooks/data/useAddress';
+import { useCreateCustomerForm } from '@/hooks/data/useCustomerForm';
+import type { Country } from '@/services/address';
+import type { CreateCustomerFormRequest } from '@/types/customerForm/CreateCustomerFormRequest';
 
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -26,20 +27,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
-import infoIcon from "@/assets/icons/info.svg";
-import copyIcon from "@/assets/icons/clipboard.svg";
+import copyIcon from '@/assets/icons/clipboard.svg';
+import infoIcon from '@/assets/icons/info.svg';
 
 // Form validation schema
 const customerFormSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().optional().or(z.literal("")),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().optional().or(z.literal('')),
   countryCode: z.string().optional(),
 });
 
@@ -58,9 +58,9 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   isOpen,
   onOpenChange,
 }) => {
-  const [generatedLink, setGeneratedLink] = useState<string>("");
+  const [generatedToken, setGeneratedToken] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   // Fetch countries for phone input
   const { data: countries = [] } = useCountries();
@@ -79,28 +79,28 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      countryCode: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      countryCode: '',
     },
   });
 
   const handleSubmit = async (data: CustomerFormData) => {
     setIsSubmitting(true);
-    setErrorMessage("");
+    setErrorMessage('');
 
     try {
       // Parse phone number and country code from the phone input
-      let countryPhoneCode = "";
-      let phoneNumber = "";
+      let countryPhoneCode = '';
+      let phoneNumber = '';
 
       if (data.phone && data.countryCode) {
         countryPhoneCode = `+${data.countryCode}`;
         phoneNumber = data.phone
-          .replace(`${data.countryCode} `, "")
-          .replace(/^\+/, "");
+          .replace(`${data.countryCode} `, '')
+          .replace(/^\+/, '');
       }
 
       // Transform dialog data to API format
@@ -116,20 +116,20 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
       const result = await createCustomerFormMutation.mutateAsync(apiData);
 
       // Use the actual link from API response
-      const link = result?.form_urls?.frontend_form_url;
+      const token = result?.token;
 
-      if (link) {
-        setGeneratedLink(link);
-        // Reset form fields automatically after successful link generation
+      if (token) {
+        setGeneratedToken(token);
+        // Reset form fields automatically after successful token generation
         form.reset({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          countryCode: "",
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          countryCode: '',
         });
       } else {
-        throw new Error("No form URL received from the API response");
+        throw new Error('No form URL received from the API response');
       }
 
       // If there's a custom onSubmit handler, call it after successful creation
@@ -145,18 +145,18 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
       if (error instanceof Error) {
         // Check if it's a network error
         if (
-          error.message.includes("fetch") ||
-          error.message.includes("network")
+          error.message.includes('fetch') ||
+          error.message.includes('network')
         ) {
           setErrorMessage(
-            "Network error. Please check your internet connection and try again."
+            'Network error. Please check your internet connection and try again.'
           );
         }
         // Check if it's a validation error (usually contains field names)
         else if (
-          error.message.includes("email") ||
-          error.message.includes("phone") ||
-          error.message.includes("name")
+          error.message.includes('email') ||
+          error.message.includes('phone') ||
+          error.message.includes('name')
         ) {
           setErrorMessage(`Validation error: ${error.message}`);
         }
@@ -165,7 +165,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
           setErrorMessage(error.message);
         }
       } else {
-        setErrorMessage("An unexpected error occurred. Please try again.");
+        setErrorMessage('An unexpected error occurred. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
@@ -185,16 +185,16 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Customer Form Link",
-          text: "Please fill out this customer form",
-          url: generatedLink,
+          title: 'Customer Form Link',
+          text: 'Please fill out this customer form',
+          url: generatedToken,
         });
       } catch {
         // Error sharing - could add user feedback here
       }
     } else {
       // Fallback to copying to clipboard
-      copyToClipboard(generatedLink);
+      copyToClipboard(generatedToken);
     }
   };
 
@@ -202,7 +202,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   useEffect(() => {
     const subscription = form.watch(() => {
       if (errorMessage) {
-        setErrorMessage("");
+        setErrorMessage('');
       }
     });
     return () => subscription.unsubscribe();
@@ -213,14 +213,14 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
     if (!open) {
       // Reset all state to initial values when dialog closes
       form.reset({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        countryCode: "",
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        countryCode: '',
       });
-      setGeneratedLink("");
-      setErrorMessage("");
+      setGeneratedToken('');
+      setErrorMessage('');
       setIsSubmitting(false);
     }
     onOpenChange?.(open);
@@ -229,9 +229,9 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
-        {trigger || <Button variant="outline">Generate New Link</Button>}
+        {trigger || <Button variant='outline'>Generate New Link</Button>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent className='sm:max-w-3xl'>
         <DialogHeader>
           <DialogTitle>Generate Customer Form Link</DialogTitle>
           <DialogDescription>
@@ -240,41 +240,41 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Separator className="my-3" />
+        <Separator className='my-3' />
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
+            className='space-y-4'
           >
             {/* Error message display */}
             {errorMessage && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-700">{errorMessage}</p>
+              <div className='p-4 bg-red-50 border border-red-200 rounded-lg'>
+                <p className='text-sm text-red-700'>{errorMessage}</p>
               </div>
             )}
 
             {/* Success message display */}
-            {generatedLink && !errorMessage && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h4 className="font-medium text-green-800 mb-2">
-                  Link Generated Successfully!
+            {generatedToken && !errorMessage && (
+              <div className='p-4 bg-green-50 border border-green-200 rounded-lg'>
+                <h4 className='font-medium text-green-800 mb-2'>
+                  Token Generated Successfully!
                 </h4>
-                <p className="text-sm text-green-700">
+                <p className='text-sm text-green-700'>
                   The customer form link has been created and is ready to share.
                 </p>
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
-                name="firstName"
+                name='firstName'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter first name" {...field} />
+                      <Input placeholder='Enter first name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -282,12 +282,12 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
               />
               <FormField
                 control={form.control}
-                name="lastName"
+                name='lastName'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter last name" {...field} />
+                      <Input placeholder='Enter last name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -295,13 +295,13 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
               />
             </div>
 
-            <div className="inline-flex items-start gap-2 bg-gray-100 px-2 py-1 rounded-md w-fit">
+            <div className='inline-flex items-start gap-2 bg-gray-100 px-2 py-1 rounded-md w-fit'>
               <img
                 src={infoIcon}
-                alt="Info"
-                className="w-4 h-4 mt-1 flex-shrink-0"
+                alt='Info'
+                className='w-4 h-4 mt-1 flex-shrink-0'
               />
-              <p className="text-xs text-gray-600">
+              <p className='text-xs text-gray-600'>
                 This name is for you to identify the link for your customer.
                 Your Customer can write his name via the link.
               </p>
@@ -309,14 +309,14 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
 
             <FormField
               control={form.control}
-              name="email"
+              name='email'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter email address"
-                      type="email"
+                      placeholder='Enter email address'
+                      type='email'
                       {...field}
                     />
                   </FormControl>
@@ -325,32 +325,32 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
               )}
             />
 
-            <div className="inline-flex items-start gap-2 bg-gray-100 px-2 py-1 rounded-md w-fit">
+            <div className='inline-flex items-start gap-2 bg-gray-100 px-2 py-1 rounded-md w-fit'>
               <img
                 src={infoIcon}
-                alt="Info"
-                className="w-4 h-4 mt-1 flex-shrink-0"
+                alt='Info'
+                className='w-4 h-4 mt-1 flex-shrink-0'
               />
-              <p className="text-xs text-gray-600">
+              <p className='text-xs text-gray-600'>
                 The link will be sent to the email address and you can copy it
               </p>
             </div>
 
             <FormField
               control={form.control}
-              name="phone"
+              name='phone'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Whatsapp Number (Optional)</FormLabel>
                   <FormControl>
                     <PhoneInput
-                      placeholder="Enter phone number"
+                      placeholder='Enter phone number'
                       countryOptions={countryPhoneOptions || []}
-                      selectedCountry={form.watch("countryCode")}
-                      phoneNumber={field.value || ""}
+                      selectedCountry={form.watch('countryCode')}
+                      phoneNumber={field.value || ''}
                       onCountryChange={(countryCode) => {
-                        form.setValue("countryCode", countryCode);
-                        form.setValue("phone", "");
+                        form.setValue('countryCode', countryCode);
+                        form.setValue('phone', '');
                       }}
                       onPhoneChange={(phoneNumber) =>
                         field.onChange(phoneNumber)
@@ -366,48 +366,48 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
               )}
             />
 
-            <DialogFooter className="sm:justify-between">
-              <div className="flex items-center gap-2">
-                {generatedLink && (
+            <DialogFooter className='sm:justify-between'>
+              <div className='flex items-center gap-2'>
+                {generatedToken && (
                   <>
-                    <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-md max-w-sm">
-                      <span className="text-sm text-gray-600 truncate">
-                        {generatedLink}
+                    <div className='flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-md max-w-sm'>
+                      <span className='text-sm text-gray-600 truncate'>
+                        {generatedToken}
                       </span>
-                    </div>{" "}
+                    </div>{' '}
                     <Button
-                      type="button"
-                      size="sm"
-                      variant={"outline"}
-                      onClick={() => copyToClipboard(generatedLink)}
-                      className="px-3"
+                      type='button'
+                      size='sm'
+                      variant={'outline'}
+                      onClick={() => copyToClipboard(generatedToken)}
+                      className='px-3'
                     >
                       <img
                         src={copyIcon}
-                        alt="Copy"
-                        className="w-5 h-5 text-gray-50"
+                        alt='Copy'
+                        className='w-5 h-5 text-gray-50'
                       />
-                      <span className="ml-1">Copy</span>
+                      <span className='ml-1'>Copy</span>
                     </Button>
                     <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
+                      type='button'
+                      size='sm'
+                      variant='outline'
                       onClick={shareLink}
-                      className="px-3"
+                      className='px-3'
                     >
-                      <Share2 className="w-5 h-5" />
+                      <Share2 className='w-5 h-5' />
                     </Button>
                   </>
                 )}
               </div>
               <Button
-                type="submit"
+                type='submit'
                 disabled={createCustomerFormMutation.isPending || isSubmitting}
               >
                 {createCustomerFormMutation.isPending || isSubmitting
-                  ? "Generating..."
-                  : "Generate Link"}
+                  ? 'Generating...'
+                  : 'Generate Token'}
               </Button>
             </DialogFooter>
           </form>

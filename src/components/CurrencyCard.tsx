@@ -1,6 +1,6 @@
 import React from 'react';
 import type { WalletCurrency } from '@/types/wallet';
-import DeleteIcon from '@/assets/icons/delete.svg';
+//import DeleteIcon from '@/assets/icons/delete.svg';
 
 interface CurrencyCardProps {
   walletCurrency: WalletCurrency;
@@ -9,7 +9,7 @@ interface CurrencyCardProps {
 
 export const CurrencyCard: React.FC<CurrencyCardProps> = ({
   walletCurrency,
-  onDelete,
+  //onDelete,
 }) => {
   const { currency, amount } = walletCurrency;
 
@@ -45,7 +45,7 @@ export const CurrencyCard: React.FC<CurrencyCardProps> = ({
       </div>
 
       {/* Right Column: Delete Button */}
-      <div className='flex-col'>
+      {/* <div className='flex-col'>
         <button
           onClick={() => onDelete(currency.id)}
           className='p-2 text-gray-400 hover:text-red-500 transition-all duration-200 '
@@ -57,7 +57,7 @@ export const CurrencyCard: React.FC<CurrencyCardProps> = ({
             className='w-8 h-8 hover:text-red-500 cursor-pointer'
           />
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
