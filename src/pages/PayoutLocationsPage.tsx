@@ -9,8 +9,7 @@ import React, { useMemo } from 'react';
 const PayoutLocationsPage: React.FC = () => {
   const { data: remittanceMethods } = useRemittanceMethods();
 
-  const { filters, filtersString, updatePagination } =
-    usePayoutLocationFilters();
+  const { filtersString, updatePagination } = usePayoutLocationFilters();
 
   const {
     data: payoutLocationsResponse,

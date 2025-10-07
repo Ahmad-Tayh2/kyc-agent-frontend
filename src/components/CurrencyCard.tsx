@@ -1,6 +1,6 @@
 import React from 'react';
 import type { WalletCurrency } from '@/types/wallet';
-import DeleteIcon from '@/assets/icons/delete.svg';
+//import DeleteIcon from '@/assets/icons/delete.svg';
 
 interface CurrencyCardProps {
   walletCurrency: WalletCurrency;
@@ -9,7 +9,7 @@ interface CurrencyCardProps {
 
 export const CurrencyCard: React.FC<CurrencyCardProps> = ({
   walletCurrency,
-  onDelete,
+  //onDelete,
 }) => {
   const { currency, amount } = walletCurrency;
 
