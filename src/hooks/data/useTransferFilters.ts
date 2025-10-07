@@ -33,7 +33,7 @@ export const useTransferFilters = (initFilters?: TransferFilterState) => {
     receive_currency: "",
     //pagination
     page: 1,
-    per_page: 15,
+    per_page: 10,
     ...initFilters,
   });
   const [filtersString, setFilterString] = useState<string>("");

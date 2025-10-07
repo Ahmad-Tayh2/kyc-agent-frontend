@@ -8,7 +8,6 @@ import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { cn } from "@/lib/utils";
 import { useCitiesByCountry, useCountries } from "@/hooks/data/useAddress";
-import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 
 const RecipientBasicDetails = (props: any) => {
   const { data, handleInputChange, handleDateChange, editMode = true } = props;
@@ -16,10 +15,6 @@ const RecipientBasicDetails = (props: any) => {
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
   ];
-  const statusOptions = CUSTOMER_STATUSES.map((status) => ({
-    label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-    value: status,
-  }));
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(data?.country_id || null);
@@ -42,6 +37,7 @@ const RecipientBasicDetails = (props: any) => {
       code: country.phone_code,
       countryCode: country.iso2,
     })) || [];
+  console.log(" data = = =", data);
   return (
     <div className="space-y-6 p-5">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -59,7 +55,6 @@ const RecipientBasicDetails = (props: any) => {
             disabled={!editMode}
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="last_name">
             Last Name<span className="text-red-500">*</span>
@@ -73,7 +68,6 @@ const RecipientBasicDetails = (props: any) => {
             disabled={!editMode}
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="email">
             Email<span className="text-red-500">*</span>
@@ -88,7 +82,6 @@ const RecipientBasicDetails = (props: any) => {
             disabled={!editMode}
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="date_of_birth">
             Date of Birth<span className="text-red-500">*</span>
@@ -99,7 +92,6 @@ const RecipientBasicDetails = (props: any) => {
             disabled={!editMode}
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="street_name">
             Street Name<span className="text-red-500">*</span>
@@ -113,7 +105,6 @@ const RecipientBasicDetails = (props: any) => {
             disabled={!editMode}
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="house_number">
             House Number<span className="text-red-500">*</span>
@@ -138,7 +129,6 @@ const RecipientBasicDetails = (props: any) => {
           required
           disabled={!editMode}
         />
-
         <SearchableSelect
           label={"City"}
           options={cityOptions}
@@ -202,16 +192,6 @@ const RecipientBasicDetails = (props: any) => {
             onPhoneChange={(phoneNumber: string) =>
               handleInputChange("phone_number", phoneNumber)
             }
-            disabled={!editMode}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <SearchableSelect
-            label={"Status"}
-            options={statusOptions}
-            value={data?.status || ""}
-            onChange={(value) => handleInputChange("status", value.toString())}
-            required
             disabled={!editMode}
           />
         </div>

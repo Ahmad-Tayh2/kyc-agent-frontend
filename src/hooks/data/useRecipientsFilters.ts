@@ -29,7 +29,7 @@ export const useRecipientsFilters = () => {
     added_by: undefined,
     //pagination
     page: 1,
-    per_page: 1,
+    per_page: 10,
   });
   const debouncedSearch = useDebounce(filters?.search);
 

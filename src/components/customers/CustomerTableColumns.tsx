@@ -18,20 +18,12 @@ const menu = (customerId: string | number) => {
     {
       label: "Send Money",
       icon: <SendMoneyIcon />,
-      onClick: () => {},
       link: ROUTES.SEND_REMITTANCE.CREATE(`?customer=${customerId}`),
     },
     {
       label: "View Details",
       icon: <ViewDetailsIcon />,
-      onClick: () => {},
       link: ROUTES.CUSTOMERS.DETAILS(customerId),
-    },
-    {
-      label: "Edit Customer",
-      icon: <EditIcon />,
-      onClick: () => {},
-      link: ROUTES.CUSTOMERS.EDIT(customerId),
     },
   ];
 };

@@ -10,7 +10,6 @@ import PageTitle from "@/components/shared/PageTitle";
 import RecipientsFilters from "@/components/recipients/RecipientsFilters";
 import { recipientsColumns } from "@/components/recipients/RecipientsTableColumns";
 import { useRecipientsFilters } from "@/hooks/data/useRecipientsFilters";
-import { useGetCustomers } from "@/hooks/data/useCustomers";
 import { ROUTES } from "@/constants/routes";
 
 const RecipientsPage: React.FC = () => {
@@ -31,7 +30,6 @@ const RecipientsPage: React.FC = () => {
   } = useRecipientsFilters();
 
   const { data: response, isLoading, error } = useRecipients(filtersString);
-  const { data: CustomersResponse } = useGetCustomers(filtersString);
 
   const recipientsData = useMemo(() => {
     return response?.data || [];
@@ -40,10 +38,6 @@ const RecipientsPage: React.FC = () => {
   const recipientsMeta = useMemo(() => {
     return response?.meta || [];
   }, [response?.meta]);
-
-  const customersData = useMemo(() => {
-    return CustomersResponse?.data || [];
-  }, [CustomersResponse?.data]);
 
   const handleAddRecipient = () => {
     navigate(ROUTES.RECIPIENTS.CREATE);
@@ -77,7 +71,6 @@ const RecipientsPage: React.FC = () => {
       </div>
       <RecipientsFilters
         filters={filters}
-        customers={customersData}
         onUpdateSearchTerm={updateSearchTerm}
         onUpdateCustomersIds={updateCustomersIds}
         onUpdateCountryIds={updateCountryIds}

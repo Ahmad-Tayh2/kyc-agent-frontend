@@ -23,7 +23,7 @@ export const usePaymentLinksFilters = () => {
     created_to: "",
     //pagination
     page: 1,
-    per_page: 1,
+    per_page: 10,
   });
   const debouncedSearch = useDebounce(filters?.search);
 

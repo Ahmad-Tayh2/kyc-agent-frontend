@@ -5,6 +5,7 @@ import type { RecipientUpdatedDataType } from "@/types/recipients";
 export interface RecipientSearchParams {
   name?: string;
   phone_number?: string;
+  customer_id?: string;
 }
 
 export interface RecipientCreateData {
@@ -86,11 +87,14 @@ export const recipientsService = {
     const response = await apiClient.get(API_URLS.recipients.getById(id));
     return response.data;
   },
-  updateCustomer: async (
+  updateRecipient: async (
     id: string | number,
     data: Partial<RecipientUpdatedDataType>
   ) => {
-    const response = await apiClient.put(API_URLS.recipients.update(id), data);
+    const response = await apiClient.patch(
+      API_URLS.recipients.update(id),
+      data
+    );
     return response.data;
   },
   searchRecipient: async (params: RecipientSearchParams) => {
@@ -99,6 +103,8 @@ export const recipientsService = {
     if (params.phone_number)
       queryParams.append("phone_number", params.phone_number);
     if (params.name) queryParams.append("name", params.name);
+    if (params.customer_id)
+      queryParams.append("customer_id", params.customer_id);
 
     const response = await apiClient.get(
       API_URLS.recipients.search(queryParams.toString())

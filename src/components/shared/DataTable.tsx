@@ -214,7 +214,7 @@ export function DataTable({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-primary/5"
+                    className="hover:bg-primary/5 odd:bg-primary/4"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -242,7 +242,7 @@ export function DataTable({
           </Table>
         </div>
         {/* pagination */}
-        {pagination?.enable && (
+        {pagination?.enable && data?.length >= 10 && (
           <Pagination className="py-2 px-5">
             <PaginationContent className="w-full flex justify-between items-center">
               {/* Previous Button */}

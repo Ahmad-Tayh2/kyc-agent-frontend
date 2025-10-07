@@ -9,6 +9,8 @@ import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { Link } from "react-router-dom";
+import ActionButton from "../shared/ActionButton";
+import { useAttachRecipientToCustomer } from "@/hooks/data/useCustomers";
 
 export type Recipient = {
   id: string;
@@ -32,15 +34,9 @@ const menu = (recipientId: string | number) => {
       link: ROUTES.SEND_REMITTANCE.CREATE(`?recipient=${recipientId}`),
     },
     {
-      label: "Edit Recipient",
-      icon: <EditIcon />,
-      onClick: () => {},
-      link: ROUTES.RECIPIENTS.EDIT(recipientId),
-    },
-    {
-      label: "View Recipient",
+      label: "View Details",
       icon: <ViewDetailsIcon />,
-      onClick: () => {},
+      link: ROUTES.RECIPIENTS.DETAILS(recipientId),
     },
   ];
 };
@@ -60,31 +56,34 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         accessorKey: "last_name",
         header: "Last Name",
       },
-      {
-        accessorKey: "country",
-        header: "Country",
-        cell: ({ row }) => {
-          const country: {
-            name: string;
-          } = row.getValue("country");
 
-          return <div className="capitalize">{country?.name}</div>;
-        },
-      },
       {
         accessorKey: "phone_number",
         header: "Mobile Number",
       },
       {
-        accessorKey: "created_at",
-        header: "Reg. date",
+        accessorKey: "country",
+        header: "Country",
         cell: ({ row }) => {
-          const value: string = row.getValue("created_at");
-          const date = parseISO(value);
-          const formattedDate = format(date, "dd-MM-yyyy");
-          return formattedDate;
+          const recipient: any = row.original;
+          return (
+            <div className="capitalize">
+              {recipient?.address?.country?.name}
+            </div>
+          );
         },
       },
+      {
+        accessorKey: "city",
+        header: "City",
+        cell: ({ row }) => {
+          const recipient: any = row.original;
+          return (
+            <div className="capitalize">{recipient?.address?.city?.name}</div>
+          );
+        },
+      },
+
       {
         accessorKey: "customers",
         header: "Customers",
@@ -102,7 +101,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
                   <div key={customer.id}>
                     {index !== 0 && ", "}
                     <Link
-                      to={ROUTES.CUSTOMERS.EDIT(customer.id)}
+                      to={ROUTES.CUSTOMERS.DETAILS(customer.id)}
                       className="hover:underline"
                     >
                       {customer.full_name}
@@ -115,8 +114,22 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         },
       },
       {
-        accessorKey: "remittance",
+        accessorKey: "remittance_methods",
         header: "Rem. Methods",
+        cell: ({ row }) => {
+          const remittance_methods: any[] = row.getValue("remittance_methods");
+
+          return (
+            <div className="flex flex-wrap">
+              {remittance_methods?.map((rm: any, index: number) => (
+                <div>
+                  {index !== 0 && ", "}
+                  {rm?.remittance_method?.name}
+                </div>
+              ))}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "transfer",
@@ -201,6 +214,92 @@ export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
                   <MoreHorizontal />
                 </Button>
               }
+            />
+          );
+        },
+      },
+    ],
+    []
+  );
+};
+export const recipientsSearchColumns = ({
+  attachRecipient,
+}: {
+  attachRecipient: (recipientId: string | number) => void;
+}): ColumnDef<Recipient>[] => {
+  return useMemo(
+    () => [
+      {
+        accessorKey: "reference_number",
+        header: "Recipient no.",
+      },
+      {
+        accessorKey: "first_name",
+        header: "First Name",
+      },
+      {
+        accessorKey: "last_name",
+        header: "Last Name",
+      },
+
+      {
+        accessorKey: "phone_number",
+        header: "Mobile Number",
+      },
+      {
+        accessorKey: "country",
+        header: "Country",
+        cell: ({ row }) => {
+          const recipient: any = row.original;
+          return (
+            <div className="capitalize">
+              {recipient?.address?.country?.name}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "city",
+        header: "City",
+        cell: ({ row }) => {
+          const recipient: any = row.original;
+          return (
+            <div className="capitalize">{recipient?.address?.city?.name}</div>
+          );
+        },
+      },
+      {
+        accessorKey: "remittance_methods",
+        header: "Rem. Methods",
+        cell: ({ row }) => {
+          const remittance_methods: any[] = row.getValue("remittance_methods");
+
+          return (
+            <div className="flex flex-wrap">
+              {remittance_methods?.map((rm: any, index: number) => (
+                <div>
+                  {index !== 0 && ", "}
+                  {rm?.remittance_method?.name}
+                </div>
+              ))}
+            </div>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const recipient: any = row.original;
+          if (recipient?.attachment_info?.is_attached) {
+            return <b className="text-primary">Already Attached</b>;
+          }
+          return (
+            <ActionButton
+              title="Add recipient"
+              type="link"
+              onClick={() => attachRecipient(recipient.id)}
             />
           );
         },

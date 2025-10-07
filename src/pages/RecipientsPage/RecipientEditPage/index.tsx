@@ -14,12 +14,15 @@ import type {
 } from "@/types/recipients";
 import RecipientBasicDetails from "../RecipientBasicDetails";
 import RecipientRemittanceDetails from "./RecipientRemittanceDetails";
-import RecipientBankDetails from "./RecipientBankDetails";
+import { format } from "date-fns";
+// import RecipientBankDetails from "./RecipientBankDetails";
 
 const CustomerEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, error } = useGetRecipient(id!);
+  const [formData, setFormData] = useState<any>({});
+
   const [recipientData, setRecipientData] = useState<RecipientDataType | null>(
     null
   );
@@ -42,48 +45,76 @@ const CustomerEditPage: React.FC = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (data && data.data) {
+      setFormData({
+        first_name: data.data.first_name,
+        last_name: data.data.last_name,
+        email: data.data.email,
+        date_of_birth: data.data.date_of_birth,
+        country_id: data.data?.address?.country.id,
+        city_id: data.data?.address?.city.id,
+        state_id: data.data?.address?.state.id,
+        postal_code: data.data?.address?.postal_code,
+        street_name: data.data?.address?.street_name,
+        house_number: data.data?.address?.house_number,
+        gender: data.data.gender,
+        phone_number: data.data.phone_number,
+        country_phone_code: data.data.country_phone_code,
+      });
+    }
+  }, [data]);
+  const handleInputChange = (field: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  const handleDateChange = (field: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
+  };
   const handleBack = () => {
     navigate(ROUTES.RECIPIENTS.LIST);
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    setRecipientData((prev: any) => {
-      const previousState = prev ?? {};
-      if (field.includes(".")) {
-        const [parentKey, childKey] = field.split(".");
-        let updatedState = { ...previousState };
-        if (!updatedState[parentKey]) {
-          updatedState[parentKey] = {};
-        }
-        updatedState[parentKey] = {
-          ...updatedState[parentKey],
-          [childKey]: value,
-        };
-        return updatedState;
-      }
-      return { ...previousState, [field]: value };
-    });
-  };
+  // const handleInputChange = (field: string, value: any) => {
+  //   setRecipientData((prev: any) => {
+  //     const previousState = prev ?? {};
+  //     if (field.includes(".")) {
+  //       const [parentKey, childKey] = field.split(".");
+  //       let updatedState = { ...previousState };
+  //       if (!updatedState[parentKey]) {
+  //         updatedState[parentKey] = {};
+  //       }
+  //       updatedState[parentKey] = {
+  //         ...updatedState[parentKey],
+  //         [childKey]: value,
+  //       };
+  //       return updatedState;
+  //     }
+  //     return { ...previousState, [field]: value };
+  //   });
+  // };
 
-  const handleDateChange = (field: string, value: any) => {
-    setRecipientData((prev: any) => ({ ...prev, [field]: value }));
-  };
+  // const handleDateChange = (field: string, value: any) => {
+  //   setRecipientData((prev: any) => ({ ...prev, [field]: value }));
+  // };
 
   const handleSave = async () => {
     try {
       const payloadToUpdate: Partial<RecipientUpdatedDataType> = {
-        first_name: recipientData?.first_name,
-        last_name: recipientData?.last_name,
-        date_of_birth: recipientData?.date_of_birth,
-        gender: recipientData?.gender,
+        first_name: formData?.first_name,
+        last_name: formData?.last_name,
+        date_of_birth: formData?.date_of_birth
+          ? format(formData?.date_of_birth, "dd-MM-yyyy")
+          : "",
+        gender: formData?.gender,
         address: {
-          street_name: recipientData?.address?.street_name,
-          house_number: recipientData?.address?.house_number,
-          postal_code: recipientData?.address?.postal_code,
-          extra_address_details: recipientData?.address?.extra_address_details,
-          city_id: recipientData?.address?.city?.id,
-          state_id: recipientData?.address?.state?.id,
-          country_id: recipientData?.address?.country?.id,
+          street_name: formData?.street_name,
+          house_number: formData.house_number,
+          postal_code: formData?.postal_code,
+          extra_address_details: formData?.extra_address_details,
+          city_id: formData?.city_id,
+          state_id: formData?.state_id,
+          country_id: formData?.country_id,
         },
         phone_number: recipientData?.phone_number,
         country_phone_code: recipientData?.country_phone_code,
@@ -135,7 +166,7 @@ const CustomerEditPage: React.FC = () => {
         checkOtherSectionEditMode={checkOtherSectionEditMode("basic")}
       >
         <RecipientBasicDetails
-          data={recipientData}
+          data={formData}
           handleInputChange={handleInputChange}
           handleDateChange={handleDateChange}
           editMode={basicInfoEditMode}
@@ -158,7 +189,7 @@ const CustomerEditPage: React.FC = () => {
           editMode={remittanceMethodsEditMode}
         />
       </EditSectionCard>
-      <EditSectionCard
+      {/* <EditSectionCard
         sectionTitle="Bank Details"
         onSave={handleSave}
         loading={false}
@@ -172,7 +203,7 @@ const CustomerEditPage: React.FC = () => {
           handleDateChange={handleDateChange}
           editMode={bankDetailsEditMode}
         />
-      </EditSectionCard>
+      </EditSectionCard> */}
     </div>
   );
 };

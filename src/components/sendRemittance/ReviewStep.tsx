@@ -104,7 +104,7 @@ const ReviewStep: React.FC = () => {
 
   const handleEditRecipient = () => {
     stepOne?.recipient?.id &&
-      navigate(ROUTES.RECIPIENTS.EDIT(stepOne?.recipient?.id));
+      navigate(ROUTES.RECIPIENTS.DETAILS(stepOne?.recipient?.id));
   };
 
   return (

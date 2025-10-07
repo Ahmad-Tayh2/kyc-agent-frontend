@@ -33,7 +33,7 @@ export const customersService = {
     id: string | number,
     data: Partial<CustomerCreateData>
   ) => {
-    const response = await apiClient.put(API_URLS.customers.update(id), data);
+    const response = await apiClient.patch(API_URLS.customers.update(id), data);
     return response.data;
   },
 

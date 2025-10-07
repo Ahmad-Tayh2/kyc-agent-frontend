@@ -14,6 +14,7 @@ interface Option {
 }
 interface SingleSelectDropdownProps {
   label?: string;
+  required?: boolean;
   options: Option[];
   onValueChange: any;
   placeholder?: string;
@@ -23,6 +24,7 @@ interface SingleSelectDropdownProps {
 export function SingleSelectDropdown(props: SingleSelectDropdownProps) {
   const {
     label,
+    required,
     options,
     onValueChange,
     placeholder,
@@ -34,6 +36,7 @@ export function SingleSelectDropdown(props: SingleSelectDropdownProps) {
       {label && (
         <Label className="block text-sm font-medium text-gray-700">
           {label}
+          {required && <span className="text-red-500">*</span>}
         </Label>
       )}
       <Select onValueChange={onValueChange} value={selectedValue}>

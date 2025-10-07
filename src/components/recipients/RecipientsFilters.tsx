@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { SearchInput } from "@/components/shared/SearchInput";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
@@ -6,12 +6,13 @@ import CountrySelector from "@/components/shared/CountrySelector";
 import { useCountries } from "@/hooks/data/useAddress";
 import type { RecipientsFilterState } from "@/hooks/data/useRecipientsFilters";
 import type { CustomerType } from "@/types/customers";
+import { useGetCustomersWithSearch } from "@/hooks/data/useCustomers";
 
 const remitanceMethodOptions = [{ label: "method 1 ", value: "1" }];
 
 interface RecipientsFiltersProps {
   filters: RecipientsFilterState;
-  customers: CustomerType[];
+
   onUpdateSearchTerm: (name: string) => void;
   onUpdateCustomersIds: (status: string[]) => void;
   onUpdateCountryIds: (countryIds: number[]) => void;
@@ -22,7 +23,7 @@ interface RecipientsFiltersProps {
 
 const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   filters,
-  customers,
+
   onUpdateSearchTerm,
   onUpdateCustomersIds,
   onUpdateCountryIds,
@@ -31,7 +32,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   onApplyFilters,
 }) => {
   const { data: countriesData = [] } = useCountries();
-
+  const [searchCustomer, setSearchCustomer] = useState("");
   const countries = React.useMemo(() => {
     if (!countriesData) return [];
     return countriesData?.map((country: any) => ({
@@ -40,9 +41,12 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
       name: country.name,
     }));
   }, [countriesData]);
-
+  const { data: CustomersResponse } = useGetCustomersWithSearch(searchCustomer);
+  const customersData = useMemo(() => {
+    return CustomersResponse?.data || [];
+  }, [CustomersResponse?.data]);
   const customersOptions = [
-    ...customers?.map((customer: CustomerType) => ({
+    ...customersData?.map((customer: CustomerType) => ({
       label: customer.full_name,
       value: customer.id,
     })),
@@ -70,6 +74,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
               onChange={onUpdateCustomersIds}
               isSearchable
               checkboxPlacement="right"
+              onSearchTermChange={(value: string) => setSearchCustomer(value)}
             />
             <CountrySelector
               label="Country"
