@@ -101,7 +101,7 @@ export function DataTable({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -177,6 +177,7 @@ export function DataTable({
       </div>
     );
   }
+  console.log(" table.. = ", table);
   return (
     <div>
       <div
@@ -242,6 +243,7 @@ export function DataTable({
           </Table>
         </div>
         {/* pagination */}
+
         {pagination?.enable &&
           (data?.length >= 10 || pagination?.page > 1) && ( //if the page is > 1 you should allow the user the navigate may be the previous page (because in that page the data.length may be less than 10)
             <Pagination className="py-2 px-5">

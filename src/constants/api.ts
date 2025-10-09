@@ -26,7 +26,7 @@ export const API_URLS = {
     update: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
 
     uploadDocuments: (agentId: string | number) =>
-      `${baseUrl}/agents/${agentId}/upload-documents`,
+      `${baseUrl}/agents/${agentId}/id-documents`,
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,
