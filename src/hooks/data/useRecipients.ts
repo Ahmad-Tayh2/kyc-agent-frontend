@@ -31,7 +31,7 @@ export function useUpdateRecipient(id: string | number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<RecipientUpdatedDataType>) =>
-      recipientsService.updateCustomer(id, data),
+      recipientsService.updateRecipient(id, data),
     onSuccess: () => {
       toast.success("Recipient updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-recipients"] });

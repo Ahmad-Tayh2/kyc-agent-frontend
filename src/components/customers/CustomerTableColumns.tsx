@@ -7,7 +7,6 @@ import StatusLabel from "@/components/shared/StatusLabel";
 import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import SendMoneyIcon from "@/assets/icons/send-money.svg?react";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
-import EditIcon from "@/assets/icons/edit.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 import type { CustomerType } from "@/types/customers";
@@ -18,20 +17,12 @@ const menu = (customerId: string | number) => {
     {
       label: "Send Money",
       icon: <SendMoneyIcon />,
-      onClick: () => {},
       link: ROUTES.SEND_REMITTANCE.CREATE(`?customer=${customerId}`),
     },
     {
       label: "View Details",
       icon: <ViewDetailsIcon />,
-      onClick: () => {},
       link: ROUTES.CUSTOMERS.DETAILS(customerId),
-    },
-    {
-      label: "Edit Customer",
-      icon: <EditIcon />,
-      onClick: () => {},
-      link: ROUTES.CUSTOMERS.EDIT(customerId),
     },
   ];
 };
@@ -84,7 +75,7 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
         },
       },
       {
-        accessorKey: "transactions",
+        accessorKey: "number_transactions",
         header: "Transactions",
       },
       {
@@ -168,10 +159,9 @@ export const searchCustomerColumns = (): ColumnDef<CustomerType>[] => {
         enableHiding: false,
         cell: ({ row }) => {
           const customer = row.original;
-          // console.log(" cussttt ", customer);
-          // if (customer?.belongs_to_current_agent) {
-          //   return null;
-          // }
+          if (customer?.belongs_to_current_agent) {
+            return <b className="text-primary">Already Added</b>;
+          }
           return (
             <ActionButton
               type="link"

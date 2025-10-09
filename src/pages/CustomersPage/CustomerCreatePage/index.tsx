@@ -150,12 +150,21 @@ const CustomerCreatePage: React.FC = () => {
           <h2 className="text-lg font-semibold">Search Results:</h2>
 
           {searchResults.length > 0 ? (
-            <div className="bg-white rounded-lg border">
-              <DataTable
-                data={searchResults}
-                columns={columns}
-                isLoading={false}
-              />
+            <div>
+              <div className="bg-white rounded-lg border">
+                <DataTable
+                  data={searchResults}
+                  columns={columns}
+                  isLoading={false}
+                />
+              </div>
+              <div className="p-5 flex items-center justify-center">
+                <ActionButton
+                  title="create new customer"
+                  icon={<AddCustomerIcon />}
+                  onClick={handleCreateNew}
+                />
+              </div>
             </div>
           ) : (
             <div className="text-center">

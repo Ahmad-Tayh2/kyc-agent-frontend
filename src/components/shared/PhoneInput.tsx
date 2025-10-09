@@ -176,7 +176,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
             type="button"
             onClick={handleCountryInputClick}
             disabled={disabled}
-            className="flex items-center gap-2 px-2 py-1 rounded-tl-md rounded-bl-md border-r border-input bg-transparent h-full transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-2 px-2 py-1 rounded-tl-md rounded-bl-md border-r border-input bg-transparent h-full transition-colors cursor-pointer disabled:cursor-not-allowed disabled:bg-[#E5E5E5] disabled:text-[#101828] disabled:opacity-50"
           >
             {selectedOption ? (
               <>
@@ -255,8 +255,8 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           // onKeyDown={handlePhoneInputKeyDown}
           // onClick={handlePhoneInputClick}
           placeholder={defaultPlaceholder}
-          disabled={disabled}
-          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+          disabled={disabled || !selectedOption?.code}
+          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 rounded-none"
         />
       </div>
       {error && <span className="text-destructive text-xs">{error}</span>}

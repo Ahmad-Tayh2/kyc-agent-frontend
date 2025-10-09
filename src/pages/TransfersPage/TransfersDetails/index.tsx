@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "@/constants/routes";
@@ -21,12 +21,12 @@ const TransfersDetails: React.FC = () => {
   const handleBack = () => {
     navigate(ROUTES.TRANSFERS.LIST);
   };
-
+  const printAreaRef = useRef(null);
   const handlePrint = () => {
-    // TODO: Implement print functionality
-    console.log("Print transfer details");
+    if (printAreaRef.current) {
+      window.print();
+    }
   };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -75,7 +75,7 @@ const TransfersDetails: React.FC = () => {
       </div>
 
       {/* Transfer Details */}
-      <DetailsCard transfer={transfer} />
+      <DetailsCard transfer={transfer} printAreaRef={printAreaRef} />
     </div>
   );
 };

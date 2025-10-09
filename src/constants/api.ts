@@ -1,4 +1,4 @@
-const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
+const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
 //const baseUrl = 'http://localhost:8000/api';
 export const API_URLS = {
   auth: {
@@ -26,7 +26,7 @@ export const API_URLS = {
     update: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
 
     uploadDocuments: (agentId: string | number) =>
-      `${baseUrl}/agents/${agentId}/upload-documents`,
+      `${baseUrl}/agents/${agentId}/id-documents`,
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,
@@ -36,9 +36,9 @@ export const API_URLS = {
     update: (id: string | number) => `${baseUrl}/customers/${id}`,
 
     uploadIdentityDocuments: (id: string | number) =>
-      `${baseUrl}/customers/${id}/upload-identity-documents`,
+      `${baseUrl}/customers/${id}/identity-documents`,
     uploadIncomeDocuments: (id: string | number) =>
-      `${baseUrl}/customers/${id}/upload-income-documents`,
+      `${baseUrl}/customers/${id}/income-documents`,
 
     // Customer Recipients endpoints
     getRecipients: (customerId: string | number) =>
@@ -126,7 +126,7 @@ export const API_URLS = {
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
-    deleteCurrency: () => '', // URL not ready yet
+    deleteCurrency: () => "", // URL not ready yet
     addCurrency: (walletId: string | number) =>
       `${baseUrl}/wallets/${walletId}/currencies`,
   },

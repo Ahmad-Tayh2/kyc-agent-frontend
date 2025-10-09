@@ -94,7 +94,7 @@ const RegisterForm: React.FC<{
     extraAddressDetails: "",
     phone: "",
     countryCode: "",
-    gender: "male",
+    gender: "",
     businessName: "",
     businessStreetName: "",
     businessHouseNumber: "",
@@ -242,6 +242,8 @@ const RegisterForm: React.FC<{
     if (!formData.dob) newErrors.dob = t("modules.register.fields.dob.error");
     if (!formData.email)
       newErrors.email = t("modules.register.fields.email.error");
+    if (!formData.gender)
+      newErrors.gender = t("modules.register.fields.email.error");
     if (!formData.password)
       newErrors.password = t("modules.register.fields.password.error");
     if (formData.password.length < 6)
@@ -288,6 +290,9 @@ const RegisterForm: React.FC<{
         newErrors.businessCountry = t(
           "modules.register.fields.businessCountry.error"
         );
+    }
+    if (!identityFiles?.length) {
+      newErrors.identityFiles = "This field is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -658,6 +663,9 @@ const RegisterForm: React.FC<{
               Female
             </label>
           </div> */}
+          {errors.gender && (
+            <span className="text-destructive text-xs">{errors.gender}</span>
+          )}
         </div>
         <div className="md:col-span-2 flex flex-col gap-2">
           <Label>{t("modules.register.fields.identity.label")}</Label>
@@ -688,7 +696,6 @@ const RegisterForm: React.FC<{
                 </span>
               </div>
             )}
-
             {/* Hidden file input */}
             <Input
               type="file"
@@ -699,6 +706,11 @@ const RegisterForm: React.FC<{
               ref={fileRef}
             />
           </div>
+          {errors.identityFiles && (
+            <span className="text-destructive text-xs">
+              {errors.identityFiles}
+            </span>
+          )}
           {identityFiles?.map((file, idx) => (
             <div
               key={idx}

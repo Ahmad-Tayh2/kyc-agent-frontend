@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, Minus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import DatePicker from "./DatePicker";
@@ -177,11 +177,30 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         >
           {getDisplayText()}
         </span>
-        {isOpen ? (
-          <ChevronUpIcon className="h-4 w-4 text-gray-400" />
-        ) : (
-          <ChevronDownIcon className="h-4 w-4 text-gray-400" />
-        )}
+        <div className="flex justify-center items-center gap-0">
+          {(value.startDate || value.endDate) && (
+            <>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange({
+                    startDate: "",
+                    endDate: "",
+                  });
+                  setShowCustomRange(false);
+                }}
+              >
+                <X size={48} className="text-gray-400" />
+              </span>
+              <Minus className="transform rotate-90 text-gray-400" />
+            </>
+          )}
+          {isOpen ? (
+            <ChevronUpIcon className="h-4  text-gray-400" />
+          ) : (
+            <ChevronDownIcon className="h-4  text-gray-400" />
+          )}
+        </div>
       </Button>
       {isOpen && (
         <div className="absolute z-50 right-0 w-max mt-1 bg-white border border-gray-200 rounded-md shadow-lg">

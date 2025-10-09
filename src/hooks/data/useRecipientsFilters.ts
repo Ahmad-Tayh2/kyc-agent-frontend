@@ -10,8 +10,8 @@ import type { paginationProps } from "@/types/shared/pagination";
 export interface RecipientsFilterState {
   search?: string;
   customer_ids?: string[];
-  country_ids?: number[];
-  remittance_method_ids?: string[];
+  countries?: number[];
+  remittance_methods_ids?: string[];
   ids?: string[];
   added_by?: number;
   //pagination
@@ -23,13 +23,13 @@ export const useRecipientsFilters = () => {
   const [filters, setFilters] = useState<RecipientsFilterState>({
     search: "",
     customer_ids: [],
-    country_ids: [],
-    remittance_method_ids: [],
+    countries: [],
+    remittance_methods_ids: [],
     ids: [],
     added_by: undefined,
     //pagination
     page: 1,
-    per_page: 1,
+    per_page: 10,
   });
   const debouncedSearch = useDebounce(filters?.search);
 
@@ -47,13 +47,13 @@ export const useRecipientsFilters = () => {
     setFilters((prev) => ({ ...prev, customer_ids }));
   }, []);
 
-  const updateCountryIds = useCallback((country_ids: number[]) => {
-    setFilters((prev) => ({ ...prev, country_ids }));
+  const updateCountryIds = useCallback((countries: number[]) => {
+    setFilters((prev) => ({ ...prev, countries }));
   }, []);
 
   const updateRemittanceMethodIds = useCallback(
-    (remittance_method_ids: string[]) => {
-      setFilters((prev) => ({ ...prev, remittance_method_ids }));
+    (remittance_methods_ids: string[]) => {
+      setFilters((prev) => ({ ...prev, remittance_methods_ids }));
     },
     []
   );

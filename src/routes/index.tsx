@@ -107,13 +107,10 @@ export const AppRoutes = () => (
           />
           {/* customers routes */}
           <Route path={ROUTES.CUSTOMERS.LIST} element={<CustomersPage />} />
-          <Route
-            path={ROUTES.CUSTOMERS.EDIT(":id")}
-            element={<CustomerEditPage mode={"edit"} />}
-          />
+
           <Route
             path={ROUTES.CUSTOMERS.DETAILS(":id")}
-            element={<CustomerEditPage mode={"view"} />}
+            element={<CustomerEditPage />}
           />
           <Route
             path={ROUTES.CUSTOMERS.CREATE}
@@ -126,7 +123,7 @@ export const AppRoutes = () => (
           {/* recipients routes */}
           <Route path={ROUTES.RECIPIENTS.LIST} element={<RecipientsPage />} />
           <Route
-            path={ROUTES.RECIPIENTS.EDIT(":id")}
+            path={ROUTES.RECIPIENTS.DETAILS(":id")}
             element={<RecipientEditPage />}
           />
           <Route

@@ -75,10 +75,11 @@ export function buildFilterString(filters: Record<string, any>): string {
         // Use array format for specific fields that should be sent as arrays
         if (
           key === "status" ||
-          key === "remittance_method_ids" ||
+          key === "remittance_methods_ids" ||
           key === "ids" ||
           key === "countries" ||
-          key === "country_codes"
+          key === "country_codes" ||
+          key === "customer_ids"
         ) {
           filterString = appendArrayQueryParam(filterString, key, value);
         } else {

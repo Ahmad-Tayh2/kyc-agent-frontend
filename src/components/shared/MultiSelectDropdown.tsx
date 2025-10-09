@@ -13,6 +13,7 @@ interface Option {
 
 interface MultiSelectDropdownProps {
   label?: string;
+  required?: boolean;
   placeholder?: string;
   options: Option[];
   value: string[];
@@ -22,10 +23,12 @@ interface MultiSelectDropdownProps {
   showSelectAll?: boolean;
   isSearchable?: boolean;
   checkboxPlacement?: "left" | "right";
+  onSearchTermChange?: (value: string) => void;
 }
 
 const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   label,
+  required,
   placeholder = "Select options",
   options,
   value = [],
@@ -35,6 +38,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   showSelectAll = false,
   isSearchable = false,
   checkboxPlacement = "left",
+  onSearchTermChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -95,6 +99,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       {label && (
         <Label className="block text-sm font-medium text-gray-700">
           {label}
+          {required && <span className="text-red-500">*</span>}
         </Label>
       )}
       <Button
@@ -147,6 +152,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                   value={searchTerm}
                   onChange={(value: string) => {
                     setSearchTerm(value);
+                    onSearchTermChange?.(value);
                   }}
                   className="w-full"
                 />

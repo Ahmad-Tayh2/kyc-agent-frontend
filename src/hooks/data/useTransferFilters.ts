@@ -33,7 +33,7 @@ export const useTransferFilters = (initFilters?: TransferFilterState) => {
     receive_currency: "",
     //pagination
     page: 1,
-    per_page: 15,
+    per_page: 10,
     ...initFilters,
   });
   const [filtersString, setFilterString] = useState<string>("");
@@ -41,7 +41,7 @@ export const useTransferFilters = (initFilters?: TransferFilterState) => {
 
   useEffect(() => {
     applyFilters();
-  }, [filters, debouncedSearch, filters?.per_page, filters?.page]);
+  }, [debouncedSearch, filters?.per_page, filters?.page]);
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search }));

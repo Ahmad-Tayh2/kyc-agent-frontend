@@ -1,15 +1,8 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   useCreateCustomer,
   useUploadIdentityDocuments,
@@ -31,6 +24,7 @@ import type {
 } from "@/services/customers";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
+import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
 
 type FormStep = "basic" | "identity" | "income";
 
@@ -66,11 +60,7 @@ const CustomerCreateFormPage: React.FC = () => {
     backDocument: null,
   });
 
-  const [incomeData, setIncomeData] = useState<CustomerIncomeFileData>({
-    bankStatements: [],
-    extraDocuments: [],
-    extraDocumentsDescription: "",
-  });
+  const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
 
   const { mutateAsync: createCustomer } = useCreateCustomer();
   const { mutateAsync: uploadIdentityDocuments } = useUploadIdentityDocuments();
@@ -80,16 +70,18 @@ const CustomerCreateFormPage: React.FC = () => {
     field: keyof CustomerCreateData,
     value: string
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
     // Clear city when country changes
     if (field === "country_id") {
       setFormData((prev) => ({
         ...prev,
+        [field]: value,
         city_id: "",
+        state_id: "",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
       }));
     }
   };
@@ -111,16 +103,24 @@ const CustomerCreateFormPage: React.FC = () => {
     }));
   };
 
-  const handleIncomeChange = (
-    field: keyof CustomerIncomeFileData,
-    value: any
-  ) => {
-    setIncomeData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleUploadIncomeFile = (files: FileList | null, type: string) => {
+    if (!files || files?.length === 0 || !type) return;
+    setIncomeData((prev: any) => {
+      const exist = prev?.find(
+        (item: CustomerIncomeFileData) => item.document_type === type
+      );
+      if (!exist) {
+        return [
+          ...prev,
+          {
+            document: files,
+            document_type: type,
+          },
+        ];
+      }
+      return prev;
+    });
   };
-
   const handleFileUpload = (
     field: string,
     files: FileList | null,
@@ -129,12 +129,12 @@ const CustomerCreateFormPage: React.FC = () => {
     if (!files || files.length === 0) return;
 
     if (isMultiple) {
-      const fileArray = Array.from(files);
-      if (field === "bankStatements") {
-        handleIncomeChange("bankStatements", fileArray);
-      } else if (field === "extraDocuments") {
-        handleIncomeChange("extraDocuments", fileArray);
-      }
+      // const fileArray = Array.from(files);
+      // if (field === "bankStatements") {
+      //   handleIncomeChange("bankStatements", fileArray);
+      // } else if (field === "extraDocuments") {
+      //   handleIncomeChange("extraDocuments", fileArray);
+      // }
     } else {
       const file = files[0];
       if (field === "frontDocument") {
@@ -188,6 +188,11 @@ const CustomerCreateFormPage: React.FC = () => {
       setCurrentStep("identity");
     }
   };
+  const handleSkip = () => {
+    if (currentStep === "identity") {
+      setCurrentStep("income");
+    }
+  };
 
   const handleSubmit = async () => {
     console.log("test submit");
@@ -212,15 +217,13 @@ const CustomerCreateFormPage: React.FC = () => {
       }
 
       // Step 3: Upload income documents (async)
-      if (
-        incomeData.bankStatements.length > 0 ||
-        incomeData.extraDocuments.length > 0
-      ) {
-        uploadIncomeDocuments({ id: customerId, data: incomeData }).catch(
-          (error) => {
+
+      if (incomeData?.length) {
+        for (let data of incomeData) {
+          uploadIncomeDocuments({ id: customerId, data }).catch((error) => {
             console.error("Failed to upload income documents:", error);
-          }
-        );
+          });
+        }
       }
     } catch (error) {
       console.log(" show response = ", error);
@@ -293,16 +296,23 @@ const CustomerCreateFormPage: React.FC = () => {
     </div>
   );
 
-  const renderCustomerIdentity = () => (
-    <div className="space-y-6 px-5">
-      <div className="text-[14px] bg-[#FDF2F0] flex items-center gap-2 mb-5 w-fit py-1 px-2 rounded-full">
-        <ClockDelayIcon className="text-blue-600" />
-        <p>This is not mandatroy at the moment. You can fill them later.</p>
-      </div>
+  const renderCustomerIdentity = () => {
+    const documentTypesOptions = [
+      { label: "Passport", value: "passport" },
+      { label: "National ID", value: "id_card'" },
+      { label: "Residence Permit ", value: "residence_permit" },
+      { label: "Driver's License", value: "driving_license" },
+    ];
+    return (
+      <div className="space-y-6 px-5">
+        <div className="text-[14px] bg-[#FDF2F0] flex items-center gap-2 mb-5 w-fit py-1 px-2 rounded-full">
+          <ClockDelayIcon className="text-blue-600" />
+          <p>This is not mandatroy at the moment. You can fill them later.</p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div>
-          <Label htmlFor="documentType">Document Type</Label>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div>
+            {/* <Label htmlFor="documentType">Document Type</Label>
           <Select
             value={identityData.documentType || ""}
             onValueChange={(value: string) =>
@@ -317,105 +327,115 @@ const CustomerCreateFormPage: React.FC = () => {
               <SelectItem value="national_id">National ID</SelectItem>
               <SelectItem value="drivers_license">Driver's License</SelectItem>
             </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="documentNumber">Document Number</Label>
-          <Input
-            id="documentNumber"
-            name="documentNumber"
-            placeholder="Enter document number"
-            value={identityData.documentNumber || ""}
-            onChange={(e) =>
-              handleIdentityChange("documentNumber", e.target.value)
-            }
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="documentIssueDate">Document Issue Date</Label>
-          <DatePicker
-            value={identityData.documentIssueDate || ""}
-            onChange={(date: string) =>
-              handleIdentityChange("documentIssueDate", date)
-            }
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="documentExpiryDate">Document Expiry Date</Label>
-          <DatePicker
-            value={identityData.documentExpiryDate || ""}
-            onChange={(date: string) =>
-              handleIdentityChange("documentExpiryDate", date)
-            }
-            endMonth={documentExpiryEndMonth}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <Label>Upload the front face of your ID</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center">
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) =>
-                handleFileUpload("frontDocument", e.target.files)
+          </Select> */}
+            <SingleSelectDropdown
+              label="Document Type"
+              options={documentTypesOptions}
+              selectedValue={identityData.documentType || ""}
+              onValueChange={(value: string) =>
+                handleIdentityChange("documentType", value)
               }
-              className="hidden"
-              id="frontDocument"
             />
-            <label
-              htmlFor="frontDocument"
-              className="cursor-pointer text-center"
-            >
-              <UploadIcon width={90} />
-              <p className="text-teal-600 font-medium">Upload document</p>
-              <p className="text-sm text-gray-500">
-                Drag or click here to upload your document
-              </p>
-            </label>
           </div>
-          {identityData.frontDocument && (
-            <p className="text-sm text-green-600">
-              ✓ {identityData.frontDocument.name}
-            </p>
-          )}
+
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="documentNumber">Document Number</Label>
+            <Input
+              id="documentNumber"
+              name="documentNumber"
+              placeholder="Enter document number"
+              value={identityData.documentNumber || ""}
+              onChange={(e) =>
+                handleIdentityChange("documentNumber", e.target.value)
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="documentIssueDate">Document Issue Date</Label>
+            <DatePicker
+              value={identityData.documentIssueDate || ""}
+              onChange={(date: string) =>
+                handleIdentityChange("documentIssueDate", date)
+              }
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="documentExpiryDate">Document Expiry Date</Label>
+            <DatePicker
+              value={identityData.documentExpiryDate || ""}
+              onChange={(date: string) =>
+                handleIdentityChange("documentExpiryDate", date)
+              }
+              endMonth={documentExpiryEndMonth}
+            />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          <Label>Upload the back face of your ID</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center flex flex-col items-center justify-center">
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => handleFileUpload("backDocument", e.target.files)}
-              className="hidden"
-              id="backDocument"
-            />
-            <label
-              htmlFor="backDocument"
-              className="cursor-pointer text-center"
-            >
-              <UploadIcon width={90} />
-              <p className="text-teal-600 font-medium">Upload document</p>
-              <p className="text-sm text-gray-500">
-                Drag or click here to upload your document
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <Label>Upload the front face of your ID</Label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center">
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) =>
+                  handleFileUpload("frontDocument", e.target.files)
+                }
+                className="hidden"
+                id="frontDocument"
+              />
+              <label
+                htmlFor="frontDocument"
+                className="p-6 cursor-pointer text-center flex flex-col items-center justify-center h-full w-full"
+              >
+                <UploadIcon width={90} />
+                <p className="text-teal-600 font-medium">Upload document</p>
+                <p className="text-sm text-gray-500">
+                  Drag or click here to upload your document
+                </p>
+              </label>
+            </div>
+            {identityData.frontDocument && (
+              <p className="text-sm text-green-600">
+                ✓ {identityData.frontDocument.name}
               </p>
-            </label>
+            )}
           </div>
-          {identityData.backDocument && (
-            <p className="text-sm text-green-600">
-              ✓ {identityData.backDocument.name}
-            </p>
-          )}
+
+          <div className="space-y-4">
+            <Label>Upload the back face of your ID</Label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg text-center flex flex-col items-center justify-center">
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) =>
+                  handleFileUpload("backDocument", e.target.files)
+                }
+                className="hidden"
+                id="backDocument"
+              />
+              <label
+                htmlFor="backDocument"
+                className="p-6 cursor-pointer text-center flex flex-col items-center justify-center w-full h-full"
+              >
+                <UploadIcon width={90} />
+                <p className="text-teal-600 font-medium">Upload document</p>
+                <p className="text-sm text-gray-500">
+                  Drag or click here to upload your document
+                </p>
+              </label>
+            </div>
+            {identityData.backDocument && (
+              <p className="text-sm text-green-600">
+                ✓ {identityData.backDocument.name}
+              </p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderProofOfIncome = () => (
     <div className="space-y-6 px-5">
@@ -433,7 +453,11 @@ const CustomerCreateFormPage: React.FC = () => {
               accept=".pdf,.doc,.docx,image/*"
               multiple
               onChange={(e) =>
-                handleFileUpload("bankStatements", e.target.files, true)
+                // handleFileUpload("bankStatements", e.target.files, true)
+                handleUploadIncomeFile(
+                  e.target.files,
+                  "recent_three_months_income"
+                )
               }
               className="hidden"
               id="bankStatements"
@@ -446,7 +470,7 @@ const CustomerCreateFormPage: React.FC = () => {
               </p>
             </label>
           </div>
-          {incomeData.bankStatements.length > 0 && (
+          {/* {incomeData.bankStatements.length > 0 && (
             <div className="space-y-1">
               {incomeData.bankStatements.map((file, index) => (
                 <p key={index} className="text-sm text-green-600">
@@ -454,7 +478,7 @@ const CustomerCreateFormPage: React.FC = () => {
                 </p>
               ))}
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="space-y-4">
@@ -470,7 +494,8 @@ const CustomerCreateFormPage: React.FC = () => {
               accept=".pdf,.doc,.docx,image/*"
               multiple
               onChange={(e) =>
-                handleFileUpload("extraDocuments", e.target.files, true)
+                // handleFileUpload("extraDocuments", e.target.files, true)
+                handleUploadIncomeFile(e.target.files, "additional_proof")
               }
               className="hidden"
               id="extraDocuments"
@@ -483,7 +508,7 @@ const CustomerCreateFormPage: React.FC = () => {
               </p>
             </label>
           </div>
-          {incomeData.extraDocuments.length > 0 && (
+          {/* {incomeData.extraDocuments.length > 0 && (
             <div className="space-y-1">
               {incomeData.extraDocuments.map((file, index) => (
                 <p key={index} className="text-sm text-green-600">
@@ -491,12 +516,30 @@ const CustomerCreateFormPage: React.FC = () => {
                 </p>
               ))}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
   );
-
+  const disableContinue = useMemo(() => {
+    if (currentStep === "basic") {
+      if (
+        !formData?.first_name ||
+        !formData?.last_name ||
+        !formData?.email ||
+        !formData?.date_of_birth ||
+        !formData?.street_name ||
+        !formData?.house_number ||
+        !formData?.country_id ||
+        !formData?.city_id ||
+        !formData?.gender ||
+        !formData?.country_phone_code ||
+        !formData?.phone_number
+      )
+        return true;
+    }
+    return false;
+  }, [currentStep, formData]);
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -528,11 +571,17 @@ const CustomerCreateFormPage: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex justify-end items-end gap-4 m-5 pt-5 border-t-1">
+          <ActionButton
+            title="Back"
+            onClick={handleBack}
+            type="cancel"
+            className="mr-auto"
+            disabled={currentStep === "basic"}
+          />
           {currentStep === "identity" && (
-            <ActionButton title="skip step" onClick={handleBack} type="link" />
+            <ActionButton title="skip step" onClick={handleSkip} type="link" />
           )}
           <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
-
           {currentStep === "income" ? (
             <ActionButton
               title="save & continue"
@@ -546,6 +595,7 @@ const CustomerCreateFormPage: React.FC = () => {
               title="save & continue"
               onClick={handleNext}
               className="bg-teal-600 hover:bg-teal-700"
+              disabled={disableContinue}
             />
           )}
         </div>

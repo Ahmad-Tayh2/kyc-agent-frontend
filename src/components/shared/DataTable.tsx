@@ -15,7 +15,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
+  // getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -101,7 +101,7 @@ export function DataTable({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -177,6 +177,7 @@ export function DataTable({
       </div>
     );
   }
+  console.log(" table.. = ", table);
   return (
     <div>
       <div
@@ -214,7 +215,7 @@ export function DataTable({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-primary/5"
+                    className="hover:bg-primary/5 odd:bg-primary/4"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -242,73 +243,75 @@ export function DataTable({
           </Table>
         </div>
         {/* pagination */}
-        {pagination?.enable && (
-          <Pagination className="py-2 px-5">
-            <PaginationContent className="w-full flex justify-between items-center">
-              {/* Previous Button */}
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  disabled={pagination.page === 1}
-                  onClick={() => pagination.setPage(pagination.page - 1)}
-                  className="cursor-pointer hover:bg-primary/10"
-                >
-                  <ArrowLeft /> <span>Previous</span>
-                </Button>
-              </PaginationItem>
 
-              {/* Page Numbers */}
-              <div className="flex justify-between items-center gap-1">
-                {pagesNumberToShow?.map((page: string | number, index) => {
-                  if (page === "...") {
-                    return (
-                      <PaginationItem key={index + 1}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    );
-                  } else {
-                    let isActive = pagination?.page === page;
-                    return (
-                      <PaginationItem key={index + 1}>
-                        <PaginationLink
-                          className={cn(
-                            "border-none cursor-pointer",
-                            isActive && "bg-primary/20"
-                          )}
-                          onClick={() => pagination.setPage(Number(page))}
-                          isActive={isActive}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  }
-                })}
-              </div>
+        {pagination?.enable &&
+          (data?.length >= 10 || pagination?.page > 1) && ( //if the page is > 1 you should allow the user the navigate may be the previous page (because in that page the data.length may be less than 10)
+            <Pagination className="py-2 px-5">
+              <PaginationContent className="w-full flex justify-between items-center">
+                {/* Previous Button */}
+                <PaginationItem>
+                  <Button
+                    variant="outline"
+                    disabled={pagination.page === 1}
+                    onClick={() => pagination.setPage(pagination.page - 1)}
+                    className="cursor-pointer hover:bg-primary/10"
+                  >
+                    <ArrowLeft /> <span>Previous</span>
+                  </Button>
+                </PaginationItem>
 
-              {/* Next Button */}
-              <PaginationItem className="flex items-center gap-2">
-                {pagination.onChangeRowsPerPage && (
-                  <SingleSelectDropdown
-                    options={paginationsPagesOptions}
-                    onValueChange={pagination.onChangeRowsPerPage}
-                    selectedValue={String(pagination?.per_page)}
-                    className="w-[120px]"
-                  />
-                )}
-                <Button
-                  variant="outline"
-                  disabled={pagination?.page === pagesLength}
-                  onClick={() => pagination.setPage(pagination.page + 1)}
-                  className="cursor-pointer hover:bg-primary/10"
-                >
-                  <span>Next</span>
-                  <ArrowRight />
-                </Button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+                {/* Page Numbers */}
+                <div className="flex justify-between items-center gap-1">
+                  {pagesNumberToShow?.map((page: string | number, index) => {
+                    if (page === "...") {
+                      return (
+                        <PaginationItem key={index + 1}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    } else {
+                      let isActive = pagination?.page === page;
+                      return (
+                        <PaginationItem key={index + 1}>
+                          <PaginationLink
+                            className={cn(
+                              "border-none cursor-pointer",
+                              isActive && "bg-primary/20"
+                            )}
+                            onClick={() => pagination.setPage(Number(page))}
+                            isActive={isActive}
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+                  })}
+                </div>
+
+                {/* Next Button */}
+                <PaginationItem className="flex items-center gap-2">
+                  {pagination.onChangeRowsPerPage && (
+                    <SingleSelectDropdown
+                      options={paginationsPagesOptions}
+                      onValueChange={pagination.onChangeRowsPerPage}
+                      selectedValue={String(pagination?.per_page)}
+                      className="w-[120px]"
+                    />
+                  )}
+                  <Button
+                    variant="outline"
+                    disabled={pagination?.page === pagesLength}
+                    onClick={() => pagination.setPage(pagination.page + 1)}
+                    className="cursor-pointer hover:bg-primary/10"
+                  >
+                    <span>Next</span>
+                    <ArrowRight />
+                  </Button>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ const TransferList: React.FC = () => {
     return response?.meta || [];
   }, [response?.meta]);
 
-  const { data: CustomersResponse } = useGetCustomers(filtersString);
+  const { data: CustomersResponse } = useGetCustomers();
 
   const customersData = useMemo(() => {
     return CustomersResponse?.data || [];

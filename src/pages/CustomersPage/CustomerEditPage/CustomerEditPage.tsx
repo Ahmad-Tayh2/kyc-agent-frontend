@@ -20,11 +20,7 @@ import { transferColumns } from "@/components/transfers/TransferTableColumns";
 import { customerRecipientsColumns } from "@/components/recipients/RecipientsTableColumns";
 import { customerPaymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
 
-interface CustomerEditPageProps {
-  mode: "view" | "edit";
-}
-const CustomerEditPage = (props: CustomerEditPageProps) => {
-  const { mode } = props;
+const CustomerEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useGetCustomer(id!);
@@ -36,7 +32,7 @@ const CustomerEditPage = (props: CustomerEditPageProps) => {
   const paymentsCols = customerPaymentLinksColumns();
 
   const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
-    useUpdateCustomer(id!);
+    useUpdateCustomer(id!, () => setBasicInfoEditMode(false));
   const {
     data: transfersResponse,
     isLoading: isTransfersLoading,
@@ -68,6 +64,7 @@ const CustomerEditPage = (props: CustomerEditPageProps) => {
       setFormData({
         country_id: data.data?.country.id,
         city_id: data.data?.city.id,
+        state_id: data.data?.state?.id,
         postal_code: data.data.postal_code,
         first_name: data.data.first_name,
         last_name: data.data.last_name,
@@ -77,6 +74,7 @@ const CustomerEditPage = (props: CustomerEditPageProps) => {
         house_number: data.data.house_number,
         phone_number: data.data.phone_number,
         country_phone_code: data.data.country_phone_code,
+        extra_address_details: data.data.extra_address_details ?? "",
         status: data.data.status,
         created_at: data.data.created_at,
       });
@@ -158,7 +156,7 @@ const CustomerEditPage = (props: CustomerEditPageProps) => {
         onSave={handleSave}
         loading={isUpdateCustomerPending}
         editMode={basicInfoEditMode}
-        setEditMode={mode === "edit" ? setBasicInfoEditMode : undefined}
+        setEditMode={setBasicInfoEditMode}
       >
         <CustomerBasicDetails
           formData={formData}

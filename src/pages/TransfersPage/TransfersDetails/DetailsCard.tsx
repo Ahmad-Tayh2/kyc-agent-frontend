@@ -5,10 +5,12 @@ import type { ReactNode } from "react";
 
 interface DetailsCardProps {
   transfer: GetTransfersDataProps;
+  printAreaRef: any;
 }
 
 interface CardContentProps {
   transfer: GetTransfersDataProps;
+  printAreaRef: any;
 }
 
 interface MiniCardLayoutProps {
@@ -16,17 +18,17 @@ interface MiniCardLayoutProps {
   children?: ReactNode;
 }
 const DetailsCard = (props: DetailsCardProps) => {
-  const { transfer } = props;
+  const { transfer, printAreaRef } = props;
   return (
     <div className="bg-white rounded-md border-1 border-gray-200">
-      <CardContent transfer={transfer} />
+      <CardContent transfer={transfer} printAreaRef={printAreaRef} />
       <CardFooter />
     </div>
   );
 };
 
 const CardContent = (props: CardContentProps) => {
-  const { transfer } = props;
+  const { transfer, printAreaRef } = props;
 
   const transfersDetails = [
     { label: "Transfer Number", value: "" },
@@ -68,12 +70,12 @@ const CardContent = (props: CardContentProps) => {
           </div>
         </MiniCardLayout>
       </div>
-      <div className="w-2/3">
+      <div className="w-2/3 print-area" ref={printAreaRef}>
         <MiniCardLayout title={"Transfers Details"}>
           {transfersDetails?.map((transferItem, key) => (
             <div
               className={cn(
-                "flex justify-between p-5",
+                "flex justify-between px-5 py-3 odd:bg-primary/4",
                 key !== 0 && "border-t-1 border-gray-200"
               )}
               key={key}
@@ -90,8 +92,8 @@ const CardContent = (props: CardContentProps) => {
 const CardFooter = () => {
   return (
     <div className="flex gap-2 justify-end border-t-1 border-gray-200 p-5">
-      <ActionButton title="cancel" type="cancel" />
-      <ActionButton title="pay out transfers" type="action" />
+      <ActionButton title="cancel" type="cancel" disabled />
+      <ActionButton title="pay out transfers" type="action" disabled />
     </div>
   );
 };
