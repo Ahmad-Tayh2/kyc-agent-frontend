@@ -14,13 +14,15 @@ import { useCurrencies } from '@/hooks/data/useCurrency';
 import { useGetCustomers } from '@/hooks/data/useCustomers';
 import { usePayoutLocations } from '@/hooks/data/usePayoutLocation';
 import { useCreateRecipientPayout } from '@/hooks/data/useRecipientPayout';
-import { useCreateRecipient } from '@/hooks/data/useRecipients';
+import { useCreateRecipientRemittanceMethod } from '@/hooks/data/useRecipientRemittanceMethods';
+import { useCreateRecipient, useCreateRecipientIntermediate } from '@/hooks/data/useRecipients';
 import {
   useRemittanceMethods,
   useVerifyAccountInfo,
 } from '@/hooks/data/useRemittanceMethod';
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import RecipientBankDetails from './components/RecipientBankDetails';
 import RecipientBasicDetails from './components/RecipientBasicDetails';
 import RemittanceMethodStep from './components/RemittanceMethodStep';
@@ -94,6 +96,7 @@ const RecipientCreateForm: React.FC = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<FormStep>('basic');
   const [completedSteps, setCompletedSteps] = useState<FormStep[]>([]);
+  const [recipientId, setRecipientId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<RecipientFormData>({
     first_name: '',
@@ -136,12 +139,16 @@ const RecipientCreateForm: React.FC = () => {
 
   const { mutateAsync: createRecipient, isPending: isCreatingRecipient } =
     useCreateRecipient();
+  const { mutateAsync: createRecipientIntermediate, isPending: isCreatingRecipientIntermediate } =
+    useCreateRecipientIntermediate();
   const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } =
     useCreateBankAccount();
   const {
     mutateAsync: createRecipientPayout,
     isPending: isCreatingRecipientPayout,
   } = useCreateRecipientPayout();
+  const { mutateAsync: createRecipientRemittanceMethod, isPending: isAddingRemittanceMethod } =
+    useCreateRecipientRemittanceMethod();
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(formData.country_id || '');
@@ -162,6 +169,7 @@ const RecipientCreateForm: React.FC = () => {
     countries?.map((country: any) => ({
       value: country.id,
       label: country.name,
+      iso2: country.iso2,
     })) || [];
 
   const cityOptions =
@@ -291,13 +299,43 @@ const RecipientCreateForm: React.FC = () => {
     }));
   };
 
-  const handleAddMethodToRecipient = (id: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      remittance_methods: prev.remittance_methods.map((method) =>
-        method.id === id ? { ...method, added_to_recipient: true } : method
-      ),
-    }));
+  const handleAddMethodToRecipient = async (id: string) => {
+    if (!recipientId) {
+      console.error('Cannot add remittance method: No recipient ID available');
+      return;
+    }
+
+    const methodData = formData.remittance_methods.find(
+      (method) => method.id === id
+    );
+
+    if (!methodData) {
+      console.error('Method data not found');
+      return;
+    }
+
+    try {
+      const requestData = {
+        recipient_id: recipientId,
+        remittance_method_id: methodData.remittance_method_id,
+        account_number: methodData.account_number || undefined,
+        country_phone_code: methodData.service_data?.country_phone_code || undefined,
+        phone_number: methodData.service_data?.phone_number || undefined,
+      };
+
+      await createRecipientRemittanceMethod(requestData);
+
+      // Update UI state to show it's been added
+      setFormData((prev) => ({
+        ...prev,
+        remittance_methods: prev.remittance_methods.map((method) =>
+          method.id === id ? { ...method, added_to_recipient: true } : method
+        ),
+      }));
+    } catch (error) {
+      console.error('Failed to add remittance method to recipient:', error);
+      // You could add toast notification here for user feedback
+    }
   };
 
   const handleAddPayoutAgent = (payoutAgentId: number) => {
@@ -337,15 +375,29 @@ const RecipientCreateForm: React.FC = () => {
 
     console.log('methodData:', methodData);
     console.log('selectedMethod:', selectedMethod);
+    console.log('validator info:', {
+      validator: selectedMethod.validator,
+      validator_id: selectedMethod.validator_id,
+      validation_type: selectedMethod.validation_type
+    });
 
-    if (!selectedMethod || !selectedMethod.validation_type || !methodData) {
+    if (!selectedMethod || !selectedMethod.validator_id || !methodData) {
       console.log('Missing required data for verification');
       return;
     }
 
     try {
+      // Check for validator name, fallback to validation_type if available
+      const validationType = selectedMethod.validator?.name || selectedMethod.validation_type || '';
+
+      if (!validationType) {
+        console.error('No validation type found for method:', selectedMethod);
+        toast.error('Validation type not configured for this method');
+        return;
+      }
+
       const verificationRequest = {
-        validation_type: selectedMethod.validation_type,
+        validation_type: validationType,
         service_data: {
           serviceCode: '00003', // Default service code as specified
           phoneNumber: `+${methodData.service_data?.country_phone_code?.replace(
@@ -397,12 +449,51 @@ const RecipientCreateForm: React.FC = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!completedSteps.includes(currentStep)) {
       setCompletedSteps((prev) => [...prev, currentStep]);
     }
 
     if (currentStep === 'basic') {
+      // Create recipient when moving from basic to remittance step
+      if (!recipientId) {
+        try {
+          const recipientResponse = await createRecipientIntermediate({
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            email: formData.email,
+            date_of_birth: formData.date_of_birth,
+            gender: formData.gender,
+            country_phone_code: formData.country_phone_code,
+            phone_number: formData.phone_number,
+            address: {
+              street_name: formData.street_name,
+              house_number: formData.house_number,
+              postal_code: formData.postal_code,
+              extra_address_details: formData.bank_details.extra_address_details,
+              city_id: parseInt(formData.city_id),
+              state_id:
+                formData.bank_details.state_id &&
+                formData.bank_details.state_id !== ''
+                  ? parseInt(formData.bank_details.state_id)
+                  : undefined,
+              country_id: parseInt(formData.country_id),
+            },
+            customer_ids: formData.customer_id
+              ? [parseInt(formData.customer_id)]
+              : [],
+            rm_service_providers: [],
+          });
+
+          const newRecipientId = recipientResponse.data?.id;
+          if (newRecipientId) {
+            setRecipientId(newRecipientId);
+          }
+        } catch (error) {
+          console.error('Error creating recipient:', error);
+          return; // Don't proceed to next step if recipient creation fails
+        }
+      }
       setCurrentStep('remittance');
     } else if (currentStep === 'remittance') {
       setCurrentStep('bank');
@@ -411,50 +502,11 @@ const RecipientCreateForm: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      // Prepare remittance methods for APCongratulations GhofraneI
-      const remittanceMethodsForAPI = formData.remittance_methods
-        .filter((method) => method.added_to_recipient)
-        .map((method) => ({
-          rm_sp_id: method.remittance_method_id,
-          account_number: method.account_number || undefined,
-          country_phone_code: method.service_data?.country_phone_code || undefined,
-          phone_number: method.service_data?.phone_number || undefined,
-        }));
-
-      // Step 1: Create recipient with basic data and remittance methods
-      const recipientResponse = await createRecipient({
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        date_of_birth: formData.date_of_birth,
-        gender: formData.gender,
-        country_phone_code: formData.country_phone_code,
-        phone_number: formData.phone_number,
-        address: {
-          street_name: formData.street_name,
-          house_number: formData.house_number,
-          postal_code: formData.postal_code,
-          extra_address_details: formData.bank_details.extra_address_details,
-          city_id: parseInt(formData.city_id),
-          state_id:
-            formData.bank_details.state_id &&
-            formData.bank_details.state_id !== ''
-              ? parseInt(formData.bank_details.state_id)
-              : undefined,
-          country_id: parseInt(formData.country_id),
-        },
-        customer_ids: formData.customer_id
-          ? [parseInt(formData.customer_id)]
-          : [],
-        rm_service_providers: remittanceMethodsForAPI,
-      });
-
-      const recipientId = recipientResponse.data?.id;
       if (!recipientId) {
-        throw new Error('Recipient ID not received from server');
+        throw new Error('No recipient ID available for final submission');
       }
 
-      // Step 2: Create bank account (async) - only if bank details are provided
+      // Step 1: Create bank account - only if bank details are provided
       if (
         formData.bank_details.bank_name &&
         formData.bank_details.account_number
@@ -486,7 +538,7 @@ const RecipientCreateForm: React.FC = () => {
         await createBankAccount(bankAccountData);
       }
 
-      // Step 3: Create recipient payout relationships
+      // Step 2: Create recipient payout relationships
       for (const payoutAgent of formData.payout_agents) {
         await createRecipientPayout({
           recipient_id: recipientId,
@@ -494,6 +546,8 @@ const RecipientCreateForm: React.FC = () => {
         });
       }
 
+      // Final success and navigation
+      toast.success("Recipient created successfully!");
       navigate(ROUTES.RECIPIENTS.LIST);
     } catch (error) {
       console.error('Error creating recipient:', error);
@@ -597,6 +651,7 @@ const RecipientCreateForm: React.FC = () => {
             payoutAgents={payoutLocations?.data || []}
             formData={formData}
             countryPhoneOptions={countryPhoneOptions}
+            countryOptions={countryOptions}
             onAddRemittanceMethod={handleAddRemittanceMethod}
             onUpdateRemittanceMethod={handleUpdateRemittanceMethod}
             onVerifyAccount={handleVerifyAccount}
@@ -605,6 +660,7 @@ const RecipientCreateForm: React.FC = () => {
             onAddPayoutAgent={handleAddPayoutAgent}
             onRemovePayoutAgent={handleRemovePayoutAgent}
             isVerifying={isVerifying}
+            isAddingRemittanceMethod={isAddingRemittanceMethod}
           />
         )}
 
@@ -649,7 +705,7 @@ const RecipientCreateForm: React.FC = () => {
                       (m: any) => m.id === method.remittance_method_id
                     );
                     return (
-                      remittanceMethod?.validation_type &&
+                      remittanceMethod?.validator_id &&
                       method.verification_status !== 'verified'
                     );
                   }),
@@ -660,6 +716,9 @@ const RecipientCreateForm: React.FC = () => {
             <ActionButton
               title='save & continue'
               onClick={handleNext}
+              buttonProps={{
+                disabled: isCreatingRecipientIntermediate,
+              }}
               className='bg-teal-600 hover:bg-teal-700'
             />
           )}

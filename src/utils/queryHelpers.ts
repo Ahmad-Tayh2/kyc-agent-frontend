@@ -77,7 +77,8 @@ export function buildFilterString(filters: Record<string, any>): string {
           key === "status" ||
           key === "remittance_method_ids" ||
           key === "ids" ||
-          key === "countries"
+          key === "countries" ||
+          key === "country_codes"
         ) {
           filterString = appendArrayQueryParam(filterString, key, value);
         } else {

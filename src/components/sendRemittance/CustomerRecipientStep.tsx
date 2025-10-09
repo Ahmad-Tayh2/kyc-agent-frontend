@@ -1,26 +1,26 @@
+import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
 import SearchableSelect from '@/components/ui/searchable-select';
 import { ROUTES } from '@/constants/routes';
-import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
 import {
-  useGetSendingCurrencies,
   useGetReceivingCurrencies,
+  useGetSendingCurrencies,
 } from '@/hooks/data/useCountryAllowedCurrency';
 import {
   useAttachRecipientToCustomer,
   useGetCustomerRecipients,
   useGetCustomers,
 } from '@/hooks/data/useCustomers';
-import { useSearchRecipient } from '@/hooks/data/useRecipients';
-import { useRecipientRemittanceMethods } from '@/hooks/data/useRecipientRemittanceMethods';
 import { useRecipientPayouts } from '@/hooks/data/useRecipientPayout';
+import { useRecipientRemittanceMethods } from '@/hooks/data/useRecipientRemittanceMethods';
+import { useSearchRecipient } from '@/hooks/data/useRecipients';
 import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
 import type { CustomerType } from '@/types/customers';
 import type { CustomerRecipient } from '@/types/customers/recipients';
 import type { RecipientDataType } from '@/types/recipients';
 
-import type { CountryAllowedCurrency } from '@/types/shared/countryAllowedCurrency';
-import type { RecipientRemittanceMethod } from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
 import type { RecipientPayout } from '@/types/recipientPayout/RecipientPayout';
+import type { RecipientRemittanceMethod } from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
+import type { CountryAllowedCurrency } from '@/types/shared/countryAllowedCurrency';
 import { ChevronDownIcon, ChevronUpIcon, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -174,7 +174,7 @@ const CustomerRecipientStep = (props: any) => {
       recipientRemittanceMethodsData.forEach(
         (rm: RecipientRemittanceMethod) => {
           options.push({
-            label: `RM: ${
+            label: `Wallet: ${
               rm.remittance_method?.name || `Method ${rm.remittance_method_id}`
             }`,
             value: `rm_${rm.id}`,
@@ -190,7 +190,7 @@ const CustomerRecipientStep = (props: any) => {
     ) {
       recipientPayoutsResponse.data.forEach((payout: RecipientPayout) => {
         options.push({
-          label: `Payout: ${
+          label: `Cash Pickup: ${
             payout.payout_agent?.business_name ||
             `Agent ${payout.payout_agent_id}`
           }`,

@@ -6,8 +6,10 @@ import { Label } from '@/components/ui/label';
 import SearchableSelect from '@/components/ui/searchable-select';
 import { useCountries } from '@/hooks/data/useAddress';
 import { usePayoutLocations } from '@/hooks/data/usePayoutLocation';
+import { usePayoutLocationFilters } from '@/hooks/data/usePayoutLocationFilters';
 import { useCreateRecipientPayout } from '@/hooks/data/useRecipientPayout';
 import { useCreateRecipientRemittanceMethod } from '@/hooks/data/useRecipientRemittanceMethods';
+import { useGetRecipient } from '@/hooks/data/useRecipients';
 import {
   useRemittanceMethods,
   useVerifyAccountInfo,
@@ -55,13 +57,19 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
 
   // API Hooks
   const { data: remittanceMethodsData = [] } = useRemittanceMethods();
-  const { data: payoutLocationsData = [] } = usePayoutLocations();
   const { data: countries } = useCountries();
+  const { data: recipientData } = useGetRecipient(recipientId);
+
+  // Payout location filtering
+  const { filtersString, updateCountryFilter, filters } =
+    usePayoutLocationFilters();
+  const { data: payoutLocationsData = [] } = usePayoutLocations(filtersString);
+
   const createRmMutation = useCreateRecipientRemittanceMethod();
   const createPayoutMutation = useCreateRecipientPayout();
   const verifyAccountMutation = useVerifyAccountInfo();
 
-  // Transform countries for PhoneInput
+  // Transform countries for PhoneInput and filtering
   const countryPhoneOptions =
     countries?.map((country: Country) => ({
       label: country.name,
@@ -70,12 +78,38 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
       countryCode: country.iso2,
     })) || [];
 
+  const countryOptions =
+    countries?.map((country: Country) => ({
+      value: country.iso2,
+      label: country.name,
+    })) || [];
+
+  // Set default country filter to recipient's country
+  React.useEffect(() => {
+    if (
+      recipientData?.data?.address?.country?.id &&
+      (countries?.length ?? 0) > 0
+    ) {
+      const recipientCountry = countries?.find(
+        (country: Country) =>
+          country.id === recipientData.data.address.country.id
+      );
+      if (recipientCountry?.iso2) {
+        updateCountryFilter([recipientCountry.iso2]);
+      }
+    }
+  }, [
+    recipientData?.data?.address?.country?.id,
+    countries,
+    updateCountryFilter,
+  ]);
+
   // Get selected method details
   const selectedMethod = remittanceMethodsData?.data?.find(
     (rm: RemittanceMethod) => rm.id === selectedRmId
   );
 
-  const hasValidator = selectedMethod?.validation_type;
+  const hasValidator = selectedMethod?.validator?.name;
 
   const rmOptions =
     remittanceMethodsData?.data?.map((rm: RemittanceMethod) => ({
@@ -85,7 +119,9 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
 
   const payoutOptions =
     payoutLocationsData?.data?.map((payout: PayoutLocation) => ({
-      label: `${payout.business_name} - ${payout.address?.location || ''}`,
+      label: `${payout.business_name} - ${payout.address?.location || ''}, ${
+        payout.address?.country || ''
+      }`,
       value: payout.id.toString(),
     })) || [];
 
@@ -104,7 +140,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
     setIsVerifying(true);
     try {
       const verificationRequest = {
-        validation_type: selectedMethod.validation_type,
+        validation_type: selectedMethod.validator.name,
         service_data: {
           serviceCode: '00003',
           phoneNumber: `+${countryPhoneCode}${phoneNumber}`,
@@ -237,7 +273,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            Remittance Method
+            Payment Method
           </button>
           <button
             type='button'
@@ -258,7 +294,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
             <>
               {/* Select Remittance Method */}
               <div className='space-y-2 mb-6'>
-                <Label>Select Remittance Method *</Label>
+                <Label>Select Payment Method *</Label>
                 <SearchableSelect
                   options={rmOptions}
                   value={selectedRmId?.toString() || ''}
@@ -269,7 +305,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                     setAccountNamePrefix('');
                     setAccountIdPrefix('');
                   }}
-                  placeholder='Choose a remittance method'
+                  placeholder='Choose a payment method'
                 />
               </div>
 
@@ -386,6 +422,21 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
             </>
           ) : (
             <>
+              {/* Country Filter */}
+              <div className='space-y-2 mb-4'>
+                <Label>Filter by Country</Label>
+                <SearchableSelect
+                  value={filters.country_codes?.[0] || ''}
+                  onChange={(value: string | number) => {
+                    const countryCode = value.toString();
+                    updateCountryFilter(countryCode ? [countryCode] : []);
+                  }}
+                  options={countryOptions}
+                  placeholder='Select a country to filter payout locations'
+                />
+              </div>
+
+              {/* Payout Location Selection */}
               <div className='space-y-2 mb-6'>
                 <Label>Select Payout Location *</Label>
                 <SearchableSelect
@@ -394,8 +445,20 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                   onChange={(value) =>
                     setSelectedPayoutId(parseInt(value.toString()))
                   }
-                  placeholder='Choose a payout location'
+                  placeholder={
+                    payoutLocationsData?.data?.length === 0
+                      ? 'No payout locations available for selected country'
+                      : 'Choose a payout location'
+                  }
                 />
+                {payoutLocationsData?.data?.length === 0 &&
+                  Array.isArray(filters.country_codes) &&
+                  filters.country_codes.length > 0 && (
+                    <p className='text-sm text-gray-500'>
+                      No payout locations found for the selected country. Try
+                      selecting a different country.
+                    </p>
+                  )}
               </div>
             </>
           )}

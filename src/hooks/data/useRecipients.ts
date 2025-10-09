@@ -65,3 +65,13 @@ export function useCreateRecipient() {
     },
   });
 }
+
+export function useCreateRecipientIntermediate() {
+  return useMutation({
+    mutationFn: (data: RecipientCreateData) =>
+      recipientsService.createRecipient(data),
+    onError: (error: AxiosError<ErrorResponseData>) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+}

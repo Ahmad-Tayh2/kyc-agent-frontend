@@ -9,6 +9,7 @@ import { useDebounce } from '../utils/useDebounce';
 
 export interface PayoutLocationFilterState {
   search?: string;
+  country_codes?: string[];
   //pagination
   page?: number;
   per_page?: number;
@@ -17,6 +18,7 @@ export interface PayoutLocationFilterState {
 export const usePayoutLocationFilters = () => {
   const [filters, setFilters] = useState<PayoutLocationFilterState>({
     search: '',
+    country_codes: [],
     //pagination
     page: 1,
     per_page: 15,
@@ -30,8 +32,12 @@ export const usePayoutLocationFilters = () => {
     setFilters((prev) => ({ ...prev, search }));
   }, []);
 
+  const updateCountryFilter = useCallback((country_codes: string[]) => {
+    setFilters((prev) => ({ ...prev, country_codes, page: 1 }));
+  }, []);
+
   const resetFilters = useCallback(() => {
-    createFilterReset(filters, setFilters, setFilterString, ['search'])();
+    createFilterReset(filters, setFilters, setFilterString, ['search', 'country_codes'])();
   }, [filters]);
 
   const applyFilters = useCallback(() => {
@@ -46,7 +52,7 @@ export const usePayoutLocationFilters = () => {
   }, [applyFilters]);
 
   const hasActiveFilters = useMemo(
-    () => createHasActiveFilters(filters, ['search']),
+    () => createHasActiveFilters(filters, ['search', 'country_codes']),
     [filters]
   );
 
@@ -66,6 +72,7 @@ export const usePayoutLocationFilters = () => {
     filters,
     filtersString,
     updateSearchTerm,
+    updateCountryFilter,
     resetFilters,
     applyFilters,
     hasActiveFilters,

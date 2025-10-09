@@ -24,12 +24,14 @@ const CustomerEditPage: React.FC = () => {
     null
   );
   const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
+  const [remittanceMethodsEditMode, setRemittanceMethodsEditMode] = React.useState(false);
   const [bankDetailsEditMode, setBankDetailsEditMode] = React.useState(false);
 
   // check in one of the other sections in already in the edit mode
-  const checkOtherSectionEditMode = (current: "bank" | "basic") => {
-    if (current === "bank") return basicInfoEditMode;
-    else if (current === "basic") return bankDetailsEditMode;
+  const checkOtherSectionEditMode = (current: "bank" | "basic" | "remittance") => {
+    if (current === "bank") return basicInfoEditMode || remittanceMethodsEditMode;
+    else if (current === "basic") return bankDetailsEditMode || remittanceMethodsEditMode;
+    else if (current === "remittance") return basicInfoEditMode || bankDetailsEditMode;
     else return true;
   };
   const { mutateAsync: updateRecipient } = useUpdateRecipient(id!);
@@ -89,6 +91,7 @@ const CustomerEditPage: React.FC = () => {
       };
       await updateRecipient(payloadToUpdate);
       setBasicInfoEditMode(false);
+      setRemittanceMethodsEditMode(false);
       setBankDetailsEditMode(false);
     } catch (e) {
       console.log(" error = ", error?.message);
@@ -140,16 +143,19 @@ const CustomerEditPage: React.FC = () => {
       </EditSectionCard>
       <EditSectionCard
         sectionTitle="Remittance methods"
-        onSave={handleSave}
+        onSave={() => {
+          // For remittance methods, we don't need to save basic recipient data
+          // The component handles its own save operations
+          setRemittanceMethodsEditMode(false);
+        }}
         loading={false}
-        editMode={basicInfoEditMode}
-        setEditMode={setBasicInfoEditMode}
+        editMode={remittanceMethodsEditMode}
+        setEditMode={setRemittanceMethodsEditMode}
+        checkOtherSectionEditMode={checkOtherSectionEditMode("remittance")}
       >
         <RecipientRemittanceDetails
-        // data={data}
-        // handleInputChange={handleInputChange}
-        // handleDateChange={handleDateChange}
-        // editMode={basicInfoEditMode}
+          data={recipientData}
+          editMode={remittanceMethodsEditMode}
         />
       </EditSectionCard>
       <EditSectionCard

@@ -2,7 +2,11 @@ export type RemittanceMethod = {
   id: number;
   name: string;
   description: string;
-  validation_type?: string;
+  validator_id?: number;
+  validator?: {
+    id: number;
+    name: string;
+  };
 };
 
 // Account verification types
