@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ChevronDownIcon, ChevronUpIcon, Minus, Tally1, X } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, Minus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import DatePicker from "./DatePicker";
