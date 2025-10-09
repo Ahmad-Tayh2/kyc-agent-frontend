@@ -9,6 +9,8 @@ import PhoneInput from '@/components/shared/PhoneInput';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import SearchableSelect from '@/components/ui/searchable-select';
+import { usePayoutLocations } from '@/hooks/data/usePayoutLocation';
+import { usePayoutLocationFilters } from '@/hooks/data/usePayoutLocationFilters';
 import type { RemittanceMethod } from '@/types/remittanceMethod/RemittanceMethod';
 import React from 'react';
 
@@ -48,9 +50,11 @@ interface RemittanceMethodStepProps {
       };
       account_number?: string;
       added_to_recipient?: boolean;
+      database_id?: number; // For edit mode - the actual database ID
     }>;
     payout_agents: SelectedPayoutAgent[];
     country_phone_code: string;
+    country_id?: string;
   };
   countryPhoneOptions: Array<{
     value: string;
@@ -58,14 +62,35 @@ interface RemittanceMethodStepProps {
     code: string;
     countryCode: string;
   }>;
+  countryOptions: Array<{
+    value: string;
+    label: string;
+    iso2?: string;
+  }>;
   onAddRemittanceMethod: (methodId: number) => void;
   onUpdateRemittanceMethod: (id: string, field: string, value: unknown) => void;
   onVerifyAccount: (id: string) => void;
   onRemoveRemittanceMethod: (id: string) => void;
   onAddMethodToRecipient: (id: string) => void;
+  onEditRemittanceMethod?: (databaseId: number, data: Partial<{
+    remittance_method_id: number;
+    verification_status: 'pending' | 'verified' | 'failed';
+    verification_data?: {
+      account_name_prefix: string;
+      account_id_prefix: string;
+    };
+    service_data?: {
+      phone_number: string;
+      country_phone_code: string;
+    };
+    account_number?: string;
+  }>) => void;
+  onDeleteRemittanceMethod?: (databaseId: number) => void;
   onAddPayoutAgent: (payoutAgentId: number) => void;
   onRemovePayoutAgent: (id: string) => void;
   isVerifying: boolean;
+  isAddingRemittanceMethod?: boolean;
+  isEditMode?: boolean;
 }
 
 const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
@@ -73,14 +98,19 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
   payoutAgents,
   formData,
   countryPhoneOptions,
+  countryOptions,
   onAddRemittanceMethod,
   onUpdateRemittanceMethod,
   onVerifyAccount,
   onRemoveRemittanceMethod,
   onAddMethodToRecipient,
+  onEditRemittanceMethod,
+  onDeleteRemittanceMethod,
   onAddPayoutAgent,
   onRemovePayoutAgent,
   isVerifying,
+  isAddingRemittanceMethod = false,
+  isEditMode = false,
 }) => {
   const [selectedMethodId, setSelectedMethodId] = React.useState<number | null>(
     null
@@ -89,19 +119,40 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
     number | null
   >(null);
 
+  // Payout location filtering
+  const { filtersString, updateCountryFilter, filters } =
+    usePayoutLocationFilters();
+  const { data: payoutLocationsResponse, isLoading: payoutLocationsLoading } =
+    usePayoutLocations(filtersString);
+
+  // Set default country filter to recipient's country (using ISO2 code)
+  React.useEffect(() => {
+    if (formData.country_id && countryOptions.length > 0) {
+      const recipientCountry = countryOptions.find(
+        (country) => country.value === formData.country_id
+      );
+      if (recipientCountry?.iso2) {
+        updateCountryFilter([recipientCountry.iso2]);
+      }
+    }
+  }, [formData.country_id, countryOptions, updateCountryFilter]);
+
   const methodOptions = remittanceMethods.map((method) => ({
     value: method.id.toString(),
     label: method.name,
   }));
 
-  const availablePayoutAgents = payoutAgents.filter(
-    (agent) =>
+  // Use filtered payout locations instead of props
+  const filteredPayoutAgents = payoutLocationsResponse?.data || [];
+
+  const availablePayoutAgents = filteredPayoutAgents.filter(
+    (agent: PayoutAgent) =>
       !formData.payout_agents.some(
         (selected) => selected.payout_agent_id === agent.id
       )
   );
 
-  const payoutAgentOptions = availablePayoutAgents.map((agent) => ({
+  const payoutAgentOptions = availablePayoutAgents.map((agent: PayoutAgent) => ({
     value: agent.id.toString(),
     label: `${agent.business_name} - ${agent.address.location}, ${agent.address.country}`,
   }));
@@ -134,13 +185,14 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
     };
     account_number?: string;
     added_to_recipient?: boolean;
+    database_id?: number;
   }) => {
     const method = remittanceMethods.find(
       (m) => m.id === methodData.remittance_method_id
     );
     if (!method) return null;
 
-    const hasValidationType = method.validation_type;
+    const hasValidationType = method.validator_id;
     const isVerified = methodData.verification_status === 'verified';
     const isFailed = methodData.verification_status === 'failed';
     const isAddedToRecipient = methodData.added_to_recipient;
@@ -153,7 +205,7 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
       methodData.verification_data?.account_id_prefix;
 
     return (
-      <div key={methodData.id} className='border rounded-lg p-3 space-y-3'>
+      <div key={methodData.id} className='bg-gray-50 rounded-lg p-3 space-y-3'>
         <div className='flex justify-between items-start'>
           <div className='flex items-center space-x-2'>
             <div className='w-4 h-4 border border-gray-300 rounded-full'></div>
@@ -169,14 +221,34 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
             </div>
           </div>
           <div className='flex space-x-2'>
-            <button className='text-primary p-1 hover:bg-gray-100 rounded'>
-              <EditIcon className='w-3 h-3' />
-            </button>
+            {isEditMode && methodData.database_id && onEditRemittanceMethod && (
+              <button
+                onClick={() => {
+                  const editData = {
+                    remittance_method_id: methodData.remittance_method_id,
+                    verification_status: methodData.verification_status,
+                    verification_data: methodData.verification_data,
+                    service_data: methodData.service_data,
+                    account_number: methodData.account_number,
+                  };
+                  onEditRemittanceMethod(methodData.database_id!, editData);
+                }}
+                className='text-primary p-1 hover:bg-gray-100 rounded'
+                title='Edit remittance method'
+              >
+                <EditIcon className='w-3 h-3' />
+              </button>
+            )}
             <button
-              onClick={() =>
-                methodData.id && onRemoveRemittanceMethod(methodData.id)
-              }
+              onClick={() => {
+                if (isEditMode && methodData.database_id && onDeleteRemittanceMethod) {
+                  onDeleteRemittanceMethod(methodData.database_id);
+                } else if (methodData.id) {
+                  onRemoveRemittanceMethod(methodData.id);
+                }
+              }}
               className='text-red-500 p-1 hover:bg-gray-100 rounded'
+              title={isEditMode ? 'Delete remittance method' : 'Remove remittance method'}
             >
               <DeleteIcon className='w-3 h-3' />
             </button>
@@ -278,11 +350,16 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
                   ✅ <strong>Account Verified Successfully!</strong>
                 </p>
                 <ActionButton
-                  title='Add Method for Recipient'
+                  title={
+                    isAddingRemittanceMethod
+                      ? 'Adding...'
+                      : 'Add Method for Recipient'
+                  }
                   onClick={() =>
                     methodData.id && onAddMethodToRecipient(methodData.id)
                   }
                   buttonProps={{
+                    disabled: isAddingRemittanceMethod,
                     className: 'h-7 px-3 text-xs',
                   }}
                 />
@@ -331,11 +408,16 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
               />
             </div>
             <ActionButton
-              title='Add Method for Recipient'
+              title={
+                isAddingRemittanceMethod
+                  ? 'Adding...'
+                  : 'Add Method for Recipient'
+              }
               onClick={() =>
                 methodData.id && onAddMethodToRecipient(methodData.id)
               }
               buttonProps={{
+                disabled: isAddingRemittanceMethod,
                 className: 'h-7 px-3 text-xs',
               }}
             />
@@ -348,20 +430,20 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
   return (
     <div className='p-6 space-y-6'>
       {/* Cash Pick up address section */}
-      <div>
+      <div className='border border-dashed border-primary rounded-lg p-4'>
         <h3 className='text-lg font-medium mb-4'>Cash Pick up address</h3>
 
         {/* Selected Payout Agents */}
         <div className='space-y-4 mb-6'>
           {formData.payout_agents.map((selectedAgent) => {
-            const agent = payoutAgents.find(
+            const agent = [...payoutAgents, ...filteredPayoutAgents].find(
               (a) => a.id === selectedAgent.payout_agent_id
             );
 
             return (
               <div
                 key={selectedAgent.id}
-                className='flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50'
+                className='flex items-center justify-between p-4 bg-gray-50 rounded-lg'
               >
                 <div className='flex items-center space-x-3'>
                   <input
@@ -397,43 +479,63 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
         </div>
 
         {/* Add New Address */}
-        {availablePayoutAgents.length > 0 && (
-          <div className='border border-dashed border-primary rounded-lg p-4 mb-6'>
-            <div className='flex items-center space-x-2 text-primary'>
-              <PlusIcon className='w-5 h-5' />
-              <span className='font-medium'>Add New Address</span>
+
+        <div className=' '>
+          <div className='flex items-center space-x-2 text-primary'>
+            <PlusIcon className='w-5 h-5' />
+            <span className='font-medium'>Add New Address</span>
+          </div>
+
+          <div className='mt-4 space-y-4'>
+            <div className='space-y-2'>
+              <Label>Filter by Country</Label>
+              <SearchableSelect
+                value={filters.country_codes?.[0] || ''}
+                onChange={(value: string | number) => {
+                  const countryCode = value.toString();
+                  updateCountryFilter(countryCode ? [countryCode] : []);
+                }}
+                options={countryOptions.map((country) => ({
+                  value: country.iso2 || country.value, // Use ISO2 code as value
+                  label: country.label, // Display country name
+                }))}
+                placeholder='Select a country to filter'
+              />
             </div>
 
-            <div className='mt-4 space-y-4'>
-              <div className='space-y-2'>
-                <Label>Select Payout Location *</Label>
-                <SearchableSelect
-                  value={selectedPayoutAgentId?.toString() || ''}
-                  onChange={(value: string | number) =>
-                    setSelectedPayoutAgentId(parseInt(value.toString()))
-                  }
-                  options={payoutAgentOptions}
-                  placeholder='Select a payout location'
-                />
-              </div>
+            <div className='space-y-2'>
+              <Label>Select Payout Location *</Label>
+              <SearchableSelect
+                value={selectedPayoutAgentId?.toString() || ''}
+                onChange={(value: string | number) =>
+                  setSelectedPayoutAgentId(parseInt(value.toString()))
+                }
+                options={payoutAgentOptions}
+                placeholder={
+                  payoutLocationsLoading
+                    ? 'Loading...'
+                    : 'Select a payout location'
+                }
+                disabled={payoutLocationsLoading}
+              />
+            </div>
 
-              <div className='flex justify-start'>
-                <ActionButton
-                  title='Add Location'
-                  onClick={handleAddPayoutAgent}
-                  buttonProps={{
-                    disabled: !selectedPayoutAgentId,
-                  }}
-                />
-              </div>
+            <div className='flex justify-start'>
+              <ActionButton
+                title='Add Location'
+                onClick={handleAddPayoutAgent}
+                buttonProps={{
+                  disabled: !selectedPayoutAgentId,
+                }}
+              />
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Wallet account section */}
-      <div>
-        <h3 className='text-lg font-medium mb-4'>wallet account</h3>
+      <div className='border border-dashed border-primary rounded-lg p-4'>
+        <h3 className='text-lg font-medium mb-4'>Wallet Account</h3>
 
         {/* Existing Methods */}
         <div className='space-y-4 mb-6'>
@@ -441,12 +543,7 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
         </div>
 
         {/* Add New Wallet */}
-        <div className='border border-dashed border-primary rounded-lg p-4'>
-          <div className='flex items-center space-x-2 text-primary'>
-            <span className='text-lg'>+</span>
-            <span className='font-medium'>Add New Wallet</span>
-          </div>
-
+        <div className=''>
           <div className='mt-4 space-y-4'>
             <div className='space-y-2'>
               <Label>Select Remittance Method *</Label>
@@ -456,7 +553,7 @@ const RemittanceMethodStep: React.FC<RemittanceMethodStepProps> = ({
                   setSelectedMethodId(parseInt(value.toString()))
                 }
                 options={methodOptions}
-                placeholder='Select a remittance method'
+                placeholder='Select a Payment method'
               />
             </div>
 
