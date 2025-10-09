@@ -15,7 +15,10 @@ import { useGetCustomers } from '@/hooks/data/useCustomers';
 import { usePayoutLocations } from '@/hooks/data/usePayoutLocation';
 import { useCreateRecipientPayout } from '@/hooks/data/useRecipientPayout';
 import { useCreateRecipientRemittanceMethod } from '@/hooks/data/useRecipientRemittanceMethods';
-import { useCreateRecipient, useCreateRecipientIntermediate } from '@/hooks/data/useRecipients';
+import {
+  useCreateRecipient,
+  useCreateRecipientIntermediate,
+} from '@/hooks/data/useRecipients';
 import {
   useRemittanceMethods,
   useVerifyAccountInfo,
@@ -137,18 +140,21 @@ const RecipientCreateForm: React.FC = () => {
 
   console.log('formData:', formData.payout_agents);
 
-  const { mutateAsync: createRecipient, isPending: isCreatingRecipient } =
-    useCreateRecipient();
-  const { mutateAsync: createRecipientIntermediate, isPending: isCreatingRecipientIntermediate } =
-    useCreateRecipientIntermediate();
+  const { isPending: isCreatingRecipient } = useCreateRecipient();
+  const {
+    mutateAsync: createRecipientIntermediate,
+    isPending: isCreatingRecipientIntermediate,
+  } = useCreateRecipientIntermediate();
   const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } =
     useCreateBankAccount();
   const {
     mutateAsync: createRecipientPayout,
     isPending: isCreatingRecipientPayout,
   } = useCreateRecipientPayout();
-  const { mutateAsync: createRecipientRemittanceMethod, isPending: isAddingRemittanceMethod } =
-    useCreateRecipientRemittanceMethod();
+  const {
+    mutateAsync: createRecipientRemittanceMethod,
+    isPending: isAddingRemittanceMethod,
+  } = useCreateRecipientRemittanceMethod();
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(formData.country_id || '');
@@ -274,7 +280,9 @@ const RecipientCreateForm: React.FC = () => {
             return {
               ...method,
               [parentField]: {
-                ...(parentValue && typeof parentValue === 'object' ? parentValue as Record<string, unknown> : {}),
+                ...(parentValue && typeof parentValue === 'object'
+                  ? (parentValue as Record<string, unknown>)
+                  : {}),
                 [childField]: value,
               },
             };
@@ -319,7 +327,8 @@ const RecipientCreateForm: React.FC = () => {
         recipient_id: recipientId,
         remittance_method_id: methodData.remittance_method_id,
         account_number: methodData.account_number || undefined,
-        country_phone_code: methodData.service_data?.country_phone_code || undefined,
+        country_phone_code:
+          methodData.service_data?.country_phone_code || undefined,
         phone_number: methodData.service_data?.phone_number || undefined,
       };
 
@@ -353,8 +362,6 @@ const RecipientCreateForm: React.FC = () => {
     }));
   };
 
-
-
   const handleRemovePayoutAgent = (id: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -363,23 +370,12 @@ const RecipientCreateForm: React.FC = () => {
   };
 
   const handleVerifyAccount = async (id: string) => {
-    console.log('handleVerifyAccount called for id:', id);
-    console.log('remittanceMethods:', remittanceMethods);
-
     const methodData = formData.remittance_methods.find(
       (method) => method.id === id
     );
     const selectedMethod = remittanceMethods?.data?.find(
       (method: any) => method.id === methodData?.remittance_method_id
     );
-
-    console.log('methodData:', methodData);
-    console.log('selectedMethod:', selectedMethod);
-    console.log('validator info:', {
-      validator: selectedMethod.validator,
-      validator_id: selectedMethod.validator_id,
-      validation_type: selectedMethod.validation_type
-    });
 
     if (!selectedMethod || !selectedMethod.validator_id || !methodData) {
       console.log('Missing required data for verification');
@@ -388,7 +384,8 @@ const RecipientCreateForm: React.FC = () => {
 
     try {
       // Check for validator name, fallback to validation_type if available
-      const validationType = selectedMethod.validator?.name || selectedMethod.validation_type || '';
+      const validationType =
+        selectedMethod.validator?.name || selectedMethod.validation_type || '';
 
       if (!validationType) {
         console.error('No validation type found for method:', selectedMethod);
@@ -413,10 +410,7 @@ const RecipientCreateForm: React.FC = () => {
         },
       };
 
-      console.log('verificationRequest:', verificationRequest);
-
       const response = await verifyAccountInfo(verificationRequest);
-      console.log('verification response:', response);
 
       // Check the actual API response structure
       if (response.data?.status === 'success') {
@@ -470,7 +464,8 @@ const RecipientCreateForm: React.FC = () => {
               street_name: formData.street_name,
               house_number: formData.house_number,
               postal_code: formData.postal_code,
-              extra_address_details: formData.bank_details.extra_address_details,
+              extra_address_details:
+                formData.bank_details.extra_address_details,
               city_id: parseInt(formData.city_id),
               state_id:
                 formData.bank_details.state_id &&
@@ -547,7 +542,7 @@ const RecipientCreateForm: React.FC = () => {
       }
 
       // Final success and navigation
-      toast.success("Recipient created successfully!");
+      toast.success('Recipient created successfully!');
       navigate(ROUTES.RECIPIENTS.LIST);
     } catch (error) {
       console.error('Error creating recipient:', error);
