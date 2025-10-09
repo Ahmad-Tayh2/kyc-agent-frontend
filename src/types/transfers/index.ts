@@ -34,7 +34,13 @@ export interface Transfer {
   updated_at: string;
 }
 
-export type TransferStatus = "draft" | "pending";
+export type TransferStatus =
+  | "draft"
+  | "in-progress"
+  | "completed"
+  | "cancelled"
+  | "blocked"
+  | "refunded";
 
 export type PaymentMethod =
   | "bank_transfer"

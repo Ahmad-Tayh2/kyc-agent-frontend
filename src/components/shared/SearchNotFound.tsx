@@ -3,7 +3,7 @@ import ActionButton from "./ActionButton";
 import type { ReactNode } from "react";
 interface SearchNotFound {
   found?: boolean;
-  description: string;
+  description?: string;
   actionButton?: {
     title?: string;
     icon?: ReactNode;

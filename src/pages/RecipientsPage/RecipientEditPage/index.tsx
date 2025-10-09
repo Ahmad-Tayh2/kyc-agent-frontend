@@ -12,7 +12,7 @@ import type {
   RecipientDataType,
   RecipientUpdatedDataType,
 } from "@/types/recipients";
-import RecipientBasicDetails from "../RecipientBasicDetails";
+import RecipientBasicDetails from "./RecipientBasicDetails";
 import RecipientRemittanceDetails from "./RecipientRemittanceDetails";
 import { format } from "date-fns";
 // import RecipientBankDetails from "./RecipientBankDetails";

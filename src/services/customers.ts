@@ -86,11 +86,10 @@ export const customersService = {
     const formData = new FormData();
     formData.append("document_type", data.documentType);
     formData.append("document_number", data.documentNumber);
-    formData.append("document_issue_date", data.documentIssueDate);
-    formData.append("document_expiry_date", data.documentExpiryDate);
-    if (data.frontDocument)
-      formData.append("front_document", data.frontDocument);
-    if (data.backDocument) formData.append("back_document", data.backDocument);
+    formData.append("issuing_date", data.documentIssueDate);
+    formData.append("expiry_date", data.documentExpiryDate);
+    if (data.frontDocument) formData.append("front_image", data.frontDocument);
+    if (data.backDocument) formData.append("back_image", data.backDocument);
 
     const response = await apiClient.post(
       API_URLS.customers.uploadIdentityDocuments(id),
@@ -109,18 +108,8 @@ export const customersService = {
     data: CustomerIncomeFileData
   ) => {
     const formData = new FormData();
-    data.bankStatements.forEach((file, index) => {
-      formData.append(`bank_statements[${index}]`, file);
-    });
-    data.extraDocuments.forEach((file, index) => {
-      formData.append(`extra_documents[${index}]`, file);
-    });
-    if (data.extraDocumentsDescription) {
-      formData.append(
-        "extra_documents_description",
-        data.extraDocumentsDescription
-      );
-    }
+    formData.append("document", data.document[0]);
+    formData.append("document_type", data.document_type);
 
     const response = await apiClient.post(
       API_URLS.customers.uploadIncomeDocuments(id),

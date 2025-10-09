@@ -3,6 +3,8 @@ import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { CustomerType } from "@/types/customers";
 import StatusLabel from "../shared/StatusLabel";
+import { Link } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 export const paymentLinksColumns = (): ColumnDef<CustomerType>[] => {
   return useMemo(
@@ -10,6 +12,19 @@ export const paymentLinksColumns = (): ColumnDef<CustomerType>[] => {
       {
         accessorKey: "customer",
         header: "Customer",
+        cell: ({ row }) => {
+          const customer: any = row.getValue("customer");
+          return (
+            <div>
+              <Link
+                to={ROUTES.CUSTOMERS.DETAILS(customer.id)}
+                className="hover:underline"
+              >
+                {customer.first_name} {customer.last_name}
+              </Link>
+            </div>
+          );
+        },
       },
       {
         accessorKey: "created_at",

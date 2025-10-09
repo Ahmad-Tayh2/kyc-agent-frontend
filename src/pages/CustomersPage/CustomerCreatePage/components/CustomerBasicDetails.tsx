@@ -112,7 +112,7 @@ const CustomerBasicDetails = (props: any) => {
           <Input
             id="street_name"
             name="street_name"
-            placeholder="Enter street name and house number"
+            placeholder="Enter street name"
             value={formData.street_name || ""}
             onChange={(e) => handleInputChange("street_name", e.target.value)}
             disabled={!editMode}
@@ -126,7 +126,7 @@ const CustomerBasicDetails = (props: any) => {
           <Input
             id="house_number"
             name="house_number"
-            placeholder="Enter street name and house number"
+            placeholder="Enter house number"
             value={formData.house_number || ""}
             onChange={(e) => handleInputChange("house_number", e.target.value)}
             disabled={!editMode}
@@ -143,7 +143,13 @@ const CustomerBasicDetails = (props: any) => {
           required
           disabled={!editMode}
         />
-
+        <SearchableSelect
+          label={"State"}
+          options={stateOptions}
+          value={formData.state_id}
+          onChange={(value) => handleInputChange("state_id", value)}
+          disabled={!formData.country_id || !editMode}
+        />
         <SearchableSelect
           label={"City"}
           options={cityOptions}
@@ -152,13 +158,7 @@ const CustomerBasicDetails = (props: any) => {
           disabled={!formData.country_id || !editMode}
           required
         />
-        <SearchableSelect
-          label={"State"}
-          options={stateOptions}
-          value={formData.state_id}
-          onChange={(value) => handleInputChange("state_id", value)}
-          disabled={!formData.country_id || !editMode}
-        />
+
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="postal_code">
             Postal Code
@@ -185,30 +185,6 @@ const CustomerBasicDetails = (props: any) => {
             }
             disabled={!editMode}
           />
-          {/* <div className="flex items-center gap-1">
-            {genderOptions?.map((genderOption: any) => (
-              <button
-                key={genderOption.value}
-                type="button"
-                className={cn(
-                  "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-                  "border-gray-200 bg-white",
-                  !editMode && "opacity-60 cursor-not-allowed"
-                )}
-                onClick={() => {
-                  if (editMode) handleInputChange("gender", genderOption.value);
-                }}
-                disabled={!editMode}
-              >
-                {formData.gender === genderOption.value ? (
-                  <CheckedIcon />
-                ) : (
-                  <UncheckedIcon />
-                )}
-                {genderOption.label}
-              </button>
-            ))}
-          </div> */}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="phone_number">

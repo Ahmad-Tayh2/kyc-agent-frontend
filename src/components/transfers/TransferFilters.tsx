@@ -9,7 +9,14 @@ import type { TransferStatus } from "@/types/transfers";
 import { useCurrencies } from "@/hooks/data/useCurrency";
 import type { CustomerType } from "@/types/customers";
 
-const TRANSFER_STATUSES: TransferStatus[] = ["pending", "draft"];
+const TRANSFER_STATUSES: TransferStatus[] = [
+  "draft",
+  "in-progress",
+  "completed",
+  "cancelled",
+  "blocked",
+  "refunded",
+];
 
 const statusOptions = TRANSFER_STATUSES.map((status) => ({
   value: status,

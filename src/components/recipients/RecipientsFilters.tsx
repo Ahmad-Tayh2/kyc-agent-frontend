@@ -7,16 +7,15 @@ import { useCountries } from "@/hooks/data/useAddress";
 import type { RecipientsFilterState } from "@/hooks/data/useRecipientsFilters";
 import type { CustomerType } from "@/types/customers";
 import { useGetCustomersWithSearch } from "@/hooks/data/useCustomers";
-
-const remitanceMethodOptions = [{ label: "method 1 ", value: "1" }];
+import { useGetRemittanceMethods } from "@/hooks/data/useRemittanceMethods";
 
 interface RecipientsFiltersProps {
   filters: RecipientsFilterState;
 
   onUpdateSearchTerm: (name: string) => void;
   onUpdateCustomersIds: (status: string[]) => void;
-  onUpdateCountryIds: (countryIds: number[]) => void;
-  onUpdateRemittanceMethodIds: (status: string[]) => void;
+  onUpdateCountryIds: (countries: number[]) => void;
+  onUpdateRemittanceMethodIds: (remittance_methods_ids: string[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
@@ -41,14 +40,27 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
       name: country.name,
     }));
   }, [countriesData]);
-  const { data: CustomersResponse } = useGetCustomersWithSearch(searchCustomer);
+  const { data: customersResponse } = useGetCustomersWithSearch(searchCustomer);
   const customersData = useMemo(() => {
-    return CustomersResponse?.data || [];
-  }, [CustomersResponse?.data]);
+    return customersResponse?.data || [];
+  }, [customersResponse?.data]);
+
+  const { data: remittanceMethodsResponse } = useGetRemittanceMethods();
+  const remittanceMethodsData = useMemo(() => {
+    return remittanceMethodsResponse?.data || [];
+  }, [remittanceMethodsResponse?.data]);
+
   const customersOptions = [
     ...customersData?.map((customer: CustomerType) => ({
       label: customer.full_name,
       value: customer.id,
+    })),
+  ];
+
+  const remittanceMethodsOptions = [
+    ...remittanceMethodsData?.map((rm_method: any) => ({
+      label: rm_method?.name,
+      value: rm_method?.id,
     })),
   ];
 
@@ -80,14 +92,14 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
               label="Country"
               placeholder="Select countries"
               countries={countries}
-              value={filters.country_ids ?? []}
+              value={filters.countries ?? []}
               onChange={onUpdateCountryIds}
             />
             <MultiSelectDropdown
               label="Remittance method"
               placeholder="All"
-              options={remitanceMethodOptions}
-              value={filters.remittance_method_ids ?? []}
+              options={remittanceMethodsOptions}
+              value={filters.remittance_methods_ids ?? []}
               onChange={onUpdateRemittanceMethodIds}
             />
           </div>

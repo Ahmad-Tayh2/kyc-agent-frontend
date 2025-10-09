@@ -188,15 +188,13 @@ const RecipientCreatePage: React.FC = () => {
                   isLoading={false}
                 />
               </div>
-              <SearchNotFound
-                description="If the recipient is not found in our system, please create a new recipient."
-                actionButton={{
-                  title: "create new recipient",
-                  icon: <AddCustomerIcon />,
-                  onClick: handleCreateNew,
-                }}
-                found
-              />
+              <div className="p-5 flex items-center justify-center">
+                <ActionButton
+                  title="create new recipient"
+                  icon={<AddCustomerIcon />}
+                  onClick={handleCreateNew}
+                />
+              </div>
             </div>
           ) : (
             <div className="text-center">

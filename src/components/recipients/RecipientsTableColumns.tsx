@@ -14,9 +14,15 @@ export type Recipient = {
   reference_number: string;
   first_name: string;
   last_name: string;
-  country: {
-    name: string;
+  address: {
+    country: {
+      name: string;
+    };
+    city: {
+      name: string;
+    };
   };
+
   phone_number: string;
   created_at: string;
   status: string;
@@ -174,24 +180,44 @@ export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
         header: "Mobile Number",
       },
       {
-        accessorKey: "city",
-        header: "City",
-        cell: ({ row }) => {
-          const address: any = row.getValue("address");
-          return <div className="capitalize">{address?.city?.name}</div>;
-        },
-      },
-      {
         accessorKey: "country",
         header: "Country",
         cell: ({ row }) => {
-          const address: any = row.getValue("address");
-          return <div className="capitalize">{address?.country?.name}</div>;
+          const recipient: any = row.original;
+          return (
+            <div className="capitalize">
+              {recipient?.address?.country?.name}
+            </div>
+          );
         },
       },
       {
-        accessorKey: "remittance",
+        accessorKey: "city",
+        header: "City",
+        cell: ({ row }) => {
+          const recipient: any = row.original;
+          return (
+            <div className="capitalize">{recipient?.address?.city?.name}</div>
+          );
+        },
+      },
+      {
+        accessorKey: "remittance_methods",
         header: "Rem. Methods",
+        cell: ({ row }) => {
+          const remittance_methods: any[] = row.getValue("remittance_methods");
+
+          return (
+            <div className="flex flex-wrap">
+              {remittance_methods?.map((rm: any, index: number) => (
+                <div>
+                  {index !== 0 && ", "}
+                  {rm?.remittance_method?.name}
+                </div>
+              ))}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "transfer",

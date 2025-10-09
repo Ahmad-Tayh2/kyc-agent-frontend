@@ -19,8 +19,7 @@ export default function (props: any) {
           className={cn(
             className,
             "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-            "border-gray-200 bg-white",
-            disabled && "opacity-50"
+            "border-gray-200 bg-white disabled:cursor-not-allowed disabled:bg-[#E5E5E5] disabled:text-[#101828] disabled:opacity-50"
           )}
           onClick={() => onSelectValue(optionItem.value)}
           disabled={disabled}

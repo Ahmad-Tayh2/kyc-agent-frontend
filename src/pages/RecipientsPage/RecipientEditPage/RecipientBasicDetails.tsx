@@ -3,11 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PhoneInput from "@/components/shared/PhoneInput";
 import DatePicker from "@/components/shared/DatePicker";
-import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
-import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
 import SearchableSelect from "@/components/ui/searchable-select";
-import { cn } from "@/lib/utils";
-import { useCitiesByCountry, useCountries } from "@/hooks/data/useAddress";
+import {
+  useCitiesByCountry,
+  useCountries,
+  useStatesByCountry,
+} from "@/hooks/data/useAddress";
+import RadioInput from "@/components/shared/RadioInput";
 
 const RecipientBasicDetails = (props: any) => {
   const { data, handleInputChange, handleDateChange, editMode = true } = props;
@@ -18,12 +20,19 @@ const RecipientBasicDetails = (props: any) => {
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(data?.country_id || null);
+  const { data: states = [] } = useStatesByCountry(data?.country_id || null);
+
   const countryOptions =
     countries?.map((country: any) => ({
       value: country.id,
       label: country.name,
     })) || [];
 
+  const stateOptions =
+    states?.map((state) => ({
+      value: state.id.toString(),
+      label: state.name,
+    })) || [];
   const cityOptions =
     cities?.map((city: any) => ({
       value: city.id,
@@ -99,7 +108,7 @@ const RecipientBasicDetails = (props: any) => {
           <Input
             id="street_name"
             name="street_name"
-            placeholder="Enter street name and house number"
+            placeholder="Enter street name"
             value={data?.street_name || ""}
             onChange={(e) => handleInputChange("street_name", e.target.value)}
             disabled={!editMode}
@@ -112,7 +121,7 @@ const RecipientBasicDetails = (props: any) => {
           <Input
             id="house_number"
             name="house_number"
-            placeholder="Enter street name and house number"
+            placeholder="Enter house number"
             value={data?.house_number || ""}
             onChange={(e) => handleInputChange("house_number", e.target.value)}
             disabled={!editMode}
@@ -128,6 +137,13 @@ const RecipientBasicDetails = (props: any) => {
           }}
           required
           disabled={!editMode}
+        />
+        <SearchableSelect
+          label={"State"}
+          options={stateOptions}
+          value={data?.state_id}
+          onChange={(value) => handleInputChange("state_id", value)}
+          disabled={!data?.country_id || !editMode}
         />
         <SearchableSelect
           label={"City"}
@@ -151,31 +167,18 @@ const RecipientBasicDetails = (props: any) => {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">Gender</Label>
-          <div className="flex items-center gap-1">
-            {genderOptions?.map((genderOption: any) => (
-              <button
-                key={genderOption.value}
-                type="button"
-                className={cn(
-                  "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-                  "border-gray-200 bg-white",
-                  !editMode && "opacity-60 cursor-not-allowed"
-                )}
-                onClick={() => {
-                  if (editMode) handleInputChange("gender", genderOption.value);
-                }}
-                disabled={!editMode}
-              >
-                {data?.gender === genderOption.value ? (
-                  <CheckedIcon />
-                ) : (
-                  <UncheckedIcon />
-                )}
-                {genderOption.label}
-              </button>
-            ))}
-          </div>
+          <Label className="text-[14px]">
+            Gender
+            <span className="text-red-500">*</span>
+          </Label>
+          <RadioInput
+            options={genderOptions}
+            selectedValue={data?.gender}
+            onSelectValue={(value: string) =>
+              handleInputChange("gender", value)
+            }
+            disabled={!editMode}
+          />
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="phone_number">

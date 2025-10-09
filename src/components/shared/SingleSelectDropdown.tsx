@@ -32,7 +32,7 @@ export function SingleSelectDropdown(props: SingleSelectDropdownProps) {
     selectedValue,
   } = props;
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       {label && (
         <Label className="block text-sm font-medium text-gray-700">
           {label}

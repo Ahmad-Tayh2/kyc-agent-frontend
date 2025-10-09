@@ -34,7 +34,6 @@ export interface CustomerIdentityFileData {
 }
 
 export interface CustomerIncomeFileData {
-  bankStatements: File[];
-  extraDocuments: File[];
-  extraDocumentsDescription?: string;
+  document: File[];
+  document_type: string;
 }

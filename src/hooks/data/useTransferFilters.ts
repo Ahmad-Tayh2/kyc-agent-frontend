@@ -41,7 +41,7 @@ export const useTransferFilters = (initFilters?: TransferFilterState) => {
 
   useEffect(() => {
     applyFilters();
-  }, [filters, debouncedSearch, filters?.per_page, filters?.page]);
+  }, [debouncedSearch, filters?.per_page, filters?.page]);
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search }));

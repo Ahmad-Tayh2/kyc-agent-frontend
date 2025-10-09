@@ -75,7 +75,7 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
         },
       },
       {
-        accessorKey: "transactions",
+        accessorKey: "number_transactions",
         header: "Transactions",
       },
       {
@@ -159,10 +159,9 @@ export const searchCustomerColumns = (): ColumnDef<CustomerType>[] => {
         enableHiding: false,
         cell: ({ row }) => {
           const customer = row.original;
-          // console.log(" cussttt ", customer);
-          // if (customer?.belongs_to_current_agent) {
-          //   return null;
-          // }
+          if (customer?.belongs_to_current_agent) {
+            return <b className="text-primary">Already Added</b>;
+          }
           return (
             <ActionButton
               type="link"
