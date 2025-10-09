@@ -117,8 +117,8 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
 
       // Use the actual link from API response
       const token = result?.token;
-      const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
-      const link = `${FRONTEND_URL}/customer-form/${result?.token}`;
+      // const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+      // const link = `${FRONTEND_URL}/customer-form/${result?.token}`;
 
       if (token) {
         setGeneratedToken(token);

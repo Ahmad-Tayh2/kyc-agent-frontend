@@ -1,5 +1,4 @@
 export type CustomerForm = {
-  token?: string;
   id: number;
   first_name: string;
   last_name: string;

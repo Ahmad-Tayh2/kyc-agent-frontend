@@ -205,7 +205,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Clock, AlertTriangle } from "lucide-react";
+import { /*Clock,*/ AlertTriangle } from "lucide-react";
 
 interface SessionRefreshDialogProps {
   showExpirationWarning: boolean;
