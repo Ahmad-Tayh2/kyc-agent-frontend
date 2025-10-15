@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import * as authService from "@/services/auth";
 import { ROUTES } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function useLogin() {
   return useMutation({
@@ -96,6 +97,12 @@ export function useLogout() {
 export function useForgotPassword() {
   return useMutation({
     mutationFn: authService.forgotPassword,
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: any) => authService.changePassword(data),
   });
 }
 

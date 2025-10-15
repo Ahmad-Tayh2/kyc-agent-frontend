@@ -1,7 +1,12 @@
+import ActionButton from "@/components/shared/ActionButton";
 import EditSectionCard from "@/components/shared/EditSectionCard";
 import PageTitle from "@/components/shared/PageTitle";
+import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import { useChangePassword } from "@/hooks/data/useAuth";
 import { cn } from "@/lib/utils";
 import { useState, type ReactElement } from "react";
+import { toast } from "sonner";
 
 const UserSettingsPage = () => {
   const tabs = [
@@ -21,10 +26,6 @@ const UserSettingsPage = () => {
           </EditSectionCard>
         </div>
       ),
-    },
-    {
-      title: "Bank Account Details",
-      content: <div>test 2 </div>,
     },
   ];
   return (
@@ -71,5 +72,109 @@ const TabNavigator = (props: TabNavigatorProps) => {
 };
 
 const ChangePasswordForm = () => {
-  return <form className="p-2">...</form>;
+  const { mutateAsync: changePassword, isPending } = useChangePassword();
+  const [passwordState, setPasswordState] = useState({
+    current_password: "",
+    new_password: "",
+    new_password_confirmation: "",
+  });
+  const [errors, setErrors] = useState({
+    current_password: "",
+    new_password: "",
+    new_password_confirmation: "",
+  });
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    // if(passwordState?.password && passwordState?.confirmPassword && )
+    //should validate before submit (try using zod)
+    const result = await changePassword(passwordState);
+    if (result.status) {
+      toast.success("Password changed successfully!");
+      setErrors({
+        current_password: "",
+        new_password: "",
+        new_password_confirmation: "",
+      });
+      setPasswordState({
+        current_password: "",
+        new_password: "",
+        new_password_confirmation: "",
+      });
+    } else {
+      setErrors(result?.errors);
+    }
+    console.log(" result = =  ** - -", result);
+  };
+  return (
+    <form className="p-5 flex flex-col gap-5">
+      <div className="flex flex-col gap-2 border-b-1 border-gray-200 pb-8">
+        <Label>
+          Old Password
+          <span className="text-red-500">*</span>
+        </Label>
+        <PasswordInput
+          value={passwordState?.current_password}
+          onChange={(e: any) =>
+            setPasswordState((prev: any) => ({
+              ...prev,
+              current_password: e.target.value,
+            }))
+          }
+          disabled={isPending}
+        />
+        {errors?.current_password && (
+          <span className="text-destructive text-xs">
+            {errors?.current_password}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label>
+          New Password
+          <span className="text-red-500">*</span>
+        </Label>
+        <PasswordInput
+          value={passwordState?.new_password}
+          onChange={(e: any) =>
+            setPasswordState((prev: any) => ({
+              ...prev,
+              new_password: e.target.value,
+            }))
+          }
+          disabled={isPending}
+        />
+        {errors?.new_password && (
+          <span className="text-destructive text-xs">
+            {errors?.new_password}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label>
+          Confirm New Password
+          <span className="text-red-500">*</span>
+        </Label>
+        <PasswordInput
+          value={passwordState?.new_password_confirmation}
+          onChange={(e: any) =>
+            setPasswordState((prev: any) => ({
+              ...prev,
+              new_password_confirmation: e.target.value,
+            }))
+          }
+          disabled={isPending}
+        />
+        {errors?.new_password_confirmation && (
+          <span className="text-destructive text-xs">
+            {errors?.new_password_confirmation}
+          </span>
+        )}
+      </div>
+      <ActionButton
+        title="Change Password"
+        onClick={handleSubmit}
+        disabled={isPending}
+      />
+    </form>
+  );
 };

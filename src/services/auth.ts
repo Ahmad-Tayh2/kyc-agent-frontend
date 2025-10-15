@@ -220,6 +220,31 @@ export async function resetPassword(
   }
 }
 
+export async function changePassword(data: any) {
+  try {
+    const res = await fetch(API_URLS.auth.changePassword, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const response = await res.json();
+
+    // if (!res.ok) {
+    //   const errorMessage =
+    //     response.message || "Failed to resend verification email";
+    //   throw new Error(errorMessage);
+    // }
+
+    return response;
+  } catch (error) {
+    console.error("Resend verification error:", error);
+    throw error;
+  }
+}
 export async function resendVerification(email: string) {
   try {
     const res = await fetch(API_URLS.auth.resendVerification, {
