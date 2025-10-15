@@ -26,7 +26,7 @@ export const API_URLS = {
     update: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
 
     uploadDocuments: (agentId: string | number) =>
-      `${baseUrl}/agents/${agentId}/id-documents`,
+      `${baseUrl}/auth/agents/${agentId}/id-documents`,
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,
@@ -35,9 +35,9 @@ export const API_URLS = {
     getById: (id: string | number) => `${baseUrl}/customers/${id}`,
     update: (id: string | number) => `${baseUrl}/customers/${id}`,
 
-    uploadIdentityDocuments: (id: string | number) =>
+    identityDocuments: (id: string | number) =>
       `${baseUrl}/customers/${id}/identity-documents`,
-    uploadIncomeDocuments: (id: string | number) =>
+    incomeDocuments: (id: string | number) =>
       `${baseUrl}/customers/${id}/income-documents`,
 
     // Customer Recipients endpoints

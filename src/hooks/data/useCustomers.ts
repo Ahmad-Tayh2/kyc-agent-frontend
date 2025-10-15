@@ -17,6 +17,7 @@ export function useGetCustomers(filters?: string) {
     queryFn: () => customersService.getCustomers(filters),
   });
 }
+
 export function useGetCustomersWithSearch(search: string) {
   return useQuery({
     queryKey: ["get-customers-with-search", search],
@@ -45,6 +46,23 @@ export function useUpdateCustomer(id: string | number, onSuccess?: () => void) {
     },
   });
 }
+
+// export function useUploadCustomerDocuments(
+//   id: string | number,
+//   onSuccess?: () => void
+// ) {
+//   return useMutation({
+//     mutationFn: (data: any) =>
+//       customersService.uploadCustomerDocuments(id, data),
+//     onSuccess: () => {
+//       onSuccess?.();
+//       toast.success("Identity documents updated successfully!");
+//     },
+//     onError: () => {
+//       toast.error("Identity documents upload failed!");
+//     },
+//   });
+// }
 
 export function useSearchCustomer() {
   return useMutation({
@@ -101,6 +119,22 @@ export function useAttachRecipientToCustomer() {
   });
 }
 
+export function useGetIdentityDocuments(customerId: string | number) {
+  return useQuery({
+    queryKey: ["get-customer-identity", customerId],
+    queryFn: () => customersService.getCustomerIndentityDocument(customerId),
+    enabled: !!customerId,
+  });
+}
+
+export function useGetIncomeDocuments(customerId: string | number) {
+  return useQuery({
+    queryKey: ["get-customer-income", customerId],
+    queryFn: () => customersService.getCustomerIncomeDocument(customerId),
+    enabled: !!customerId,
+  });
+}
+
 export function useUploadIdentityDocuments() {
   return useMutation({
     mutationFn: ({
@@ -112,6 +146,9 @@ export function useUploadIdentityDocuments() {
     }) => customersService.uploadIdentityDocuments(id, data),
     onSuccess: () => {
       toast.success("Identity documents uploaded successfully!");
+    },
+    onError: () => {
+      toast.error("Identity documents upload failed!");
     },
   });
 }

@@ -9,6 +9,7 @@ import CustomerFormPage from "@/pages/CustomerFormPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import UserProfilePage from "@/pages/UserProfilePage";
+import UserSettingsPage from "@/pages/UserSettingsPage";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
@@ -97,6 +98,7 @@ export const AppRoutes = () => (
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.PROFILE} element={<UserProfilePage />} />
+          <Route path={ROUTES.SETTINGS} element={<UserSettingsPage />} />
           <Route
             path={ROUTES.SEND_REMITTANCE.CREATE()}
             element={<SendRemittancePage mode={"create"} />}

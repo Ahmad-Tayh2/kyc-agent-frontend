@@ -41,6 +41,7 @@ export const ROUTES = {
   },
   HELP: "/help",
   PROFILE: "/profile",
+  SETTINGS: "/settings",
   AUTH: {
     LOGIN: "/auth/login",
     REGISTER: "/auth/register",

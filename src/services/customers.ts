@@ -79,6 +79,20 @@ export const customersService = {
     return handleApiResponse(response.data);
   },
 
+  getCustomerIndentityDocument: async (customerId: string | number) => {
+    const response = await apiClient.get(
+      API_URLS.customers.identityDocuments(customerId)
+    );
+    return response.data;
+  },
+
+  getCustomerIncomeDocument: async (customerId: string | number) => {
+    const response = await apiClient.get(
+      API_URLS.customers.incomeDocuments(customerId)
+    );
+    return response.data;
+  },
+
   uploadIdentityDocuments: async (
     id: string | number,
     data: CustomerIdentityFileData
@@ -92,7 +106,7 @@ export const customersService = {
     if (data.backDocument) formData.append("back_image", data.backDocument);
 
     const response = await apiClient.post(
-      API_URLS.customers.uploadIdentityDocuments(id),
+      API_URLS.customers.identityDocuments(id),
       formData,
       {
         headers: {
@@ -112,7 +126,7 @@ export const customersService = {
     formData.append("document_type", data.document_type);
 
     const response = await apiClient.post(
-      API_URLS.customers.uploadIncomeDocuments(id),
+      API_URLS.customers.incomeDocuments(id),
       formData,
       {
         headers: {

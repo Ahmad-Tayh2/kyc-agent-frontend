@@ -8,10 +8,15 @@ import {
   useGetCustomer,
   useGetCustomerRecipients,
   useUpdateCustomer,
+  useGetIncomeDocuments,
+  useGetIdentityDocuments,
+  useUploadIdentityDocuments,
+  useUploadIncomeDocuments,
 } from "@/hooks/data/useCustomers";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 import EditSectionCard from "@/components/shared/EditSectionCard";
 import CustomerBasicDetails from "../CustomerCreatePage/components/CustomerBasicDetails";
+import CustomerDocumentUpload from "@/components/customers/CustomerDocumentUpload";
 import { DataTable } from "@/components/shared/DataTable";
 import ActionButton from "@/components/shared/ActionButton";
 import { useGetTransfers } from "@/hooks/data/useTransfers";
@@ -19,6 +24,11 @@ import { useGetPaymentLinks } from "@/hooks/data/usePaymentLinks";
 import { transferColumns } from "@/components/transfers/TransferTableColumns";
 import { customerRecipientsColumns } from "@/components/recipients/RecipientsTableColumns";
 import { customerPaymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
+import EditMultiSectionCard from "@/components/shared/EditMultiSectionCard";
+import type {
+  CustomerIdentityFileData,
+  CustomerIncomeFileData,
+} from "@/types/customers";
 
 const CustomerEditPage = () => {
   const navigate = useNavigate();
@@ -33,6 +43,13 @@ const CustomerEditPage = () => {
 
   const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
     useUpdateCustomer(id!, () => setBasicInfoEditMode(false));
+
+  const { data: identityDataResponse } = useGetIdentityDocuments(id!);
+  const { data: incomeDataResponse } = useGetIncomeDocuments(id!);
+
+  const { mutateAsync: uploadIdentityDocuments } = useUploadIdentityDocuments();
+  const { mutateAsync: uploadIncomeDocuments } = useUploadIncomeDocuments();
+
   const {
     data: transfersResponse,
     isLoading: isTransfersLoading,
@@ -114,16 +131,78 @@ const CustomerEditPage = () => {
       // handle error
     }
   };
-
-  if (isLoading) return <div className="p-8">Loading...</div>;
-  if (error)
-    return <div className="p-8 text-red-500">Error loading customer.</div>;
+  const handleSaveDocuments = async () => {
+    console.log(" save documents ", identityData);
+    console.log(" save incomeData ", incomeData);
+    uploadIdentityDocuments({ id: id!, data: identityData });
+    if (incomeData?.length) {
+      for (let data of incomeData) {
+        uploadIncomeDocuments({ id: id!, data });
+      }
+    }
+  };
 
   const statusColor =
     CUSTOMER_STATUS_COLORS[
       formData.status as keyof typeof CUSTOMER_STATUS_COLORS
     ] || "#000000";
 
+  const [identityData, setIdentityData] = useState<CustomerIdentityFileData>({
+    documentType: "",
+    documentNumber: "",
+    documentIssueDate: "",
+    documentExpiryDate: "",
+    frontDocument: null,
+    backDocument: null,
+  });
+  const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
+  useEffect(() => {
+    console.log("identityDataResponse = ", identityDataResponse);
+  }, [identityDataResponse]);
+  useEffect(() => {
+    console.log("incomeDataResponse = ", incomeDataResponse);
+  }, [incomeDataResponse]);
+
+  const customerSections: any[] = [
+    {
+      sectionTitle: "Customer Bio",
+      onSave: handleSave,
+      loading: isUpdateCustomerPending,
+      editMode: basicInfoEditMode,
+      setEditMode: setBasicInfoEditMode,
+      content: (
+        <CustomerBasicDetails
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleDateChange={handleDateChange}
+          editMode={basicInfoEditMode}
+        />
+      ),
+    },
+    {
+      sectionTitle: "Documents",
+      onSave: handleSaveDocuments,
+      loading: isUpdateCustomerPending,
+      editMode: basicInfoEditMode,
+      setEditMode: setBasicInfoEditMode,
+      content: (
+        <CustomerDocumentUpload
+          identityData={identityData}
+          setIdentityData={setIdentityData}
+          incomeData={incomeData}
+          setIncomeData={setIncomeData}
+          // formData={formData}
+          // handleInputChange={handleInputChange}
+          // handleDateChange={handleDateChange}
+          editMode={basicInfoEditMode}
+        />
+      ),
+    },
+  ];
+
+  if (isLoading) return <div className="p-8">Loading...</div>;
+  if (error)
+    return <div className="p-8 text-red-500">Error loading customer.</div>;
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -151,20 +230,14 @@ const CustomerEditPage = () => {
         )}
       </div>
 
-      <EditSectionCard
-        sectionTitle="Customer Bio"
-        onSave={handleSave}
-        loading={isUpdateCustomerPending}
-        editMode={basicInfoEditMode}
-        setEditMode={setBasicInfoEditMode}
-      >
-        <CustomerBasicDetails
-          formData={formData}
-          handleInputChange={handleInputChange}
-          handleDateChange={handleDateChange}
-          editMode={basicInfoEditMode}
-        />
-      </EditSectionCard>
+      <EditMultiSectionCard
+        // sectionTitle="Customer Bio"
+        // onSave={handleSave}
+        // loading={isUpdateCustomerPending}
+        // editMode={basicInfoEditMode}
+        // setEditMode={setBasicInfoEditMode}
+        customerSections={customerSections}
+      />
       <EditSectionCard sectionTitle="Recent transactions">
         <div className="p-5 flex flex-col gap-5">
           <DataTable

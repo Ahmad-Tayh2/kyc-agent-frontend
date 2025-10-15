@@ -156,6 +156,13 @@ const RegisterForm: React.FC<{
       const filesArray = Array.from(e.target.files);
       if (filesArray.length <= 2) {
         setIdentityFiles(filesArray);
+        // Clear error when user starts typing
+        if (errors["identityFiles"]) {
+          setErrors((prev) => ({
+            ...prev,
+            identityFiles: "",
+          }));
+        }
       }
     }
   };
@@ -624,7 +631,10 @@ const RegisterForm: React.FC<{
         </div>
 
         <div className="md:col-span-2 flex flex-col gap-2">
-          <Label>{t("modules.register.fields.gender.label")}</Label>
+          <Label>
+            {t("modules.register.fields.gender.label")}
+            <span className="text-red-500">*</span>
+          </Label>
           <div className="flex items-center gap-2">
             {genderOptions?.map((genderOption: any) => (
               <button
@@ -668,7 +678,10 @@ const RegisterForm: React.FC<{
           )}
         </div>
         <div className="md:col-span-2 flex flex-col gap-2">
-          <Label>{t("modules.register.fields.identity.label")}</Label>
+          <Label>
+            {t("modules.register.fields.identity.label")}
+            <span className="text-red-500">*</span>
+          </Label>
 
           <div
             className="h-20 border cursor-pointer rounded-lg px-2 hover:bg-gray-50 transition"
