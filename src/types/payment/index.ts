@@ -6,7 +6,7 @@ export type PaymentMethod = 'card' | 'bank_transfer' | 'digital_wallet';
 
 // Payment Request Types
 export interface PaymentRequest {
-  transactionId?: number | null;
+  transactionId?: number | string | null; // Allow string transaction references
   paymentLinkToken?: string | null;
   provider: PaymentProvider;
   payment_method: PaymentMethod | string; // Allow both payment method type and payment method token
