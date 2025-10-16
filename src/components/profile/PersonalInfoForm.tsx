@@ -7,9 +7,11 @@ import PhoneInput from "@/components/shared/PhoneInput";
 import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
 import { useTranslation } from "react-i18next";
 import RadioInput from "@/components/shared/RadioInput";
+import ErrorField from "../shared/ErrorField";
 
 interface PersonalInfoFormProps {
   formData: any;
+  errors: Record<string, string>;
   handleInputChange: (field: string, value: any) => void;
   handleDateChange: (field: string, value: any) => void;
   editMode: boolean;
@@ -17,6 +19,7 @@ interface PersonalInfoFormProps {
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   formData,
+  errors,
   handleInputChange,
   handleDateChange,
   editMode,
@@ -68,6 +71,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) => handleInputChange("firstName", e.target.value)}
             placeholder={t("modules.profile.fields.firstName.placeholder")}
           />
+          {errors?.firstName && <ErrorField errors={[errors?.firstName]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -81,6 +85,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) => handleInputChange("lastName", e.target.value)}
             placeholder={t("modules.profile.fields.lastName.placeholder")}
           />
+          {errors?.lastName && <ErrorField errors={[errors?.lastName]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -93,6 +98,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             value={formData.dob || ""}
             onChange={(date: string) => handleDateChange("dob", date)}
           />
+          {errors?.dob && <ErrorField errors={[errors?.dob]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -107,6 +113,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder={t("modules.profile.fields.email.placeholder")}
           />
+          {errors?.email && <ErrorField errors={[errors?.email]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -128,6 +135,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               handleInputChange("phone", phoneNumber)
             }
           />
+          {errors?.phone && <ErrorField errors={[errors?.phone]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -141,6 +149,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) => handleInputChange("streetName", e.target.value)}
             placeholder={t("modules.profile.fields.streetName.placeholder")}
           />
+          {errors?.streetName && <ErrorField errors={[errors?.streetName]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -154,6 +163,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) => handleInputChange("houseNumber", e.target.value)}
             placeholder={t("modules.profile.fields.houseNumber.placeholder")}
           />
+          {errors?.houseNumber && <ErrorField errors={[errors?.houseNumber]} />}
         </div>
 
         <SearchableSelect
@@ -165,6 +175,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           loading={countriesLoading}
           disabled={!editMode}
           required
+          error={errors?.country}
         />
 
         <SearchableSelect
@@ -176,6 +187,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           loading={citiesLoading}
           disabled={!editMode || !formData.country}
           required
+          error={errors?.city}
         />
 
         <div className="flex flex-col gap-1">
@@ -188,6 +200,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) => handleInputChange("state", e.target.value)}
             placeholder={t("modules.profile.fields.state.placeholder")}
           />
+          {errors?.state && <ErrorField errors={[errors?.state]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -200,6 +213,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             onChange={(e) => handleInputChange("postalCode", e.target.value)}
             placeholder={t("modules.profile.fields.postalCode.placeholder")}
           />
+          {errors?.postalCode && <ErrorField errors={[errors?.postalCode]} />}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -216,6 +230,9 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               "modules.profile.fields.extraAddressDetails.placeholder"
             )}
           />
+          {errors?.extraAddressDetails && (
+            <ErrorField errors={[errors?.extraAddressDetails]} />
+          )}
         </div>
 
         <div className="md:col-span-1 flex flex-col gap-2">
@@ -228,32 +245,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             }
             disabled={!editMode}
           />
-          {/* <div className="flex items-center gap-2">
-            {genderOptions?.map((genderOption: any) => (
-              <button
-                key={genderOption.value}
-                type="button"
-                className={cn(
-                  "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-                  "border-gray-200 bg-white",
-                  !editMode && "cursor-not-allowed opacity-60"
-                )}
-                disabled={!editMode}
-                onClick={() => {
-                  if (editMode) {
-                    handleInputChange("gender", genderOption.value);
-                  }
-                }}
-              >
-                {formData.gender === genderOption.value ? (
-                  <CheckedIcon />
-                ) : (
-                  <UncheckedIcon />
-                )}
-                {genderOption.label}
-              </button>
-            ))}
-          </div> */}
+          {errors?.gender && <ErrorField errors={[errors?.gender]} />}
         </div>
       </div>
     </div>

@@ -177,7 +177,6 @@ export function DataTable({
       </div>
     );
   }
-  console.log(" table.. = ", table);
   return (
     <div>
       <div

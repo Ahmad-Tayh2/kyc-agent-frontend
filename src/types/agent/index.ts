@@ -55,6 +55,8 @@ export interface Agent {
   created_at: string;
   updated_at: string;
   business_details?: BusinessDetails;
+  identity_file_path_1?: string | null;
+  identity_file_path_2?: string | null;
 }
 
 export interface User {
@@ -148,7 +150,7 @@ export interface ProfileFormData {
   state: string;
   postalCode: string;
   extraAddressDetails: string;
-  gender: "male" | "female";
+  gender: "male" | "female" | "";
 
   // Business Information
   businessName: string;
@@ -167,4 +169,9 @@ export interface ProfileFormData {
   sendingAgentGroupId?: number;
   payoutAgentGroupId?: number;
   commission: number;
+}
+
+export interface agentDocsData {
+  files: File[];
+  document_type: string;
 }

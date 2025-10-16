@@ -32,7 +32,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     if (!email) {
       newErrors.email = t("modules.forgotPassword.fields.email.required");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = t("modules.forgotPassword.fields.email.error");
+      newErrors.email = t("modules.forgotPassword.fields.email.format");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -41,13 +41,23 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     }
 
     try {
-      await forgotPasswordAsync(email);
-      onSuccess(email);
+      const result = await forgotPasswordAsync(email);
+      console.log("result  = = ", result);
+      if (result.status) {
+        onSuccess(email);
+      } else {
+        if (result?.errors?.email?.[0]) {
+          setErrors((prev) => ({ ...prev, email: result?.errors?.email?.[0] }));
+        }
+      }
     } catch (err) {
       // Error is handled by React Query's error state
     }
   };
 
+  React.useEffect(() => {
+    console.log(" errors updated = = ", errors);
+  }, [errors]);
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     if (errors.email) {

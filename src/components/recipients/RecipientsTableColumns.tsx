@@ -316,7 +316,9 @@ export const recipientsSearchColumns = ({
         cell: ({ row }) => {
           const recipient: any = row.original;
           if (recipient?.attachment_info?.is_attached) {
-            return <b className="text-primary">Already Attached</b>;
+            return (
+              <div className="text-primary font-bold p-2">Already Attached</div>
+            );
           }
           return (
             <ActionButton
@@ -328,6 +330,6 @@ export const recipientsSearchColumns = ({
         },
       },
     ],
-    []
+    [attachRecipient]
   );
 };

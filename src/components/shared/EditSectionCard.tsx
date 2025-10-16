@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface EditSectionCardProps {
   sectionTitle?: string;
+  description?: string;
   onSave?: () => void;
   loading?: boolean;
   editMode?: boolean;
@@ -16,6 +17,7 @@ interface EditSectionCardProps {
 
 const EditSectionCard: React.FC<EditSectionCardProps> = ({
   sectionTitle,
+  description,
   onSave,
   loading = false,
   editMode,
@@ -30,7 +32,12 @@ const EditSectionCard: React.FC<EditSectionCardProps> = ({
       className={cn(className, "bg-white rounded-lg border border-[#E7EFEF]")}
     >
       <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] p-5">
-        <h2 className="text-lg font-semibold">{sectionTitle}</h2>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">{sectionTitle}</h2>
+          {description && (
+            <p className="text-[14px] text-[#656565]">{description}</p>
+          )}
+        </div>
         {setEditMode && (
           <>
             {editMode ? (

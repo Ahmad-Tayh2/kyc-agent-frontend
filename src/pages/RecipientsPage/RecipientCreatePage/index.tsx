@@ -16,6 +16,7 @@ import {
   useAttachRecipientToCustomer,
   useGetCustomers,
 } from "@/hooks/data/useCustomers";
+import { toast } from "sonner";
 
 interface SearchFormData {
   name: string;
@@ -37,11 +38,33 @@ const RecipientCreatePage: React.FC = () => {
   const { mutateAsync: attachRecipientToCustomer } =
     useAttachRecipientToCustomer();
   const attachRecipient = useCallback(
-    (recipientId: string | number) => {
-      attachRecipientToCustomer({
+    async (recipientId: string | number) => {
+      const result = await attachRecipientToCustomer({
         customerId: searchForm.customer_id,
         recipientId,
       });
+      if (result?.status) {
+        setSearchResults((prev: any[]) => {
+          let updatedData: any[] = [];
+          if (prev?.length > 0) {
+            for (let recipient of prev) {
+              if (recipient?.id === recipientId) {
+                updatedData?.push({
+                  ...recipient,
+                  attachment_info: {
+                    ...recipient.attachment_info,
+                    is_attached: true,
+                  },
+                });
+              } else updatedData.push(recipient);
+            }
+          }
+          return updatedData;
+        });
+        toast.success("Recipient attached to customer successfully!");
+      } else {
+        toast.error(result?.message);
+      }
     },
     [searchForm.customer_id]
   );
@@ -65,7 +88,6 @@ const RecipientCreatePage: React.FC = () => {
     if (!searchForm.phone_number && !searchForm.name) {
       return;
     }
-
     try {
       const result = await searchRecipient({
         name: searchForm.name || undefined,
@@ -179,6 +201,7 @@ const RecipientCreatePage: React.FC = () => {
       {hasSearched && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Search Results:</h2>
+
           {searchResults.length > 0 ? (
             <div>
               <div className="bg-white rounded-lg border">

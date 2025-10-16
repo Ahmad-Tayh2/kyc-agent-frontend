@@ -11,6 +11,8 @@ import {
 } from "@/hooks/data/useAddress";
 import { genderOptions } from "@/constants/options";
 import RadioInput from "@/components/shared/RadioInput";
+import ErrorField from "@/components/shared/ErrorField";
+import { useEffect } from "react";
 
 const CustomerBasicDetails = (props: any) => {
   const {
@@ -18,6 +20,7 @@ const CustomerBasicDetails = (props: any) => {
     handleInputChange,
     handleDateChange,
     editMode = true,
+    validationErrors,
   } = props;
 
   const { data: countries = [] } = useCountries();
@@ -47,6 +50,9 @@ const CustomerBasicDetails = (props: any) => {
       code: country.phone_code,
       countryCode: country.iso2,
     })) || [];
+  useEffect(() => {
+    console.log(" validationErrors=== === ", validationErrors);
+  }, [validationErrors]);
   return (
     <div className="space-y-6 p-5">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -63,6 +69,9 @@ const CustomerBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("first_name", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.first_name && (
+            <ErrorField errors={validationErrors?.first_name} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -77,6 +86,9 @@ const CustomerBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("last_name", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.last_name && (
+            <ErrorField errors={validationErrors?.last_name} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -92,6 +104,9 @@ const CustomerBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("email", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.email && (
+            <ErrorField errors={[validationErrors?.email[0]]} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -103,6 +118,9 @@ const CustomerBasicDetails = (props: any) => {
             onChange={(date: string) => handleDateChange("date_of_birth", date)}
             disabled={!editMode}
           />
+          {validationErrors?.date_of_birth && (
+            <ErrorField errors={validationErrors?.date_of_birth} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -117,6 +135,9 @@ const CustomerBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("street_name", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.street_name && (
+            <ErrorField errors={validationErrors?.street_name} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -131,6 +152,9 @@ const CustomerBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("house_number", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.house_number && (
+            <ErrorField errors={validationErrors?.house_number} />
+          )}
         </div>
         <SearchableSelect
           label={"Country"}
@@ -142,14 +166,9 @@ const CustomerBasicDetails = (props: any) => {
           }}
           required
           disabled={!editMode}
+          error={validationErrors?.country_id}
         />
-        <SearchableSelect
-          label={"State"}
-          options={stateOptions}
-          value={formData.state_id}
-          onChange={(value) => handleInputChange("state_id", value)}
-          disabled={!formData.country_id || !editMode}
-        />
+
         <SearchableSelect
           label={"City"}
           options={cityOptions}
@@ -157,6 +176,15 @@ const CustomerBasicDetails = (props: any) => {
           onChange={(value) => handleInputChange("city_id", value)}
           disabled={!formData.country_id || !editMode}
           required
+          error={validationErrors?.city}
+        />
+        <SearchableSelect
+          label={"State"}
+          options={stateOptions}
+          value={formData.state_id}
+          onChange={(value) => handleInputChange("state_id", value)}
+          disabled={!formData.country_id || !editMode}
+          error={validationErrors?.state}
         />
 
         <div className="flex flex-col gap-1">
@@ -171,6 +199,9 @@ const CustomerBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("postal_code", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.postal_code && (
+            <ErrorField errors={validationErrors?.postal_code} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -185,6 +216,9 @@ const CustomerBasicDetails = (props: any) => {
             }
             disabled={!editMode}
           />
+          {validationErrors?.gender && (
+            <ErrorField errors={validationErrors?.gender} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="phone_number">
@@ -202,6 +236,7 @@ const CustomerBasicDetails = (props: any) => {
               handleInputChange("phone_number", phoneNumber)
             }
             disabled={!editMode}
+            error={validationErrors?.phone_number?.[0]}
           />
         </div>
       </div>

@@ -48,7 +48,7 @@ const UserMenu = () => {
       label: t("modules.topbar.settings"),
       icon: <SettingIcon style={{ width: "25px", height: "25px" }} />,
       onClick: () => {},
-      // link: "#",
+      link: ROUTES.SETTINGS,
     },
     {
       label: t("modules.topbar.logout"),

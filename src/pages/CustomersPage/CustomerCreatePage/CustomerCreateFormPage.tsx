@@ -52,12 +52,12 @@ const CustomerCreateFormPage: React.FC = () => {
   });
 
   const [identityData, setIdentityData] = useState<CustomerIdentityFileData>({
-    documentType: "",
-    documentNumber: "",
-    documentIssueDate: "",
-    documentExpiryDate: "",
-    frontDocument: null,
-    backDocument: null,
+    document_type: "",
+    document_number: "",
+    issuing_date: "",
+    expiry_date: "",
+    front_image: null,
+    back_image: null,
   });
 
   const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
@@ -137,10 +137,10 @@ const CustomerCreateFormPage: React.FC = () => {
       // }
     } else {
       const file = files[0];
-      if (field === "frontDocument") {
-        handleIdentityChange("frontDocument", file);
-      } else if (field === "backDocument") {
-        handleIdentityChange("backDocument", file);
+      if (field === "front_image") {
+        handleIdentityChange("front_image", file);
+      } else if (field === "back_image") {
+        handleIdentityChange("back_image", file);
       }
     }
   };
@@ -208,7 +208,7 @@ const CustomerCreateFormPage: React.FC = () => {
       }
 
       // Step 2: Upload identity documents (async)
-      if (identityData.documentType && identityData.documentNumber) {
+      if (identityData.document_type && identityData.document_number) {
         uploadIdentityDocuments({ id: customerId, data: identityData }).catch(
           (error) => {
             console.error("Failed to upload identity documents:", error);
@@ -299,7 +299,7 @@ const CustomerCreateFormPage: React.FC = () => {
   const renderCustomerIdentity = () => {
     const documentTypesOptions = [
       { label: "Passport", value: "passport" },
-      { label: "National ID", value: "id_card'" },
+      { label: "National ID", value: "id_card" },
       { label: "Residence Permit ", value: "residence_permit" },
       { label: "Driver's License", value: "driving_license" },
     ];
@@ -331,9 +331,9 @@ const CustomerCreateFormPage: React.FC = () => {
             <SingleSelectDropdown
               label="Document Type"
               options={documentTypesOptions}
-              selectedValue={identityData.documentType || ""}
+              selectedValue={identityData.document_type || ""}
               onValueChange={(value: string) =>
-                handleIdentityChange("documentType", value)
+                handleIdentityChange("document_type", value)
               }
             />
           </div>
@@ -344,9 +344,9 @@ const CustomerCreateFormPage: React.FC = () => {
               id="documentNumber"
               name="documentNumber"
               placeholder="Enter document number"
-              value={identityData.documentNumber || ""}
+              value={identityData.document_number || ""}
               onChange={(e) =>
-                handleIdentityChange("documentNumber", e.target.value)
+                handleIdentityChange("document_number", e.target.value)
               }
             />
           </div>
@@ -354,18 +354,18 @@ const CustomerCreateFormPage: React.FC = () => {
           <div className="flex flex-col gap-1">
             <Label htmlFor="documentIssueDate">Document Issue Date</Label>
             <DatePicker
-              value={identityData.documentIssueDate || ""}
+              value={identityData.issuing_date || ""}
               onChange={(date: string) =>
-                handleIdentityChange("documentIssueDate", date)
+                handleIdentityChange("issuing_date", date)
               }
             />
           </div>
           <div className="flex flex-col gap-1">
             <Label htmlFor="documentExpiryDate">Document Expiry Date</Label>
             <DatePicker
-              value={identityData.documentExpiryDate || ""}
+              value={identityData.expiry_date || ""}
               onChange={(date: string) =>
-                handleIdentityChange("documentExpiryDate", date)
+                handleIdentityChange("expiry_date", date)
               }
               endMonth={documentExpiryEndMonth}
             />
@@ -396,9 +396,9 @@ const CustomerCreateFormPage: React.FC = () => {
                 </p>
               </label>
             </div>
-            {identityData.frontDocument && (
+            {identityData.front_image && (
               <p className="text-sm text-green-600">
-                ✓ {identityData.frontDocument.name}
+                ✓ {identityData.front_image.name}
               </p>
             )}
           </div>
@@ -426,9 +426,9 @@ const CustomerCreateFormPage: React.FC = () => {
                 </p>
               </label>
             </div>
-            {identityData.backDocument && (
+            {identityData.back_image && (
               <p className="text-sm text-green-600">
-                ✓ {identityData.backDocument.name}
+                ✓ {identityData.back_image.name}
               </p>
             )}
           </div>

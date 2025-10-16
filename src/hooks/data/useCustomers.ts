@@ -17,6 +17,7 @@ export function useGetCustomers(filters?: string) {
     queryFn: () => customersService.getCustomers(filters),
   });
 }
+
 export function useGetCustomersWithSearch(search: string) {
   return useQuery({
     queryKey: ["get-customers-with-search", search],
@@ -33,7 +34,11 @@ export function useGetCustomer(id: string | number) {
   });
 }
 
-export function useUpdateCustomer(id: string | number, onSuccess?: () => void) {
+export function useUpdateCustomer(
+  id: string | number,
+  onSuccess: () => void,
+  onError: (data: any) => void
+) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<CustomerCreateData>) =>
@@ -43,8 +48,29 @@ export function useUpdateCustomer(id: string | number, onSuccess?: () => void) {
       toast.success("Customer updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-customers"] });
     },
+    onError: (err: any) => {
+      console.log(" errrrr   =", err?.response?.data?.errors);
+      onError(err?.response?.data?.errors);
+    },
   });
 }
+
+// export function useUploadCustomerDocuments(
+//   id: string | number,
+//   onSuccess?: () => void
+// ) {
+//   return useMutation({
+//     mutationFn: (data: any) =>
+//       customersService.uploadCustomerDocuments(id, data),
+//     onSuccess: () => {
+//       onSuccess?.();
+//       toast.success("Identity documents updated successfully!");
+//     },
+//     onError: () => {
+//       toast.error("Identity documents upload failed!");
+//     },
+//   });
+// }
 
 export function useSearchCustomer() {
   return useMutation({
@@ -80,7 +106,6 @@ export function useGetCustomerRecipients(customerId: string | number) {
 }
 
 export function useAttachRecipientToCustomer() {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       customerId,
@@ -89,19 +114,29 @@ export function useAttachRecipientToCustomer() {
       customerId: string | number;
       recipientId: string | number;
     }) => customersService.attachRecipientToCustomer(customerId, recipientId),
-    onSuccess: (_, { customerId }) => {
-      toast.success("Recipient attached to customer successfully!");
-      queryClient.invalidateQueries({
-        queryKey: ["get-customer-recipients", customerId],
-      });
-    },
-    onError: () => {
-      toast.error("Failed to attach recipient to customer!");
-    },
   });
 }
 
-export function useUploadIdentityDocuments() {
+export function useGetIdentityDocuments(customerId: string | number) {
+  return useQuery({
+    queryKey: ["get-customer-identity", customerId],
+    queryFn: () => customersService.getCustomerIndentityDocument(customerId),
+    enabled: !!customerId,
+  });
+}
+
+export function useGetIncomeDocuments(customerId: string | number) {
+  return useQuery({
+    queryKey: ["get-customer-income", customerId],
+    queryFn: () => customersService.getCustomerIncomeDocument(customerId),
+    enabled: !!customerId,
+  });
+}
+
+export function useUploadIdentityDocuments(actions?: {
+  onSuccess: () => void;
+  onError: (data: any) => void;
+}) {
   return useMutation({
     mutationFn: ({
       id,
@@ -112,6 +147,11 @@ export function useUploadIdentityDocuments() {
     }) => customersService.uploadIdentityDocuments(id, data),
     onSuccess: () => {
       toast.success("Identity documents uploaded successfully!");
+      actions?.onSuccess?.();
+    },
+    onError: (err: any) => {
+      console.log(" errrrr   =", err?.response?.data?.errors);
+      actions?.onError(err?.response?.data?.errors);
     },
   });
 }

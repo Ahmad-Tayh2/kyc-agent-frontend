@@ -1,5 +1,7 @@
 const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
+export const serverUrl = "https://nomadrem.amazing-agileteam.com";
 //const baseUrl = 'http://localhost:8000/api';
+
 export const API_URLS = {
   auth: {
     login: `${baseUrl}/auth/login`,
@@ -7,9 +9,11 @@ export const API_URLS = {
     register: `${baseUrl}/auth/register/agent`,
     forgotPassword: `${baseUrl}/auth/forgot-password`,
     resetPassword: `${baseUrl}/auth/reset-password`,
+    changePassword: `${baseUrl}/auth/change-password`,
     resendVerification: `${baseUrl}/auth/agents/send-verification-email`,
     refresh: `${baseUrl}/auth/refresh`,
     user: `${baseUrl}/auth/user`,
+    verifyEmail: `${baseUrl}/auth/verify-email`,
   },
   otp: {
     verify: `${baseUrl}/auth/otp/verify`,
@@ -24,7 +28,8 @@ export const API_URLS = {
   agents: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
     update: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
-
+    uploadAuthDocuments: (agentId: string | number) =>
+      `${baseUrl}/auth/agents/${agentId}/id-documents`,
     uploadDocuments: (agentId: string | number) =>
       `${baseUrl}/agents/${agentId}/id-documents`,
   },
@@ -35,9 +40,9 @@ export const API_URLS = {
     getById: (id: string | number) => `${baseUrl}/customers/${id}`,
     update: (id: string | number) => `${baseUrl}/customers/${id}`,
 
-    uploadIdentityDocuments: (id: string | number) =>
+    identityDocuments: (id: string | number) =>
       `${baseUrl}/customers/${id}/identity-documents`,
-    uploadIncomeDocuments: (id: string | number) =>
+    incomeDocuments: (id: string | number) =>
       `${baseUrl}/customers/${id}/income-documents`,
 
     // Customer Recipients endpoints

@@ -216,7 +216,8 @@
         "email": {
           "label": "$t(common.fields.email.label)",
           "placeholder": "$t(common.fields.email.placeholder)",
-          "error": "$t(common.validation.required)"
+          "required": "$t(common.validation.required)",
+          "format": "$t(common.validation.email)"
         }
       },
       "rememberPassword": "Remember your password?",
@@ -267,7 +268,7 @@
       "success": {
         "title": "Registration Complete!",
         "registrationStatus": "Registration Status",
-        "registrationSuccess": "Your account has been created successfully!",
+        "registrationSuccess": "Your account has been created successfully!\nCheck your email inbox (and spam folder) and click the link to activate your account",
         "registrationPartial": "Account created but some issues occurred.",
         "registrationError": "Account creation failed. Please try again.",
         "uploadStatus": "Identity Files Status",
@@ -280,6 +281,9 @@
         "resendingVerification": "Resending...",
         "verificationEmailSent": "Verification email sent successfully!",
         "verificationEmailError": "Failed to send verification email. Please try again."
+      },
+      "error": {
+        "title": "Registration Incomplete!"
       },
       "businessType": {
         "title": "What best describes your business status",
@@ -461,6 +465,11 @@
           "placeholder": "$t(common.fields.streetName.placeholder)",
           "error": "$t(common.validation.required)"
         },
+        "country": {
+          "label": "$t(common.fields.country.label)",
+          "placeholder": "$t(common.fields.country.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
         "city": {
           "label": "$t(common.fields.city.label)",
           "placeholder": "$t(common.fields.city.placeholder)",
@@ -491,14 +500,13 @@
         "houseNumber": {
           "label": "$t(common.fields.houseNumber.label)"
         },
-        "country": {
-          "label": "$t(common.fields.country.label)"
-        },
+
         "postalCode": {
           "label": "$t(common.fields.postalCode.label)"
         },
         "extraAddressDetails": {
-          "label": "$t(common.fields.extraAddressDetails.label)"
+          "label": "$t(common.fields.extraAddressDetails.label)",
+          "placeholder": "$t(common.fields.extraAddressDetails.placeholder)"
         },
 
         "businessName": {

@@ -147,8 +147,9 @@ const RegisterForm: React.FC<{
   const [showSuccessDialog, setShowSuccessDialog] = React.useState(false);
   const [registrationResult, setRegistrationResult] = React.useState<{
     registrationStatus: "success" | "partial" | "error";
-    uploadStatus: "success" | "partial" | "error";
+    uploadStatus?: "success" | "partial" | "error";
     uploadMessage?: string;
+    registrationMessages?: string[];
   } | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,6 +157,13 @@ const RegisterForm: React.FC<{
       const filesArray = Array.from(e.target.files);
       if (filesArray.length <= 2) {
         setIdentityFiles(filesArray);
+        // Clear error when user starts typing
+        if (errors["identityFiles"]) {
+          setErrors((prev) => ({
+            ...prev,
+            identityFiles: "",
+          }));
+        }
       }
     }
   };
@@ -344,35 +352,69 @@ const RegisterForm: React.FC<{
     }
     try {
       const result = await registerAndUpload({ payload, files: identityFiles });
-      console.log("Registration result:", result);
-
+      console.log(" general result ", result);
       // Determine registration and upload status
+      type ErrorsMap = Record<string, any[]>; // example: { "user.email": ["Invalid email"], "user.name": ["Required"] }
+
+      function flattenErrors(registration: {
+        errors: ErrorsMap;
+      }): Array<string> {
+        const result: Array<string> = [];
+
+        for (const field in registration.errors) {
+          if (
+            Object.prototype.hasOwnProperty.call(registration.errors, field)
+          ) {
+            const messages = registration.errors[field];
+            for (const msg of messages) {
+              result.push(msg);
+            }
+          }
+        }
+
+        return result;
+      }
       const registrationStatus: "success" | "partial" | "error" = "success";
       let uploadStatus: "success" | "partial" | "error" = "success";
       let uploadMessage: string | undefined;
+      let registrationMessages: string[] = [];
+      if (result?.registration?.status === false) {
+        result?.registration?.errors?.values?.map(
+          (value: string[]) =>
+            (registrationMessages = [...registrationMessages, ...value])
+        );
+        const flattened = flattenErrors(result?.registration);
 
-      // Check if files were provided and if upload was successful
-      if (identityFiles.length === 0) {
-        uploadStatus = "partial";
-        uploadMessage = "No identity files were provided during registration.";
-      } else if (result.upload && result.upload.status === "success") {
-        uploadStatus = "success";
-      } else if (result.upload && result.upload.status === "error") {
-        uploadStatus = "error";
-        uploadMessage =
-          result.upload.message ||
-          "File upload failed. You can add identity files later in your profile.";
+        setRegistrationResult({
+          registrationStatus: "error",
+          registrationMessages: flattened,
+        });
       } else {
-        uploadStatus = "partial";
-        uploadMessage =
-          "File upload status unclear. You can add identity files later in your profile.";
+        // Check if files were provided and if upload was successful
+        if (identityFiles.length === 0) {
+          uploadStatus = "partial";
+          uploadMessage =
+            "No identity files were provided during registration.";
+        } else if (result.upload && result.upload.status) {
+          uploadStatus = "success";
+        } else if (result.upload && !result.upload.status) {
+          uploadStatus = "error";
+          uploadMessage =
+            result.upload.message ||
+            "File upload failed. You can add identity files later in your profile.";
+        } else {
+          uploadStatus = "partial";
+          uploadMessage =
+            "File upload status unclear. You can add identity files later in your profile.";
+        }
+
+        setRegistrationResult({
+          registrationStatus,
+          uploadStatus,
+          uploadMessage,
+        });
       }
 
-      setRegistrationResult({
-        registrationStatus,
-        uploadStatus,
-        uploadMessage,
-      });
       setShowSuccessDialog(true);
     } catch (error) {
       console.error("Registration error in form:", error);
@@ -624,7 +666,10 @@ const RegisterForm: React.FC<{
         </div>
 
         <div className="md:col-span-2 flex flex-col gap-2">
-          <Label>{t("modules.register.fields.gender.label")}</Label>
+          <Label>
+            {t("modules.register.fields.gender.label")}
+            <span className="text-red-500">*</span>
+          </Label>
           <div className="flex items-center gap-2">
             {genderOptions?.map((genderOption: any) => (
               <button
@@ -668,7 +713,10 @@ const RegisterForm: React.FC<{
           )}
         </div>
         <div className="md:col-span-2 flex flex-col gap-2">
-          <Label>{t("modules.register.fields.identity.label")}</Label>
+          <Label>
+            {t("modules.register.fields.identity.label")}
+            <span className="text-red-500">*</span>
+          </Label>
 
           <div
             className="h-20 border cursor-pointer rounded-lg px-2 hover:bg-gray-50 transition"
@@ -902,6 +950,7 @@ const RegisterForm: React.FC<{
           isOpen={showSuccessDialog}
           onClose={() => setShowSuccessDialog(false)}
           registrationStatus={registrationResult.registrationStatus}
+          registrationMessages={registrationResult.registrationMessages}
           uploadStatus={registrationResult.uploadStatus}
           uploadMessage={registrationResult.uploadMessage}
           userEmail={formData.email}

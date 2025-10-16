@@ -27,14 +27,20 @@ const CustomerEditPage: React.FC = () => {
     null
   );
   const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
-  const [remittanceMethodsEditMode, setRemittanceMethodsEditMode] = React.useState(false);
+  const [remittanceMethodsEditMode, setRemittanceMethodsEditMode] =
+    React.useState(false);
   const [bankDetailsEditMode, setBankDetailsEditMode] = React.useState(false);
 
   // check in one of the other sections in already in the edit mode
-  const checkOtherSectionEditMode = (current: "bank" | "basic" | "remittance") => {
-    if (current === "bank") return basicInfoEditMode || remittanceMethodsEditMode;
-    else if (current === "basic") return bankDetailsEditMode || remittanceMethodsEditMode;
-    else if (current === "remittance") return basicInfoEditMode || bankDetailsEditMode;
+  const checkOtherSectionEditMode = (
+    current: "bank" | "basic" | "remittance"
+  ) => {
+    if (current === "bank")
+      return basicInfoEditMode || remittanceMethodsEditMode;
+    else if (current === "basic")
+      return bankDetailsEditMode || remittanceMethodsEditMode;
+    else if (current === "remittance")
+      return basicInfoEditMode || bankDetailsEditMode;
     else return true;
   };
   const { mutateAsync: updateRecipient } = useUpdateRecipient(id!);
@@ -52,9 +58,9 @@ const CustomerEditPage: React.FC = () => {
         last_name: data.data.last_name,
         email: data.data.email,
         date_of_birth: data.data.date_of_birth,
-        country_id: data.data?.address?.country.id,
-        city_id: data.data?.address?.city.id,
-        state_id: data.data?.address?.state.id,
+        country_id: data.data?.address?.country?.id,
+        city_id: data.data?.address?.city?.id,
+        state_id: data.data?.address?.state?.id,
         postal_code: data.data?.address?.postal_code,
         street_name: data.data?.address?.street_name,
         house_number: data.data?.address?.house_number,

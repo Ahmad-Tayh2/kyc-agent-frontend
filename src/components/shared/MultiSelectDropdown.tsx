@@ -42,6 +42,12 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
+  React.useEffect(() => {
+    if (!value || value?.length === 0) {
+      setSearchTerm("");
+      onSearchTermChange?.("");
+    }
+  }, [value]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const filteredOptions = React.useMemo(() => {

@@ -1,7 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CheckCircle, AlertCircle, ArrowRight, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -11,14 +10,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/constants/routes";
 import { useResendVerification } from "@/hooks/data/useAuth";
 
 interface RegistrationSuccessDialogProps {
   isOpen: boolean;
   onClose: () => void;
   registrationStatus: "success" | "partial" | "error";
-  uploadStatus: "success" | "partial" | "error";
+  registrationMessages?: string[];
+  uploadStatus?: "success" | "partial" | "error";
   uploadMessage?: string;
   userEmail: string;
 }
@@ -27,19 +26,14 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
   isOpen,
   onClose,
   registrationStatus,
+  registrationMessages,
   uploadStatus,
   uploadMessage,
   userEmail,
 }) => {
-  const navigate = useNavigate();
   const [t] = useTranslation("global");
   const { mutateAsync: resendVerification, isPending: isResending } =
     useResendVerification();
-
-  const handleGoToLogin = () => {
-    onClose();
-    navigate(ROUTES.AUTH.LOGIN);
-  };
 
   const handleResendVerification = async () => {
     try {
@@ -95,7 +89,9 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">
-            {t("modules.register.success.title")}
+            {registrationStatus === "success"
+              ? t("modules.register.success.title")
+              : t("modules.register.error.title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -109,54 +105,72 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
               <h4 className="font-medium text-sm">
                 {t("modules.register.success.registrationStatus")}
               </h4>
-              <p className="text-sm text-muted-foreground mt-1">
-                {getStatusText(registrationStatus)}
-              </p>
+              {registrationStatus === "success" ? (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {getStatusText(registrationStatus)}
+                </p>
+              ) : (
+                <div className="text-sm text-muted-foreground mt-1 font-medium text-desctructive">
+                  {registrationMessages?.map((msg: string) => (
+                    <div>{msg}</div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
           {/* File Upload Status */}
-          <div className="flex items-start gap-3 p-3 rounded-lg border">
-            <div className="flex-shrink-0 mt-0.5">
-              {getStatusIcon(uploadStatus)}
-            </div>
-            <div className="flex-1">
-              <h4 className="font-medium text-sm">
-                {t("modules.register.success.uploadStatus")}
-              </h4>
-              <p className="text-sm text-muted-foreground mt-1">
-                {getUploadStatusText(uploadStatus)}
-              </p>
-              {uploadMessage && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  {uploadMessage}
+          {uploadStatus && (
+            <div className="flex items-start gap-3 p-3 rounded-lg border">
+              <div className="flex-shrink-0 mt-0.5">
+                {getStatusIcon(uploadStatus)}
+              </div>
+              <div className="flex-1">
+                <h4 className="font-medium text-sm">
+                  {t("modules.register.success.uploadStatus")}
+                </h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {getUploadStatusText(uploadStatus)}
                 </p>
-              )}
+                {uploadMessage && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {uploadMessage}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-3 pt-2">
-            <Button onClick={handleGoToLogin} className="w-full">
-              {t("modules.register.success.goToLogin")}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+            {registrationStatus === "success" ? (
+              <>
+                <Button onClick={() => onClose?.()} className="w-full">
+                  Okay
+                  {/* <ArrowRight className="w-4 h-4 ml-2" /> */}
+                </Button>
 
-            <Button
-              variant="outline"
-              onClick={handleResendVerification}
-              disabled={isResending}
-              className="w-full"
-            >
-              {isResending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {t("modules.register.success.resendingVerification")}
-                </>
-              ) : (
-                t("modules.register.success.resendVerification")
-              )}
-            </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleResendVerification}
+                  disabled={isResending}
+                  className="w-full"
+                >
+                  {isResending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {t("modules.register.success.resendingVerification")}
+                    </>
+                  ) : (
+                    t("modules.register.success.resendVerification")
+                  )}
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => onClose?.()} className="w-full">
+                Try again
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>

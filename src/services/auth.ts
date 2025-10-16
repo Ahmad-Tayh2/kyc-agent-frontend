@@ -98,8 +98,8 @@ export async function register(payload: RegisterPayload) {
   }
 }
 
-export async function uploadFiles(agentId: string, formData: FormData) {
-  return fetch(API_URLS.agents.uploadDocuments(agentId), {
+export async function uploadAuthFiles(agentId: string, formData: FormData) {
+  return fetch(API_URLS.agents.uploadAuthDocuments(agentId), {
     method: "POST",
     body: formData,
   });
@@ -174,10 +174,10 @@ export async function forgotPassword(email: string) {
 
     const response = await res.json();
 
-    if (!res.ok) {
-      const errorMessage = response.message || "Failed to send reset email";
-      throw new Error(errorMessage);
-    }
+    // if (!res.ok) {
+    //   const errorMessage = response.message || "Failed to send reset email";
+    //   throw new Error(errorMessage);
+    // }
 
     return response;
   } catch (error) {
@@ -216,6 +216,32 @@ export async function resetPassword(
     return response;
   } catch (error) {
     console.error("Reset password error:", error);
+    throw error;
+  }
+}
+
+export async function changePassword(data: any) {
+  try {
+    const res = await fetch(API_URLS.auth.changePassword, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const response = await res.json();
+
+    // if (!res.ok) {
+    //   const errorMessage =
+    //     response.message || "Failed to resend verification email";
+    //   throw new Error(errorMessage);
+    // }
+
+    return response;
+  } catch (error) {
+    console.error("Resend verification error:", error);
     throw error;
   }
 }
@@ -270,6 +296,20 @@ export async function refreshToken() {
   }
 }
 
+export async function verifyEmail(email: string, token: string) {
+  const res = await fetch(
+    API_URLS.auth.verifyEmail + `?email=${email}&token=${token}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const response = await res.json();
+  return response;
+}
 // export const getAuthUser = async (): Promise<ApiResponse<LoginResponse>> => {
 //   return authenticatedApiRequest<LoginResponse>({
 //     method: "GET",

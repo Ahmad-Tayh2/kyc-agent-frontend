@@ -1,6 +1,6 @@
 import { API_URLS } from "@/constants/api";
 import apiClient from "@/lib/axiosInstance";
-import { handleApiResponse } from "@/lib/handleApiResponse";
+// import { handleApiResponse } from "@/lib/handleApiResponse";
 import type {
   CustomerCreateData,
   CustomerIdentityFileData,
@@ -73,10 +73,35 @@ export const customersService = {
     customerId: string | number,
     recipientId: string | number
   ) => {
-    const response = await apiClient.post(
-      API_URLS.customers.attachRecipient(customerId, recipientId)
+    try {
+      const res = await fetch(
+        API_URLS.customers.attachRecipient(customerId, recipientId),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      return res.json();
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+    }
+  },
+
+  getCustomerIndentityDocument: async (customerId: string | number) => {
+    const response = await apiClient.get(
+      API_URLS.customers.identityDocuments(customerId)
     );
-    return handleApiResponse(response.data);
+    return response.data;
+  },
+
+  getCustomerIncomeDocument: async (customerId: string | number) => {
+    const response = await apiClient.get(
+      API_URLS.customers.incomeDocuments(customerId)
+    );
+    return response.data;
   },
 
   uploadIdentityDocuments: async (
@@ -84,15 +109,15 @@ export const customersService = {
     data: CustomerIdentityFileData
   ) => {
     const formData = new FormData();
-    formData.append("document_type", data.documentType);
-    formData.append("document_number", data.documentNumber);
-    formData.append("issuing_date", data.documentIssueDate);
-    formData.append("expiry_date", data.documentExpiryDate);
-    if (data.frontDocument) formData.append("front_image", data.frontDocument);
-    if (data.backDocument) formData.append("back_image", data.backDocument);
+    formData.append("document_type", data.document_type);
+    formData.append("document_number", data.document_number);
+    formData.append("issuing_date", data.issuing_date);
+    formData.append("expiry_date", data.expiry_date);
+    if (data.front_image) formData.append("front_image", data.front_image);
+    if (data.back_image) formData.append("back_image", data.back_image);
 
     const response = await apiClient.post(
-      API_URLS.customers.uploadIdentityDocuments(id),
+      API_URLS.customers.identityDocuments(id),
       formData,
       {
         headers: {
@@ -112,7 +137,7 @@ export const customersService = {
     formData.append("document_type", data.document_type);
 
     const response = await apiClient.post(
-      API_URLS.customers.uploadIncomeDocuments(id),
+      API_URLS.customers.incomeDocuments(id),
       formData,
       {
         headers: {
