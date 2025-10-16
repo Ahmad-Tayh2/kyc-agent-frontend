@@ -11,6 +11,7 @@ export const API_URLS = {
     resendVerification: `${baseUrl}/auth/agents/send-verification-email`,
     refresh: `${baseUrl}/auth/refresh`,
     user: `${baseUrl}/auth/user`,
+    verifyEmail: `${baseUrl}/auth/verify-email`,
   },
   otp: {
     verify: `${baseUrl}/auth/otp/verify`,
@@ -26,8 +27,10 @@ export const API_URLS = {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
     update: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
 
-    uploadDocuments: (agentId: string | number) =>
+    uploadAuthDocuments: (agentId: string | number) =>
       `${baseUrl}/auth/agents/${agentId}/id-documents`,
+    uploadDocuments: (agentId: string | number) =>
+      `${baseUrl}/agents/${agentId}/id-documents`,
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,

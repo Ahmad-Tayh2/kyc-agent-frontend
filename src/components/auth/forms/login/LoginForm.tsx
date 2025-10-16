@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { useLogin } from "@/hooks/data/useAuth";
+import { useResendVerification } from "@/hooks/data/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { validate } from "@/lib/validate";
 import ErrorField from "@/components/shared/ErrorField";
+import ActionButton from "@/components/shared/ActionButton";
 
 interface LoginErrorsTypes {
   email?: string[];
@@ -42,11 +44,28 @@ const LoginForm: React.FC<{
     remember: false,
   });
   const [errors, setErrors] = React.useState<LoginErrorsTypes | null>(null);
+  const [error, setError] = React.useState({
+    message: "",
+    status: "",
+  });
+  const [emailToVerify, setEmailToVerify] = React.useState("");
   const [hasSubmitted, setHasSubmitted] = React.useState(false);
 
   const { mutateAsync: loginAsync, status } = useLogin();
+  const { mutateAsync: sendVerificationEmail } = useResendVerification();
   const navigate = useNavigate();
-
+  const resetEveryThing = () => {
+    setData({
+      email: "",
+      password: "",
+      remember: false,
+    });
+    setError({
+      message: "",
+      status: "",
+    });
+    setErrors(null);
+  };
   const handleChange =
     (field: keyof typeof data) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -60,6 +79,10 @@ const LoginForm: React.FC<{
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setHasSubmitted(true);
+    setError({
+      message: "",
+      status: "",
+    });
 
     // Validate on submit
     const { errors: loginErrors } = validate(loginSchema, data);
@@ -83,11 +106,19 @@ const LoginForm: React.FC<{
       } else {
         onSuccess(data.email);
       }
+      console.log(" success  response= ", response);
     } catch (err: any) {
       // Access error response data if available
       const errorResponse = err.response?.data;
-      toast.error(errorResponse?.message);
+      // toast.error(errorResponse?.message);
       setErrors(errorResponse?.errors);
+      setError({
+        status: errorResponse?.errors?.status,
+        message: errorResponse?.message,
+      });
+      if (errorResponse?.errors?.status === "inactive") {
+        setEmailToVerify(data?.email);
+      }
 
       // if (err instanceof z.ZodError) {
       //   // map errors to your UI
@@ -95,6 +126,12 @@ const LoginForm: React.FC<{
       //   console.log(" errors *********** ---- ",errors);
       // }
       // Error is handled by React Query's error state
+    }
+  };
+  const onResendVerificationEmail = async () => {
+    const result = await sendVerificationEmail(emailToVerify);
+    if (result.status) {
+      resetEveryThing();
     }
   };
   return (
@@ -140,6 +177,20 @@ const LoginForm: React.FC<{
         <ErrorField errors={errors?.password} />
       </div>
 
+      {error?.message && (
+        <div className="flex items-center gap-2">
+          <ErrorField errors={[error?.message]} />
+          {error?.status === "inactive" && (
+            <button
+              type="button"
+              onClick={onResendVerificationEmail}
+              className="text-primary text-sm hover:underline ml-auto"
+            >
+              Resend Email
+            </button>
+          )}
+        </div>
+      )}
       <div className="flex items-center justify-between ">
         <button
           type="button"
@@ -149,7 +200,6 @@ const LoginForm: React.FC<{
           {t("modules.login.forgotPassword")}
         </button>
       </div>
-
       {/* Submit Button */}
       <Button
         type="submit"

@@ -8,6 +8,7 @@ import AuthPage from "@/pages/AuthPage";
 import CustomerFormPage from "@/pages/CustomerFormPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import VerificationEmailPage from "@/pages/VerificationEmailPage";
 import UserProfilePage from "@/pages/UserProfilePage";
 import UserSettingsPage from "@/pages/UserSettingsPage";
 import { DashboardLayout } from "../layouts/DashboardLayout";
@@ -82,6 +83,10 @@ export const AppRoutes = () => (
       <Route
         path={ROUTES.AUTH.RESET_PASSWORD}
         element={<ResetPasswordPage />}
+      />
+      <Route
+        path={ROUTES.AUTH.VERIFY_EMAIL}
+        element={<VerificationEmailPage />}
       />
 
       {/* Payment routes - These should be public or protected based on your requirements */}

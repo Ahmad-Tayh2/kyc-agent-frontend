@@ -461,6 +461,11 @@
           "placeholder": "$t(common.fields.streetName.placeholder)",
           "error": "$t(common.validation.required)"
         },
+        "country": {
+          "label": "$t(common.fields.country.label)",
+          "placeholder": "$t(common.fields.country.placeholder)",
+          "error": "$t(common.validation.required)"
+        },
         "city": {
           "label": "$t(common.fields.city.label)",
           "placeholder": "$t(common.fields.city.placeholder)",
@@ -491,14 +496,13 @@
         "houseNumber": {
           "label": "$t(common.fields.houseNumber.label)"
         },
-        "country": {
-          "label": "$t(common.fields.country.label)"
-        },
+
         "postalCode": {
           "label": "$t(common.fields.postalCode.label)"
         },
         "extraAddressDetails": {
-          "label": "$t(common.fields.extraAddressDetails.label)"
+          "label": "$t(common.fields.extraAddressDetails.label)",
+          "placeholder": "$t(common.fields.extraAddressDetails.placeholder)"
         },
 
         "businessName": {

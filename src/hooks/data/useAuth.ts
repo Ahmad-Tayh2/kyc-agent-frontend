@@ -40,7 +40,7 @@ export function useRegisterAndUpload() {
               formData.append("files", file);
             });
 
-            const uploadResponse = await authService.uploadFiles(
+            const uploadResponse = await authService.uploadAuthFiles(
               agentId,
               formData
             );
@@ -125,6 +125,24 @@ export function useResetPassword() {
 export function useResendVerification() {
   return useMutation({
     mutationFn: authService.resendVerification,
+    onSuccess: () =>
+      toast.success(
+        "Verification email sent. Check your inbox to activate your account."
+      ),
+  });
+}
+
+export function useVerifyEmail({
+  token,
+  email,
+}: {
+  token: string;
+  email: string;
+}) {
+  return useQuery({
+    queryFn: () => authService.verifyEmail(email, token),
+    queryKey: ["auth-verify-agent-email", token, email],
+    enabled: !!token && !!email,
   });
 }
 

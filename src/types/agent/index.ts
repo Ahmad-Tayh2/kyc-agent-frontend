@@ -148,7 +148,7 @@ export interface ProfileFormData {
   state: string;
   postalCode: string;
   extraAddressDetails: string;
-  gender: "male" | "female";
+  gender: "male" | "female" | "";
 
   // Business Information
   businessName: string;
@@ -167,4 +167,9 @@ export interface ProfileFormData {
   sendingAgentGroupId?: number;
   payoutAgentGroupId?: number;
   commission: number;
+}
+
+export interface agentDocsData {
+  files: File[];
+  document_type: string;
 }

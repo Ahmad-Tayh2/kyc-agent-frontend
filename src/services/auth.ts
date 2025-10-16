@@ -98,8 +98,8 @@ export async function register(payload: RegisterPayload) {
   }
 }
 
-export async function uploadFiles(agentId: string, formData: FormData) {
-  return fetch(API_URLS.agents.uploadDocuments(agentId), {
+export async function uploadAuthFiles(agentId: string, formData: FormData) {
+  return fetch(API_URLS.agents.uploadAuthDocuments(agentId), {
     method: "POST",
     body: formData,
   });
@@ -245,6 +245,7 @@ export async function changePassword(data: any) {
     throw error;
   }
 }
+
 export async function resendVerification(email: string) {
   try {
     const res = await fetch(API_URLS.auth.resendVerification, {
@@ -295,6 +296,20 @@ export async function refreshToken() {
   }
 }
 
+export async function verifyEmail(email: string, token: string) {
+  const res = await fetch(
+    API_URLS.auth.verifyEmail + `?email=${email}&token=${token}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const response = await res.json();
+  return response;
+}
 // export const getAuthUser = async (): Promise<ApiResponse<LoginResponse>> => {
 //   return authenticatedApiRequest<LoginResponse>({
 //     method: "GET",

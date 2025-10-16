@@ -47,8 +47,12 @@ const CustomerEditPage = () => {
   const { data: identityDataResponse } = useGetIdentityDocuments(id!);
   const { data: incomeDataResponse } = useGetIncomeDocuments(id!);
 
-  const { mutateAsync: uploadIdentityDocuments } = useUploadIdentityDocuments();
-  const { mutateAsync: uploadIncomeDocuments } = useUploadIncomeDocuments();
+  const {
+    mutateAsync: uploadIdentityDocuments,
+    isPending: isPendingIndentity,
+  } = useUploadIdentityDocuments();
+  const { mutateAsync: uploadIncomeDocuments, isPending: isPendingIncomes } =
+    useUploadIncomeDocuments();
 
   const {
     data: transfersResponse,
@@ -182,7 +186,7 @@ const CustomerEditPage = () => {
     {
       sectionTitle: "Documents",
       onSave: handleSaveDocuments,
-      loading: isUpdateCustomerPending,
+      loading: isPendingIndentity || isPendingIncomes,
       editMode: basicInfoEditMode,
       setEditMode: setBasicInfoEditMode,
       content: (
@@ -191,9 +195,6 @@ const CustomerEditPage = () => {
           setIdentityData={setIdentityData}
           incomeData={incomeData}
           setIncomeData={setIncomeData}
-          // formData={formData}
-          // handleInputChange={handleInputChange}
-          // handleDateChange={handleDateChange}
           editMode={basicInfoEditMode}
         />
       ),
@@ -230,14 +231,7 @@ const CustomerEditPage = () => {
         )}
       </div>
 
-      <EditMultiSectionCard
-        // sectionTitle="Customer Bio"
-        // onSave={handleSave}
-        // loading={isUpdateCustomerPending}
-        // editMode={basicInfoEditMode}
-        // setEditMode={setBasicInfoEditMode}
-        customerSections={customerSections}
-      />
+      <EditMultiSectionCard customerSections={customerSections} />
       <EditSectionCard sectionTitle="Recent transactions">
         <div className="p-5 flex flex-col gap-5">
           <DataTable

@@ -4,15 +4,18 @@ import { Label } from "@/components/ui/label";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
 import { useTranslation } from "react-i18next";
+import ErrorField from "../shared/ErrorField";
 
 interface BusinessInfoFormProps {
   formData: any;
+  errors: Record<string, string>;
   handleInputChange: (field: string, value: any) => void;
   editMode: boolean;
 }
 
 const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
   formData,
+  errors,
   handleInputChange,
   editMode,
 }) => {
@@ -49,6 +52,9 @@ const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
             onChange={(e) => handleInputChange("businessName", e.target.value)}
             placeholder={t("modules.profile.fields.businessName.placeholder")}
           />
+          {errors?.businessName && (
+            <ErrorField errors={[errors?.businessName]} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -65,6 +71,9 @@ const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
               "modules.profile.fields.businessStreetName.placeholder"
             )}
           />
+          {errors?.businessStreetName && (
+            <ErrorField errors={[errors?.businessStreetName]} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -81,6 +90,9 @@ const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
               "modules.profile.fields.businessHouseNumber.placeholder"
             )}
           />
+          {errors?.businessHouseNumber && (
+            <ErrorField errors={[errors?.businessHouseNumber]} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -96,6 +108,9 @@ const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
               "modules.profile.fields.businessPostalCode.placeholder"
             )}
           />
+          {errors?.businessPostalCode && (
+            <ErrorField errors={[errors?.businessPostalCode]} />
+          )}
         </div>
         <SearchableSelect
           label={t("modules.profile.fields.businessCountry.label")}
@@ -108,7 +123,9 @@ const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
           loading={countriesLoading}
           disabled={!editMode}
           required
+          error={errors?.businessCountry}
         />
+
         <SearchableSelect
           label={t("modules.profile.fields.businessCity.label")}
           placeholder={t("modules.profile.fields.businessCity.placeholder")}
@@ -120,6 +137,7 @@ const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
           loading={businessCitiesLoading}
           disabled={!editMode || !formData.businessCountry}
           required
+          error={errors?.businessCity}
         />
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -135,6 +153,9 @@ const BusinessInfoForm: React.FC<BusinessInfoFormProps> = ({
               "modules.profile.fields.businessExtraAddressDetails.placeholder"
             )}
           />
+          {errors?.businessExtraAddressDetails && (
+            <ErrorField errors={[errors?.businessExtraAddressDetails]} />
+          )}
         </div>
       </div>
     </div>

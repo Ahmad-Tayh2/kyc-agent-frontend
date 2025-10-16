@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import ProfileHeader from "../components/profile/ProfileHeader";
-import EditSectionCard from "../components/shared/EditSectionCard";
 import PersonalInfoForm from "../components/profile/PersonalInfoForm";
 import BusinessInfoForm from "../components/profile/BusinessInfoForm";
-import { useAgentProfile, useUpdateAgentProfile } from "@/hooks/data/useAgent";
-import type { ProfileFormData } from "@/types/agent";
+import {
+  useAgentProfile,
+  useUpdateAgentProfile,
+  useUploadAgentDocs,
+} from "@/hooks/data/useAgent";
+import type { agentDocsData, ProfileFormData } from "@/types/agent";
+import { useTranslation } from "react-i18next";
+import EditMultiSectionCard from "@/components/shared/EditMultiSectionCard";
+import AgentDocumentUpload from "@/components/profile/AgentDocumentUpload";
 
 // Utility function to get agent ID from localStorage
 const getUserIdFromStorage = (): number | null => {
@@ -32,7 +38,7 @@ const initialFormData: ProfileFormData = {
   state: "",
   postalCode: "",
   extraAddressDetails: "",
-  gender: "male",
+  gender: "",
 
   // Business Information
   businessName: "",
@@ -54,8 +60,11 @@ const initialFormData: ProfileFormData = {
 };
 
 const UserProfilePage = () => {
+  const [t] = useTranslation("global");
   const agentId = React.useMemo(() => getUserIdFromStorage(), []);
   const { data: profileData, isLoading } = useAgentProfile(agentId);
+  const { mutateAsync: uploadDocs, isPending: isDocsPending } =
+    useUploadAgentDocs();
   const { mutateAsync: updateProfile, isPending } =
     useUpdateAgentProfile(agentId);
 
@@ -127,6 +136,13 @@ const UserProfilePage = () => {
     if (field === "businessCountry") {
       setFormData((prev) => ({ ...prev, businessCity: "" }));
     }
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: "",
+      }));
+    }
   };
 
   // Handle date changes
@@ -136,7 +152,59 @@ const UserProfilePage = () => {
       [field]: value,
     }));
   };
+  //validate fields
 
+  const validateFields = () => {
+    // Basic validation
+    const newErrors: Record<string, string> = {};
+    if (!formData.firstName)
+      newErrors.firstName = t("modules.register.fields.firstName.error");
+    if (!formData.lastName)
+      newErrors.lastName = t("modules.register.fields.lastName.error");
+    if (!formData.dob) newErrors.dob = t("modules.register.fields.dob.error");
+    if (!formData.email)
+      newErrors.email = t("modules.register.fields.email.error");
+    if (!formData.gender)
+      newErrors.gender = t("modules.register.fields.email.error");
+
+    if (!formData.streetName)
+      newErrors.streetName = t("modules.register.fields.streetName.error");
+    if (!formData.houseNumber)
+      newErrors.houseNumber = t("modules.register.fields.houseNumber.error");
+    if (!formData.city)
+      newErrors.city = t("modules.register.fields.city.error");
+    if (!formData.country)
+      newErrors.country = t("modules.register.fields.country.error");
+
+    if (!formData.countryCode)
+      newErrors.countryCode = t("common.validation.required");
+    if (!formData.phone)
+      newErrors.phone = t("modules.register.fields.phone.error");
+
+    if (formData.agentType === "business_partner") {
+      if (!formData.businessName)
+        newErrors.businessName = t(
+          "modules.register.fields.businessName.error"
+        );
+      if (!formData.businessStreetName)
+        newErrors.businessStreetName = t(
+          "modules.register.fields.businessStreetName.error"
+        );
+      if (!formData.businessHouseNumber)
+        newErrors.businessHouseNumber = t(
+          "modules.register.fields.businessHouseNumber.error"
+        );
+      if (!formData.businessCity)
+        newErrors.businessCity = t(
+          "modules.register.fields.businessCity.error"
+        );
+      if (!formData.businessCountry)
+        newErrors.businessCountry = t(
+          "modules.register.fields.businessCountry.error"
+        );
+    }
+    return newErrors;
+  };
   // Prepare update payload
   const prepareUpdatePayload = () => ({
     user: {
@@ -178,17 +246,74 @@ const UserProfilePage = () => {
       },
     }),
   });
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
   // Handle form submission
   const handleFormSave = async () => {
     try {
-      const payload = prepareUpdatePayload();
+      const validationErrors = validateFields();
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+      const payload: any = prepareUpdatePayload();
       await updateProfile(payload);
       setEditMode(false);
     } catch (error) {
       console.error("Failed to update profile:", error);
     }
   };
+  const [docsData, setDocsData] = useState<agentDocsData>({
+    document_type: "identity",
+    files: [],
+  });
+  const handleSaveDocuments = () => {
+    if (!agentId) return;
+    uploadDocs({ id: agentId!, data: docsData });
+  };
+
+  const agentProfileSections: any[] = [
+    {
+      sectionTitle: "Profile Information",
+      onSave: handleFormSave,
+      loading: isPending,
+      editMode: editMode,
+      setEditMode: setEditMode,
+      content: (
+        <>
+          <PersonalInfoForm
+            formData={formData}
+            errors={errors}
+            handleInputChange={handleInputChange}
+            handleDateChange={handleDateChange}
+            editMode={editMode}
+          />
+
+          {formData.agentType === "business_partner" && (
+            <BusinessInfoForm
+              formData={formData}
+              errors={errors}
+              handleInputChange={handleInputChange}
+              editMode={editMode}
+            />
+          )}
+        </>
+      ),
+    },
+    {
+      sectionTitle: "Documents",
+      onSave: handleSaveDocuments,
+      loading: isDocsPending,
+      editMode: editMode,
+      setEditMode: setEditMode,
+      content: (
+        <AgentDocumentUpload
+          docsData={docsData}
+          setDocsData={setDocsData}
+          editMode={editMode}
+        />
+      ),
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -203,7 +328,7 @@ const UserProfilePage = () => {
       <ProfileHeader name={formData.firstName + " " + formData.lastName} />
 
       <div className="mt-6 space-y-6">
-        <EditSectionCard
+        {/* <EditSectionCard
           sectionTitle="Profile Information"
           onSave={handleFormSave}
           loading={isPending}
@@ -212,6 +337,7 @@ const UserProfilePage = () => {
         >
           <PersonalInfoForm
             formData={formData}
+            errors={errors}
             handleInputChange={handleInputChange}
             handleDateChange={handleDateChange}
             editMode={editMode}
@@ -219,11 +345,14 @@ const UserProfilePage = () => {
           {formData.agentType === "business_partner" && (
             <BusinessInfoForm
               formData={formData}
+              errors={errors}
               handleInputChange={handleInputChange}
               editMode={editMode}
             />
           )}
-        </EditSectionCard>
+        </EditSectionCard> */}
+
+        <EditMultiSectionCard customerSections={agentProfileSections} />
       </div>
     </div>
   );

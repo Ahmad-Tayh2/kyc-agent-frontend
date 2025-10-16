@@ -103,7 +103,6 @@ const ChangePasswordForm = () => {
     } else {
       setErrors(result?.errors);
     }
-    console.log(" result = =  ** - -", result);
   };
   return (
     <form className="p-5 flex flex-col gap-5">

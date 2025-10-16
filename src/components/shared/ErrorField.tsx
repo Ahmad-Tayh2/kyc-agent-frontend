@@ -2,9 +2,9 @@ export default function ErrorField(props: { errors?: string[] }) {
   const { errors } = props;
   if (!errors?.length) return <></>;
   return (
-    <div className="text-destructive text-xs bg-red-50 py-1 px-2 my-1 rounded-md">
+    <div className="text-xs my-1 rounded-md">
       {errors?.map((err: string) => (
-        <div>{err}</div>
+        <span className="text-destructive text-xs">{err}</span>
       ))}
     </div>
   );
