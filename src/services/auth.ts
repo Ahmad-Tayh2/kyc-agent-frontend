@@ -174,10 +174,10 @@ export async function forgotPassword(email: string) {
 
     const response = await res.json();
 
-    if (!res.ok) {
-      const errorMessage = response.message || "Failed to send reset email";
-      throw new Error(errorMessage);
-    }
+    // if (!res.ok) {
+    //   const errorMessage = response.message || "Failed to send reset email";
+    //   throw new Error(errorMessage);
+    // }
 
     return response;
   } catch (error) {

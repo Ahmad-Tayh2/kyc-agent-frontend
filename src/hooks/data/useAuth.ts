@@ -14,21 +14,27 @@ export function useRegisterAndUpload() {
   return useMutation({
     mutationFn: async ({ payload, files }: { payload: any; files: File[] }) => {
       console.log("Data to send =", { payload, files });
-
+      // registration
+      // :
       try {
         // Step 1: Register the user
         const registerResponse = await authService.register(payload);
         const registerData = await registerResponse.json();
 
-        if (!registerResponse.ok) {
-          throw new Error(
-            `Registration failed: ${registerData?.errors || "Unknown error"}`
-          );
-        }
+        // if (!registerResponse.ok) {
+        //   throw new Error(
+        //     `Registration failed: ${registerData?.errors || "Unknown error"}`
+        //   );
+        // }
 
         const agentId = registerData?.data?.agent?.id;
         if (!agentId) {
-          throw new Error("Agent ID not found in registration response");
+          return {
+            registration: registerData,
+            // upload: uploadResult,
+            success: false,
+          };
+          // throw new Error("Agent ID not found in registration response");
         }
 
         // Step 2: Upload files if provided
@@ -37,27 +43,27 @@ export function useRegisterAndUpload() {
           try {
             const formData = new FormData();
             files.forEach((file) => {
-              formData.append("files", file);
+              formData.append("files[]", file);
             });
 
             const uploadResponse = await authService.uploadAuthFiles(
               agentId,
               formData
             );
-            if (uploadResponse.ok) {
-              uploadResult = await uploadResponse.json();
-            } else {
-              // Upload failed but registration succeeded
-              console.warn("File upload failed:", uploadResponse.status);
-              uploadResult = {
-                status: "error",
-                message: `Upload failed with status ${uploadResponse.status}`,
-              };
-            }
+            uploadResult = await uploadResponse.json();
+            // if (uploadResponse.ok) {
+            // } else {
+            //   // Upload failed but registration succeeded
+            //   console.warn("File upload failed:", uploadResponse.status);
+            //   uploadResult = {
+            //     status: "error",
+            //     message: `Upload failed with status ${uploadResponse.status}`,
+            //   };
+            // }
           } catch (uploadError) {
             console.warn("File upload error:", uploadError);
             uploadResult = {
-              status: "error",
+              status:false,
               message: "File upload failed due to network or server error",
             };
           }
