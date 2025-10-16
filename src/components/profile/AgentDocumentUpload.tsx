@@ -4,12 +4,16 @@ import FileIcon from "@/assets/icons/file-icon.svg?react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import { serverUrl } from "@/constants/api";
 export default function AgentDocumentUpload(props: any) {
-  const { editMode, setDocsData, docsData } = props;
+  const { editMode, setDocsData, docsData, gotDocs } = props;
   const [t] = useTranslation("global");
   useEffect(() => {
     console.log(" docsData ==== ", docsData);
   }, [docsData]);
+  const handleOpenFile = (pathLink: string) => {
+    window.open(pathLink, "_blank", "noopener,noreferrer");
+  };
   return (
     <div className="p-5">
       <div className="md:col-span-2 flex flex-col gap-2">
@@ -53,24 +57,59 @@ export default function AgentDocumentUpload(props: any) {
             {errors.identityFiles}
           </span>
         )} */}
-        {[...docsData?.files]?.map((file: File, idx: number) => (
-          <div
-            key={idx}
-            className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2"
-          >
-            <span>
-              {/* You can use an icon here */}
-              <FileIcon color="var(--primary)" />
-            </span>
-            <div>
-              <div className="font-medium">{file.name}</div>
-              <div className="text-xs text-[#656565]">
-                {(file.size / 1024).toFixed(0)}{" "}
-                {/* {t("modules.register.fields.identity.fileSize")} */}
+        {[...docsData?.files]?.length ? (
+          [...docsData?.files]?.map((file: File, idx: number) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2"
+            >
+              <span>
+                {/* You can use an icon here */}
+                <FileIcon color="var(--primary)" />
+              </span>
+              <div>
+                <div className="font-medium">{file.name}</div>
+                <div className="text-xs text-[#656565]">
+                  {(file.size / 1024).toFixed(0)}{" "}
+                  {/* {t("modules.register.fields.identity.fileSize")} */}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <>
+            {gotDocs.path1 && (
+              <div
+                className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2 cursor-pointer hover:bg-primary/5"
+                onClick={() => handleOpenFile(serverUrl + gotDocs.path1)}
+              >
+                <span>
+                  {/* You can use an icon here */}
+                  <FileIcon color="var(--primary)" />
+                </span>
+                <div>
+                  <div className="font-medium">ID Document 1</div>
+                  <div className="text-xs text-[#656565]"></div>
+                </div>
+              </div>
+            )}
+            {gotDocs.path2 && (
+              <div
+                className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2 cursor-pointer hover:bg-primary/5"
+                onClick={() => handleOpenFile(serverUrl + gotDocs.path2)}
+              >
+                <span>
+                  {/* You can use an icon here */}
+                  <FileIcon color="var(--primary)" />
+                </span>
+                <div>
+                  <div className="font-medium">ID Document 2</div>
+                  <div className="text-xs text-[#656565]"></div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

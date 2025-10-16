@@ -266,9 +266,12 @@ const UserProfilePage = () => {
     document_type: "identity",
     files: [],
   });
-  const handleSaveDocuments = () => {
+  const handleSaveDocuments = async () => {
     if (!agentId) return;
-    uploadDocs({ id: agentId!, data: docsData });
+    const result = await uploadDocs({ id: agentId!, data: docsData });
+    if (result?.status) {
+      setEditMode(false);
+    }
   };
 
   const agentProfileSections: any[] = [
@@ -308,6 +311,10 @@ const UserProfilePage = () => {
       content: (
         <AgentDocumentUpload
           docsData={docsData}
+          gotDocs={{
+            path1: profileData?.data?.user?.agent?.identity_file_path_1,
+            path2: profileData?.data?.user?.agent?.identity_file_path_2,
+          }}
           setDocsData={setDocsData}
           editMode={editMode}
         />
@@ -326,32 +333,7 @@ const UserProfilePage = () => {
   return (
     <div className="px-6 py-2 h-fit">
       <ProfileHeader name={formData.firstName + " " + formData.lastName} />
-
       <div className="mt-6 space-y-6">
-        {/* <EditSectionCard
-          sectionTitle="Profile Information"
-          onSave={handleFormSave}
-          loading={isPending}
-          editMode={editMode}
-          setEditMode={setEditMode}
-        >
-          <PersonalInfoForm
-            formData={formData}
-            errors={errors}
-            handleInputChange={handleInputChange}
-            handleDateChange={handleDateChange}
-            editMode={editMode}
-          />
-          {formData.agentType === "business_partner" && (
-            <BusinessInfoForm
-              formData={formData}
-              errors={errors}
-              handleInputChange={handleInputChange}
-              editMode={editMode}
-            />
-          )}
-        </EditSectionCard> */}
-
         <EditMultiSectionCard customerSections={agentProfileSections} />
       </div>
     </div>

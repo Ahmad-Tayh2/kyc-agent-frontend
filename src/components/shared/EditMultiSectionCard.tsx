@@ -2,6 +2,7 @@ import React, { useState, type ReactElement } from "react";
 import EditIcon from "@/assets/icons/edit-icon.svg?react";
 import SaveIcon from "@/assets/icons/save-icon.svg?react";
 import { cn } from "@/lib/utils";
+import Loader from "./Loader";
 
 interface EditSection {
   sectionTitle?: string;
@@ -72,7 +73,11 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
           </div>
         )}
       </div>
-      {customerSections?.[selectedSection]?.content}
+      {customerSections?.[selectedSection]?.loading ? (
+        <Loader size="50px" className="p-5 h-[50vh]" />
+      ) : (
+        customerSections?.[selectedSection]?.content
+      )}
     </div>
   );
 };

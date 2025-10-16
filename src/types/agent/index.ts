@@ -55,6 +55,8 @@ export interface Agent {
   created_at: string;
   updated_at: string;
   business_details?: BusinessDetails;
+  identity_file_path_1?: string | null;
+  identity_file_path_2?: string | null;
 }
 
 export interface User {
