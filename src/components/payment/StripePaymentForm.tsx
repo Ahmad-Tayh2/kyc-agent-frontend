@@ -7,7 +7,7 @@ import type { StripeCardElementChangeEvent } from '@stripe/stripe-js';
 import { useState } from 'react';
 
 interface StripePaymentFormProps {
-  transactionId?: number;
+  transactionId?: number | string; // Allow string transaction references
   paymentLinkToken?: string;
   amount?: number;
   currency?: string;
