@@ -34,7 +34,11 @@ export function useGetCustomer(id: string | number) {
   });
 }
 
-export function useUpdateCustomer(id: string | number, onSuccess?: () => void) {
+export function useUpdateCustomer(
+  id: string | number,
+  onSuccess: () => void,
+  onError: (data: any) => void
+) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<CustomerCreateData>) =>
@@ -43,6 +47,10 @@ export function useUpdateCustomer(id: string | number, onSuccess?: () => void) {
       onSuccess?.();
       toast.success("Customer updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-customers"] });
+    },
+    onError: (err: any) => {
+      console.log(" errrrr   =", err?.response?.data?.errors);
+      onError(err?.response?.data?.errors);
     },
   });
 }
@@ -125,7 +133,10 @@ export function useGetIncomeDocuments(customerId: string | number) {
   });
 }
 
-export function useUploadIdentityDocuments() {
+export function useUploadIdentityDocuments(
+  onSucces: () => void,
+  onError: (data: any) => void
+) {
   return useMutation({
     mutationFn: ({
       id,
@@ -136,9 +147,11 @@ export function useUploadIdentityDocuments() {
     }) => customersService.uploadIdentityDocuments(id, data),
     onSuccess: () => {
       toast.success("Identity documents uploaded successfully!");
+      onSucces?.();
     },
-    onError: () => {
-      toast.error("Identity documents upload failed!");
+    onError: (err: any) => {
+      console.log(" errrrr   =", err?.response?.data?.errors);
+      onError(err?.response?.data?.errors);
     },
   });
 }

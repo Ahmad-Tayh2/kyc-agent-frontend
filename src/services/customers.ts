@@ -109,12 +109,12 @@ export const customersService = {
     data: CustomerIdentityFileData
   ) => {
     const formData = new FormData();
-    formData.append("document_type", data.documentType);
-    formData.append("document_number", data.documentNumber);
-    formData.append("issuing_date", data.documentIssueDate);
-    formData.append("expiry_date", data.documentExpiryDate);
-    if (data.frontDocument) formData.append("front_image", data.frontDocument);
-    if (data.backDocument) formData.append("back_image", data.backDocument);
+    formData.append("document_type", data.document_type);
+    formData.append("document_number", data.document_number);
+    formData.append("issuing_date", data.issuing_date);
+    formData.append("expiry_date", data.expiry_date);
+    if (data.front_image) formData.append("front_image", data.front_image);
+    if (data.back_image) formData.append("back_image", data.back_image);
 
     const response = await apiClient.post(
       API_URLS.customers.identityDocuments(id),

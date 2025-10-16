@@ -29,6 +29,71 @@ import type {
   CustomerIdentityFileData,
   CustomerIncomeFileData,
 } from "@/types/customers";
+import { z } from "zod";
+export const identitySchema = z.object({
+  document_type: z.string().nonempty("Document type is required"),
+  document_number: z.string().nonempty("Document number is required"),
+  issuing_date: z
+    .string()
+    .nonempty("Document issue date is required")
+    .refine((date) => !isNaN(Date.parse(date)), "Invalid date format"),
+  expiry_date: z
+    .string()
+    .nonempty("Document expiry date is required")
+    .refine((date) => !isNaN(Date.parse(date)), "Invalid date format"),
+  front_image: z
+    .any()
+    .refine((file) => file != null, "Front document file is required"),
+  // back_image: z
+  //   .any()
+  //   .refine((file) => file != null, "Back document file is required"),
+});
+
+export const customerSchema = z.object({
+  first_name: z
+    .string()
+    .min(2, "First name must contain at least 2 characters")
+    .max(50, "First name is too long"),
+  last_name: z
+    .string()
+    .min(2, "Last name must contain at least 2 characters")
+    .max(50, "Last name is too long"),
+  email: z
+    .string()
+    .nonempty("Email is required")
+    .email("Invalid email address format"),
+  date_of_birth: z
+    .string()
+    .nonempty("Date of birth is required")
+    .refine(
+      (date) => !isNaN(Date.parse(date)),
+      "Invalid date format (must be YYYY-MM-DD)"
+    ),
+  gender: z.enum(["male", "female"], {
+    errorMap: () => ({ message: "Gender is required" }),
+  }),
+  country_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "Country is required"),
+
+  city_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "City is required"),
+  street_name: z.string().nonempty("Street name is required"),
+  house_number: z.string().nonempty("Street name is required"),
+  // postal_code: z.string().min(3, "Postal code is too short"),
+  phone_number: z
+    .string()
+    .nonempty("Phone number is required")
+    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+  // .min(6, "Phone number is too short"),
+  country_phone_code: z.string().nonempty("Country phone code required"),
+  status: z.string().optional(),
+});
 
 const CustomerEditPage = () => {
   const navigate = useNavigate();
@@ -42,7 +107,14 @@ const CustomerEditPage = () => {
   const paymentsCols = customerPaymentLinksColumns();
 
   const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
-    useUpdateCustomer(id!, () => setBasicInfoEditMode(false));
+    useUpdateCustomer(
+      id!,
+      () => {
+        setBasicInfoEditMode(false);
+        setValidationErrors({});
+      },
+      (errorsData: any) => setValidationErrors(errorsData)
+    );
 
   const { data: identityDataResponse } = useGetIdentityDocuments(id!);
   const { data: incomeDataResponse } = useGetIncomeDocuments(id!);
@@ -50,7 +122,13 @@ const CustomerEditPage = () => {
   const {
     mutateAsync: uploadIdentityDocuments,
     isPending: isPendingIndentity,
-  } = useUploadIdentityDocuments();
+  } = useUploadIdentityDocuments(
+    () => {
+      setBasicInfoEditMode(false);
+      setIdentityErrors({});
+    },
+    (errorsData: any) => setIdentityErrors(errorsData)
+  );
   const { mutateAsync: uploadIncomeDocuments, isPending: isPendingIncomes } =
     useUploadIncomeDocuments();
 
@@ -86,9 +164,10 @@ const CustomerEditPage = () => {
         country_id: data.data?.country.id,
         city_id: data.data?.city.id,
         state_id: data.data?.state?.id,
-        postal_code: data.data.postal_code,
+        postal_code: data.data.postal_code ?? "",
         first_name: data.data.first_name,
         last_name: data.data.last_name,
+        email: data?.data?.email,
         date_of_birth: data.data.date_of_birth,
         gender: data.data.gender,
         street_name: data.data.street_name,
@@ -113,24 +192,54 @@ const CustomerEditPage = () => {
   const handleDateChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
+  const [identityErrors, setIdentityErrors] = useState<Record<string, string>>(
+    {}
+  );
+  const validateIdentityData = () => {
+    const result = identitySchema.safeParse(identityData);
+
+    if (!result.success) {
+      const errors: any = result.error.flatten().fieldErrors;
+      setIdentityErrors(errors);
+      return false;
+    }
+    setIdentityErrors({});
+    return true;
+  };
 
   const handleSave = async () => {
     try {
       const payloadToUpdate: any = {
         first_name: formData.first_name,
         last_name: formData.last_name,
+        email: formData.email,
         date_of_birth: formData.date_of_birth,
         gender: formData.gender,
         country_id: formData.country_id,
         city_id: formData.city_id,
         street_name: formData.street_name,
         house_number: formData.house_number,
-        postal_code: formData.postal_code,
+        postal_code: formData.postal_code ?? "",
         phone_number: formData.phone_number,
         country_phone_code: formData.country_phone_code,
         status: formData.status,
       };
-      await updateCustomer(payloadToUpdate);
+      const validationResult = customerSchema.safeParse(payloadToUpdate);
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.flatten().fieldErrors;
+        console.log("check ==== errors = ", errors);
+
+        // // Optional: show toast or inline messages
+        // toast.error("Please fix the highlighted errors before saving.");
+        setValidationErrors(errors); // We'll define this state below
+        return;
+      }
+      const result = await updateCustomer(payloadToUpdate);
+      console.log(" customer data resultttt  == = ", result);
     } catch (e) {
       // handle error
     }
@@ -138,7 +247,16 @@ const CustomerEditPage = () => {
   const handleSaveDocuments = async () => {
     console.log(" save documents ", identityData);
     console.log(" save incomeData ", incomeData);
-    uploadIdentityDocuments({ id: id!, data: identityData });
+    const isIdentityValid = validateIdentityData();
+    if (!isIdentityValid) {
+      // optional: toast.error("Please fix errors before saving");
+      return;
+    }
+    const result = await uploadIdentityDocuments({
+      id: id!,
+      data: identityData,
+    });
+    console.log(" result doccccssss  = ", result);
     if (incomeData?.length) {
       for (let data of incomeData) {
         uploadIncomeDocuments({ id: id!, data });
@@ -152,12 +270,12 @@ const CustomerEditPage = () => {
     ] || "#000000";
 
   const [identityData, setIdentityData] = useState<CustomerIdentityFileData>({
-    documentType: "",
-    documentNumber: "",
-    documentIssueDate: "",
-    documentExpiryDate: "",
-    frontDocument: null,
-    backDocument: null,
+    document_type: "",
+    document_number: "",
+    issuing_date: "",
+    expiry_date: "",
+    front_image: null,
+    back_image: null,
   });
   const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
   useEffect(() => {
@@ -180,6 +298,7 @@ const CustomerEditPage = () => {
           handleInputChange={handleInputChange}
           handleDateChange={handleDateChange}
           editMode={basicInfoEditMode}
+          validationErrors={validationErrors}
         />
       ),
     },
@@ -196,6 +315,7 @@ const CustomerEditPage = () => {
           incomeData={incomeData}
           setIncomeData={setIncomeData}
           editMode={basicInfoEditMode}
+          identityErrors={identityErrors}
         />
       ),
     },

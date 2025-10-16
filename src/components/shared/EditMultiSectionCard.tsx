@@ -73,11 +73,7 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
           </div>
         )}
       </div>
-      {customerSections?.[selectedSection]?.loading ? (
-        <Loader size="50px" className="p-5 h-[50vh]" />
-      ) : (
-        customerSections?.[selectedSection]?.content
-      )}
+      {customerSections?.[selectedSection]?.content}
     </div>
   );
 };

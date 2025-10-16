@@ -11,10 +11,17 @@ import type {
 } from "@/services/customers";
 import SearchableSelect from "../ui/searchable-select";
 import { cn } from "@/lib/utils";
+import ErrorField from "../shared/ErrorField";
 
 export default function CustomerDocumentUpload(props: any) {
-  const { identityData, setIdentityData, incomeData, setIncomeData, editMode } =
-    props;
+  const {
+    identityData,
+    setIdentityData,
+    incomeData,
+    setIncomeData,
+    editMode,
+    identityErrors,
+  } = props;
 
   return (
     <div className="space-y-6 p-5">
@@ -23,6 +30,7 @@ export default function CustomerDocumentUpload(props: any) {
           identityData={identityData}
           setIdentityData={setIdentityData}
           editMode={editMode}
+          identityErrors={identityErrors}
         />
       </div>
       <RenderProofOfIncome
@@ -35,14 +43,11 @@ export default function CustomerDocumentUpload(props: any) {
 }
 
 const RenderCustomerIdentity = (props: any) => {
-  const { identityData, setIdentityData, editMode } = props;
-  useEffect(() => {
-    console.log(" identityData = ", identityData);
-  }, [identityData]);
+  const { identityData, setIdentityData, editMode, identityErrors } = props;
 
   const documentTypesOptions = [
     { label: "Passport", value: "passport" },
-    { label: "National ID", value: "id_card'" },
+    { label: "National ID", value: "id_card" },
     { label: "Residence Permit ", value: "residence_permit" },
     { label: "Driver's License", value: "driving_license" },
   ];
@@ -57,10 +62,10 @@ const RenderCustomerIdentity = (props: any) => {
     if (isMultiple) {
     } else {
       const file = files[0];
-      if (field === "frontDocument") {
-        handleIdentityChange("frontDocument", file);
-      } else if (field === "backDocument") {
-        handleIdentityChange("backDocument", file);
+      if (field === "front_image") {
+        handleIdentityChange("front_image", file);
+      } else if (field === "back_image") {
+        handleIdentityChange("back_image", file);
       }
     }
   };
@@ -73,6 +78,9 @@ const RenderCustomerIdentity = (props: any) => {
       [field]: value,
     }));
   };
+  useEffect(() => {
+    console.log(" identityData = = ", identityData);
+  }, [identityData]);
   return (
     <div className="flex flex-col gap-5">
       <h3 className="text-lg font-semibold">Identity files</h3>
@@ -82,47 +90,51 @@ const RenderCustomerIdentity = (props: any) => {
           <SearchableSelect
             label="Document Type"
             options={documentTypesOptions}
-            value={identityData?.documentType || ""}
+            value={identityData?.document_type || ""}
             onChange={(value: string | number) =>
-              handleIdentityChange("documentType", String(value))
+              handleIdentityChange("document_type", String(value))
             }
             disabled={!editMode}
             required
+            error={identityErrors?.document_type}
           />
-          {/* <SingleSelectDropdown
-          
-          /> */}
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="documentNumber">
+          <Label htmlFor="document_number">
             Document Number
             <span className="text-red-500">*</span>
           </Label>
           <Input
-            id="documentNumber"
-            name="documentNumber"
+            id="document_number"
+            name="document_number"
             placeholder="Enter document number"
-            value={identityData?.documentNumber || ""}
+            value={identityData?.document_number || ""}
             onChange={(e) =>
-              handleIdentityChange("documentNumber", e.target.value)
+              handleIdentityChange("document_number", e.target.value)
             }
             disabled={!editMode}
           />
+          {identityErrors?.document_number && (
+            <ErrorField errors={[identityErrors?.document_number[0]]} />
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="documentIssueDate">
+          <Label htmlFor="issuing_date">
             Document Issue Date
             <span className="text-red-500">*</span>
           </Label>
           <DatePicker
-            value={identityData?.documentIssueDate || ""}
+            value={identityData?.issuing_date || ""}
             onChange={(date: string) =>
-              handleIdentityChange("documentIssueDate", date)
+              handleIdentityChange("issuing_date", date)
             }
             disabled={!editMode}
           />
+          {identityErrors?.issuing_date && (
+            <ErrorField errors={[identityErrors?.issuing_date[0]]} />
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="documentExpiryDate">
@@ -130,13 +142,16 @@ const RenderCustomerIdentity = (props: any) => {
             <span className="text-red-500">*</span>
           </Label>
           <DatePicker
-            value={identityData?.documentExpiryDate || ""}
+            value={identityData?.expiry_date || ""}
             onChange={(date: string) =>
-              handleIdentityChange("documentExpiryDate", date)
+              handleIdentityChange("expiry_date", date)
             }
             disabled={!editMode}
             // endMonth={documentExpiryEndMonth}
           />
+          {identityErrors?.expiry_date && (
+            <ErrorField errors={[identityErrors?.expiry_date[0]]} />
+          )}
         </div>
       </div>
 
@@ -150,15 +165,13 @@ const RenderCustomerIdentity = (props: any) => {
             <input
               type="file"
               accept="image/*,.pdf"
-              onChange={(e) =>
-                handleFileUpload("frontDocument", e.target.files)
-              }
+              onChange={(e) => handleFileUpload("front_image", e.target.files)}
               className="hidden"
-              id="frontDocument"
+              id="front_image"
               disabled={!editMode}
             />
             <label
-              htmlFor="frontDocument"
+              htmlFor="front_image"
               className={cn(
                 "p-6 cursor-pointer text-center flex flex-col items-center justify-center h-full w-full",
                 !editMode && "opacity-50 cursor-not-allowed"
@@ -172,12 +185,12 @@ const RenderCustomerIdentity = (props: any) => {
               </p>
             </label>
           </div>
-          {/* {identityData?.frontDocument && (
+          {/* {identityData?.front_image && (
             <p className="text-sm text-green-600">
-              ✓ {identityData?.frontDocument?.name}
+              ✓ {identityData?.front_image?.name}
             </p>
           )} */}
-          {identityData?.frontDocument && (
+          {identityData?.front_image && (
             <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
               <span>
                 {/* You can use an icon here */}
@@ -185,13 +198,16 @@ const RenderCustomerIdentity = (props: any) => {
               </span>
               <div>
                 <div className="font-medium">
-                  {identityData?.frontDocument?.name}
+                  {identityData?.front_image?.name}
                 </div>
                 <div className="text-xs text-[#656565]">
-                  {(identityData?.frontDocument?.size / 1024).toFixed(0)}{" "}
+                  {(identityData?.front_image?.size / 1024).toFixed(0)}{" "}
                 </div>
               </div>
             </div>
+          )}
+          {identityErrors?.front_image && (
+            <ErrorField errors={[identityErrors?.front_image[0]]} />
           )}
         </div>
 
@@ -201,13 +217,13 @@ const RenderCustomerIdentity = (props: any) => {
             <input
               type="file"
               accept="image/*,.pdf"
-              onChange={(e) => handleFileUpload("backDocument", e.target.files)}
+              onChange={(e) => handleFileUpload("back_image", e.target.files)}
               className="hidden"
-              id="backDocument"
+              id="back_image"
               disabled={!editMode}
             />
             <label
-              htmlFor="backDocument"
+              htmlFor="back_image"
               className={cn(
                 "p-6 cursor-pointer text-center flex flex-col items-center justify-center h-full w-full",
                 !editMode && "opacity-50 cursor-not-allowed"
@@ -221,12 +237,12 @@ const RenderCustomerIdentity = (props: any) => {
               </p>
             </label>
           </div>
-          {/* {identityData?.backDocument && (
+          {/* {identityData?.back_image && (
             <p className="text-sm text-green-600">
-              ✓ {identityData?.backDocument?.name}
+              ✓ {identityData?.back_image?.name}
             </p>
           )} */}
-          {identityData?.backDocument && (
+          {identityData?.back_image && (
             <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
               <span>
                 {/* You can use an icon here */}
@@ -234,10 +250,10 @@ const RenderCustomerIdentity = (props: any) => {
               </span>
               <div>
                 <div className="font-medium">
-                  {identityData?.backDocument?.name}
+                  {identityData?.back_image?.name}
                 </div>
                 <div className="text-xs text-[#656565]">
-                  {(identityData?.backDocument?.size / 1024).toFixed(0)}{" "}
+                  {(identityData?.back_image?.size / 1024).toFixed(0)}{" "}
                 </div>
               </div>
             </div>

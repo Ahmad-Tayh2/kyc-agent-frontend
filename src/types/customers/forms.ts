@@ -25,12 +25,12 @@ export interface CustomerSearchParams {
 }
 
 export interface CustomerIdentityFileData {
-  documentType: string;
-  documentNumber: string;
-  documentIssueDate: string;
-  documentExpiryDate: string;
-  frontDocument: File | null;
-  backDocument: File | null;
+  document_type: string;
+  document_number: string;
+  issuing_date: string;
+  expiry_date: string;
+  front_image: File | null;
+  back_image: File | null;
 }
 
 export interface CustomerIncomeFileData {
