@@ -73,10 +73,21 @@ export const customersService = {
     customerId: string | number,
     recipientId: string | number
   ) => {
-    const response = await apiClient.post(
-      API_URLS.customers.attachRecipient(customerId, recipientId)
-    );
-    return handleApiResponse(response.data);
+    try {
+      const res = await fetch(
+        API_URLS.customers.attachRecipient(customerId, recipientId),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      return res.json();
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+    }
   },
 
   getCustomerIndentityDocument: async (customerId: string | number) => {

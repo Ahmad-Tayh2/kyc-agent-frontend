@@ -98,7 +98,6 @@ export function useGetCustomerRecipients(customerId: string | number) {
 }
 
 export function useAttachRecipientToCustomer() {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       customerId,
@@ -107,15 +106,6 @@ export function useAttachRecipientToCustomer() {
       customerId: string | number;
       recipientId: string | number;
     }) => customersService.attachRecipientToCustomer(customerId, recipientId),
-    onSuccess: (_, { customerId }) => {
-      toast.success("Recipient attached to customer successfully!");
-      queryClient.invalidateQueries({
-        queryKey: ["get-customer-recipients", customerId],
-      });
-    },
-    onError: () => {
-      toast.error("Failed to attach recipient to customer!");
-    },
   });
 }
 
