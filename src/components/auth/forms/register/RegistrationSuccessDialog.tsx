@@ -1,7 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CheckCircle, AlertCircle, ArrowRight, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -11,7 +10,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/constants/routes";
 import { useResendVerification } from "@/hooks/data/useAuth";
 
 interface RegistrationSuccessDialogProps {
@@ -33,15 +31,9 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
   uploadMessage,
   userEmail,
 }) => {
-  const navigate = useNavigate();
   const [t] = useTranslation("global");
   const { mutateAsync: resendVerification, isPending: isResending } =
     useResendVerification();
-
-  const handleGoToLogin = () => {
-    onClose();
-    navigate(ROUTES.AUTH.LOGIN);
-  };
 
   const handleResendVerification = async () => {
     try {

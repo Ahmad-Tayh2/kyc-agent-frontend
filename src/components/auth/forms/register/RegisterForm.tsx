@@ -103,33 +103,6 @@ const RegisterForm: React.FC<{
     businessCity: "",
     businessCountry: "",
   });
-  const resetData = () => {
-    setFormData({
-      firstName: "",
-      lastName: "",
-      dob: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      streetName: "",
-      houseNumber: "",
-      city: "",
-      country: "",
-      state: "",
-      postalCode: "",
-      extraAddressDetails: "",
-      phone: "",
-      countryCode: "",
-      gender: "",
-      businessName: "",
-      businessStreetName: "",
-      businessHouseNumber: "",
-      businessPostalCode: "",
-      businessExtraAddressDetails: "",
-      businessCity: "",
-      businessCountry: "",
-    });
-  };
 
   const { data: countries = [], isLoading: countriesLoading } = useCountries();
   const { data: cities = [], isLoading: citiesLoading } = useCitiesByCountry(

@@ -1,6 +1,6 @@
 import { API_URLS } from "@/constants/api";
 import apiClient from "@/lib/axiosInstance";
-import { handleApiResponse } from "@/lib/handleApiResponse";
+// import { handleApiResponse } from "@/lib/handleApiResponse";
 import type {
   CustomerCreateData,
   CustomerIdentityFileData,
