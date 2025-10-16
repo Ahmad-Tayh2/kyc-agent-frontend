@@ -11,10 +11,8 @@ import { useLogin } from "@/hooks/data/useAuth";
 import { useResendVerification } from "@/hooks/data/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { validate } from "@/lib/validate";
 import ErrorField from "@/components/shared/ErrorField";
-import ActionButton from "@/components/shared/ActionButton";
 
 interface LoginErrorsTypes {
   email?: string[];
