@@ -2,7 +2,6 @@ import React, { useState, type ReactElement } from "react";
 import EditIcon from "@/assets/icons/edit-icon.svg?react";
 import SaveIcon from "@/assets/icons/save-icon.svg?react";
 import { cn } from "@/lib/utils";
-import Loader from "./Loader";
 
 interface EditSection {
   sectionTitle?: string;

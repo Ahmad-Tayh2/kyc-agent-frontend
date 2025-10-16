@@ -122,13 +122,13 @@ const CustomerEditPage = () => {
   const {
     mutateAsync: uploadIdentityDocuments,
     isPending: isPendingIndentity,
-  } = useUploadIdentityDocuments(
-    () => {
+  } = useUploadIdentityDocuments({
+    onSuccess: () => {
       setBasicInfoEditMode(false);
       setIdentityErrors({});
     },
-    (errorsData: any) => setIdentityErrors(errorsData)
-  );
+    onError: (errorsData: any) => setIdentityErrors(errorsData),
+  });
   const { mutateAsync: uploadIncomeDocuments, isPending: isPendingIncomes } =
     useUploadIncomeDocuments();
 

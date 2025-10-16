@@ -133,10 +133,10 @@ export function useGetIncomeDocuments(customerId: string | number) {
   });
 }
 
-export function useUploadIdentityDocuments(
-  onSucces: () => void,
-  onError: (data: any) => void
-) {
+export function useUploadIdentityDocuments(actions?: {
+  onSuccess: () => void;
+  onError: (data: any) => void;
+}) {
   return useMutation({
     mutationFn: ({
       id,
@@ -147,11 +147,11 @@ export function useUploadIdentityDocuments(
     }) => customersService.uploadIdentityDocuments(id, data),
     onSuccess: () => {
       toast.success("Identity documents uploaded successfully!");
-      onSucces?.();
+      actions?.onSuccess?.();
     },
     onError: (err: any) => {
       console.log(" errrrr   =", err?.response?.data?.errors);
-      onError(err?.response?.data?.errors);
+      actions?.onError(err?.response?.data?.errors);
     },
   });
 }
