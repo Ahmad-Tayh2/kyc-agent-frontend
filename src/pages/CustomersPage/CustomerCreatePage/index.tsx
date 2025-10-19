@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
 import SearchNotFound from "@/components/shared/SearchNotFound";
+import { useAttachCustomerToAgent } from "@/hooks/data/useAgent";
 
 interface SearchFormData {
   customerNumber: string;
@@ -32,7 +33,31 @@ const CustomerCreatePage: React.FC = () => {
 
   const { mutateAsync: searchCustomer, isPending: isSearching } =
     useSearchCustomer();
-  const columns = searchCustomerColumns();
+  const { mutateAsync: attachCustomerToAgent } = useAttachCustomerToAgent();
+  useEffect(() => {
+    console.log("searchResults = = ", searchResults);
+  }, [searchResults]);
+  const handleAttachCustomerToAgent = async (customerId: number | string) => {
+    console.log(" customerId = ", customerId);
+    const result = await attachCustomerToAgent(customerId);
+    if (result?.status) {
+      setSearchResults((prev: any[]) => {
+        let updatedData: any[] = [];
+        if (prev?.length > 0) {
+          for (let customer of prev) {
+            if (customer?.id === customerId) {
+              updatedData?.push({
+                ...customer,
+                belongs_to_current_agent: true,
+              });
+            } else updatedData?.push(customer);
+          }
+        }
+        return updatedData;
+      });
+    }
+  };
+  const columns = searchCustomerColumns(handleAttachCustomerToAgent);
 
   const handleSearch = async () => {
     if (

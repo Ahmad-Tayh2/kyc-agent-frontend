@@ -32,6 +32,8 @@ export const API_URLS = {
       `${baseUrl}/auth/agents/${agentId}/id-documents`,
     uploadDocuments: (agentId: string | number) =>
       `${baseUrl}/agents/${agentId}/id-documents`,
+    attachCustomer: (agentId: string | number, customerId: string | number) =>
+      `${baseUrl}/agents/${agentId}/customers/${customerId}`,
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,

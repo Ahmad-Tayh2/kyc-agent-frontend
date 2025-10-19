@@ -37,3 +37,21 @@ export function useUploadAgentDocs() {
     },
   });
 }
+
+export function useAttachCustomerToAgent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (customerId: string | number) =>
+      agentService.attachCustomerToAgent(customerId),
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message);
+    },
+    onSuccess: () => {
+      toast.success("Customer Attached successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["get-customers"],
+      });
+    },
+  });
+}

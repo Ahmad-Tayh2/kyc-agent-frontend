@@ -58,4 +58,17 @@ export const agentService = {
     );
     return response.data;
   },
+
+  attachCustomerToAgent: async (customerId: string | number) => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const agentId = JSON.parse(userString)?.agent?.id;
+      if (agentId) {
+        const response = await apiClient.post(
+          API_URLS.agents.attachCustomer(agentId, customerId)
+        );
+        return response.data;
+      }
+    }
+  },
 };
