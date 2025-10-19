@@ -5,13 +5,14 @@ import type { AxiosResponse } from 'axios';
 export interface WorldpaySessionRequest {
   transactionReference?: string;
   paymentLinkToken?: string;
+  description?: string;
 }
 
 export interface WorldpaySessionResponse {
   payment_id: string | number;
   transaction_uuid: string;
-  merchant_code: string;
-  session_id: string; // This is actually the full session URL, not just an ID
+  redirect_url: string;
+  order_code: string;
 }
 
 /**
@@ -28,7 +29,25 @@ export const createWorldpaySession = async (data: WorldpaySessionRequest) => {
 };
 
 /**
- * Note: We're using Worldpay Hosted Payment Pages via direct URL redirect instead of
- * the JavaScript client, as our backend returns a complete payment session URL.
- * No need to load the Worldpay.js script anymore.
+ * Verifies payment status by order code
+ * @param orderCode The Worldpay order code to verify
+ * @returns Promise with the payment status data
+ */
+export const verifyPaymentStatus = async (orderCode: string) => {
+  return axiosInstance
+    .get(`/api/payments/status/${orderCode}`)
+    .then((response: AxiosResponse) =>
+      handleApiResponse<{
+        status: string;
+        order_code: string;
+        amount?: number;
+        currency?: string;
+      }>(response.data)
+    );
+};
+
+/**
+ * Note: We're using the simplified approach where the Laravel backend handles all Worldpay
+ * XML order creation and returns a redirect URL. The frontend simply redirects the user
+ * to this URL where they complete payment on Worldpay's secure pages.
  */

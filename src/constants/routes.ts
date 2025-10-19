@@ -39,6 +39,9 @@ export const ROUTES = {
     TRANSACTION: (transactionId: string | number) =>
       `/payment/worldpay/transaction/${transactionId}`,
     PAYMENT_LINK: (token: string) => `/payment/worldpay/links/${token}`,
+    SUCCESS: '/payment/success',
+    FAILED: '/payment/failed',
+    CANCELLED: '/payment/cancelled',
   },
   SUPPORT: {
     LIST: '/support',
