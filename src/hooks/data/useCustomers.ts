@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { ROUTES } from "@/constants/routes";
+// import { ROUTES } from "@/constants/routes";
 import {
   customersService,
   type CustomerCreateData,
@@ -9,7 +9,7 @@ import {
   type CustomerIncomeFileData,
   type CustomerSearchParams,
 } from "@/services/customers";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 export function useGetCustomers(filters?: string) {
   return useQuery({
