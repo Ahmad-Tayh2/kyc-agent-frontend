@@ -122,6 +122,15 @@ export default function PaymentMethodSelector({
         </Alert>
       )}
 
+      {selectedProvider === 'worldpay' && selectedMethod === 'card' && (
+        <Alert className='border-blue-200 bg-blue-50'>
+          <AlertDescription className='text-blue-700'>
+            You will be redirected to Worldpay to complete your payment
+            securely.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {selectedProvider === 'worldpay' &&
         selectedMethod === 'bank_transfer' && (
           <Alert className='border-blue-200 bg-blue-50'>

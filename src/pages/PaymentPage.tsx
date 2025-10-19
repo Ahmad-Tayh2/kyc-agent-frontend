@@ -15,7 +15,10 @@ import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const stripePromise = getStripe();
+// Function to get Stripe promise only when needed to avoid conflicts with Worldpay
+const getStripePromise = () => {
+  return getStripe();
+};
 
 interface PaymentPageProps {
   defaultProvider?: PaymentProvider;
@@ -61,8 +64,32 @@ export default function PaymentPage({
     }
   }, [transactionId, paymentLinkToken]);
 
-  const handlePaymentSuccess = (data: PaymentData) => {
-    setPaymentData(data);
+  const handlePaymentSuccess = (
+    data: PaymentData | Record<string, unknown>
+  ) => {
+    // Handle both PaymentData and generic success data from iframe/lightbox
+    if ('id' in data && 'transaction_uuid' in data) {
+      // It's a PaymentData object
+      setPaymentData(data as PaymentData);
+    } else {
+      // It's generic data from iframe/lightbox, create a minimal PaymentData object
+      const paymentData: PaymentData = {
+        id: Date.now(), // Temporary ID
+        transaction_uuid: (data.transaction_uuid as string) || 'unknown',
+        amount: paymentInfo.amount,
+        currency: paymentInfo.currency,
+        status: 'completed',
+        type: 'payment',
+        description: paymentInfo.description,
+        provider: 'worldpay',
+        provider_transaction_id: (data.order_code as string) || 'unknown',
+        provider_payment_method: 'card',
+        processed_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setPaymentData(paymentData);
+    }
     setPaymentStatus('success');
     setErrorMessage('');
   };
@@ -82,20 +109,19 @@ export default function PaymentPage({
     setPaymentData(null);
   };
 
-  // Loading state while Stripe initializes
-  if (!stripePromise) {
-    return (
-      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
-        <div className='text-center'>
-          <p className='text-gray-600'>Payment system is not available</p>
-          <Button onClick={handleGoBack} variant='outline' className='mt-4'>
-            <ArrowLeft className='w-4 h-4 mr-2' />
-            Go Back
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // Only initialize Stripe when it's the selected provider to avoid conflicts with Worldpay
+  const stripePromise =
+    selectedProvider === 'stripe' ? getStripePromise() : null;
+
+  // Clear any existing Stripe instances when switching to Worldpay
+  useEffect(() => {
+    if (selectedProvider === 'worldpay') {
+      // Clear any Stripe-related postMessage listeners that might interfere
+      console.log(
+        '🧹 Switching to Worldpay - clearing any Stripe interference'
+      );
+    }
+  }, [selectedProvider]);
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -254,19 +280,21 @@ export default function PaymentPage({
               />
 
               {/* Stripe Payment Form */}
-              {selectedProvider === 'stripe' && selectedMethod === 'card' && (
-                <Elements stripe={stripePromise}>
-                  <StripePaymentForm
-                    transactionId={transactionId} // Pass the transaction ID directly
-                    paymentLinkToken={paymentLinkToken}
-                    amount={paymentInfo.amount}
-                    currency={paymentInfo.currency}
-                    description={paymentInfo.description}
-                    onSuccess={handlePaymentSuccess}
-                    onError={handlePaymentError}
-                  />
-                </Elements>
-              )}
+              {selectedProvider === 'stripe' &&
+                selectedMethod === 'card' &&
+                stripePromise && (
+                  <Elements stripe={stripePromise}>
+                    <StripePaymentForm
+                      transactionId={transactionId} // Pass the transaction ID directly
+                      paymentLinkToken={paymentLinkToken}
+                      amount={paymentInfo.amount}
+                      currency={paymentInfo.currency}
+                      description={paymentInfo.description}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
+                    />
+                  </Elements>
+                )}
 
               {/* Other Payment Providers */}
               {selectedProvider === 'paypal' && (
@@ -284,7 +312,10 @@ export default function PaymentPage({
                 <WorldpayPaymentForm
                   transactionId={transactionId} // Pass the transaction ID directly
                   paymentLinkToken={paymentLinkToken}
+                  description={paymentInfo.description}
+                  mode='iframe' // Iframe mode using official Worldpay library
                   onError={handlePaymentError}
+                  onSuccess={handlePaymentSuccess}
                 />
               )}
 

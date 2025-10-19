@@ -6,6 +6,9 @@ import PrivateRoute from './PrivateRoute';
 import Loader from '@/components/shared/Loader';
 import AuthPage from '@/pages/AuthPage';
 import CustomerFormPage from '@/pages/CustomerFormPage';
+import PaymentCancelledPage from '@/pages/PaymentCancelledPage';
+import PaymentFailedPage from '@/pages/PaymentFailedPage';
+import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
 import RegisterPage from '@/pages/RegisterPage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import UserProfilePage from '@/pages/UserProfilePage';
@@ -109,6 +112,15 @@ export const AppRoutes = () => (
         path={ROUTES.WORLDPAY.PAYMENT_LINK(':token')}
         element={<PaymentPage defaultProvider='worldpay' />}
       />
+
+      {/* Worldpay callback routes */}
+      <Route path={ROUTES.WORLDPAY.SUCCESS} element={<PaymentSuccessPage />} />
+      <Route path={ROUTES.WORLDPAY.FAILED} element={<PaymentFailedPage />} />
+      <Route
+        path={ROUTES.WORLDPAY.CANCELLED}
+        element={<PaymentCancelledPage />}
+      />
+
       <Route element={<PrivateRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
