@@ -1,36 +1,36 @@
-import BackArrowIcon from '@/assets/icons/back-arrow.svg?react';
-import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
-import NextStepArrow from '@/assets/icons/next-step-arrow.svg?react';
-import ActionButton from '@/components/shared/ActionButton';
-import PageTitle from '@/components/shared/PageTitle';
-import { ROUTES } from '@/constants/routes';
+import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
+import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
+import NextStepArrow from "@/assets/icons/next-step-arrow.svg?react";
+import ActionButton from "@/components/shared/ActionButton";
+import PageTitle from "@/components/shared/PageTitle";
+import { ROUTES } from "@/constants/routes";
 import {
   useCitiesByCountry,
   useCountries,
   useStatesByCountry,
-} from '@/hooks/data/useAddress';
-import { useCreateBankAccount } from '@/hooks/data/useBankAccounts';
-import { useCurrencies } from '@/hooks/data/useCurrency';
-import { useGetCustomers } from '@/hooks/data/useCustomers';
-import { usePayoutLocations } from '@/hooks/data/usePayoutLocation';
-import { useCreateRecipientPayout } from '@/hooks/data/useRecipientPayout';
-import { useCreateRecipientRemittanceMethod } from '@/hooks/data/useRecipientRemittanceMethods';
+} from "@/hooks/data/useAddress";
+import { useCreateBankAccount } from "@/hooks/data/useBankAccounts";
+import { useCurrencies } from "@/hooks/data/useCurrency";
+import { useGetCustomers } from "@/hooks/data/useCustomers";
+import { usePayoutLocations } from "@/hooks/data/usePayoutLocation";
+import { useCreateRecipientPayout } from "@/hooks/data/useRecipientPayout";
+import { useCreateRecipientRemittanceMethod } from "@/hooks/data/useRecipientRemittanceMethods";
 import {
   useCreateRecipient,
   useCreateRecipientIntermediate,
-} from '@/hooks/data/useRecipients';
+} from "@/hooks/data/useRecipients";
 import {
   useRemittanceMethods,
   useVerifyAccountInfo,
-} from '@/hooks/data/useRemittanceMethod';
-import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import RecipientBankDetails from './components/RecipientBankDetails';
-import RecipientBasicDetails from './components/RecipientBasicDetails';
-import RemittanceMethodStep from './components/RemittanceMethodStep';
+} from "@/hooks/data/useRemittanceMethod";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+import RecipientBankDetails from "./components/RecipientBankDetails";
+import RecipientBasicDetails from "./components/RecipientBasicDetails";
+import RemittanceMethodStep from "./components/RemittanceMethodStep";
 
-type FormStep = 'basic' | 'remittance' | 'bank';
+type FormStep = "basic" | "remittance" | "bank";
 
 interface RecipientFormData {
   // Basic Details
@@ -60,7 +60,7 @@ interface RecipientFormData {
   remittance_methods: Array<{
     id?: string; // Temporary ID for UI management
     remittance_method_id: number;
-    verification_status: 'pending' | 'verified' | 'failed';
+    verification_status: "pending" | "verified" | "failed";
     verification_data?: {
       account_name_prefix: string;
       account_id_prefix: string;
@@ -97,34 +97,37 @@ interface RecipientFormData {
 
 const RecipientCreateForm: React.FC = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<FormStep>('basic');
+  const [currentStep, setCurrentStep] = useState<FormStep>("basic");
   const [completedSteps, setCompletedSteps] = useState<FormStep[]>([]);
   const [recipientId, setRecipientId] = useState<number | null>(null);
 
+  const [searchParams] = useSearchParams();
+  const customerIdQuery = searchParams.get("customer");
+
   const [formData, setFormData] = useState<RecipientFormData>({
-    first_name: '',
-    last_name: '',
-    email: '',
-    date_of_birth: '',
-    street_name: '',
-    house_number: '',
-    postal_code: '',
-    city_id: '',
-    country_id: '',
-    gender: '',
-    country_phone_code: '',
-    phone_number: '',
+    first_name: "",
+    last_name: "",
+    email: "",
+    date_of_birth: "",
+    street_name: "",
+    house_number: "",
+    postal_code: "",
+    city_id: "",
+    country_id: "",
+    gender: "",
+    country_phone_code: "",
+    phone_number: "",
     bank_details: {
-      bank_name: '',
-      account_number: '',
-      swift_code: '',
-      account_type: '',
-      iban: '',
-      bic_code: '',
-      bank_address: '',
-      currency_id: '',
-      extra_address_details: '',
-      state_id: '',
+      bank_name: "",
+      account_number: "",
+      swift_code: "",
+      account_type: "",
+      iban: "",
+      bic_code: "",
+      bank_address: "",
+      currency_id: "",
+      extra_address_details: "",
+      state_id: "",
     },
     rm_service_providers: [
       {
@@ -138,7 +141,7 @@ const RecipientCreateForm: React.FC = () => {
     payout_agents: [],
   });
 
-  console.log('formData:', formData.payout_agents);
+  console.log("formData:", formData.payout_agents);
 
   const { isPending: isCreatingRecipient } = useCreateRecipient();
   const {
@@ -157,10 +160,10 @@ const RecipientCreateForm: React.FC = () => {
   } = useCreateRecipientRemittanceMethod();
 
   const { data: countries = [] } = useCountries();
-  const { data: cities = [] } = useCitiesByCountry(formData.country_id || '');
+  const { data: cities = [] } = useCitiesByCountry(formData.country_id || "");
   const { data: states = [] } = useStatesByCountry(formData.country_id || null);
   const { data: currencies = [] } = useCurrencies();
-  const { data: customersResponse } = useGetCustomers('');
+  const { data: customersResponse } = useGetCustomers("");
   const { data: remittanceMethods = [] } = useRemittanceMethods();
   const { mutateAsync: verifyAccountInfo, isPending: isVerifying } =
     useVerifyAccountInfo();
@@ -206,10 +209,10 @@ const RecipientCreateForm: React.FC = () => {
   ];
 
   const accountTypeOptions = [
-    { label: 'Savings', value: 'savings' },
-    { label: 'Checking', value: 'checking' },
-    { label: 'Current', value: 'current' },
-    { label: 'Business', value: 'business' },
+    { label: "Savings", value: "savings" },
+    { label: "Checking", value: "checking" },
+    { label: "Current", value: "current" },
+    { label: "Business", value: "business" },
   ];
 
   const currencyOptions =
@@ -225,10 +228,10 @@ const RecipientCreateForm: React.FC = () => {
     }));
 
     // Clear city when country changes
-    if (field === 'country_id') {
+    if (field === "country_id") {
       setFormData((prev) => ({
         ...prev,
-        city_id: '',
+        city_id: "",
       }));
     }
   };
@@ -259,7 +262,7 @@ const RecipientCreateForm: React.FC = () => {
         {
           id: newId,
           remittance_method_id: methodId,
-          verification_status: 'pending' as const,
+          verification_status: "pending" as const,
         },
       ],
     }));
@@ -274,13 +277,13 @@ const RecipientCreateForm: React.FC = () => {
       ...prev,
       remittance_methods: prev.remittance_methods.map((method) => {
         if (method.id === id) {
-          if (field.includes('.')) {
-            const [parentField, childField] = field.split('.');
+          if (field.includes(".")) {
+            const [parentField, childField] = field.split(".");
             const parentValue = method[parentField as keyof typeof method];
             return {
               ...method,
               [parentField]: {
-                ...(parentValue && typeof parentValue === 'object'
+                ...(parentValue && typeof parentValue === "object"
                   ? (parentValue as Record<string, unknown>)
                   : {}),
                 [childField]: value,
@@ -309,7 +312,7 @@ const RecipientCreateForm: React.FC = () => {
 
   const handleAddMethodToRecipient = async (id: string) => {
     if (!recipientId) {
-      console.error('Cannot add remittance method: No recipient ID available');
+      console.error("Cannot add remittance method: No recipient ID available");
       return;
     }
 
@@ -318,7 +321,7 @@ const RecipientCreateForm: React.FC = () => {
     );
 
     if (!methodData) {
-      console.error('Method data not found');
+      console.error("Method data not found");
       return;
     }
 
@@ -342,7 +345,7 @@ const RecipientCreateForm: React.FC = () => {
         ),
       }));
     } catch (error) {
-      console.error('Failed to add remittance method to recipient:', error);
+      console.error("Failed to add remittance method to recipient:", error);
       // You could add toast notification here for user feedback
     }
   };
@@ -356,7 +359,7 @@ const RecipientCreateForm: React.FC = () => {
         {
           id: newId,
           payout_agent_id: payoutAgentId,
-          account_number: '',
+          account_number: "",
         },
       ],
     }));
@@ -378,49 +381,49 @@ const RecipientCreateForm: React.FC = () => {
     );
 
     if (!selectedMethod || !selectedMethod.validator_id || !methodData) {
-      console.log('Missing required data for verification');
+      console.log("Missing required data for verification");
       return;
     }
 
     try {
       // Check for validator name, fallback to validation_type if available
       const validationType =
-        selectedMethod.validator?.name || selectedMethod.validation_type || '';
+        selectedMethod.validator?.name || selectedMethod.validation_type || "";
 
       if (!validationType) {
-        console.error('No validation type found for method:', selectedMethod);
-        toast.error('Validation type not configured for this method');
+        console.error("No validation type found for method:", selectedMethod);
+        toast.error("Validation type not configured for this method");
         return;
       }
 
       const verificationRequest = {
         validation_type: validationType,
         service_data: {
-          serviceCode: '00003', // Default service code as specified
+          serviceCode: "00003", // Default service code as specified
           phoneNumber: `+${methodData.service_data?.country_phone_code?.replace(
             /^\+/,
-            ''
+            ""
           )}${methodData.service_data?.phone_number}`,
         },
         verification_data: {
           expected_account_name_prefix:
-            methodData.verification_data?.account_name_prefix || '',
+            methodData.verification_data?.account_name_prefix || "",
           expected_account_id_prefix:
-            methodData.verification_data?.account_id_prefix || '',
+            methodData.verification_data?.account_id_prefix || "",
         },
       };
 
       const response = await verifyAccountInfo(verificationRequest);
 
       // Check the actual API response structure
-      if (response.data?.status === 'success') {
-        handleUpdateRemittanceMethod(id, 'verification_status', 'verified');
+      if (response.data?.status === "success") {
+        handleUpdateRemittanceMethod(id, "verification_status", "verified");
       } else {
-        handleUpdateRemittanceMethod(id, 'verification_status', 'failed');
+        handleUpdateRemittanceMethod(id, "verification_status", "failed");
       }
     } catch (error) {
-      console.error('Verification failed:', error);
-      handleUpdateRemittanceMethod(id, 'verification_status', 'failed');
+      console.error("Verification failed:", error);
+      handleUpdateRemittanceMethod(id, "verification_status", "failed");
     }
   };
 
@@ -432,23 +435,30 @@ const RecipientCreateForm: React.FC = () => {
 
   const canNavigateToStep = (step: FormStep): boolean => {
     switch (step) {
-      case 'basic':
+      case "basic":
         return true;
-      case 'remittance':
-        return completedSteps.includes('basic');
-      case 'bank':
-        return completedSteps.includes('remittance');
+      case "remittance":
+        return completedSteps.includes("basic");
+      case "bank":
+        return completedSteps.includes("remittance");
       default:
         return false;
     }
   };
-
+  useEffect(() => {
+    if (customerIdQuery && customerOptions?.length > 0) {
+      const found = customerOptions?.find((item: any) => {
+        return String(item?.value) === String(customerIdQuery);
+      });
+      if (found) handleInputChange("customer_id", found?.value);
+    }
+  }, [customerIdQuery, customerOptions]);
   const handleNext = async () => {
     if (!completedSteps.includes(currentStep)) {
       setCompletedSteps((prev) => [...prev, currentStep]);
     }
 
-    if (currentStep === 'basic') {
+    if (currentStep === "basic") {
       // Create recipient when moving from basic to remittance step
       if (!recipientId) {
         try {
@@ -469,7 +479,7 @@ const RecipientCreateForm: React.FC = () => {
               city_id: parseInt(formData.city_id),
               state_id:
                 formData.bank_details.state_id &&
-                formData.bank_details.state_id !== ''
+                formData.bank_details.state_id !== ""
                   ? parseInt(formData.bank_details.state_id)
                   : undefined,
               country_id: parseInt(formData.country_id),
@@ -485,20 +495,20 @@ const RecipientCreateForm: React.FC = () => {
             setRecipientId(newRecipientId);
           }
         } catch (error) {
-          console.error('Error creating recipient:', error);
+          console.error("Error creating recipient:", error);
           return; // Don't proceed to next step if recipient creation fails
         }
       }
-      setCurrentStep('remittance');
-    } else if (currentStep === 'remittance') {
-      setCurrentStep('bank');
+      setCurrentStep("remittance");
+    } else if (currentStep === "remittance") {
+      setCurrentStep("bank");
     }
   };
 
   const handleSubmit = async () => {
     try {
       if (!recipientId) {
-        throw new Error('No recipient ID available for final submission');
+        throw new Error("No recipient ID available for final submission");
       }
 
       // Step 1: Create bank account - only if bank details are provided
@@ -507,7 +517,7 @@ const RecipientCreateForm: React.FC = () => {
         formData.bank_details.account_number
       ) {
         const bankAccountData = {
-          accountable_type: 'Recipient' as const,
+          accountable_type: "Recipient" as const,
           accountable_id: recipientId,
           first_name: formData.first_name,
           last_name: formData.last_name,
@@ -518,7 +528,7 @@ const RecipientCreateForm: React.FC = () => {
           city_id: parseInt(formData.city_id),
           state_id:
             formData.bank_details.state_id &&
-            formData.bank_details.state_id !== ''
+            formData.bank_details.state_id !== ""
               ? parseInt(formData.bank_details.state_id)
               : undefined,
           country_id: parseInt(formData.country_id),
@@ -542,10 +552,10 @@ const RecipientCreateForm: React.FC = () => {
       }
 
       // Final success and navigation
-      toast.success('Recipient created successfully!');
+      toast.success("Recipient created successfully!");
       navigate(ROUTES.RECIPIENTS.LIST);
     } catch (error) {
-      console.error('Error creating recipient:', error);
+      console.error("Error creating recipient:", error);
     }
   };
 
@@ -556,39 +566,39 @@ const RecipientCreateForm: React.FC = () => {
   const steps = [
     {
       number: 1,
-      title: 'Basic Details',
-      name: 'basic' as FormStep,
+      title: "Basic Details",
+      name: "basic" as FormStep,
     },
     {
       number: 2,
-      title: 'Remittance Method',
-      name: 'remittance' as FormStep,
+      title: "Remittance Method",
+      name: "remittance" as FormStep,
     },
     {
       number: 3,
-      title: 'Bank Details (Optional)',
-      name: 'bank' as FormStep,
+      title: "Bank Details (Optional)",
+      name: "bank" as FormStep,
     },
   ];
   const renderStepIndicator = () => (
-    <div className='flex items-center justify-start p-5'>
-      <div className='flex items-center space-x-4'>
+    <div className="flex items-center justify-start p-5">
+      <div className="flex items-center space-x-4">
         {steps?.map((step) => (
           <React.Fragment key={step.name}>
             <div
               key={step.name}
               className={`flex items-center p-2 rounded-full ${
                 currentStep === step.name
-                  ? 'text-white bg-primary'
-                  : 'text-gray-400'
+                  ? "text-white bg-primary"
+                  : "text-gray-400"
               }`}
               onClick={() => handleStepClick(step.name)}
             >
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center ${
                   currentStep === step.name
-                    ? 'text-primary bg-white'
-                    : 'border-gray-300'
+                    ? "text-primary bg-white"
+                    : "border-gray-300"
                 }`}
               >
                 {completedSteps.includes(step.name) &&
@@ -598,7 +608,7 @@ const RecipientCreateForm: React.FC = () => {
                   <span>{step.number}</span>
                 )}
               </div>
-              <span className='ml-2 font-medium'>{step.title}</span>
+              <span className="ml-2 font-medium">{step.title}</span>
             </div>
             {step.number < 3 && <NextStepArrow />}
           </React.Fragment>
@@ -608,27 +618,25 @@ const RecipientCreateForm: React.FC = () => {
   );
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
       {/* Header */}
-      <div className='flex justify-start items-center gap-3'>
+      <div className="flex justify-start items-center gap-3">
         <button
           onClick={handleCancel}
-          className='text-primary top-1 cursor-pointer'
+          className="text-primary top-1 cursor-pointer"
         >
           <BackArrowIcon width={30} height={30} />
         </button>
-        <PageTitle title='Add New Recipients' />
+        <PageTitle title="Add New Recipients" />
       </div>
 
       {/* Form Content */}
-      <div className='bg-white rounded-lg border'>
-        <div className='p-6 border-b-1'>Add new recipient details here.</div>
-
+      <div className="bg-white rounded-lg border">
+        <div className="p-6 border-b-1">Add new recipient details here.</div>
         {/* Step Indicator */}
         {renderStepIndicator()}
-
         {/* Step Content */}
-        {currentStep === 'basic' && (
+        {currentStep === "basic" && (
           <RecipientBasicDetails
             formData={formData}
             handleInputChange={handleInputChange}
@@ -639,8 +647,7 @@ const RecipientCreateForm: React.FC = () => {
             countryPhoneOptions={countryPhoneOptions}
           />
         )}
-
-        {currentStep === 'remittance' && (
+        {currentStep === "remittance" && (
           <RemittanceMethodStep
             remittanceMethods={remittanceMethods?.data || []}
             payoutAgents={payoutLocations?.data || []}
@@ -658,8 +665,7 @@ const RecipientCreateForm: React.FC = () => {
             isAddingRemittanceMethod={isAddingRemittanceMethod}
           />
         )}
-
-        {currentStep === 'bank' && (
+        {currentStep === "bank" && (
           <RecipientBankDetails
             formData={formData}
             handleBankDetailsChange={handleBankDetailsChange}
@@ -668,14 +674,13 @@ const RecipientCreateForm: React.FC = () => {
             stateOptions={stateOptions}
           />
         )}
-
         {/* Action Buttons */}
-        <div className='flex justify-end items-end gap-4 m-5 pt-5 border-t-1'>
-          <ActionButton title='cancel' onClick={handleCancel} type='cancel' />
+        <div className="flex justify-end items-end gap-4 m-5 pt-5 border-t-1">
+          <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
 
-          {currentStep === 'bank' ? (
+          {currentStep === "bank" ? (
             <ActionButton
-              title='save & continue'
+              title="save & continue"
               onClick={handleSubmit}
               buttonProps={{
                 disabled:
@@ -684,9 +689,9 @@ const RecipientCreateForm: React.FC = () => {
                   isCreatingRecipientPayout,
               }}
             />
-          ) : currentStep === 'remittance' ? (
+          ) : currentStep === "remittance" ? (
             <ActionButton
-              title='save & continue'
+              title="save & continue"
               onClick={handleNext}
               buttonProps={{
                 disabled:
@@ -701,20 +706,20 @@ const RecipientCreateForm: React.FC = () => {
                     );
                     return (
                       remittanceMethod?.validator_id &&
-                      method.verification_status !== 'verified'
+                      method.verification_status !== "verified"
                     );
                   }),
               }}
-              className='bg-teal-600 hover:bg-teal-700'
+              className="bg-teal-600 hover:bg-teal-700"
             />
           ) : (
             <ActionButton
-              title='save & continue'
+              title="save & continue"
               onClick={handleNext}
               buttonProps={{
                 disabled: isCreatingRecipientIntermediate,
               }}
-              className='bg-teal-600 hover:bg-teal-700'
+              className="bg-teal-600 hover:bg-teal-700"
             />
           )}
         </div>

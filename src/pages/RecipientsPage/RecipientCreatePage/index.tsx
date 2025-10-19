@@ -105,7 +105,9 @@ const RecipientCreatePage: React.FC = () => {
   };
 
   const handleCreateNew = () => {
-    navigate(ROUTES.RECIPIENTS.CREATE_FORM);
+    navigate(
+      ROUTES.RECIPIENTS.CREATE_FORM + `?customer=${searchForm.customer_id}`
+    );
   };
 
   const handleBack = () => {
