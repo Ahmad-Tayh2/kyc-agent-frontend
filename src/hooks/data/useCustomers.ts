@@ -80,7 +80,7 @@ export function useSearchCustomer() {
 }
 
 export function useCreateCustomer() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CustomerCreateData) =>
@@ -88,7 +88,7 @@ export function useCreateCustomer() {
     onSuccess: () => {
       toast.success("Customer created successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-customers"] });
-      navigate(ROUTES.CUSTOMERS.LIST);
+      // navigate(ROUTES.CUSTOMERS.LIST);
     },
     onError: () => {
       toast.error("Customer creation failed!");
@@ -135,7 +135,8 @@ export function useGetIncomeDocuments(customerId: string | number) {
 
 export function useUploadIdentityDocuments(actions?: {
   onSuccess: () => void;
-  onError: (data: any) => void;
+  onError?: (data: any) => void;
+  onCreateError?: (data: any) => void;
 }) {
   return useMutation({
     mutationFn: ({
@@ -151,7 +152,8 @@ export function useUploadIdentityDocuments(actions?: {
     },
     onError: (err: any) => {
       console.log(" errrrr   =", err?.response?.data?.errors);
-      actions?.onError(err?.response?.data?.errors);
+      actions?.onError?.(err?.response?.data?.errors);
+      actions?.onCreateError?.(err);
     },
   });
 }
