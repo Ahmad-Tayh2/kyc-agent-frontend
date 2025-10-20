@@ -8,7 +8,17 @@ export default function PaymentFailedPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [orderCode, setOrderCode] = useState<string | null>(null);
+  const [paymentData, setPaymentData] = useState<{
+    orderCode: string | null;
+    provider: string | null;
+    transactionId: string | null;
+    paymentLinkToken: string | null;
+  }>({
+    orderCode: null,
+    provider: null,
+    transactionId: null,
+    paymentLinkToken: null,
+  });
 
   const mapErrorCode = useCallback((errorCode: string): string => {
     const errorMap: Record<string, string> = {
@@ -38,8 +48,16 @@ export default function PaymentFailedPage() {
     const errorCode = searchParams.get('error_code');
     const errorMessageParam = searchParams.get('error_message');
     const error = searchParams.get('error');
+    const provider = searchParams.get('provider');
+    const transactionId = searchParams.get('transactionId');
+    const paymentLinkToken = searchParams.get('paymentLinkToken');
 
-    setOrderCode(orderCodeParam);
+    setPaymentData({
+      orderCode: orderCodeParam,
+      provider,
+      transactionId,
+      paymentLinkToken,
+    });
 
     // Map error messages to user-friendly versions
     let displayMessage = 'Payment failed. Please try again.';
@@ -50,6 +68,8 @@ export default function PaymentFailedPage() {
       displayMessage = mapErrorMessage(errorCode, errorMessageParam);
     } else if (errorCode) {
       displayMessage = mapErrorCode(errorCode);
+    } else if (error) {
+      displayMessage = error;
     }
 
     setErrorMessage(displayMessage);
@@ -60,7 +80,15 @@ export default function PaymentFailedPage() {
   }, [searchParams, mapErrorMessage, mapErrorCode]);
 
   const handleRetry = () => {
-    navigate('/checkout');
+    // Retry with the original token if available
+    if (paymentData.transactionId) {
+      navigate(`/payment/${paymentData.transactionId}`);
+    } else if (paymentData.paymentLinkToken) {
+      navigate(`/payment/${paymentData.paymentLinkToken}`);
+    } else {
+      // Fallback to dashboard if no retry data available
+      navigate('/dashboard');
+    }
   };
 
   const handleGoHome = () => {
@@ -90,12 +118,20 @@ export default function PaymentFailedPage() {
             </Alert>
           )}
 
-          {orderCode && (
+          {paymentData.orderCode && (
             <div className='bg-gray-50 rounded-lg p-4 mb-6'>
               <div className='flex justify-between text-sm'>
                 <span className='text-gray-600'>Order Code:</span>
-                <span className='font-medium'>{orderCode}</span>
+                <span className='font-medium'>{paymentData.orderCode}</span>
               </div>
+              {paymentData.provider && (
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gray-600'>Provider:</span>
+                  <span className='font-medium capitalize'>
+                    {paymentData.provider}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 

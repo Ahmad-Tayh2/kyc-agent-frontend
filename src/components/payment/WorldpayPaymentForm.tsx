@@ -64,9 +64,6 @@ const WorldpayPaymentForm = ({
         setStatus('loading');
         showPaymentLoading('Initializing payment...');
 
-        console.log('Debug - transactionId:', transactionId);
-        console.log('Debug - paymentLinkToken:', paymentLinkToken);
-
         // Create session request data
         const requestData = transactionId
           ? { transactionReference: String(transactionId), description }
@@ -75,21 +72,7 @@ const WorldpayPaymentForm = ({
         // Validate payment data
         validatePaymentData(requestData);
 
-        console.log('Creating Worldpay session with data:', requestData);
-
         const session = await createWorldpaySession(requestData);
-
-        console.log('Worldpay session created:', session);
-        console.log('Redirect URL:', session.redirect_url);
-        console.log('Order Code:', session.order_code);
-
-        // Check for common issues
-        if (!session.redirect_url.includes('worldpay.com')) {
-          console.warn(
-            '⚠️ WARNING: Redirect URL does not contain worldpay.com:',
-            session.redirect_url
-          );
-        }
 
         // Store order code and payment ID for tracking
         localStorage.setItem('worldpay_order_code', session.order_code);
@@ -106,48 +89,32 @@ const WorldpayPaymentForm = ({
 
           // Small delay to ensure the container is rendered
           setTimeout(() => {
-            console.log('🔄 Attempting iframe embedding');
-            console.log('📋 Debug Info:', {
-              redirectUrl: session.redirect_url,
-              containerId: 'worldpay-iframe-container',
-              containerExists: !!document.getElementById(
-                'worldpay-iframe-container'
-              ),
-              WPCLAvailable: typeof window.WPCL,
-            });
-
             openWorldpayIframe(
               session.redirect_url,
               'worldpay-iframe-container',
               (data) => {
-                console.log('Payment successful:', data);
                 onSuccess?.(data as Record<string, unknown>);
               },
               (error) => {
-                console.warn('Iframe payment error:', error);
                 onError(error);
               },
               () => {
-                console.log('Payment cancelled');
                 onError('Payment was cancelled');
               }
             );
-          }, 200); // Increased delay to ensure DOM is ready
+          }, 200);
         } else if (mode === 'lightbox') {
           setStatus('submitting');
           // Open in lightbox
           openWorldpayLightbox(
             session.redirect_url,
             (data) => {
-              console.log('Payment successful:', data);
               onSuccess?.(data as Record<string, unknown>);
             },
             (error) => {
-              console.error('Payment failed:', error);
               onError(error);
             },
             () => {
-              console.log('Payment cancelled');
               onError('Payment was cancelled');
             }
           );
@@ -240,31 +207,6 @@ const WorldpayPaymentForm = ({
                 <p className='text-gray-600 text-center'>
                   Loading payment form...
                 </p>
-                {process.env.NODE_ENV === 'development' && (
-                  <button
-                    onClick={() => {
-                      const container = document.getElementById(
-                        'worldpay-iframe-container'
-                      );
-                      const iframe = container?.querySelector('iframe');
-                      console.log('🔍 Debug iframe:', {
-                        container,
-                        iframe,
-                        iframeStyles: iframe
-                          ? {
-                              width: iframe.style.width,
-                              height: iframe.style.height,
-                              display: iframe.style.display,
-                              visibility: iframe.style.visibility,
-                            }
-                          : 'No iframe found',
-                      });
-                    }}
-                    className='mt-2 text-xs text-blue-600 underline'
-                  >
-                    Debug Iframe
-                  </button>
-                )}
               </div>
             </div>
           </CardContent>
