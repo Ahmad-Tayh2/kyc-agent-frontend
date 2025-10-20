@@ -6,27 +6,54 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 export default function PaymentCancelledPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [orderCode, setOrderCode] = useState<string | null>(null);
+  const [paymentData, setPaymentData] = useState<{
+    orderCode: string | null;
+    provider: string | null;
+    transactionId: string | null;
+    paymentLinkToken: string | null;
+  }>({
+    orderCode: null,
+    provider: null,
+    transactionId: null,
+    paymentLinkToken: null,
+  });
 
   useEffect(() => {
     const orderCodeParam =
       searchParams.get('orderCode') || searchParams.get('order_code');
-    setOrderCode(orderCodeParam);
+    const provider = searchParams.get('provider');
+    const transactionId = searchParams.get('transactionId');
+    const paymentLinkToken = searchParams.get('paymentLinkToken');
+
+    setPaymentData({
+      orderCode: orderCodeParam,
+      provider,
+      transactionId,
+      paymentLinkToken,
+    });
 
     // Clean up stored data
     localStorage.removeItem('worldpay_order_code');
     localStorage.removeItem('payment_id');
 
-    // Auto-redirect after 5 seconds
+    // Auto-redirect after 8 seconds
     const timer = setTimeout(() => {
-      navigate('/checkout');
-    }, 5000);
+      navigate('/dashboard');
+    }, 8000);
 
     return () => clearTimeout(timer);
   }, [searchParams, navigate]);
 
   const handleRetry = () => {
-    navigate('/checkout');
+    // Retry with the original token if available
+    if (paymentData.transactionId) {
+      navigate(`/payment/${paymentData.transactionId}`);
+    } else if (paymentData.paymentLinkToken) {
+      navigate(`/payment/${paymentData.paymentLinkToken}`);
+    } else {
+      // Fallback to dashboard if no retry data available
+      navigate('/dashboard');
+    }
   };
 
   const handleGoHome = () => {
@@ -48,12 +75,20 @@ export default function PaymentCancelledPage() {
             Payment was cancelled. You can try again anytime.
           </p>
 
-          {orderCode && (
+          {paymentData.orderCode && (
             <div className='bg-gray-50 rounded-lg p-4 mb-6'>
               <div className='flex justify-between text-sm'>
                 <span className='text-gray-600'>Order Code:</span>
-                <span className='font-medium'>{orderCode}</span>
+                <span className='font-medium'>{paymentData.orderCode}</span>
               </div>
+              {paymentData.provider && (
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gray-600'>Provider:</span>
+                  <span className='font-medium capitalize'>
+                    {paymentData.provider}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -70,7 +105,7 @@ export default function PaymentCancelledPage() {
           </div>
 
           <p className='text-xs text-gray-500'>
-            You will be redirected to checkout in a few seconds...
+            You will be redirected to dashboard in a few seconds...
           </p>
         </div>
       </div>

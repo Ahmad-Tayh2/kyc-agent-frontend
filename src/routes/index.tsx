@@ -98,8 +98,9 @@ export const AppRoutes = () => (
         element={<PaymentPage />}
       />
 
+      {/* Unified Payment Route */}
       <Route
-        path={ROUTES.WORLDPAY.TRANSACTION(':transactionId')}
+        path='/payment/:token'
         element={<PaymentPage defaultProvider='worldpay' />}
       />
 
@@ -108,16 +109,11 @@ export const AppRoutes = () => (
         element={<PaymentLinkValidationPage />}
       />
 
+      {/* Payment callback routes */}
+      <Route path={ROUTES.PAYMENT.SUCCESS} element={<PaymentSuccessPage />} />
+      <Route path={ROUTES.PAYMENT.FAILED} element={<PaymentFailedPage />} />
       <Route
-        path={ROUTES.WORLDPAY.PAYMENT_LINK(':token')}
-        element={<PaymentPage defaultProvider='worldpay' />}
-      />
-
-      {/* Worldpay callback routes */}
-      <Route path={ROUTES.WORLDPAY.SUCCESS} element={<PaymentSuccessPage />} />
-      <Route path={ROUTES.WORLDPAY.FAILED} element={<PaymentFailedPage />} />
-      <Route
-        path={ROUTES.WORLDPAY.CANCELLED}
+        path={ROUTES.PAYMENT.CANCELLED}
         element={<PaymentCancelledPage />}
       />
 

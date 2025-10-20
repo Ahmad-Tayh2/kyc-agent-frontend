@@ -30,23 +30,24 @@ export interface Transfer {
   extra_fees_amount: number;
   total_commission_amount: number;
   payout_amount: number;
+  total_payable_amount: number;
   created_at: string;
   updated_at: string;
 }
 
 export type TransferStatus =
-  | "draft"
-  | "in-progress"
-  | "completed"
-  | "cancelled"
-  | "blocked"
-  | "refunded";
+  | 'draft'
+  | 'in-progress'
+  | 'completed'
+  | 'cancelled'
+  | 'blocked'
+  | 'refunded';
 
 export type PaymentMethod =
-  | "bank_transfer"
-  | "cash_pickup"
-  | "mobile_money"
-  | "digital_wallet";
+  | 'bank_transfer'
+  | 'cash_pickup'
+  | 'mobile_money'
+  | 'digital_wallet';
 
 export interface TransferResponse {
   status: boolean;

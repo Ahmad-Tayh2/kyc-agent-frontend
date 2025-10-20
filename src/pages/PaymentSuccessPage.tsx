@@ -7,36 +7,58 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [orderCode, setOrderCode] = useState<string | null>(null);
+  const [paymentData, setPaymentData] = useState<{
+    orderCode: string | null;
+    amount: string | null;
+    currency: string | null;
+    provider: string | null;
+    transactionId: string | null;
+  }>({
+    orderCode: null,
+    amount: null,
+    currency: null,
+    provider: null,
+    transactionId: null,
+  });
 
   useEffect(() => {
     const status = searchParams.get('status');
-    const orderCodeParam = searchParams.get('orderCode');
+    const orderCode = searchParams.get('orderCode');
+    const amount = searchParams.get('amount');
+    const currency = searchParams.get('currency');
+    const provider = searchParams.get('provider');
+    const transactionId = searchParams.get('transactionId');
 
-    if (status === 'success' && orderCodeParam) {
-      setOrderCode(orderCodeParam);
+    if (status === 'success' && orderCode) {
+      setPaymentData({
+        orderCode,
+        amount,
+        currency,
+        provider,
+        transactionId,
+      });
 
       // Optional: Verify payment status with backend
-      verifyPaymentStatus(orderCodeParam)
-        .then((result) => {
-          if (result && result.status === 'completed') {
-            console.log('Payment verified as completed');
-          } else {
-            console.warn('Payment status verification failed:', result);
-          }
-        })
-        .catch((error) => {
-          console.error('Error verifying payment status:', error);
-        });
+      if (orderCode) {
+        verifyPaymentStatus(orderCode)
+          .then((result) => {
+            if (result && result.status === 'completed') {
+              // Payment verified successfully
+            }
+          })
+          .catch((_error) => {
+            // Verification failed, but payment was already successful
+          });
+      }
 
       // Clean up stored data
       localStorage.removeItem('worldpay_order_code');
       localStorage.removeItem('payment_id');
 
-      // Auto-redirect after 5 seconds
+      // Auto-redirect after 8 seconds
       const timer = setTimeout(() => {
         navigate('/dashboard');
-      }, 5000);
+      }, 8000);
 
       return () => clearTimeout(timer);
     } else {
@@ -64,12 +86,36 @@ export default function PaymentSuccessPage() {
             Your payment has been processed successfully.
           </p>
 
-          {orderCode && (
-            <div className='bg-gray-50 rounded-lg p-4 mb-6'>
+          {paymentData.orderCode && (
+            <div className='bg-gray-50 rounded-lg p-4 mb-6 space-y-2'>
               <div className='flex justify-between text-sm'>
                 <span className='text-gray-600'>Order Code:</span>
-                <span className='font-medium'>{orderCode}</span>
+                <span className='font-medium'>{paymentData.orderCode}</span>
               </div>
+              {paymentData.amount && paymentData.currency && (
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gray-600'>Amount:</span>
+                  <span className='font-medium'>
+                    {paymentData.amount} {paymentData.currency.toUpperCase()}
+                  </span>
+                </div>
+              )}
+              {paymentData.provider && (
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gray-600'>Provider:</span>
+                  <span className='font-medium capitalize'>
+                    {paymentData.provider}
+                  </span>
+                </div>
+              )}
+              {paymentData.transactionId && (
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gray-600'>Transaction ID:</span>
+                  <span className='font-medium'>
+                    {paymentData.transactionId}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -81,7 +127,8 @@ export default function PaymentSuccessPage() {
           </Button>
 
           <p className='text-xs text-gray-500'>
-            You will be redirected automatically in a few seconds...
+            You will be redirected to dashboard automatically in a few
+            seconds...
           </p>
         </div>
       </div>

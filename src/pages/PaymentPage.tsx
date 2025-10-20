@@ -27,9 +27,10 @@ interface PaymentPageProps {
 export default function PaymentPage({
   defaultProvider = 'stripe',
 }: PaymentPageProps) {
-  const { transactionId, paymentLinkToken } = useParams<{
+  const { transactionId, paymentLinkToken, token } = useParams<{
     transactionId?: string;
     paymentLinkToken?: string;
+    token?: string; // New unified token parameter
   }>();
   const navigate = useNavigate();
 
@@ -43,37 +44,86 @@ export default function PaymentPage({
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(
     null
   );
+
+  // Token detection logic
+  const [detectedTransactionId, setDetectedTransactionId] = useState<
+    string | undefined
+  >();
+  const [detectedPaymentLinkToken, setDetectedPaymentLinkToken] = useState<
+    string | undefined
+  >();
+
+  useEffect(() => {
+    if (token) {
+      // Detect token type based on "TR-" prefix
+      if (token.startsWith('TR-')) {
+        setDetectedTransactionId(token);
+        setDetectedPaymentLinkToken(undefined);
+      } else {
+        setDetectedPaymentLinkToken(token);
+        setDetectedTransactionId(undefined);
+      }
+    } else {
+      // Fallback to existing parameters
+      setDetectedTransactionId(transactionId);
+      setDetectedPaymentLinkToken(paymentLinkToken);
+    }
+  }, [token, transactionId, paymentLinkToken]);
+
   const { data: transferData } = useGetTransferById(
-    transactionId ? parseInt(transactionId) : ''
+    detectedTransactionId ? parseInt(detectedTransactionId) : ''
   );
 
   // Sample payment info - in real app, this would come from API
   const [paymentInfo] = useState({
-    amount: transferData?.data?.payout_amount || 0,
+    amount: transferData?.data?.total_payable_amount || 0,
     currency: transferData?.data?.send_currency || 'USD',
-    description: `Payment for transaction #${transactionId}`,
+    description: `Payment for transaction #${
+      detectedTransactionId || detectedPaymentLinkToken
+    }`,
   });
 
   useEffect(() => {
-    // Validate that we have either transactionId or paymentLinkToken
-    if (!transactionId && !paymentLinkToken) {
+    // Only validate if we have processed the token detection
+    const hasAnyToken = token || transactionId || paymentLinkToken;
+    const hasDetectedValues = detectedTransactionId || detectedPaymentLinkToken;
+
+    if (hasAnyToken && !hasDetectedValues) {
+      setErrorMessage('Invalid payment link. Unable to process payment token.');
+      setPaymentStatus('error');
+    } else if (!hasAnyToken) {
       setErrorMessage(
         'Invalid payment link. Missing transaction ID or payment link token.'
       );
       setPaymentStatus('error');
+    } else if (hasDetectedValues) {
+      // Clear any previous errors when we have valid data
+      if (paymentStatus === 'error') {
+        setPaymentStatus('pending');
+        setErrorMessage('');
+      }
     }
-  }, [transactionId, paymentLinkToken]);
+  }, [
+    detectedTransactionId,
+    detectedPaymentLinkToken,
+    token,
+    transactionId,
+    paymentLinkToken,
+    paymentStatus,
+  ]);
 
   const handlePaymentSuccess = (
     data: PaymentData | Record<string, unknown>
   ) => {
     // Handle both PaymentData and generic success data from iframe/lightbox
+    let paymentData: PaymentData;
+
     if ('id' in data && 'transaction_uuid' in data) {
       // It's a PaymentData object
-      setPaymentData(data as PaymentData);
+      paymentData = data as PaymentData;
     } else {
-      // It's generic data from iframe/lightbox, create a minimal PaymentData object
-      const paymentData: PaymentData = {
+      // It's generic data from iframe/lightbox, create a PaymentData object
+      paymentData = {
         id: Date.now(), // Temporary ID
         transaction_uuid: (data.transaction_uuid as string) || 'unknown',
         amount: paymentInfo.amount,
@@ -81,22 +131,41 @@ export default function PaymentPage({
         status: 'completed',
         type: 'payment',
         description: paymentInfo.description,
-        provider: 'worldpay',
-        provider_transaction_id: (data.order_code as string) || 'unknown',
+        provider: selectedProvider,
+        provider_transaction_id:
+          (data.order_code as string) || (data.orderKey as string) || 'unknown',
         provider_payment_method: 'card',
         processed_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      setPaymentData(paymentData);
     }
-    setPaymentStatus('success');
-    setErrorMessage('');
+
+    // Redirect to success page with payment data
+    const searchParams = new URLSearchParams({
+      status: 'success',
+      orderCode: paymentData.provider_transaction_id,
+      amount: paymentData.amount.toString(),
+      currency: paymentData.currency,
+      provider: paymentData.provider,
+      transactionId: paymentData.transaction_uuid,
+    });
+
+    navigate(`/payment/success?${searchParams.toString()}`);
   };
 
   const handlePaymentError = (error: string) => {
-    setErrorMessage(error);
-    setPaymentStatus('error');
+    // Redirect to error page with error details
+    const searchParams = new URLSearchParams({
+      error: error,
+      provider: selectedProvider,
+      ...(detectedTransactionId && { transactionId: detectedTransactionId }),
+      ...(detectedPaymentLinkToken && {
+        paymentLinkToken: detectedPaymentLinkToken,
+      }),
+    });
+
+    navigate(`/payment/failed?${searchParams.toString()}`);
   };
 
   const handleGoBack = () => {
@@ -117,9 +186,6 @@ export default function PaymentPage({
   useEffect(() => {
     if (selectedProvider === 'worldpay') {
       // Clear any Stripe-related postMessage listeners that might interfere
-      console.log(
-        '🧹 Switching to Worldpay - clearing any Stripe interference'
-      );
     }
   }, [selectedProvider]);
 
@@ -285,8 +351,8 @@ export default function PaymentPage({
                 stripePromise && (
                   <Elements stripe={stripePromise}>
                     <StripePaymentForm
-                      transactionId={transactionId} // Pass the transaction ID directly
-                      paymentLinkToken={paymentLinkToken}
+                      transactionId={detectedTransactionId} // Pass the detected transaction ID
+                      paymentLinkToken={detectedPaymentLinkToken}
                       amount={paymentInfo.amount}
                       currency={paymentInfo.currency}
                       description={paymentInfo.description}
@@ -310,8 +376,8 @@ export default function PaymentPage({
 
               {selectedProvider === 'worldpay' && selectedMethod === 'card' && (
                 <WorldpayPaymentForm
-                  transactionId={transactionId} // Pass the transaction ID directly
-                  paymentLinkToken={paymentLinkToken}
+                  transactionId={detectedTransactionId} // Pass the detected transaction ID
+                  paymentLinkToken={detectedPaymentLinkToken}
                   description={paymentInfo.description}
                   mode='iframe' // Iframe mode using official Worldpay library
                   onError={handlePaymentError}

@@ -22,7 +22,7 @@ export interface WorldpaySessionResponse {
  */
 export const createWorldpaySession = async (data: WorldpaySessionRequest) => {
   return axiosInstance
-    .post('http://localhost:8000/api/payments/worldpay/session', data)
+    .post('http://localhost:8000/api/worldpay/initialize', data)
     .then((response: AxiosResponse) =>
       handleApiResponse<WorldpaySessionResponse>(response.data)
     );
