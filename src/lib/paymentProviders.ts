@@ -18,7 +18,7 @@ export const PAYMENT_PROVIDERS: Record<PaymentProvider, PaymentProviderConfig> =
       name: 'worldpay',
       displayName: 'WorldPay',
       supportedMethods: ['card', 'bank_transfer'],
-      requiresRedirect: false,
+      requiresRedirect: true,
     },
   };
 
