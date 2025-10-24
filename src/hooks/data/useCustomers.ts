@@ -108,12 +108,19 @@ export function useGetCustomerRecipients(customerId: string | number) {
 export function useAttachRecipientToCustomer() {
   return useMutation({
     mutationFn: ({
-      customerId,
-      recipientId,
+      customer_id,
+      agent_id,
+      recipient_id,
     }: {
-      customerId: string | number;
-      recipientId: string | number;
-    }) => customersService.attachRecipientToCustomer(customerId, recipientId),
+      customer_id?: string | number;
+      agent_id?: string | number;
+      recipient_id: string | number;
+    }) =>
+      customersService.attachRecipientToCustomer({
+        customer_id,
+        agent_id,
+        recipient_id,
+      }),
   });
 }
 

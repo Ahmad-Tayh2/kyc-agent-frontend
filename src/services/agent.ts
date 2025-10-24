@@ -32,7 +32,7 @@ export const agentService = {
       : { "Content-Type": "application/json" };
     console.log(" data = ", data);
     const res = await fetch(API_URLS.agents.update(agentId), {
-      method: "PUT",
+      method: "PATCH",
       headers,
       body: JSON.stringify(data),
     });

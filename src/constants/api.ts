@@ -1,5 +1,5 @@
-const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
-export const serverUrl = 'https://nomadrem.amazing-agileteam.com';
+const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
+export const serverUrl = "https://nomadrem.amazing-agileteam.com";
 //const baseUrl = 'http://localhost:8000/api';
 
 export const API_URLS = {
@@ -34,6 +34,8 @@ export const API_URLS = {
       `${baseUrl}/agents/${agentId}/id-documents`,
     attachCustomer: (agentId: string | number, customerId: string | number) =>
       `${baseUrl}/agents/${agentId}/customers/${customerId}`,
+    attachRecipient: (agentId: string | number, recipientId: string | number) =>
+      `${baseUrl}/agents/${agentId}/recipients/${recipientId}`,
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,
@@ -133,7 +135,7 @@ export const API_URLS = {
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
-    deleteCurrency: () => '', // URL not ready yet
+    deleteCurrency: () => "", // URL not ready yet
     addCurrency: (walletId: string | number) =>
       `${baseUrl}/wallets/${walletId}/currencies`,
   },

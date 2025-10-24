@@ -34,6 +34,7 @@ interface RecipientBasicDetailsProps {
     code: string;
     countryCode: string;
   }>;
+  disableCstomerSelection?: boolean;
 }
 
 const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
@@ -44,6 +45,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
   countryOptions,
   cityOptions,
   countryPhoneOptions,
+  disableCstomerSelection,
 }) => {
   return (
     <div className="space-y-6 p-5">
@@ -56,6 +58,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
           value={formData.customer_id || ""}
           onChange={(value) => handleInputChange("customer_id", value)}
           placeholder="Select customer"
+          disabled={disableCstomerSelection}
         />
       </div>
 

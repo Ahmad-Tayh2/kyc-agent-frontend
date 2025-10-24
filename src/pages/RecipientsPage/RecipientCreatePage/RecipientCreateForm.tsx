@@ -445,12 +445,17 @@ const RecipientCreateForm: React.FC = () => {
         return false;
     }
   };
+
+  const [disableCstomerSelection, setDisableCstomerSelection] = useState(false);
   useEffect(() => {
     if (customerIdQuery && customerOptions?.length > 0) {
       const found = customerOptions?.find((item: any) => {
         return String(item?.value) === String(customerIdQuery);
       });
-      if (found) handleInputChange("customer_id", found?.value);
+      if (found) {
+        handleInputChange("customer_id", found?.value);
+        setDisableCstomerSelection(true);
+      }
     }
   }, [customerIdQuery, customerOptions]);
   const handleNext = async () => {
@@ -645,6 +650,7 @@ const RecipientCreateForm: React.FC = () => {
             countryOptions={countryOptions}
             cityOptions={cityOptions}
             countryPhoneOptions={countryPhoneOptions}
+            disableCstomerSelection={disableCstomerSelection}
           />
         )}
         {currentStep === "remittance" && (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 // import { useForm } from "react-hook-form";
 import { z } from "zod";
 // import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,8 +12,6 @@ import { useTranslation } from "react-i18next";
 import RegistrationSuccessDialog from "./RegistrationSuccessDialog";
 
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
-import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
-import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UploadIcon from "@/assets/icons/upload-icon.svg?react";
 import FileIcon from "@/assets/icons/file-icon.svg?react";
 import DatePicker from "@/components/shared/DatePicker";
@@ -22,6 +20,7 @@ import PhoneInput from "@/components/shared/PhoneInput";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { PasswordInput } from "@/components/ui/password-input";
+import RadioInput from "@/components/shared/RadioInput";
 
 const schema = z
   .object({
@@ -139,9 +138,6 @@ const RegisterForm: React.FC<{
     };
   });
 
-  React.useEffect(() => {
-    console.log(" formData = = ", formData);
-  }, [formData]);
   const [identityFiles, setIdentityFiles] = React.useState<File[]>([]);
   const [fileDragOver, setFileDragOver] = React.useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = React.useState(false);
@@ -152,6 +148,9 @@ const RegisterForm: React.FC<{
     registrationMessages?: string[];
   } | null>(null);
 
+  const IsFieldsDisabled = useMemo(() => {
+    return registrationResult?.registrationStatus === "success";
+  }, [registrationResult]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
@@ -192,7 +191,6 @@ const RegisterForm: React.FC<{
   };
   const fileRef = React.useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [selectedGender, setSelectedGender] = React.useState<string>("");
 
   const genderOptions = [
     { label: "Male", value: "male" },
@@ -472,6 +470,7 @@ const RegisterForm: React.FC<{
             value={formData.firstName}
             onChange={(e) => handleInputChange("firstName", e.target.value)}
             placeholder={t("modules.register.fields.firstName.placeholder")}
+            disabled={IsFieldsDisabled}
           />
           {errors.firstName && (
             <span className="text-destructive text-xs">{errors.firstName}</span>
@@ -486,6 +485,7 @@ const RegisterForm: React.FC<{
             value={formData.lastName}
             onChange={(e) => handleInputChange("lastName", e.target.value)}
             placeholder={t("modules.register.fields.lastName.placeholder")}
+            disabled={IsFieldsDisabled}
           />
           {errors.lastName && (
             <span className="text-destructive text-xs">{errors.lastName}</span>
@@ -501,6 +501,7 @@ const RegisterForm: React.FC<{
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder={t("modules.register.fields.email.placeholder")}
+            disabled={IsFieldsDisabled}
           />
           {errors.email && (
             <span className="text-destructive text-xs">{errors.email}</span>
@@ -525,6 +526,7 @@ const RegisterForm: React.FC<{
               handleInputChange("phone", phoneNumber)
             }
             error={errors.countryCode || errors.phone}
+            disabled={IsFieldsDisabled}
           />
         </div>
 
@@ -537,6 +539,7 @@ const RegisterForm: React.FC<{
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             placeholder={t("modules.register.fields.password.placeholder")}
+            disabled={IsFieldsDisabled}
           />
 
           {errors.password && (
@@ -556,6 +559,7 @@ const RegisterForm: React.FC<{
             placeholder={t(
               "modules.register.fields.confirmPassword.placeholder"
             )}
+            disabled={IsFieldsDisabled}
           />
           {errors.confirmPassword && (
             <span className="text-destructive text-xs">
@@ -573,6 +577,7 @@ const RegisterForm: React.FC<{
             value={formData.streetName}
             onChange={(e) => handleInputChange("streetName", e.target.value)}
             placeholder={t("modules.register.fields.streetName.placeholder")}
+            disabled={IsFieldsDisabled}
           />
           {errors.streetName && (
             <span className="text-destructive text-xs">
@@ -589,6 +594,7 @@ const RegisterForm: React.FC<{
             value={formData.houseNumber}
             onChange={(e) => handleInputChange("houseNumber", e.target.value)}
             placeholder={t("modules.register.fields.houseNumber.placeholder")}
+            disabled={IsFieldsDisabled}
           />
           {errors.houseNumber && (
             <span className="text-destructive text-xs">
@@ -605,6 +611,7 @@ const RegisterForm: React.FC<{
           error={errors.country}
           loading={countriesLoading}
           required
+          disabled={IsFieldsDisabled}
         />
 
         <SearchableSelect
@@ -615,7 +622,7 @@ const RegisterForm: React.FC<{
           onChange={(value) => handleInputChange("city", value.toString())}
           error={errors.city}
           loading={citiesLoading}
-          disabled={!formData.country}
+          disabled={!formData.country || IsFieldsDisabled}
           required
         />
 
@@ -627,6 +634,7 @@ const RegisterForm: React.FC<{
             value={formData.state}
             onChange={(e) => handleInputChange("state", e.target.value)}
             placeholder={t("modules.register.fields.state.placeholder")}
+            disabled={IsFieldsDisabled}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -637,6 +645,7 @@ const RegisterForm: React.FC<{
             value={formData.postalCode}
             onChange={(e) => handleInputChange("postalCode", e.target.value)}
             placeholder={t("modules.register.fields.postalCode.placeholder")}
+            disabled={IsFieldsDisabled}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -651,6 +660,7 @@ const RegisterForm: React.FC<{
             placeholder={t(
               "modules.register.fields.extraAddressDetails.placeholder"
             )}
+            disabled={IsFieldsDisabled}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -659,7 +669,11 @@ const RegisterForm: React.FC<{
             <span className="text-red-500">*</span>
           </Label>
           {/* <Input type="date" {...register("dob")} placeholder="DD/MM/YY" /> */}
-          <DatePicker value={formData.dob} onChange={handleDateChange} />
+          <DatePicker
+            value={formData.dob}
+            onChange={handleDateChange}
+            disabled={IsFieldsDisabled}
+          />
           {errors.dob && (
             <span className="text-destructive text-xs">{errors.dob}</span>
           )}
@@ -670,44 +684,15 @@ const RegisterForm: React.FC<{
             {t("modules.register.fields.gender.label")}
             <span className="text-red-500">*</span>
           </Label>
-          <div className="flex items-center gap-2">
-            {genderOptions?.map((genderOption: any) => (
-              <button
-                key={genderOption.value}
-                type="button"
-                className={cn(
-                  "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-                  "border-gray-200 bg-white"
-                )}
-                onClick={() => {
-                  setSelectedGender(genderOption.value);
-                  handleInputChange("gender", genderOption.value);
-                }}
-              >
-                {selectedGender === genderOption.value ? (
-                  <CheckedIcon />
-                ) : (
-                  <UncheckedIcon />
-                )}
-                {genderOption.label}
-              </button>
-            ))}
-          </div>
-          {/* <div className="flex gap-6 mt-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                value="male"
-                {...register("gender")}
-                defaultChecked
-              />{" "}
-              Male
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="radio" value="female" {...register("gender")} />{" "}
-              Female
-            </label>
-          </div> */}
+
+          <RadioInput
+            options={genderOptions}
+            selectedValue={formData.gender}
+            onSelectValue={(value: string) =>
+              handleInputChange("gender", value)
+            }
+            disabled={IsFieldsDisabled}
+          />
           {errors.gender && (
             <span className="text-destructive text-xs">{errors.gender}</span>
           )}
@@ -719,7 +704,7 @@ const RegisterForm: React.FC<{
           </Label>
 
           <div
-            className="h-20 border cursor-pointer rounded-lg px-2 hover:bg-gray-50 transition"
+            className="h-20 border cursor-pointer rounded-lg hover:bg-gray-50 transition"
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -733,7 +718,13 @@ const RegisterForm: React.FC<{
                 </div>
               </div>
             ) : (
-              <div className="border-gray-300 rounded-lg w-full h-full flex items-center gap-2 ">
+              <div
+                className={cn(
+                  "border-gray-300 px-2 rounded-lg w-full h-full flex items-center gap-2",
+                  IsFieldsDisabled &&
+                    "cursor-not-allowed bg-[#E5E5E5] text-[#101828] opacity-50"
+                )}
+              >
                 <UploadIcon width={90} />
 
                 <span className="text-md text-muted-foreground">
@@ -752,6 +743,7 @@ const RegisterForm: React.FC<{
               onChange={handleFileChange}
               className="hidden"
               ref={fileRef}
+              disabled={IsFieldsDisabled}
             />
           </div>
           {errors.identityFiles && (
@@ -776,20 +768,22 @@ const RegisterForm: React.FC<{
                 </div>
               </div>
               {/* Optional: Remove button */}
-              <button
-                type="button"
-                className="mb-auto ml-auto text-red-500 cursor-pointer"
-                onClick={() => {
-                  setIdentityFiles((files) =>
-                    files.filter((_, i) => i !== idx)
-                  );
-                  if (fileRef.current) {
-                    fileRef.current.value = "";
-                  }
-                }}
-              >
-                <X width={22} height={22} />
-              </button>
+              {!IsFieldsDisabled && (
+                <button
+                  type="button"
+                  className="mb-auto ml-auto text-red-500 cursor-pointer"
+                  onClick={() => {
+                    setIdentityFiles((files) =>
+                      files.filter((_, i) => i !== idx)
+                    );
+                    if (fileRef.current) {
+                      fileRef.current.value = "";
+                    }
+                  }}
+                >
+                  <X width={22} height={22} />
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -815,6 +809,7 @@ const RegisterForm: React.FC<{
                 placeholder={t(
                   "modules.register.fields.businessName.placeholder"
                 )}
+                disabled={IsFieldsDisabled}
               />
               {errors.businessName && (
                 <span className="text-destructive text-xs">
@@ -835,6 +830,7 @@ const RegisterForm: React.FC<{
                 placeholder={t(
                   "modules.register.fields.businessStreetName.placeholder"
                 )}
+                disabled={IsFieldsDisabled}
               />
               {errors.businessStreetName && (
                 <span className="text-destructive text-xs">
@@ -855,6 +851,7 @@ const RegisterForm: React.FC<{
                 placeholder={t(
                   "modules.register.fields.businessHouseNumber.placeholder"
                 )}
+                disabled={IsFieldsDisabled}
               />
               {errors.businessHouseNumber && (
                 <span className="text-destructive text-xs">
@@ -874,6 +871,7 @@ const RegisterForm: React.FC<{
                 placeholder={t(
                   "modules.register.fields.businessPostalCode.placeholder"
                 )}
+                disabled={IsFieldsDisabled}
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -891,6 +889,7 @@ const RegisterForm: React.FC<{
                 placeholder={t(
                   "modules.register.fields.businessExtraAddressDetails.placeholder"
                 )}
+                disabled={IsFieldsDisabled}
               />
             </div>
             <SearchableSelect
@@ -906,6 +905,7 @@ const RegisterForm: React.FC<{
               error={errors.businessCountry}
               loading={countriesLoading}
               required
+              disabled={IsFieldsDisabled}
             />
             <SearchableSelect
               label={t("modules.register.fields.businessCity.label")}
@@ -919,25 +919,27 @@ const RegisterForm: React.FC<{
               }
               error={errors.businessCity}
               loading={businessCitiesLoading}
-              disabled={!formData.businessCountry}
+              disabled={!formData.businessCountry || IsFieldsDisabled}
               required
             />
           </div>
         </div>
       )}
-      <div
-        className="flex gap-4 mt-6 "
-        style={{
-          marginBottom: "20px",
-        }}
-      >
-        <Button type="button" variant="outline" onClick={onBack}>
-          {t("common.buttons.cancel")}
-        </Button>
-        <Button type="submit" disabled={status === "pending"}>
-          {t("common.buttons.register")}
-        </Button>
-      </div>
+      {!IsFieldsDisabled && (
+        <div
+          className="flex gap-4 mt-6 "
+          style={{
+            marginBottom: "20px",
+          }}
+        >
+          <Button type="button" variant="outline" onClick={onBack}>
+            {t("common.buttons.cancel")}
+          </Button>
+          <Button type="submit" disabled={status === "pending"}>
+            {t("common.buttons.register")}
+          </Button>
+        </div>
+      )}
       {error && (
         <div className="text-destructive text-sm mt-2">
           {(error as Error).message}

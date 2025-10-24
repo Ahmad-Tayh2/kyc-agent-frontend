@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -123,12 +123,15 @@
   button {
     cursor: pointer;
   }
+  button:disabled {
+    cursor: not-allowed;
+  }
 }
 
 /* Worldpay iframe styling fixes */
 #worldpay-iframe-container iframe,
-iframe[id*='worldpay'],
-iframe[name*='worldpay'],
+iframe[id*="worldpay"],
+iframe[name*="worldpay"],
 .wp-cl-iframe {
   width: 100% !important;
   min-width: 100% !important;

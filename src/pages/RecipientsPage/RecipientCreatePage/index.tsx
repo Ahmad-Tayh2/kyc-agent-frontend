@@ -17,11 +17,15 @@ import {
   useGetCustomers,
 } from "@/hooks/data/useCustomers";
 import { toast } from "sonner";
+import PhoneInput from "@/components/shared/PhoneInput";
+import { useCountries } from "@/hooks/data/useAddress";
+import { geAgentUserFromStorage } from "@/utils/authHelpers";
 
 interface SearchFormData {
   name: string;
   phone_number: string;
   customer_id: string;
+  phone_code?: string;
 }
 
 const RecipientCreatePage: React.FC = () => {
@@ -30,6 +34,7 @@ const RecipientCreatePage: React.FC = () => {
     name: "",
     phone_number: "",
     customer_id: "",
+    phone_code: "",
   });
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -37,12 +42,31 @@ const RecipientCreatePage: React.FC = () => {
     useSearchRecipient();
   const { mutateAsync: attachRecipientToCustomer } =
     useAttachRecipientToCustomer();
+  const { data: countries = [] } = useCountries();
+  const agentUser: any = useMemo(() => {
+    return geAgentUserFromStorage();
+  }, []);
   const attachRecipient = useCallback(
     async (recipientId: string | number) => {
-      const result = await attachRecipientToCustomer({
-        customerId: searchForm.customer_id,
-        recipientId,
-      });
+      let payloadToSend: {
+        recipient_id: string | number;
+        agent_id?: string;
+        customer_id?: string;
+      } = {
+        recipient_id: recipientId,
+      };
+      if (searchForm?.customer_id === "agent_id") {
+        payloadToSend = {
+          ...payloadToSend,
+          agent_id: agentUser?.agent?.id,
+        };
+      } else {
+        payloadToSend = {
+          ...payloadToSend,
+          customer_id: searchForm?.customer_id,
+        };
+      }
+      const result = await attachRecipientToCustomer(payloadToSend);
       if (result?.status) {
         setSearchResults((prev: any[]) => {
           let updatedData: any[] = [];
@@ -81,18 +105,31 @@ const RecipientCreatePage: React.FC = () => {
     ...customersData?.map((customer: any) => ({
       label: customer.full_name,
       value: customer.id,
+      name: "customer_id",
     })),
   ];
-
+  const isSearchDisabled = useMemo(() => {
+    return !searchForm?.phone_number && !searchForm?.name;
+  }, [searchForm]);
   const handleSearch = async () => {
-    if (!searchForm.phone_number && !searchForm.name) {
+    if (isSearchDisabled) {
       return;
     }
     try {
       const result = await searchRecipient({
         name: searchForm.name || undefined,
         phone_number: searchForm.phone_number || undefined,
-        customer_id: searchForm.customer_id || undefined,
+        phone_code: searchForm.phone_code || undefined,
+        customer_id:
+          searchForm.customer_id && searchForm.customer_id !== "agent_id"
+            ? searchForm.customer_id
+            : undefined,
+        agent_id:
+          agentUser?.agent?.id &&
+          searchForm.customer_id &&
+          searchForm.customer_id === "agent_id"
+            ? agentUser?.agent?.id
+            : undefined,
       });
 
       setSearchResults(result.data || []);
@@ -120,7 +157,18 @@ const RecipientCreatePage: React.FC = () => {
       [field]: value,
     }));
   };
-
+  const countryPhoneOptions = countries?.map((country: any) => {
+    return {
+      value: country.phone_code,
+      label: country.name,
+      code: country.phone_code,
+      countryCode: country.iso2,
+    };
+  });
+  const extraOption = {
+    label: `${agentUser?.first_name} ${agentUser?.last_name} (Myself)`,
+    value: "agent_id",
+  };
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -136,9 +184,15 @@ const RecipientCreatePage: React.FC = () => {
       {/* Search Form */}
       <div className="bg-white rounded-lg border">
         <div className="p-6 border-b-1">
-          <span> You can add an existing recipient of other </span>
-          <b>agents / customers</b>{" "}
-          <span>by searching them in our database.</span>
+          <div>
+            First, search for the recipient. If none are found, create a new
+            record.
+          </div>
+          <div>
+            <span>You can also add an existing recipient of other </span>
+            <b>agents / customers</b>{" "}
+            <span>by searching them in our database.</span>
+          </div>
         </div>
         <div className="p-5">
           <div className="">
@@ -146,10 +200,11 @@ const RecipientCreatePage: React.FC = () => {
               label="Adding Recipient to the following Customer"
               placeholder="Select a customer"
               options={customersOptions}
+              extraOption={extraOption}
               selectedValue={searchForm.customer_id}
-              onValueChange={(value: string) =>
-                handleInputChange("customer_id", value)
-              }
+              onValueChange={(value: string) => {
+                handleInputChange("customer_id", value);
+              }}
               required
             />
           </div>
@@ -173,7 +228,21 @@ const RecipientCreatePage: React.FC = () => {
                   <Label htmlFor="phone_number" className="text-[14px]">
                     Phone number
                   </Label>
-                  <Input
+                  <PhoneInput
+                    placeholder="Enter your phone number"
+                    countryOptions={countryPhoneOptions || []}
+                    selectedCountry={searchForm.phone_code}
+                    phoneNumber={searchForm.phone_number}
+                    onCountryChange={(phoneCode) => {
+                      handleInputChange("phone_code", phoneCode);
+                      // Clear the phone number when country changes to let the PhoneInput component handle it
+                      handleInputChange("phone_number", "");
+                    }}
+                    onPhoneChange={(phoneNumber) =>
+                      handleInputChange("phone_number", phoneNumber)
+                    }
+                  />
+                  {/* <Input
                     type="number"
                     id="phone_number"
                     placeholder="Enter your phone number"
@@ -181,15 +250,13 @@ const RecipientCreatePage: React.FC = () => {
                     onChange={(e) =>
                       handleInputChange("phone_number", e.target.value)
                     }
-                  />
+                  /> */}
                 </div>
 
                 <ActionButton
                   onClick={handleSearch}
                   disabled={
-                    isSearching ||
-                    !(searchForm.name || searchForm.phone_number) || //must fill one of the two fields
-                    !searchForm.customer_id //must select a customer
+                    isSearching || isSearchDisabled || !searchForm.customer_id //must select a customer
                   }
                   className="bg-teal-600 hover:bg-teal-700"
                   title="search"

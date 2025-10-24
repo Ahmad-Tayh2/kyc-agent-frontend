@@ -6,6 +6,8 @@ export interface RecipientSearchParams {
   name?: string;
   phone_number?: string;
   customer_id?: string;
+  agent_id?: string;
+  phone_code?: string;
 }
 
 export interface RecipientCreateData {
@@ -100,11 +102,13 @@ export const recipientsService = {
   searchRecipient: async (params: RecipientSearchParams) => {
     const queryParams = new URLSearchParams();
 
+    if (params.phone_code) queryParams.append("phone_code", params.phone_code);
     if (params.phone_number)
       queryParams.append("phone_number", params.phone_number);
     if (params.name) queryParams.append("name", params.name);
     if (params.customer_id)
       queryParams.append("customer_id", params.customer_id);
+    if (params.agent_id) queryParams.append("agent_id", params.agent_id);
 
     const response = await apiClient.get(
       API_URLS.recipients.search(queryParams.toString())

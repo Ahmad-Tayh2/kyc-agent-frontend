@@ -11,11 +11,13 @@ import { cn } from "@/lib/utils";
 interface Option {
   label: string;
   value: string;
+  name?: string;
 }
 interface SingleSelectDropdownProps {
   label?: string;
   required?: boolean;
   options: Option[];
+  extraOption?: Option;
   onValueChange: any;
   placeholder?: string;
   className?: string;
@@ -26,6 +28,7 @@ export function SingleSelectDropdown(props: SingleSelectDropdownProps) {
     label,
     required,
     options,
+    extraOption,
     onValueChange,
     placeholder,
     className,
@@ -44,6 +47,11 @@ export function SingleSelectDropdown(props: SingleSelectDropdownProps) {
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
+          {extraOption && (
+            <SelectItem value={extraOption?.value}>
+              <b>{extraOption?.label}</b>
+            </SelectItem>
+          )}
           {options?.map((option: Option) => (
             <SelectItem value={option.value} key={option.value}>
               {option.label}
