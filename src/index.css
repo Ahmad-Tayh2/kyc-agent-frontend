@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -132,6 +132,21 @@
 #worldpay-iframe-container iframe,
 iframe[id*="worldpay"],
 iframe[name*="worldpay"],
+.wp-cl-iframe {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Worldpay iframe styling fixes */
+#worldpay-iframe-container iframe,
+iframe[id*='worldpay'],
+iframe[name*='worldpay'],
 .wp-cl-iframe {
   width: 100% !important;
   min-width: 100% !important;
