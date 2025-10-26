@@ -22,6 +22,7 @@ export interface CustomerSearchParams {
   customerNumber?: string;
   email?: string;
   phoneNumber?: string;
+  phoneCode?: string;
 }
 
 export interface CustomerIdentityFileData {

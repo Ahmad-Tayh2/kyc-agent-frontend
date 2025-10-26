@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, Loader2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useResendVerification } from "@/hooks/data/useAuth";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 interface RegistrationSuccessDialogProps {
   isOpen: boolean;
@@ -31,9 +33,13 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
   uploadMessage,
   userEmail,
 }) => {
+  const navigate = useNavigate();
   const [t] = useTranslation("global");
   const { mutateAsync: resendVerification, isPending: isResending } =
     useResendVerification();
+  const handleGoToLogin = () => {
+    navigate(ROUTES.AUTH.LOGIN);
+  };
 
   const handleResendVerification = async () => {
     try {
@@ -85,7 +91,7 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={() => onClose?.()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">
@@ -145,9 +151,9 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
           <div className="flex flex-col gap-3 pt-2">
             {registrationStatus === "success" ? (
               <>
-                <Button onClick={() => onClose?.()} className="w-full">
-                  Okay
-                  {/* <ArrowRight className="w-4 h-4 ml-2" /> */}
+                <Button onClick={handleGoToLogin} className="w-full">
+                  {t("modules.register.success.goToLogin")}
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
 
                 <Button

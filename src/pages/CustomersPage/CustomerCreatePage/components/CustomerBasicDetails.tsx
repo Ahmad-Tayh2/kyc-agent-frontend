@@ -176,7 +176,7 @@ const CustomerBasicDetails = (props: any) => {
           onChange={(value) => handleInputChange("city_id", value)}
           disabled={!formData.country_id || !editMode}
           required
-          error={validationErrors?.city}
+          error={validationErrors?.city_id}
         />
         <SearchableSelect
           label={"State"}
@@ -184,7 +184,7 @@ const CustomerBasicDetails = (props: any) => {
           value={formData.state_id}
           onChange={(value) => handleInputChange("state_id", value)}
           disabled={!formData.country_id || !editMode}
-          error={validationErrors?.state}
+          error={validationErrors?.state_id}
         />
 
         <div className="flex flex-col gap-1">

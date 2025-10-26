@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as authService from "@/services/auth";
 import { ROUTES } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
@@ -63,7 +63,7 @@ export function useRegisterAndUpload() {
           } catch (uploadError) {
             console.warn("File upload error:", uploadError);
             uploadResult = {
-              status:false,
+              status: false,
               message: "File upload failed due to network or server error",
             };
           }
@@ -91,11 +91,13 @@ export function useVerifyOtp() {
 
 export function useLogout() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
       navigate(ROUTES.AUTH.LOGIN);
+      queryClient.clear();
     },
   });
 }

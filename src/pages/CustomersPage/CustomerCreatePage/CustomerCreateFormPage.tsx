@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import FileIcon from "@/assets/icons/file-icon.svg?react";
+
 import {
   useCreateCustomer,
   useUploadIdentityDocuments,
@@ -11,7 +13,7 @@ import {
 import CustomerBasicDetails from "./components/CustomerBasicDetails";
 import DatePicker from "@/components/shared/DatePicker";
 import { ROUTES } from "@/constants/routes";
-import { AlertCircle, Upload } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import NextStepArrow from "@/assets/icons/next-step-arrow.svg?react";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
@@ -24,7 +26,13 @@ import type {
 } from "@/services/customers";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
-import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
+// import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
+import {
+  customerSchema,
+  identitySchema,
+} from "../CustomerEditPage/CustomerEditPage";
+import SearchableSelect from "@/components/ui/searchable-select";
+import ErrorField from "@/components/shared/ErrorField";
 
 type FormStep = "basic" | "identity" | "income";
 
@@ -61,10 +69,40 @@ const CustomerCreateFormPage: React.FC = () => {
   });
 
   const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
+  useEffect(() => {
+    console.log("incomeeess = ", incomeData);
+  }, [incomeData]);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
+  const [identityErrors, setIdentityErrors] = useState<Record<string, string>>(
+    {}
+  );
+  const validateIdentityData = () => {
+    const result = identitySchema.safeParse(identityData);
 
-  const { mutateAsync: createCustomer } = useCreateCustomer();
-  const { mutateAsync: uploadIdentityDocuments } = useUploadIdentityDocuments();
-  const { mutateAsync: uploadIncomeDocuments } = useUploadIncomeDocuments();
+    if (!result.success) {
+      const errors: any = result.error.flatten().fieldErrors;
+      setIdentityErrors(errors);
+      return false;
+    }
+    setIdentityErrors({});
+    return true;
+  };
+
+  const { mutateAsync: createCustomer, isPending: isCreationPending } =
+    useCreateCustomer();
+  const {
+    mutateAsync: uploadIdentityDocuments,
+    isPending: isIdentityDocsPending,
+  } = useUploadIdentityDocuments({
+    onSuccess: () => {
+      setIdentityErrors({});
+    },
+    onCreateError: (errorsData: any) => setIdentityErrors(errorsData),
+  });
+  const { mutateAsync: uploadIncomeDocuments, isPending: isIcomeDocsPending } =
+    useUploadIncomeDocuments();
 
   const handleInputChange = (
     field: keyof CustomerCreateData,
@@ -84,6 +122,13 @@ const CustomerCreateFormPage: React.FC = () => {
         [field]: value,
       }));
     }
+    // Clear error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors((prev: Record<string, string[]>) => ({
+        ...prev,
+        [field]: [],
+      }));
+    }
   };
 
   const handleDateChange = (field: keyof CustomerCreateData, date: string) => {
@@ -91,6 +136,13 @@ const CustomerCreateFormPage: React.FC = () => {
       ...prev,
       [field]: date,
     }));
+    // Clear error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors((prev: Record<string, string[]>) => ({
+        ...prev,
+        [field]: [],
+      }));
+    }
   };
 
   const handleIdentityChange = (
@@ -101,24 +153,49 @@ const CustomerCreateFormPage: React.FC = () => {
       ...prev,
       [field]: value,
     }));
+    if (identityErrors[field]) {
+      setIdentityErrors((prev: Record<string, string>) => ({
+        ...prev,
+        [field]: "",
+      }));
+    }
   };
 
   const handleUploadIncomeFile = (files: FileList | null, type: string) => {
+    console.log(" files = ", files);
+    console.log(" type = ", type);
     if (!files || files?.length === 0 || !type) return;
     setIncomeData((prev: any) => {
-      const exist = prev?.find(
-        (item: CustomerIncomeFileData) => item.document_type === type
-      );
-      if (!exist) {
-        return [
-          ...prev,
-          {
+      let updatedData: any[] = [];
+      let exist = false;
+      if (prev?.length) {
+        console.log(" yes find one = =  = = = = = ");
+        for (let item of prev) {
+          if (item.document_type === type) {
+            updatedData?.push({
+              document: files,
+              document_type: type,
+            });
+            exist = true;
+          } else {
+            updatedData?.push(item);
+          }
+          console.log(" updatedData contains *******", updatedData);
+        }
+        if (!exist) {
+          updatedData?.push({
             document: files,
             document_type: type,
-          },
-        ];
+          });
+        }
+      } else {
+        updatedData?.push({
+          document: files,
+          document_type: type,
+        });
       }
-      return prev;
+
+      return updatedData;
     });
   };
   const handleFileUpload = (
@@ -175,8 +252,40 @@ const CustomerCreateFormPage: React.FC = () => {
     }
 
     if (currentStep === "basic") {
+      const payloadToValidate: any = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        date_of_birth: formData.date_of_birth,
+        gender: formData.gender,
+        country_id: formData.country_id,
+        city_id: formData.city_id,
+        street_name: formData.street_name,
+        house_number: formData.house_number,
+        postal_code: formData.postal_code ?? "",
+        phone_number: formData.phone_number,
+        country_phone_code: formData.country_phone_code,
+        // status: formData.status,
+      };
+      const validationResult = customerSchema.safeParse(payloadToValidate);
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.flatten().fieldErrors;
+        console.log("check ==== errors = ", errors);
+
+        // // Optional: show toast or inline messages
+        // toast.error("Please fix the highlighted errors before saving.");
+        setValidationErrors(errors); // We'll define this state below
+        return;
+      }
       setCurrentStep("identity");
     } else if (currentStep === "identity") {
+      //validate identity docs
+      const isIdentityValid = validateIdentityData();
+      if (!isIdentityValid) {
+        // optional: toast.error("Please fix errors before saving");
+        return;
+      }
       setCurrentStep("income");
     }
   };
@@ -193,11 +302,11 @@ const CustomerCreateFormPage: React.FC = () => {
       setCurrentStep("income");
     }
   };
-
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const handleSubmit = async () => {
-    console.log("test submit");
     try {
       // Step 1: Create customer with basic data (sync)
+
       const customerResponse = await createCustomer(
         formData as CustomerCreateData
       );
@@ -206,25 +315,30 @@ const CustomerCreateFormPage: React.FC = () => {
       if (!customerId) {
         throw new Error("Customer ID not received from server");
       }
-
+      setIsSubmitDisabled(true);
+      let identityResult: any = undefined;
       // Step 2: Upload identity documents (async)
       if (identityData.document_type && identityData.document_number) {
-        uploadIdentityDocuments({ id: customerId, data: identityData }).catch(
-          (error) => {
-            console.error("Failed to upload identity documents:", error);
-          }
-        );
+        identityResult = await uploadIdentityDocuments({
+          id: customerId,
+          data: identityData,
+        }).catch((error) => {
+          console.error("Failed to upload identity documents:", error);
+        });
+        console.log(" result identityResult  = ", identityResult);
       }
 
       // Step 3: Upload income documents (async)
-
       if (incomeData?.length) {
         for (let data of incomeData) {
-          uploadIncomeDocuments({ id: customerId, data }).catch((error) => {
-            console.error("Failed to upload income documents:", error);
-          });
+          await uploadIncomeDocuments({ id: customerId, data }).catch(
+            (error) => {
+              console.error("Failed to upload income documents:", error);
+            }
+          );
         }
       }
+      navigate(ROUTES.CUSTOMERS.LIST);
     } catch (error) {
       console.log(" show response = ", error);
     }
@@ -307,34 +421,23 @@ const CustomerCreateFormPage: React.FC = () => {
       <div className="space-y-6 px-5">
         <div className="text-[14px] bg-[#FDF2F0] flex items-center gap-2 mb-5 w-fit py-1 px-2 rounded-full">
           <ClockDelayIcon className="text-blue-600" />
-          <p>This is not mandatroy at the moment. You can fill them later.</p>
+          <p>
+            This is not mandatroy at the moment. You can skip the step and fill
+            them later.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
-            {/* <Label htmlFor="documentType">Document Type</Label>
-          <Select
-            value={identityData.documentType || ""}
-            onValueChange={(value: string) =>
-              handleIdentityChange("documentType", value)
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="passport">Passport</SelectItem>
-              <SelectItem value="national_id">National ID</SelectItem>
-              <SelectItem value="drivers_license">Driver's License</SelectItem>
-            </SelectContent>
-          </Select> */}
-            <SingleSelectDropdown
+            <SearchableSelect
               label="Document Type"
               options={documentTypesOptions}
-              selectedValue={identityData.document_type || ""}
-              onValueChange={(value: string) =>
-                handleIdentityChange("document_type", value)
+              value={identityData?.document_type || ""}
+              onChange={(value: string | number) =>
+                handleIdentityChange("document_type", String(value))
               }
+              required
+              error={identityErrors?.document_type}
             />
           </div>
 
@@ -349,6 +452,9 @@ const CustomerCreateFormPage: React.FC = () => {
                 handleIdentityChange("document_number", e.target.value)
               }
             />
+            {identityErrors?.document_number && (
+              <ErrorField errors={[identityErrors?.document_number[0]]} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -359,6 +465,9 @@ const CustomerCreateFormPage: React.FC = () => {
                 handleIdentityChange("issuing_date", date)
               }
             />
+            {identityErrors?.issuing_date && (
+              <ErrorField errors={[identityErrors?.issuing_date[0]]} />
+            )}
           </div>
           <div className="flex flex-col gap-1">
             <Label htmlFor="documentExpiryDate">Document Expiry Date</Label>
@@ -369,6 +478,9 @@ const CustomerCreateFormPage: React.FC = () => {
               }
               endMonth={documentExpiryEndMonth}
             />
+            {identityErrors?.expiry_date && (
+              <ErrorField errors={[identityErrors?.expiry_date[0]]} />
+            )}
           </div>
         </div>
 
@@ -380,13 +492,13 @@ const CustomerCreateFormPage: React.FC = () => {
                 type="file"
                 accept="image/*,.pdf"
                 onChange={(e) =>
-                  handleFileUpload("frontDocument", e.target.files)
+                  handleFileUpload("front_image", e.target.files)
                 }
                 className="hidden"
-                id="frontDocument"
+                id="front_image"
               />
               <label
-                htmlFor="frontDocument"
+                htmlFor="front_image"
                 className="p-6 cursor-pointer text-center flex flex-col items-center justify-center h-full w-full"
               >
                 <UploadIcon width={90} />
@@ -396,10 +508,24 @@ const CustomerCreateFormPage: React.FC = () => {
                 </p>
               </label>
             </div>
-            {identityData.front_image && (
-              <p className="text-sm text-green-600">
-                ✓ {identityData.front_image.name}
-              </p>
+            {identityErrors?.front_image && (
+              <ErrorField errors={[identityErrors?.front_image[0]]} />
+            )}
+            {identityData?.front_image && (
+              <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
+                <span>
+                  {/* You can use an icon here */}
+                  <FileIcon color="var(--primary)" />
+                </span>
+                <div>
+                  <div className="font-medium">
+                    {identityData?.front_image?.name}
+                  </div>
+                  <div className="text-xs text-[#656565]">
+                    {(identityData?.front_image?.size / 1024).toFixed(0)}{" "}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
@@ -409,14 +535,12 @@ const CustomerCreateFormPage: React.FC = () => {
               <input
                 type="file"
                 accept="image/*,.pdf"
-                onChange={(e) =>
-                  handleFileUpload("backDocument", e.target.files)
-                }
+                onChange={(e) => handleFileUpload("back_image", e.target.files)}
                 className="hidden"
-                id="backDocument"
+                id="back_image"
               />
               <label
-                htmlFor="backDocument"
+                htmlFor="back_image"
                 className="p-6 cursor-pointer text-center flex flex-col items-center justify-center w-full h-full"
               >
                 <UploadIcon width={90} />
@@ -426,10 +550,21 @@ const CustomerCreateFormPage: React.FC = () => {
                 </p>
               </label>
             </div>
-            {identityData.back_image && (
-              <p className="text-sm text-green-600">
-                ✓ {identityData.back_image.name}
-              </p>
+            {identityData?.back_image && (
+              <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
+                <span>
+                  {/* You can use an icon here */}
+                  <FileIcon color="var(--primary)" />
+                </span>
+                <div>
+                  <div className="font-medium">
+                    {identityData?.back_image?.name}
+                  </div>
+                  <div className="text-xs text-[#656565]">
+                    {(identityData?.back_image?.size / 1024).toFixed(0)}{" "}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -447,38 +582,63 @@ const CustomerCreateFormPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <Label>Upload Recent Three Months Bank Statements</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+
+          <div className="border-2 border-dashed border-gray-300 rounded-lg text-center flex flex-col items-center justify-center">
             <input
               type="file"
               accept=".pdf,.doc,.docx,image/*"
               multiple
               onChange={(e) =>
                 // handleFileUpload("bankStatements", e.target.files, true)
-                handleUploadIncomeFile(
-                  e.target.files,
-                  "recent_three_months_income"
-                )
+                {
+                  handleUploadIncomeFile(
+                    e.target.files,
+                    "recent_three_months_income"
+                  );
+                }
               }
               className="hidden"
               id="bankStatements"
             />
-            <label htmlFor="bankStatements" className="cursor-pointer">
-              <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+            <label
+              htmlFor="bankStatements"
+              className="p-6 cursor-pointer text-center flex flex-col items-center justify-center w-full h-full"
+            >
+              <UploadIcon width={90} />
               <p className="text-teal-600 font-medium">Upload Bank statement</p>
               <p className="text-sm text-gray-500">
                 Drag or click here to upload your document
               </p>
             </label>
           </div>
-          {/* {incomeData.bankStatements.length > 0 && (
-            <div className="space-y-1">
-              {incomeData.bankStatements.map((file, index) => (
-                <p key={index} className="text-sm text-green-600">
-                  ✓ {file.name}
-                </p>
-              ))}
+          {incomeData?.find(
+            (data: any) => data?.document_type === "recent_three_months_income"
+          )?.document?.length && (
+            <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
+              <span>
+                {/* You can use an icon here */}
+                <FileIcon color="var(--primary)" />
+              </span>
+              <div>
+                <div className="font-medium">
+                  {
+                    incomeData?.find(
+                      (data: any) =>
+                        data?.document_type === "recent_three_months_income"
+                    )?.document?.[0]?.name
+                  }
+                </div>
+                {/* <div className="text-xs text-[#656565]">
+                  {(
+                    incomeData?.find(
+                      (data: any) =>
+                        data?.document_type === "recent_three_months_income"
+                    )?.document?.[0]?.size / 1024
+                  ).toFixed(0)}{" "}
+                </div> */}
+              </div>
             </div>
-          )} */}
+          )}
         </div>
 
         <div className="space-y-4">
@@ -488,7 +648,7 @@ const CustomerCreateFormPage: React.FC = () => {
             </Label>
             <AlertCircle className="h-4 w-4 text-gray-400" />
           </div>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg text-center">
             <input
               type="file"
               accept=".pdf,.doc,.docx,image/*"
@@ -500,46 +660,75 @@ const CustomerCreateFormPage: React.FC = () => {
               className="hidden"
               id="extraDocuments"
             />
-            <label htmlFor="extraDocuments" className="cursor-pointer">
+            {/* <label htmlFor="extraDocuments" className="cursor-pointer">
               <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+              <p className="text-teal-600 font-medium">Upload extra document</p>
+              <p className="text-sm text-gray-500">
+                Drag or click here to upload your document
+              </p>
+            </label> */}
+            <label
+              htmlFor="extraDocuments"
+              className="p-6 cursor-pointer text-center flex flex-col items-center justify-center"
+            >
+              <UploadIcon width={90} />
               <p className="text-teal-600 font-medium">Upload extra document</p>
               <p className="text-sm text-gray-500">
                 Drag or click here to upload your document
               </p>
             </label>
           </div>
-          {/* {incomeData.extraDocuments.length > 0 && (
-            <div className="space-y-1">
-              {incomeData.extraDocuments.map((file, index) => (
-                <p key={index} className="text-sm text-green-600">
-                  ✓ {file.name}
-                </p>
-              ))}
+          {incomeData?.find(
+            (data: any) => data?.document_type === "additional_proof"
+          )?.document?.length && (
+            <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
+              <span>
+                {/* You can use an icon here */}
+                <FileIcon color="var(--primary)" />
+              </span>
+              <div>
+                <div className="font-medium">
+                  {
+                    incomeData?.find(
+                      (data: any) => data?.document_type === "additional_proof"
+                    )?.document?.[0]?.name
+                  }
+                </div>
+                {/* <div className="text-xs text-[#656565]">
+                  {(
+                    incomeData?.find(
+                      (data: any) =>
+                        data?.document_type === "additional_proof"
+                    )?.document?.[0]?.size / 1024
+                  ).toFixed(0)}{" "}
+                </div> */}
+              </div>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>
   );
-  const disableContinue = useMemo(() => {
-    if (currentStep === "basic") {
-      if (
-        !formData?.first_name ||
-        !formData?.last_name ||
-        !formData?.email ||
-        !formData?.date_of_birth ||
-        !formData?.street_name ||
-        !formData?.house_number ||
-        !formData?.country_id ||
-        !formData?.city_id ||
-        !formData?.gender ||
-        !formData?.country_phone_code ||
-        !formData?.phone_number
-      )
-        return true;
-    }
-    return false;
-  }, [currentStep, formData]);
+  // const disableContinue = useMemo(() => {
+  //   if (currentStep === "basic") {
+  //     if (
+  //       !formData?.first_name ||
+  //       !formData?.last_name ||
+  //       !formData?.email ||
+  //       !formData?.date_of_birth ||
+  //       !formData?.street_name ||
+  //       !formData?.house_number ||
+  //       !formData?.country_id ||
+  //       !formData?.city_id ||
+  //       !formData?.gender ||
+  //       !formData?.country_phone_code ||
+  //       !formData?.phone_number
+  //     )
+  //       return true;
+  //   }
+  //   return false;
+  // }, [currentStep, formData]);
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -564,7 +753,13 @@ const CustomerCreateFormPage: React.FC = () => {
             formData={formData}
             handleInputChange={handleInputChange}
             handleDateChange={handleDateChange}
+            validationErrors={validationErrors}
           />
+          // <CustomerBasicDetails
+          //   formData={formData}
+          //   handleInputChange={handleInputChange}
+          //   handleDateChange={handleDateChange}
+          // />
         )}
         {currentStep === "identity" && renderCustomerIdentity()}
         {currentStep === "income" && renderProofOfIncome()}
@@ -586,16 +781,19 @@ const CustomerCreateFormPage: React.FC = () => {
             <ActionButton
               title="save & continue"
               onClick={handleSubmit}
-              buttonProps={{
-                disabled: false,
-              }}
+              disabled={
+                isSubmitDisabled ||
+                isCreationPending ||
+                isIdentityDocsPending ||
+                isIcomeDocsPending
+              }
             />
           ) : (
             <ActionButton
               title="save & continue"
               onClick={handleNext}
               className="bg-teal-600 hover:bg-teal-700"
-              disabled={disableContinue}
+              // disabled={disableContinue}
             />
           )}
         </div>

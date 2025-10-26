@@ -32,7 +32,7 @@ export const agentService = {
       : { "Content-Type": "application/json" };
     console.log(" data = ", data);
     const res = await fetch(API_URLS.agents.update(agentId), {
-      method: "PUT",
+      method: "PATCH",
       headers,
       body: JSON.stringify(data),
     });
@@ -57,5 +57,18 @@ export const agentService = {
       }
     );
     return response.data;
+  },
+
+  attachCustomerToAgent: async (customerId: string | number) => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const agentId = JSON.parse(userString)?.agent?.id;
+      if (agentId) {
+        const response = await apiClient.post(
+          API_URLS.agents.attachCustomer(agentId, customerId)
+        );
+        return response.data;
+      }
+    }
   },
 };

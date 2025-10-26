@@ -6,6 +6,7 @@ import PhoneInput from "@/components/shared/PhoneInput";
 import DatePicker from "@/components/shared/DatePicker";
 import { genderOptions } from "@/constants/options";
 import RadioInput from "@/components/shared/RadioInput";
+import ErrorField from "@/components/shared/ErrorField";
 
 interface RecipientBasicDetailsProps {
   formData: {
@@ -34,6 +35,8 @@ interface RecipientBasicDetailsProps {
     code: string;
     countryCode: string;
   }>;
+  disableCstomerSelection?: boolean;
+  validationErrors?: any;
 }
 
 const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
@@ -44,6 +47,8 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
   countryOptions,
   cityOptions,
   countryPhoneOptions,
+  disableCstomerSelection,
+  validationErrors,
 }) => {
   return (
     <div className="space-y-6 p-5">
@@ -56,6 +61,8 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
           value={formData.customer_id || ""}
           onChange={(value) => handleInputChange("customer_id", value)}
           placeholder="Select customer"
+          disabled={disableCstomerSelection}
+          error={validationErrors?.customer_id}
         />
       </div>
 
@@ -75,6 +82,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               value={formData.first_name || ""}
               onChange={(e) => handleInputChange("first_name", e.target.value)}
             />
+            {validationErrors?.first_name && (
+              <ErrorField errors={validationErrors?.first_name} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -88,6 +98,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               value={formData.last_name || ""}
               onChange={(e) => handleInputChange("last_name", e.target.value)}
             />
+            {validationErrors?.last_name && (
+              <ErrorField errors={validationErrors?.last_name} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -102,6 +115,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               value={formData.email || ""}
               onChange={(e) => handleInputChange("email", e.target.value)}
             />
+            {validationErrors?.email && (
+              <ErrorField errors={[validationErrors?.email[0]]} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -114,6 +130,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
                 handleDateChange("date_of_birth", date)
               }
             />
+            {validationErrors?.date_of_birth && (
+              <ErrorField errors={[validationErrors?.date_of_birth[0]]} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -128,6 +147,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               }
               // disabled={!editMode}
             />
+            {validationErrors?.gender && (
+              <ErrorField errors={[validationErrors?.gender[0]]} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -146,6 +168,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               countryOptions={countryPhoneOptions}
               placeholder="Enter phone number"
             />
+            {validationErrors?.phone_number && (
+              <ErrorField errors={validationErrors.phone_number} />
+            )}
           </div>
         </div>
       </div>
@@ -166,6 +191,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               value={formData.street_name || ""}
               onChange={(e) => handleInputChange("street_name", e.target.value)}
             />
+            {validationErrors?.street_name && (
+              <ErrorField errors={[validationErrors?.street_name[0]]} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -181,6 +209,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
                 handleInputChange("house_number", e.target.value)
               }
             />
+            {validationErrors?.house_number && (
+              <ErrorField errors={[validationErrors?.house_number[0]]} />
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -194,6 +225,9 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               value={formData.postal_code || ""}
               onChange={(e) => handleInputChange("postal_code", e.target.value)}
             />
+            {validationErrors?.postal_code && (
+              <ErrorField errors={[validationErrors?.postal_code[0]]} />
+            )}
           </div>
 
           <SearchableSelect
@@ -204,6 +238,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               handleInputChange("country_id", value);
             }}
             required
+            error={validationErrors?.country_id}
           />
 
           <SearchableSelect
@@ -213,6 +248,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
             onChange={(value) => handleInputChange("city_id", value)}
             disabled={!formData.country_id}
             required
+            error={validationErrors?.city_id}
           />
         </div>
       </div>

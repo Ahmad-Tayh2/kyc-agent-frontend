@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import SearchableSelect from "@/components/ui/searchable-select";
+import ErrorField from "@/components/shared/ErrorField";
 
 interface RecipientBankDetailsProps {
   formData: {
@@ -11,7 +12,7 @@ interface RecipientBankDetailsProps {
       account_number: string;
       swift_code: string;
       account_type: string;
-      iban: string;
+      iban_code: string;
       bic_code: string;
       bank_address: string;
       currency_id: string;
@@ -23,6 +24,7 @@ interface RecipientBankDetailsProps {
   accountTypeOptions: Array<{ label: string; value: string }>;
   currencyOptions: Array<{ label: string; value: string }>;
   stateOptions: Array<{ label: string; value: string }>;
+  validationErrors?: any;
 }
 
 const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
@@ -31,6 +33,7 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
   accountTypeOptions,
   currencyOptions,
   stateOptions,
+  validationErrors,
 }) => {
   return (
     <div className="space-y-6 p-5">
@@ -44,9 +47,14 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
           <Input
             id="iban"
             placeholder="Enter IBAN"
-            value={formData.bank_details.iban || ""}
-            onChange={(e) => handleBankDetailsChange("iban", e.target.value)}
+            value={formData.bank_details.iban_code || ""}
+            onChange={(e) =>
+              handleBankDetailsChange("iban_code", e.target.value)
+            }
           />
+          {validationErrors?.iban_code && (
+            <ErrorField errors={[validationErrors?.iban_code[0]]} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -62,6 +70,9 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
               handleBankDetailsChange("account_number", e.target.value)
             }
           />
+          {validationErrors?.account_number && (
+            <ErrorField errors={[validationErrors?.account_number[0]]} />
+          )}
         </div>
 
         {/* Swift Code and BIC Code in a row */}
@@ -78,6 +89,9 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
               handleBankDetailsChange("swift_code", e.target.value)
             }
           />
+          {validationErrors?.swift_code && (
+            <ErrorField errors={[validationErrors?.swift_code[0]]} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -93,6 +107,9 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
               handleBankDetailsChange("bic_code", e.target.value)
             }
           />
+          {validationErrors?.bic_code && (
+            <ErrorField errors={validationErrors?.bic_code} />
+          )}
         </div>
 
         {/* Bank Name and Account Type in a row */}
@@ -109,6 +126,9 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
               handleBankDetailsChange("bank_name", e.target.value)
             }
           />
+          {validationErrors?.bank_name && (
+            <ErrorField errors={validationErrors?.bank_name} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -119,6 +139,7 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
             onChange={(value) => handleBankDetailsChange("account_type", value)}
             placeholder="Select the account type"
             required
+            error={validationErrors?.account_type?.[0]}
           />
         </div>
 
@@ -131,6 +152,7 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
             onChange={(value) => handleBankDetailsChange("currency_id", value)}
             placeholder="Select currency"
             required
+            error={validationErrors?.currency_id?.[0]}
           />
         </div>
 
@@ -175,6 +197,9 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
             rows={3}
             className="resize-none w-full"
           />
+          {validationErrors?.bank_address && (
+            <ErrorField errors={validationErrors?.bank_address} />
+          )}
         </div>
       </div>
     </div>

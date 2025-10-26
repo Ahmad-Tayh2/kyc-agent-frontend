@@ -326,8 +326,8 @@ const CustomerRecipientStep = (props: any) => {
     if (stepOne.customer) {
       attachRecipientMutation.mutate(
         {
-          customerId: stepOne.customer.id.toString(),
-          recipientId: recipientId.toString(),
+          customer_id: stepOne.customer.id.toString(),
+          recipient_id: recipientId.toString(),
         },
         {
           onSuccess: () => {

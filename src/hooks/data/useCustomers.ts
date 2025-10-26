@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { ROUTES } from "@/constants/routes";
+// import { ROUTES } from "@/constants/routes";
 import {
   customersService,
   type CustomerCreateData,
@@ -9,7 +9,7 @@ import {
   type CustomerIncomeFileData,
   type CustomerSearchParams,
 } from "@/services/customers";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 export function useGetCustomers(filters?: string) {
   return useQuery({
@@ -80,7 +80,7 @@ export function useSearchCustomer() {
 }
 
 export function useCreateCustomer() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CustomerCreateData) =>
@@ -88,7 +88,7 @@ export function useCreateCustomer() {
     onSuccess: () => {
       toast.success("Customer created successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-customers"] });
-      navigate(ROUTES.CUSTOMERS.LIST);
+      // navigate(ROUTES.CUSTOMERS.LIST);
     },
     onError: () => {
       toast.error("Customer creation failed!");
@@ -108,12 +108,19 @@ export function useGetCustomerRecipients(customerId: string | number) {
 export function useAttachRecipientToCustomer() {
   return useMutation({
     mutationFn: ({
-      customerId,
-      recipientId,
+      customer_id,
+      agent_id,
+      recipient_id,
     }: {
-      customerId: string | number;
-      recipientId: string | number;
-    }) => customersService.attachRecipientToCustomer(customerId, recipientId),
+      customer_id?: string | number;
+      agent_id?: string | number;
+      recipient_id: string | number;
+    }) =>
+      customersService.attachRecipientToCustomer({
+        customer_id,
+        agent_id,
+        recipient_id,
+      }),
   });
 }
 
@@ -135,7 +142,8 @@ export function useGetIncomeDocuments(customerId: string | number) {
 
 export function useUploadIdentityDocuments(actions?: {
   onSuccess: () => void;
-  onError: (data: any) => void;
+  onError?: (data: any) => void;
+  onCreateError?: (data: any) => void;
 }) {
   return useMutation({
     mutationFn: ({
@@ -150,8 +158,9 @@ export function useUploadIdentityDocuments(actions?: {
       actions?.onSuccess?.();
     },
     onError: (err: any) => {
-      console.log(" errrrr   =", err?.response?.data?.errors);
-      actions?.onError(err?.response?.data?.errors);
+      console.log(" errrrr   =", err);
+      actions?.onError?.(err?.response?.data?.errors);
+      actions?.onCreateError?.(err?.response?.data?.errors);
     },
   });
 }

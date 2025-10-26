@@ -62,13 +62,11 @@ export const customerSchema = z.object({
     .string()
     .nonempty("Email is required")
     .email("Invalid email address format"),
-  date_of_birth: z
-    .string()
-    .nonempty("Date of birth is required")
-    .refine(
-      (date) => !isNaN(Date.parse(date)),
-      "Invalid date format (must be YYYY-MM-DD)"
-    ),
+  date_of_birth: z.string().nonempty("Date of birth is required"),
+  // .refine(
+  //   (date) => !isNaN(Date.parse(date)),
+  //   "Invalid date format (must be YYYY-MM-DD)"
+  // ),
   gender: z.enum(["male", "female"], {
     errorMap: () => ({ message: "Gender is required" }),
   }),
@@ -186,11 +184,41 @@ const CustomerEditPage = () => {
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }));
+    // Clear city when country changes
+    if (field === "country_id") {
+      setFormData((prev: any) => ({
+        ...prev,
+        [field]: value,
+        city_id: "",
+        state_id: "",
+      }));
+    } else {
+      setFormData((prev: any) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
+    // Clear error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors((prev: Record<string, string[]>) => ({
+        ...prev,
+        [field]: [],
+      }));
+    }
   };
 
   const handleDateChange = (field: string, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({
+      ...prev,
+      [field]: value,
+    }));
+    // Clear error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors((prev: Record<string, string[]>) => ({
+        ...prev,
+        [field]: [],
+      }));
+    }
   };
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
@@ -225,13 +253,15 @@ const CustomerEditPage = () => {
         postal_code: formData.postal_code ?? "",
         phone_number: formData.phone_number,
         country_phone_code: formData.country_phone_code,
-        status: formData.status,
+        // status: formData.status,
       };
       const validationResult = customerSchema.safeParse(payloadToUpdate);
+      console.log("check ==== epayloadToUpdate = ", payloadToUpdate);
 
       if (!validationResult.success) {
         const errors = validationResult.error.flatten().fieldErrors;
-        console.log("check ==== errors = ", errors);
+        console.log("check ==== epayloadToUpdate = ", payloadToUpdate);
+        console.log("check ==== error edits = ", errors);
 
         // // Optional: show toast or inline messages
         // toast.error("Please fix the highlighted errors before saving.");

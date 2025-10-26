@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
@@ -12,42 +12,72 @@ import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
 import SearchNotFound from "@/components/shared/SearchNotFound";
+import { useAttachCustomerToAgent } from "@/hooks/data/useAgent";
+import PhoneInput from "@/components/shared/PhoneInput";
+import { useCountries } from "@/hooks/data/useAddress";
 
 interface SearchFormData {
-  customerNumber: string;
+  // customerNumber: string;
   email: string;
   phoneNumber: string;
+  phoneCode: string;
 }
 
 const CustomerCreatePage: React.FC = () => {
   // const [t] = useTranslation("global");
   const navigate = useNavigate();
   const [searchForm, setSearchForm] = useState<SearchFormData>({
-    customerNumber: "",
+    // customerNumber: "",
     email: "",
     phoneNumber: "",
+    phoneCode: "",
   });
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
   const { mutateAsync: searchCustomer, isPending: isSearching } =
     useSearchCustomer();
-  const columns = searchCustomerColumns();
+  const { data: countries = [] } = useCountries();
 
+  const { mutateAsync: attachCustomerToAgent } = useAttachCustomerToAgent();
+  useEffect(() => {
+    console.log("searchForm = = ", searchForm);
+  }, [searchForm]);
+  const handleAttachCustomerToAgent = async (customerId: number | string) => {
+    console.log(" customerId = ", customerId);
+    const result = await attachCustomerToAgent(customerId);
+    if (result?.status) {
+      setSearchResults((prev: any[]) => {
+        let updatedData: any[] = [];
+        if (prev?.length > 0) {
+          for (let customer of prev) {
+            if (customer?.id === customerId) {
+              updatedData?.push({
+                ...customer,
+                belongs_to_current_agent: true,
+              });
+            } else updatedData?.push(customer);
+          }
+        }
+        return updatedData;
+      });
+    }
+  };
+  const columns = searchCustomerColumns(handleAttachCustomerToAgent);
+  const isSearchDisabled = useMemo(() => {
+    return !searchForm?.email && !searchForm?.phoneNumber;
+  }, [searchForm]);
   const handleSearch = async () => {
-    if (
-      !searchForm.customerNumber &&
-      !searchForm.email &&
-      !searchForm.phoneNumber
-    ) {
+    if (isSearchDisabled) {
       return;
     }
 
     try {
       const result = await searchCustomer({
-        customerNumber: searchForm.customerNumber || undefined,
+        // customerNumber: searchForm.customerNumber || undefined,
         email: searchForm.email || undefined,
         phoneNumber: searchForm.phoneNumber || undefined,
+        phoneCode: searchForm.phoneCode || undefined,
       });
 
       setSearchResults(result.data || []);
@@ -73,7 +103,15 @@ const CustomerCreatePage: React.FC = () => {
       [field]: value,
     }));
   };
-
+  // Country phone code options
+  const countryPhoneOptions = countries?.map((country: any) => {
+    return {
+      value: country.phone_code,
+      label: country.name,
+      code: country.phone_code,
+      countryCode: country.iso2,
+    };
+  });
   // const customerNotFound = hasSearched && searchResults.length === 0;
   return (
     <div className="space-y-4">
@@ -90,10 +128,12 @@ const CustomerCreatePage: React.FC = () => {
       {/* Search Form */}
       <div className="bg-white rounded-lg border ">
         <div className="p-6 border-b-1">
-          You can add an existing customer of other agents by searching them.
+          {/* You can add an existing customer of other agents by searching them. */}
+          First, search for the customer. If none are found, create a new
+          record.
         </div>
         <div className="flex items-end gap-4 flex-wrap p-6">
-          <div className="flex-1 min-w-[200px] flex flex-col gap-1">
+          {/* <div className="flex-1 min-w-[200px] flex flex-col gap-1">
             <Label htmlFor="customerNumber">Customer number</Label>
             <Input
               id="customerNumber"
@@ -105,8 +145,7 @@ const CustomerCreatePage: React.FC = () => {
             />
           </div>
 
-          <div className="text-gray-500 mb-3">or</div>
-
+          <div className="text-gray-500 mb-3">or</div> */}
           <div className="flex-1 min-w-[200px] flex flex-col gap-1">
             <Label htmlFor="email" className="text-[14px]">
               Email
@@ -119,21 +158,32 @@ const CustomerCreatePage: React.FC = () => {
               onChange={(e) => handleInputChange("email", e.target.value)}
             />
           </div>
-
           <div className="text-gray-500 mb-3">or</div>
-
           <div className="flex-1 min-w-[200px] flex flex-col gap-1">
             <Label htmlFor="phoneNumber" className="text-[14px]">
               Phone number
             </Label>
-            <Input
+            <PhoneInput
+              placeholder="Enter your phone number"
+              countryOptions={countryPhoneOptions || []}
+              selectedCountry={searchForm.phoneCode}
+              phoneNumber={searchForm.phoneNumber}
+              onCountryChange={(phoneCode) => {
+                handleInputChange("phoneCode", phoneCode);
+                // Clear the phone number when country changes to let the PhoneInput component handle it
+                handleInputChange("phoneNumber", "");
+              }}
+              onPhoneChange={(phoneNumber) =>
+                handleInputChange("phoneNumber", phoneNumber)
+              }
+            />
+            {/* <Input
               id="phoneNumber"
               placeholder="Enter your phone number"
               value={searchForm.phoneNumber}
               onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-            />
+            /> */}
           </div>
-
           <ActionButton
             onClick={handleSearch}
             buttonProps={{
@@ -141,6 +191,7 @@ const CustomerCreatePage: React.FC = () => {
             }}
             className="bg-teal-600 hover:bg-teal-700"
             title="search"
+            disabled={isSearchDisabled}
           />
         </div>
       </div>

@@ -125,7 +125,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
           return (
             <div className="flex flex-wrap">
               {remittance_methods?.map((rm: any, index: number) => (
-                <div>
+                <div key={index}>
                   {index !== 0 && ", "}
                   {rm?.remittance_method?.name}
                 </div>
@@ -210,7 +210,7 @@ export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
           return (
             <div className="flex flex-wrap">
               {remittance_methods?.map((rm: any, index: number) => (
-                <div>
+                <div key={index}>
                   {index !== 0 && ", "}
                   {rm?.remittance_method?.name}
                 </div>
@@ -300,7 +300,7 @@ export const recipientsSearchColumns = ({
           return (
             <div className="flex flex-wrap">
               {remittance_methods?.map((rm: any, index: number) => (
-                <div>
+                <div key={index}>
                   {index !== 0 && ", "}
                   {rm?.remittance_method?.name}
                 </div>

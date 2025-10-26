@@ -45,6 +45,7 @@ export const customersService = {
     if (params.email) queryParams.append("email", params.email);
     if (params.phoneNumber)
       queryParams.append("phone_number", params.phoneNumber);
+    if (params.phoneCode) queryParams.append("phone_code", params.phoneCode);
 
     const response = await apiClient.get(
       `${API_URLS.customers.search}?${queryParams.toString()}`
@@ -64,26 +65,33 @@ export const customersService = {
     const response = await apiClient.get(
       API_URLS.customers.getRecipients(customerId)
     );
-    console.log(" getCustomerRecipients --------- ", response?.data);
     return response?.data;
     // return handleApiResponse(response.data);
   },
 
-  attachRecipientToCustomer: async (
-    customerId: string | number,
-    recipientId: string | number
-  ) => {
+  attachRecipientToCustomer: async ({
+    customer_id,
+    agent_id,
+    recipient_id,
+  }: {
+    customer_id?: string | number;
+    agent_id?: string | number;
+    recipient_id: string | number;
+  }) => {
+    let url;
+    if (agent_id) {
+      url = API_URLS.agents.attachRecipient(agent_id, recipient_id);
+    } else if (customer_id) {
+      url = API_URLS.customers.attachRecipient(customer_id, recipient_id);
+    } else return;
     try {
-      const res = await fetch(
-        API_URLS.customers.attachRecipient(customerId, recipientId),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return res.json();
     } catch (error) {
       console.error("Logout API call failed:", error);

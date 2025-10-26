@@ -116,10 +116,10 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
     []
   );
 };
-const handleAddCustomerToAgent = (customerId: number | string) => {
-  console.log(" customerId = ", customerId);
-};
-export const searchCustomerColumns = (): ColumnDef<CustomerType>[] => {
+
+export const searchCustomerColumns = (
+  attachCustomerToAgent: (customerId: string | number) => void
+): ColumnDef<CustomerType>[] => {
   return useMemo(
     () => [
       {
@@ -160,13 +160,15 @@ export const searchCustomerColumns = (): ColumnDef<CustomerType>[] => {
         cell: ({ row }) => {
           const customer = row.original;
           if (customer?.belongs_to_current_agent) {
-            return <b className="text-primary">Already Added</b>;
+            return (
+              <div className="text-primary font-bold p-2">Already Attached</div>
+            );
           }
           return (
             <ActionButton
               type="link"
               title="Add customer"
-              onClick={() => handleAddCustomerToAgent(customer?.id)}
+              onClick={() => attachCustomerToAgent(customer?.id)}
             />
           );
         },
