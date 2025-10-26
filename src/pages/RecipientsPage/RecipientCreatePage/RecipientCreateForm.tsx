@@ -29,6 +29,60 @@ import { toast } from "sonner";
 import RecipientBankDetails from "./components/RecipientBankDetails";
 import RecipientBasicDetails from "./components/RecipientBasicDetails";
 import RemittanceMethodStep from "./components/RemittanceMethodStep";
+import { recipientSchema } from "../RecipientEditPage";
+import { z } from "zod";
+
+export const bankAccountSchema = z.object({
+  accountable_type: z.literal("Recipient"),
+  accountable_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "Recipient ID is required"),
+
+  first_name: z
+    .string()
+    .min(2, "First name must contain at least 2 characters"),
+  last_name: z.string().min(2, "Last name must contain at least 2 characters"),
+
+  street_name: z.string().nonempty("Street name is required"),
+  house_number: z.string().nonempty("House number is required"),
+  postal_code: z.string().optional(),
+  extra_address_details: z.string().optional(),
+
+  city_id: z.number({ invalid_type_error: "City is required" }),
+  state_id: z.number().optional(),
+  country_id: z.number({ invalid_type_error: "Country is required" }),
+
+  bank_name: z.string().nonempty("Bank name is required"),
+  account_type: z.string().nonempty("Account type is required"),
+  account_number: z
+    .string()
+    .nonempty("Account number is required")
+    .regex(
+      /^[0-9A-Za-z]+$/,
+      "Account number must contain only letters or digits"
+    ),
+
+  swift_code: z
+    .string()
+    .nonempty("SWIFT code is required")
+    .regex(
+      /^[A-Z0-9]{8,11}$/,
+      "SWIFT code must be 8–11 uppercase letters or digits"
+    ),
+  bic_code: z.string().nonempty("BIC code is required"),
+  currency_id: z.number({ invalid_type_error: "Currency is required" }),
+  iban_code: z
+    .string()
+    .nonempty("IBAN is required")
+    .regex(
+      /^[A-Z0-9]+$/,
+      "IBAN must contain only uppercase letters and digits"
+    ),
+
+  bank_address: z.string().nonempty("Bank address is required"),
+});
 
 type FormStep = "basic" | "remittance" | "bank";
 
@@ -86,7 +140,7 @@ interface RecipientFormData {
     account_number: string;
     swift_code: string;
     account_type: string;
-    iban: string;
+    iban_code: string;
     bic_code: string;
     bank_address: string;
     currency_id: string;
@@ -103,6 +157,12 @@ const RecipientCreateForm: React.FC = () => {
 
   const [searchParams] = useSearchParams();
   const customerIdQuery = searchParams.get("customer");
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
+  const [bankValidationErrors, setBankValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
 
   const [formData, setFormData] = useState<RecipientFormData>({
     first_name: "",
@@ -122,7 +182,7 @@ const RecipientCreateForm: React.FC = () => {
       account_number: "",
       swift_code: "",
       account_type: "",
-      iban: "",
+      iban_code: "",
       bic_code: "",
       bank_address: "",
       currency_id: "",
@@ -141,7 +201,7 @@ const RecipientCreateForm: React.FC = () => {
     payout_agents: [],
   });
 
-  console.log("formData:", formData.payout_agents);
+  // console.log("formData:", formData.payout_agents);
 
   const { isPending: isCreatingRecipient } = useCreateRecipient();
   const {
@@ -222,17 +282,21 @@ const RecipientCreateForm: React.FC = () => {
     })) || [];
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Clear city when country changes
     if (field === "country_id") {
-      setFormData((prev) => ({
+      setFormData((prev: any) => ({
         ...prev,
+        [field]: value,
         city_id: "",
+        state_id: "",
       }));
+    } else {
+      setFormData((prev: any) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => ({ ...prev, [field]: [] }));
     }
   };
 
@@ -244,6 +308,9 @@ const RecipientCreateForm: React.FC = () => {
         [field]: value,
       },
     }));
+    if (bankValidationErrors[field]) {
+      setBankValidationErrors((prev) => ({ ...prev, [field]: [] }));
+    }
   };
 
   const handleDateChange = (field: string, date: string) => {
@@ -251,6 +318,9 @@ const RecipientCreateForm: React.FC = () => {
       ...prev,
       [field]: date,
     }));
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => ({ ...prev, [field]: [] }));
+    }
   };
 
   const handleAddRemittanceMethod = (methodId: number) => {
@@ -465,35 +535,54 @@ const RecipientCreateForm: React.FC = () => {
 
     if (currentStep === "basic") {
       // Create recipient when moving from basic to remittance step
+      const recipientPayload = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        date_of_birth: formData.date_of_birth,
+        gender: formData.gender,
+        country_phone_code: formData.country_phone_code,
+        phone_number: formData.phone_number,
+        address: {
+          street_name: formData.street_name,
+          house_number: formData.house_number,
+          postal_code: formData.postal_code,
+          extra_address_details: formData.bank_details.extra_address_details,
+          city_id: parseInt(formData.city_id),
+          state_id:
+            formData.bank_details.state_id &&
+            formData.bank_details.state_id !== ""
+              ? parseInt(formData.bank_details.state_id)
+              : undefined,
+          country_id: parseInt(formData.country_id),
+        },
+        customer_ids: formData.customer_id
+          ? [parseInt(formData.customer_id)]
+          : [],
+        customer_id: parseInt(formData.customer_id ?? ""),
+
+        rm_service_providers: [],
+      };
+      // Flatten fields for validation
+      const flattenedData = {
+        ...recipientPayload,
+        ...recipientPayload.address,
+        country_id: formData.customer_id,
+      };
+
+      const validationResult = recipientSchema.safeParse(flattenedData);
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.flatten().fieldErrors;
+        setValidationErrors(errors);
+        console.log("Validation errors:", errors);
+        return;
+      }
       if (!recipientId) {
         try {
-          const recipientResponse = await createRecipientIntermediate({
-            first_name: formData.first_name,
-            last_name: formData.last_name,
-            email: formData.email,
-            date_of_birth: formData.date_of_birth,
-            gender: formData.gender,
-            country_phone_code: formData.country_phone_code,
-            phone_number: formData.phone_number,
-            address: {
-              street_name: formData.street_name,
-              house_number: formData.house_number,
-              postal_code: formData.postal_code,
-              extra_address_details:
-                formData.bank_details.extra_address_details,
-              city_id: parseInt(formData.city_id),
-              state_id:
-                formData.bank_details.state_id &&
-                formData.bank_details.state_id !== ""
-                  ? parseInt(formData.bank_details.state_id)
-                  : undefined,
-              country_id: parseInt(formData.country_id),
-            },
-            customer_ids: formData.customer_id
-              ? [parseInt(formData.customer_id)]
-              : [],
-            rm_service_providers: [],
-          });
+          const recipientResponse = await createRecipientIntermediate(
+            recipientPayload
+          );
 
           const newRecipientId = recipientResponse.data?.id;
           if (newRecipientId) {
@@ -515,36 +604,47 @@ const RecipientCreateForm: React.FC = () => {
       if (!recipientId) {
         throw new Error("No recipient ID available for final submission");
       }
+      // Flatten fields for validation
+      const bankAccountData = {
+        accountable_type: "Recipient" as const,
+        accountable_id: recipientId,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        street_name: formData.street_name,
+        house_number: formData.house_number,
+        postal_code: formData.postal_code,
+        extra_address_details: formData.bank_details.extra_address_details,
+        city_id: parseInt(formData.city_id),
+        state_id:
+          formData.bank_details.state_id &&
+          formData.bank_details.state_id !== ""
+            ? parseInt(formData.bank_details.state_id)
+            : undefined,
+        country_id: parseInt(formData.country_id),
+        bank_name: formData.bank_details.bank_name,
+        account_number: formData.bank_details.account_number,
+        account_type: formData.bank_details.account_type,
+        swift_code: formData.bank_details.swift_code,
+        bic_code: formData.bank_details.bic_code,
 
+        currency_id: parseInt(formData.bank_details.currency_id),
+        iban_code: formData.bank_details.iban_code,
+        bank_address: formData.bank_details.bank_address,
+      };
+
+      const validationResult = bankAccountSchema.safeParse(bankAccountData);
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.flatten().fieldErrors;
+        setBankValidationErrors(errors);
+        console.log("Bank details validation errors:", errors);
+        return;
+      }
       // Step 1: Create bank account - only if bank details are provided
       if (
         formData.bank_details.bank_name &&
         formData.bank_details.account_number
       ) {
-        const bankAccountData = {
-          accountable_type: "Recipient" as const,
-          accountable_id: recipientId,
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          street_name: formData.street_name,
-          house_number: formData.house_number,
-          postal_code: formData.postal_code,
-          extra_address_details: formData.bank_details.extra_address_details,
-          city_id: parseInt(formData.city_id),
-          state_id:
-            formData.bank_details.state_id &&
-            formData.bank_details.state_id !== ""
-              ? parseInt(formData.bank_details.state_id)
-              : undefined,
-          country_id: parseInt(formData.country_id),
-          bank_name: formData.bank_details.bank_name,
-          account_number: formData.bank_details.account_number,
-          swift_code: formData.bank_details.swift_code,
-          currency_id: parseInt(formData.bank_details.currency_id),
-          iban_code: formData.bank_details.iban,
-          bank_address: formData.bank_details.bank_address,
-        };
-
         await createBankAccount(bankAccountData);
       }
 
@@ -651,6 +751,7 @@ const RecipientCreateForm: React.FC = () => {
             cityOptions={cityOptions}
             countryPhoneOptions={countryPhoneOptions}
             disableCstomerSelection={disableCstomerSelection}
+            validationErrors={validationErrors}
           />
         )}
         {currentStep === "remittance" && (
@@ -678,6 +779,7 @@ const RecipientCreateForm: React.FC = () => {
             accountTypeOptions={accountTypeOptions}
             currencyOptions={currencyOptions}
             stateOptions={stateOptions}
+            validationErrors={bankValidationErrors}
           />
         )}
         {/* Action Buttons */}

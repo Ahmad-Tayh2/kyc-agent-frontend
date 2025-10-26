@@ -234,15 +234,17 @@ const UserProfilePage = () => {
     ...(formData.agentType === "business_partner" && {
       business_details: {
         business_name: formData.businessName,
-        street_name: formData.businessStreetName,
-        house_number: formData.businessHouseNumber,
-        postal_code: formData.businessPostalCode || "",
-        extra_address_details: formData.businessExtraAddressDetails || "",
-        city_id: parseInt(formData.businessCity),
-        state_id: formData.businessState
-          ? parseInt(formData.businessState)
-          : undefined,
-        country_id: parseInt(formData.businessCountry),
+        address: {
+          street_name: formData.businessStreetName,
+          house_number: formData.businessHouseNumber,
+          postal_code: formData.businessPostalCode || "",
+          extra_address_details: formData.businessExtraAddressDetails || "",
+          city_id: parseInt(formData.businessCity),
+          state_id: formData.businessState
+            ? parseInt(formData.businessState)
+            : undefined,
+          country_id: parseInt(formData.businessCountry),
+        },
       },
     }),
   });

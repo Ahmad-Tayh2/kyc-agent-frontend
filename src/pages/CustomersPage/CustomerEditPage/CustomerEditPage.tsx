@@ -62,13 +62,11 @@ export const customerSchema = z.object({
     .string()
     .nonempty("Email is required")
     .email("Invalid email address format"),
-  date_of_birth: z
-    .string()
-    .nonempty("Date of birth is required")
-    .refine(
-      (date) => !isNaN(Date.parse(date)),
-      "Invalid date format (must be YYYY-MM-DD)"
-    ),
+  date_of_birth: z.string().nonempty("Date of birth is required"),
+  // .refine(
+  //   (date) => !isNaN(Date.parse(date)),
+  //   "Invalid date format (must be YYYY-MM-DD)"
+  // ),
   gender: z.enum(["male", "female"], {
     errorMap: () => ({ message: "Gender is required" }),
   }),

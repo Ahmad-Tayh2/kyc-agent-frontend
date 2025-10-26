@@ -10,9 +10,16 @@ import {
   useStatesByCountry,
 } from "@/hooks/data/useAddress";
 import RadioInput from "@/components/shared/RadioInput";
+import ErrorField from "@/components/shared/ErrorField";
 
 const RecipientBasicDetails = (props: any) => {
-  const { data, handleInputChange, handleDateChange, editMode = true } = props;
+  const {
+    data,
+    handleInputChange,
+    handleDateChange,
+    editMode = true,
+    validationErrors,
+  } = props;
   const genderOptions = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
@@ -46,7 +53,6 @@ const RecipientBasicDetails = (props: any) => {
       code: country.phone_code,
       countryCode: country.iso2,
     })) || [];
-  console.log(" data = = =", data);
   return (
     <div className="space-y-6 p-5">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -63,6 +69,9 @@ const RecipientBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("first_name", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.first_name && (
+            <ErrorField errors={validationErrors.first_name} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="last_name">
@@ -76,6 +85,9 @@ const RecipientBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("last_name", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.last_name && (
+            <ErrorField errors={validationErrors.last_name} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="email">
@@ -90,6 +102,9 @@ const RecipientBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("email", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.email && (
+            <ErrorField errors={[validationErrors.email[0]]} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="date_of_birth">
@@ -100,6 +115,9 @@ const RecipientBasicDetails = (props: any) => {
             onChange={(date: string) => handleDateChange("date_of_birth", date)}
             disabled={!editMode}
           />
+          {validationErrors?.date_of_birth && (
+            <ErrorField errors={validationErrors.date_of_birth} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="street_name">
@@ -113,6 +131,9 @@ const RecipientBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("street_name", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.street_name && (
+            <ErrorField errors={validationErrors.street_name} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="house_number">
@@ -126,6 +147,9 @@ const RecipientBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("house_number", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.house_number && (
+            <ErrorField errors={validationErrors.house_number} />
+          )}
         </div>
         <SearchableSelect
           label={"Country"}
@@ -137,6 +161,7 @@ const RecipientBasicDetails = (props: any) => {
           }}
           required
           disabled={!editMode}
+          error={validationErrors.country_id}
         />
         <SearchableSelect
           label={"State"}
@@ -144,6 +169,7 @@ const RecipientBasicDetails = (props: any) => {
           value={data?.state_id}
           onChange={(value) => handleInputChange("state_id", value)}
           disabled={!data?.country_id || !editMode}
+          error={validationErrors.state_id}
         />
         <SearchableSelect
           label={"City"}
@@ -152,6 +178,7 @@ const RecipientBasicDetails = (props: any) => {
           onChange={(value) => handleInputChange("city_id", value)}
           disabled={!data?.country_id || !editMode}
           required
+          error={validationErrors.city_id}
         />
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="postal_code">
@@ -165,6 +192,9 @@ const RecipientBasicDetails = (props: any) => {
             onChange={(e) => handleInputChange("postal_code", e.target.value)}
             disabled={!editMode}
           />
+          {validationErrors?.postal_code && (
+            <ErrorField errors={validationErrors.postal_code} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -179,6 +209,9 @@ const RecipientBasicDetails = (props: any) => {
             }
             disabled={!editMode}
           />
+          {validationErrors?.gender && (
+            <ErrorField errors={validationErrors.gender} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="phone_number">
@@ -197,6 +230,9 @@ const RecipientBasicDetails = (props: any) => {
             }
             disabled={!editMode}
           />
+          {validationErrors?.phone_number && (
+            <ErrorField errors={validationErrors.phone_number} />
+          )}
         </div>
       </div>
     </div>

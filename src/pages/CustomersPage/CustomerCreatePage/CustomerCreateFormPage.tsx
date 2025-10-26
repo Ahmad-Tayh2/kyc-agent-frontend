@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import {
 import CustomerBasicDetails from "./components/CustomerBasicDetails";
 import DatePicker from "@/components/shared/DatePicker";
 import { ROUTES } from "@/constants/routes";
-import { AlertCircle, Upload } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import NextStepArrow from "@/assets/icons/next-step-arrow.svg?react";
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
@@ -69,6 +69,9 @@ const CustomerCreateFormPage: React.FC = () => {
   });
 
   const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
+  useEffect(() => {
+    console.log("incomeeess = ", incomeData);
+  }, [incomeData]);
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
   >({});
@@ -86,14 +89,20 @@ const CustomerCreateFormPage: React.FC = () => {
     setIdentityErrors({});
     return true;
   };
-  const { mutateAsync: createCustomer } = useCreateCustomer();
-  const { mutateAsync: uploadIdentityDocuments } = useUploadIdentityDocuments({
+
+  const { mutateAsync: createCustomer, isPending: isCreationPending } =
+    useCreateCustomer();
+  const {
+    mutateAsync: uploadIdentityDocuments,
+    isPending: isIdentityDocsPending,
+  } = useUploadIdentityDocuments({
     onSuccess: () => {
       setIdentityErrors({});
     },
     onCreateError: (errorsData: any) => setIdentityErrors(errorsData),
   });
-  const { mutateAsync: uploadIncomeDocuments } = useUploadIncomeDocuments();
+  const { mutateAsync: uploadIncomeDocuments, isPending: isIcomeDocsPending } =
+    useUploadIncomeDocuments();
 
   const handleInputChange = (
     field: keyof CustomerCreateData,
@@ -153,21 +162,40 @@ const CustomerCreateFormPage: React.FC = () => {
   };
 
   const handleUploadIncomeFile = (files: FileList | null, type: string) => {
+    console.log(" files = ", files);
+    console.log(" type = ", type);
     if (!files || files?.length === 0 || !type) return;
     setIncomeData((prev: any) => {
-      const exist = prev?.find(
-        (item: CustomerIncomeFileData) => item.document_type === type
-      );
-      if (!exist) {
-        return [
-          ...prev,
-          {
+      let updatedData: any[] = [];
+      let exist = false;
+      if (prev?.length) {
+        console.log(" yes find one = =  = = = = = ");
+        for (let item of prev) {
+          if (item.document_type === type) {
+            updatedData?.push({
+              document: files,
+              document_type: type,
+            });
+            exist = true;
+          } else {
+            updatedData?.push(item);
+          }
+          console.log(" updatedData contains *******", updatedData);
+        }
+        if (!exist) {
+          updatedData?.push({
             document: files,
             document_type: type,
-          },
-        ];
+          });
+        }
+      } else {
+        updatedData?.push({
+          document: files,
+          document_type: type,
+        });
       }
-      return prev;
+
+      return updatedData;
     });
   };
   const handleFileUpload = (
@@ -274,11 +302,11 @@ const CustomerCreateFormPage: React.FC = () => {
       setCurrentStep("income");
     }
   };
-
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const handleSubmit = async () => {
-    console.log("test submit");
     try {
       // Step 1: Create customer with basic data (sync)
+
       const customerResponse = await createCustomer(
         formData as CustomerCreateData
       );
@@ -287,6 +315,7 @@ const CustomerCreateFormPage: React.FC = () => {
       if (!customerId) {
         throw new Error("Customer ID not received from server");
       }
+      setIsSubmitDisabled(true);
       let identityResult: any = undefined;
       // Step 2: Upload identity documents (async)
       if (identityData.document_type && identityData.document_number) {
@@ -309,6 +338,7 @@ const CustomerCreateFormPage: React.FC = () => {
           );
         }
       }
+      navigate(ROUTES.CUSTOMERS.LIST);
     } catch (error) {
       console.log(" show response = ", error);
     }
@@ -520,10 +550,21 @@ const CustomerCreateFormPage: React.FC = () => {
                 </p>
               </label>
             </div>
-            {identityData.back_image && (
-              <p className="text-sm text-green-600">
-                ✓ {identityData.back_image.name}
-              </p>
+            {identityData?.back_image && (
+              <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
+                <span>
+                  {/* You can use an icon here */}
+                  <FileIcon color="var(--primary)" />
+                </span>
+                <div>
+                  <div className="font-medium">
+                    {identityData?.back_image?.name}
+                  </div>
+                  <div className="text-xs text-[#656565]">
+                    {(identityData?.back_image?.size / 1024).toFixed(0)}{" "}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -541,38 +582,63 @@ const CustomerCreateFormPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <Label>Upload Recent Three Months Bank Statements</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+
+          <div className="border-2 border-dashed border-gray-300 rounded-lg text-center flex flex-col items-center justify-center">
             <input
               type="file"
               accept=".pdf,.doc,.docx,image/*"
               multiple
               onChange={(e) =>
                 // handleFileUpload("bankStatements", e.target.files, true)
-                handleUploadIncomeFile(
-                  e.target.files,
-                  "recent_three_months_income"
-                )
+                {
+                  handleUploadIncomeFile(
+                    e.target.files,
+                    "recent_three_months_income"
+                  );
+                }
               }
               className="hidden"
               id="bankStatements"
             />
-            <label htmlFor="bankStatements" className="cursor-pointer">
-              <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+            <label
+              htmlFor="bankStatements"
+              className="p-6 cursor-pointer text-center flex flex-col items-center justify-center w-full h-full"
+            >
+              <UploadIcon width={90} />
               <p className="text-teal-600 font-medium">Upload Bank statement</p>
               <p className="text-sm text-gray-500">
                 Drag or click here to upload your document
               </p>
             </label>
           </div>
-          {/* {incomeData.bankStatements.length > 0 && (
-            <div className="space-y-1">
-              {incomeData.bankStatements.map((file, index) => (
-                <p key={index} className="text-sm text-green-600">
-                  ✓ {file.name}
-                </p>
-              ))}
+          {incomeData?.find(
+            (data: any) => data?.document_type === "recent_three_months_income"
+          )?.document?.length && (
+            <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
+              <span>
+                {/* You can use an icon here */}
+                <FileIcon color="var(--primary)" />
+              </span>
+              <div>
+                <div className="font-medium">
+                  {
+                    incomeData?.find(
+                      (data: any) =>
+                        data?.document_type === "recent_three_months_income"
+                    )?.document?.[0]?.name
+                  }
+                </div>
+                {/* <div className="text-xs text-[#656565]">
+                  {(
+                    incomeData?.find(
+                      (data: any) =>
+                        data?.document_type === "recent_three_months_income"
+                    )?.document?.[0]?.size / 1024
+                  ).toFixed(0)}{" "}
+                </div> */}
+              </div>
             </div>
-          )} */}
+          )}
         </div>
 
         <div className="space-y-4">
@@ -582,7 +648,7 @@ const CustomerCreateFormPage: React.FC = () => {
             </Label>
             <AlertCircle className="h-4 w-4 text-gray-400" />
           </div>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg text-center">
             <input
               type="file"
               accept=".pdf,.doc,.docx,image/*"
@@ -594,23 +660,51 @@ const CustomerCreateFormPage: React.FC = () => {
               className="hidden"
               id="extraDocuments"
             />
-            <label htmlFor="extraDocuments" className="cursor-pointer">
+            {/* <label htmlFor="extraDocuments" className="cursor-pointer">
               <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+              <p className="text-teal-600 font-medium">Upload extra document</p>
+              <p className="text-sm text-gray-500">
+                Drag or click here to upload your document
+              </p>
+            </label> */}
+            <label
+              htmlFor="extraDocuments"
+              className="p-6 cursor-pointer text-center flex flex-col items-center justify-center"
+            >
+              <UploadIcon width={90} />
               <p className="text-teal-600 font-medium">Upload extra document</p>
               <p className="text-sm text-gray-500">
                 Drag or click here to upload your document
               </p>
             </label>
           </div>
-          {/* {incomeData.extraDocuments.length > 0 && (
-            <div className="space-y-1">
-              {incomeData.extraDocuments.map((file, index) => (
-                <p key={index} className="text-sm text-green-600">
-                  ✓ {file.name}
-                </p>
-              ))}
+          {incomeData?.find(
+            (data: any) => data?.document_type === "additional_proof"
+          )?.document?.length && (
+            <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
+              <span>
+                {/* You can use an icon here */}
+                <FileIcon color="var(--primary)" />
+              </span>
+              <div>
+                <div className="font-medium">
+                  {
+                    incomeData?.find(
+                      (data: any) => data?.document_type === "additional_proof"
+                    )?.document?.[0]?.name
+                  }
+                </div>
+                {/* <div className="text-xs text-[#656565]">
+                  {(
+                    incomeData?.find(
+                      (data: any) =>
+                        data?.document_type === "additional_proof"
+                    )?.document?.[0]?.size / 1024
+                  ).toFixed(0)}{" "}
+                </div> */}
+              </div>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>
@@ -687,9 +781,12 @@ const CustomerCreateFormPage: React.FC = () => {
             <ActionButton
               title="save & continue"
               onClick={handleSubmit}
-              buttonProps={{
-                disabled: false,
-              }}
+              disabled={
+                isSubmitDisabled ||
+                isCreationPending ||
+                isIdentityDocsPending ||
+                isIcomeDocsPending
+              }
             />
           ) : (
             <ActionButton

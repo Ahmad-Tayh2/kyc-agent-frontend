@@ -158,9 +158,9 @@ export function useUploadIdentityDocuments(actions?: {
       actions?.onSuccess?.();
     },
     onError: (err: any) => {
-      console.log(" errrrr   =", err?.response?.data?.errors);
+      console.log(" errrrr   =", err);
       actions?.onError?.(err?.response?.data?.errors);
-      actions?.onCreateError?.(err);
+      actions?.onCreateError?.(err?.response?.data?.errors);
     },
   });
 }

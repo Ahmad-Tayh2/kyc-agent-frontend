@@ -27,16 +27,23 @@ export function useGetRecipient(id: string | number) {
   });
 }
 
-export function useUpdateRecipient(id: string | number) {
+export function useUpdateRecipient(
+  id: string | number,
+  onSuccess: () => void,
+  onError: (data: any) => void
+) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<RecipientUpdatedDataType>) =>
       recipientsService.updateRecipient(id, data),
     onSuccess: () => {
+      onSuccess?.();
       toast.success("Recipient updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-recipients"] });
     },
-    onError: (error: AxiosError<ErrorResponseData>) => {
+    onError: (error: any) => {
+      console.log(" errrrr   =", error?.response?.data?.errors);
+      onError?.(error?.response?.data?.errors);
       toast.error(error?.response?.data?.message);
     },
   });

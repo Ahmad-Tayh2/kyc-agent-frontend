@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Share2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -59,6 +59,9 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   onOpenChange,
 }) => {
   const [generatedToken, setGeneratedToken] = useState<string>("");
+  const customerFormLink = useMemo(() => {
+    return window.location.origin + "/customer-form/" + generatedToken;
+  }, [generatedToken]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -189,14 +192,14 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
         await navigator.share({
           title: "Customer Form Link",
           text: "Please fill out this customer form",
-          url: generatedToken,
+          url: customerFormLink,
         });
       } catch {
         // Error sharing - could add user feedback here
       }
     } else {
       // Fallback to copying to clipboard
-      copyToClipboard(generatedToken);
+      copyToClipboard(customerFormLink);
     }
   };
 
@@ -370,18 +373,18 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
 
             <DialogFooter className="sm:justify-between">
               <div className="flex items-center gap-2">
-                {generatedToken && (
+                {customerFormLink && (
                   <>
                     <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-md max-w-sm">
                       <span className="text-sm text-gray-600 truncate">
-                        {generatedToken}
+                        {customerFormLink}
                       </span>
                     </div>{" "}
                     <Button
                       type="button"
                       size="sm"
                       variant={"outline"}
-                      onClick={() => copyToClipboard(generatedToken)}
+                      onClick={() => copyToClipboard(customerFormLink)}
                       className="px-3"
                     >
                       <img
@@ -409,7 +412,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
               >
                 {createCustomerFormMutation.isPending || isSubmitting
                   ? "Generating..."
-                  : "Generate Token"}
+                  : "Generate Form Link"}
               </Button>
             </DialogFooter>
           </form>

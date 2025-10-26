@@ -83,7 +83,9 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
                 {t("modules.register.businessType.partnerRoles.sending")}
                 <span
                   className="text-gray-400 text-xs"
-                  title={t("modules.register.businessType.partnerRoles.sendingTooltip")}
+                  title={t(
+                    "modules.register.businessType.partnerRoles.sendingTooltip"
+                  )}
                 >
                   <InfoIcon />
                 </span>
@@ -96,13 +98,15 @@ const BusinessTypeStep: React.FC<BusinessTypeStepProps> = ({ onNext }) => {
                 {t("modules.register.businessType.partnerRoles.payout")}
                 <span
                   className="text-gray-400 text-xs"
-                  title={t("modules.register.businessType.partnerRoles.payoutTooltip")}
+                  title={t(
+                    "modules.register.businessType.partnerRoles.payoutTooltip"
+                  )}
                 >
                   <InfoIcon />
                 </span>
               </label>
             </div>
-            <div className="bg-primary/10 text-xs rounded p-2 mt-2">
+            <div className="bg-primary/10 text-s rounded p-2 mt-2">
               {t("modules.register.businessType.partnerRoles.description")}
             </div>
           </>

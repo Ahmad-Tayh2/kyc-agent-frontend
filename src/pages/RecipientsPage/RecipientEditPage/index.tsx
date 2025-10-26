@@ -16,12 +16,64 @@ import RecipientBasicDetails from "./RecipientBasicDetails";
 import RecipientRemittanceDetails from "./RecipientRemittanceDetails";
 import { format } from "date-fns";
 // import RecipientBankDetails from "./RecipientBankDetails";
+import { z } from "zod";
 
-const CustomerEditPage: React.FC = () => {
+export const recipientSchema = z.object({
+  customer_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "Customer is required"),
+  first_name: z
+    .string()
+    .min(2, "First name must contain at least 2 characters")
+    .max(50, "First name is too long"),
+  last_name: z
+    .string()
+    .min(2, "Last name must contain at least 2 characters")
+    .max(50, "Last name is too long"),
+  email: z
+    .string()
+    .nonempty("Email is required")
+    .email("Invalid email address format"),
+  date_of_birth: z.string().nonempty("Date of birth is required"),
+  // .refine(
+  //   (date) => !isNaN(Date.parse(date)),
+  //   "Invalid date format (must be YYYY-MM-DD)"
+  // ),
+  gender: z.enum(["male", "female"], {
+    errorMap: () => ({ message: "Gender is required" }),
+  }),
+  country_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "Country is required"),
+
+  city_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "City is required"),
+
+  street_name: z.string().nonempty("Street name is required"),
+  house_number: z.string().nonempty("House number is required"),
+  // postal_code: z.string().optional(),
+  phone_number: z
+    .string()
+    .nonempty("Phone number is required")
+    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+  country_phone_code: z.string().nonempty("Country phone code required"),
+});
+
+const RecipientEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, error } = useGetRecipient(id!);
   const [formData, setFormData] = useState<any>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
 
   const [recipientData, setRecipientData] = useState<RecipientDataType | null>(
     null
@@ -43,7 +95,14 @@ const CustomerEditPage: React.FC = () => {
       return basicInfoEditMode || bankDetailsEditMode;
     else return true;
   };
-  const { mutateAsync: updateRecipient } = useUpdateRecipient(id!);
+  const { mutateAsync: updateRecipient } = useUpdateRecipient(
+    id!,
+    () => {
+      setBasicInfoEditMode(false);
+      setValidationErrors({});
+    },
+    (errorsData: any) => setValidationErrors(errorsData)
+  );
 
   useEffect(() => {
     if (data?.data) {
@@ -71,11 +130,29 @@ const CustomerEditPage: React.FC = () => {
     }
   }, [data]);
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }));
+    if (field === "country_id") {
+      setFormData((prev: any) => ({
+        ...prev,
+        [field]: value,
+        city_id: "",
+        state_id: "",
+      }));
+    } else {
+      setFormData((prev: any) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => ({ ...prev, [field]: [] }));
+    }
   };
 
   const handleDateChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => ({ ...prev, [field]: [] }));
+    }
   };
   const handleBack = () => {
     navigate(ROUTES.RECIPIENTS.LIST);
@@ -109,6 +186,7 @@ const CustomerEditPage: React.FC = () => {
       const payloadToUpdate: Partial<RecipientUpdatedDataType> = {
         first_name: formData?.first_name,
         last_name: formData?.last_name,
+        email: formData?.email,
         date_of_birth: formData?.date_of_birth
           ? format(formData?.date_of_birth, "dd-MM-yyyy")
           : "",
@@ -126,6 +204,21 @@ const CustomerEditPage: React.FC = () => {
         country_phone_code: recipientData?.country_phone_code,
         bank_details: recipientData?.bank_details,
       };
+
+      // Flatten fields for validation
+      const flattenedData = {
+        ...payloadToUpdate,
+        ...payloadToUpdate.address,
+      };
+
+      const validationResult = recipientSchema.safeParse(flattenedData);
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.flatten().fieldErrors;
+        setValidationErrors(errors);
+        console.log("Validation errors:", errors);
+        return;
+      }
       await updateRecipient(payloadToUpdate);
       setBasicInfoEditMode(false);
       setRemittanceMethodsEditMode(false);
@@ -176,6 +269,7 @@ const CustomerEditPage: React.FC = () => {
           handleInputChange={handleInputChange}
           handleDateChange={handleDateChange}
           editMode={basicInfoEditMode}
+          validationErrors={validationErrors}
         />
       </EditSectionCard>
       <EditSectionCard
@@ -214,4 +308,4 @@ const CustomerEditPage: React.FC = () => {
   );
 };
 
-export default CustomerEditPage;
+export default RecipientEditPage;
