@@ -100,7 +100,7 @@ const CustomerFormsPage: React.FC = () => {
 
       cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
         const token = row.original.token;
-        const url = window.location.href + "/" + token;
+        const url = window.location.origin + "/customer-form/" + token;
         const displayUrl = url.length > 55 ? `${url.slice(0, 55)}...` : url;
 
         return (
