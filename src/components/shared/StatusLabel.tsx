@@ -22,7 +22,7 @@ const StatusLabel = ({
   return (
     <div
       className={cn(
-        "font-semibold w-fit cursor-default rounded-md border-1 capitalize",
+        "font-medium w-fit cursor-default rounded-md border-1 capitalize",
         sizeClasses[size],
         className
       )}
