@@ -1,6 +1,6 @@
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
-import NomadRemLogo from "@/assets/logo.svg?react";
+import NomadRemLogo from "@/assets/black-logo.svg?react";
 import DatePicker from "@/components/shared/DatePicker";
 import Loader from "@/components/shared/Loader";
 import PhoneInput from "@/components/shared/PhoneInput";
@@ -31,7 +31,7 @@ import { format } from "date-fns";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { z } from "zod";
 
 // Simple authentication check
@@ -73,7 +73,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   onClose,
 }) => {
   const { token: urlToken } = useParams<{ token: string }>();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [t] = useTranslation("global");
   const effectiveToken = token || urlToken;
   const isUserAuthenticated = isAuthenticated();
@@ -104,7 +104,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
   // NomadRem branding component
   const brandingSection = (
-    <div className="text-center bg-gray-50 border border-gray-200 p-4 ">
+    <div className="text-center bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
       <div className="flex justify-center mb-2">
         <NomadRemLogo className="h-6" />
       </div>
@@ -253,7 +253,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           <p className="text-gray-600">
             {t("modules.pages.customerForm.linkUsed.message")}
           </p>
-          {mode === "fullpage" && (
+          {/* {mode === "fullpage" && (
             <Button
               onClick={() => navigate("/")}
               className="mt-4"
@@ -261,7 +261,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             >
               {t("common.actions.goHome")}
             </Button>
-          )}
+          )} */}
           {isPreviewMode && (
             <Button onClick={onClose} className="mt-4" variant="outline">
               {t("modules.pages.customerForm.closePreview")}
@@ -284,7 +284,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           <p className="text-gray-600">
             {t("modules.pages.customerForm.linkExpired.message")}
           </p>
-          {mode === "fullpage" && (
+          {/* {mode === "fullpage" && (
             <Button
               onClick={() => navigate("/")}
               className="mt-4"
@@ -292,7 +292,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             >
               {t("common.actions.goHome")}
             </Button>
-          )}
+          )} */}
           {isPreviewMode && (
             <Button onClick={onClose} className="mt-4" variant="outline">
               {t("modules.pages.customerForm.closePreview")}

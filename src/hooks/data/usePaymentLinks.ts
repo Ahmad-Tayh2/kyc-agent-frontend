@@ -6,6 +6,7 @@ export function useGetPaymentLinks(filters?: string) {
   return useQuery({
     queryKey: ["get-payment-links", filters],
     queryFn: () => paymentLinksService.getPaymentLinks(filters),
+    refetchInterval: 60 * 1000,
   });
 }
 

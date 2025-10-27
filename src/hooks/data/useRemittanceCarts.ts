@@ -7,6 +7,7 @@ export function useGetRemittanceCarts(filters?: string) {
   return useQuery({
     queryKey: ["get-remittance-carts"],
     queryFn: () => remittanceCartsService.getRemittanceCarts(filters),
+    refetchInterval: 60 * 1000,
   });
 }
 

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import PageTitle from "@/components/shared/PageTitle";
 import CommissionFilters from "@/components/commission/CommissionFilters";
 import { CommissionTableColumns } from "@/components/commission/CommissionTableColumns";
-import ReportIssueDialog from "@/components/commission/ReportIssueDialog";
+// import ReportIssueDialog from "@/components/commission/ReportIssueDialog";
 // import { useCommissionFilters } from "@/hooks/data/useCommissionFilters";
 // import { ROUTES } from "@/constants/routes";
 
@@ -26,7 +26,7 @@ const MoneyWithdrawalsPage: React.FC = () => {
   //   // updatePagination,
   // } = useCommissionFilters();
 
-  // const { data: response, isLoading, error } = useGetCommission(filtersString);
+  // const { data: response, isLoading, error } = useGetCommission(filtersString); to put in query: refetchInterval: 60 * 1000,
 
   // Memoize customers data to prevent unnecessary re-renders
   // const commissionData = useMemo(() => {
@@ -65,7 +65,7 @@ const MoneyWithdrawalsPage: React.FC = () => {
         onApplyFilters={applyFilters}
       />
       <div>
-        <ReportIssueDialog trigger={<div>Report issue popup</div>} />
+        {/* <ReportIssueDialog trigger={<div>Report issue popup</div>} /> */}
         <DataTable
           data={[]}
           columns={columns}
