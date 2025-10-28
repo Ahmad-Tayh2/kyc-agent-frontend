@@ -18,12 +18,12 @@ import { format } from "date-fns";
 // import RecipientBankDetails from "./RecipientBankDetails";
 import { z } from "zod";
 
-export const recipientSchema = z.object({
-  customer_id: z.union([z.string(), z.number()]).refine((val) => {
-    if (typeof val === "string") return val.trim() !== "";
-    if (typeof val === "number") return !isNaN(val);
-    return false;
-  }, "Customer is required"),
+export const editRecipientSchema = z.object({
+  // customer_id: z.union([z.string(), z.number()]).refine((val) => {
+  //   if (typeof val === "string") return val.trim() !== "";
+  //   if (typeof val === "number") return !isNaN(val);
+  //   return false;
+  // }, "Customer is required"),
   first_name: z
     .string()
     .min(2, "First name must contain at least 2 characters")
@@ -211,7 +211,7 @@ const RecipientEditPage: React.FC = () => {
         ...payloadToUpdate.address,
       };
 
-      const validationResult = recipientSchema.safeParse(flattenedData);
+      const validationResult = editRecipientSchema.safeParse(flattenedData);
 
       if (!validationResult.success) {
         const errors = validationResult.error.flatten().fieldErrors;

@@ -29,9 +29,54 @@ import { toast } from "sonner";
 import RecipientBankDetails from "./components/RecipientBankDetails";
 import RecipientBasicDetails from "./components/RecipientBasicDetails";
 import RemittanceMethodStep from "./components/RemittanceMethodStep";
-import { recipientSchema } from "../RecipientEditPage";
 import { z } from "zod";
+export const createRecipientSchema = z.object({
+  customer_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "Customer is required"),
+  first_name: z
+    .string()
+    .min(2, "First name must contain at least 2 characters")
+    .max(50, "First name is too long"),
+  last_name: z
+    .string()
+    .min(2, "Last name must contain at least 2 characters")
+    .max(50, "Last name is too long"),
+  email: z
+    .string()
+    .nonempty("Email is required")
+    .email("Invalid email address format"),
+  date_of_birth: z.string().nonempty("Date of birth is required"),
+  // .refine(
+  //   (date) => !isNaN(Date.parse(date)),
+  //   "Invalid date format (must be YYYY-MM-DD)"
+  // ),
+  gender: z.enum(["male", "female"], {
+    errorMap: () => ({ message: "Gender is required" }),
+  }),
+  country_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "Country is required"),
 
+  city_id: z.union([z.string(), z.number()]).refine((val) => {
+    if (typeof val === "string") return val.trim() !== "";
+    if (typeof val === "number") return !isNaN(val);
+    return false;
+  }, "City is required"),
+
+  street_name: z.string().nonempty("Street name is required"),
+  house_number: z.string().nonempty("House number is required"),
+  // postal_code: z.string().optional(),
+  phone_number: z
+    .string()
+    .nonempty("Phone number is required")
+    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+  country_phone_code: z.string().nonempty("Country phone code required"),
+});
 export const bankAccountSchema = z.object({
   accountable_type: z.literal("Recipient"),
   accountable_id: z.union([z.string(), z.number()]).refine((val) => {
@@ -570,7 +615,7 @@ const RecipientCreateForm: React.FC = () => {
         country_id: formData.customer_id,
       };
 
-      const validationResult = recipientSchema.safeParse(flattenedData);
+      const validationResult = createRecipientSchema.safeParse(flattenedData);
 
       if (!validationResult.success) {
         const errors = validationResult.error.flatten().fieldErrors;
