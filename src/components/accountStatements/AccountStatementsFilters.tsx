@@ -1,16 +1,35 @@
 import React from "react";
 import { FilterButton } from "@/components/shared/FilterButton";
-import type { CustomerFilterState } from "@/hooks/data/useCustomerFilters";
+import type { AccountStatementsFilterState } from "@/hooks/data/useAccountStatementsFilters";
 import { ExportButton } from "../shared/ExportButton";
+import MultiSelectDropdown from "../shared/MultiSelectDropdown";
+import DateRangeSelector from "../shared/DateRangeSelector";
+// import { useCurrencies } from "@/hooks/data/useCurrency";
+import { TRASACTIONS_TYPES } from "@/constants/appConstants";
 
 interface AccountStatementsFiltersProps {
-  filters: CustomerFilterState;
+  filters: AccountStatementsFilterState;
+  onUpdateTypes: (type: string[]) => void;
+  onUpdateDateRange: (dateRange: {
+    startDate: string | null;
+    endDate: string | null;
+  }) => void;
+  onUpdateCurrency: (currency: string) => void;
+
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
-
+const typeOptions = TRASACTIONS_TYPES.map((type) => ({
+  value: type,
+  label: type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+}));
 const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
-  // filters,
+  filters,
+
+  onUpdateTypes,
+  onUpdateDateRange,
+  // onUpdateCurrency,
+
   onResetFilters,
   onApplyFilters,
 }) => {
@@ -18,6 +37,18 @@ const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
     { label: "Export to Excel", onClick: () => {} },
     { label: "Export to PDF", onClick: () => {} },
   ];
+  const dateRangeValue = {
+    startDate: filters.date_from || null,
+    endDate: filters.date_to || null,
+  };
+  // const { data: currencies = [] } = useCurrencies();
+
+  // const currencyOptions =
+  //   currencies?.map((currency: any) => ({
+  //     label: `${currency.code} - ${currency.name}`,
+  //     value: currency.id.toString(),
+  //   })) || [];
+
   return (
     <div className="flex items-center justify-between flex-wrap">
       <div className="flex items-center justify-start w-fit gap-1 flex-wrap">
@@ -28,12 +59,12 @@ const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
           onApplyFilters={onApplyFilters}
         >
           <div className="flex gap-2 w-fit">
-            {/* <MultiSelectDropdown
-              label="Status"
+            <MultiSelectDropdown
+              label="Type"
               placeholder="All"
-              options={statusOptions}
-              value={filters.status ?? []}
-              onChange={onUpdateStatus}
+              options={typeOptions}
+              value={filters.types ?? []}
+              onChange={onUpdateTypes}
               showSelectAll
             />
             <DateRangeSelector
@@ -42,12 +73,12 @@ const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
               value={dateRangeValue}
               onChange={onUpdateDateRange}
             />
-            <CountrySelector
-              label="Country"
-              placeholder="Select countries"
-              countries={countries}
-              value={filters.countries ?? []}
-              onChange={onUpdateCountryIds}
+            {/* <MultiSelectDropdown
+              label={"Currency"}
+              placeholder={"Select currency"}
+              options={currencyOptions}
+              value={filters.currency}
+              onChange={onUpdateCurrency}
             /> */}
           </div>
         </FilterButton>

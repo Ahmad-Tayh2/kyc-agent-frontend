@@ -5,73 +5,82 @@ import { useTranslation } from "react-i18next";
 import PageTitle from "@/components/shared/PageTitle";
 import AccountStatementsFilters from "@/components/accountStatements/AccountStatementsFilters";
 import { AccountStatementsTableColumns } from "@/components/accountStatements/AccountStatementsTableColumns";
-import TransactionDetailsDialog from "@/components/accountStatements/TransactionDetailsDialog";
-// import { useCommissionFilters } from "@/hooks/data/useCommissionFilters";
+// import TransactionDetailsDialog from "@/components/accountStatements/TransactionDetailsDialog";
+import { useGetAccountStatements } from "@/hooks/data/useFinancialReport";
+import { useMemo } from "react";
+import { useAccountStatementsFilters } from "@/hooks/data/useAccountStatementsFilters";
 // import { ROUTES } from "@/constants/routes";
 
 const AccountStatementsPage: React.FC = () => {
   const [t] = useTranslation("global");
   const columns = AccountStatementsTableColumns();
-  const filters = {};
-  const resetFilters = () => {};
-  const applyFilters = () => {};
 
-  // const {
-  //   filters,
-  //   filtersString,
-  //   updateSearchTerm,
-  //   resetFilters,
-  //   applyFilters,
-  //   // updatePagination,
-  // } = useCommissionFilters();
+  const {
+    filters,
+    filtersString,
 
-  // const { data: response, isLoading, error } = useGetCommission(filtersString);
+    updateTypes,
+    updateDateRange,
+    updateCurrency,
 
-  // Memoize customers data to prevent unnecessary re-renders
-  // const commissionData = useMemo(() => {
-  //   return response?.data || [];
-  // }, [response?.data]);
+    resetFilters,
+    applyFilters,
+    updatePagination,
+  } = useAccountStatementsFilters();
 
-  // const commissionMeta = useMemo(() => {
-  //   return response?.meta || [];
-  // }, [response?.meta]);
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useGetAccountStatements(filtersString);
 
-  // const pagination = {
-  //   enable: true,
-  //   page: commissionMeta?.current_page,
-  //   per_page: commissionMeta?.per_page,
-  //   total: commissionMeta?.total,
-  //   from: commissionMeta?.from,
-  //   to: commissionMeta?.to,
-  //   last_page: commissionMeta?.last_page,
-  //   onChangeRowsPerPage: (value: number) => {
-  //     updatePagination({ per_page: value });
-  //   },
-  //   setPage: (value: number) => {
-  //     updatePagination({ page: value });
-  //   },
-  // };
+  const accountStatementsData = useMemo(() => {
+    return response?.data || [];
+  }, [response?.data]);
+
+  const accountStatementsMeta = useMemo(() => {
+    return response?.meta || [];
+  }, [response?.meta]);
+
+  const pagination = {
+    enable: true,
+    page: accountStatementsMeta?.current_page,
+    per_page: accountStatementsMeta?.per_page,
+    total: accountStatementsMeta?.total,
+    from: accountStatementsMeta?.from,
+    to: accountStatementsMeta?.to,
+    last_page: accountStatementsMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <PageTitle title={t("modules.pages.accountStatements.title")} />
         <AccountStatementsFilters
           filters={filters}
+          onUpdateTypes={updateTypes}
+          onUpdateDateRange={updateDateRange}
+          onUpdateCurrency={updateCurrency}
           onResetFilters={resetFilters}
           onApplyFilters={applyFilters}
         />
       </div>
 
       <div>
-        <TransactionDetailsDialog
+        {/* <TransactionDetailsDialog
           trigger={<div> transaction details popup</div>}
-        />
+        /> */}
         <DataTable
-          data={[]}
+          data={accountStatementsData}
           columns={columns}
-          // isLoading={isLoading}
-          // error={error}
-          // pagination={pagination}
+          isLoading={isLoading}
+          error={error}
+          pagination={pagination}
         />
       </div>
     </div>

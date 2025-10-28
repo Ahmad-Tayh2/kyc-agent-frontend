@@ -5,53 +5,62 @@ import { useTranslation } from "react-i18next";
 import PageTitle from "@/components/shared/PageTitle";
 import CommissionFilters from "@/components/commission/CommissionFilters";
 import { CommissionTableColumns } from "@/components/commission/CommissionTableColumns";
+import { useGetCommissionEarned } from "@/hooks/data/useFinancialReport";
+import { useMemo } from "react";
 // import ReportIssueDialog from "@/components/commission/ReportIssueDialog";
-// import { useCommissionFilters } from "@/hooks/data/useCommissionFilters";
+import { useCommissionFilters } from "@/hooks/data/useCommissionFilters";
 // import { ROUTES } from "@/constants/routes";
 
 const MoneyWithdrawalsPage: React.FC = () => {
   const [t] = useTranslation("global");
   const columns = CommissionTableColumns();
-  const filters = {};
-  const updateSearchTerm = () => {};
-  const resetFilters = () => {};
-  const applyFilters = () => {};
 
-  // const {
-  //   filters,
-  //   filtersString,
-  //   updateSearchTerm,
-  //   resetFilters,
-  //   applyFilters,
-  //   // updatePagination,
-  // } = useCommissionFilters();
+  const {
+    filters,
+    filtersString,
+    updateSearchTerm,
 
-  // const { data: response, isLoading, error } = useGetCommission(filtersString); to put in query: refetchInterval: 60 * 1000,
+    updateTransactionStatus,
+    updateDateRange,
+    updateSendingCountry,
+    updateReceivedCountry,
+
+    resetFilters,
+    applyFilters,
+    updatePagination,
+  } = useCommissionFilters();
+
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useGetCommissionEarned(filtersString);
 
   // Memoize customers data to prevent unnecessary re-renders
-  // const commissionData = useMemo(() => {
-  //   return response?.data || [];
-  // }, [response?.data]);
+  const commissionData = useMemo(() => {
+    console.log(" commisssion data , === ", response);
+    return response?.data || [];
+  }, [response?.data]);
 
-  // const commissionMeta = useMemo(() => {
-  //   return response?.meta || [];
-  // }, [response?.meta]);
+  const commissionMeta = useMemo(() => {
+    return response?.meta || [];
+  }, [response?.meta]);
 
-  // const pagination = {
-  //   enable: true,
-  //   page: commissionMeta?.current_page,
-  //   per_page: commissionMeta?.per_page,
-  //   total: commissionMeta?.total,
-  //   from: commissionMeta?.from,
-  //   to: commissionMeta?.to,
-  //   last_page: commissionMeta?.last_page,
-  //   onChangeRowsPerPage: (value: number) => {
-  //     updatePagination({ per_page: value });
-  //   },
-  //   setPage: (value: number) => {
-  //     updatePagination({ page: value });
-  //   },
-  // };
+  const pagination = {
+    enable: true,
+    page: commissionMeta?.current_page,
+    per_page: commissionMeta?.per_page,
+    total: commissionMeta?.total,
+    from: commissionMeta?.from,
+    to: commissionMeta?.to,
+    last_page: commissionMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -61,17 +70,22 @@ const MoneyWithdrawalsPage: React.FC = () => {
       <CommissionFilters
         filters={filters}
         onUpdateSearchTerm={updateSearchTerm}
+        onUpdateTransactionStatus={updateTransactionStatus}
+        onUpdateDateRange={updateDateRange}
+        onUpdateSendingCountry={updateSendingCountry}
+        onUpdateReceivedCountry={updateReceivedCountry}
         onResetFilters={resetFilters}
         onApplyFilters={applyFilters}
       />
+
       <div>
         {/* <ReportIssueDialog trigger={<div>Report issue popup</div>} /> */}
         <DataTable
-          data={[]}
+          data={commissionData}
           columns={columns}
-          // isLoading={isLoading}
-          // error={error}
-          // pagination={pagination}
+          isLoading={isLoading}
+          error={error}
+          pagination={pagination}
         />
       </div>
     </div>

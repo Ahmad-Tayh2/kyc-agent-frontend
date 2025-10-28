@@ -22,3 +22,18 @@ export const PAYMENT_LINKS_STATUSES_COLORS = {
   expired_link: "#B42318", // Red
   valid_link: "#DF6B1D", // Blue
 } as const;
+
+export const TRASACTIONS_STATUSES = [
+  "initiated",
+  "in-progress",
+  "completed",
+  "cancelled",
+  "blocked",
+  "refunded",
+];
+export const TRASACTIONS_TYPES = [
+  "transfer",
+  "add_money",
+  "withdraw_money",
+  "exchange_money",
+];

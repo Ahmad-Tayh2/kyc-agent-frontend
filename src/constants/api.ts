@@ -101,7 +101,12 @@ export const API_URLS = {
     removeTransaction: (transactionId: string | number) =>
       `${baseUrl}/remittance-carts/transactions/${transactionId}/remove`,
   },
-
+  financialReport: {
+    getCommissionEarned: (filters: string) =>
+      `${baseUrl}/financial-reports/agent-commissions${filters}`,
+    getAccountStatements: (filters: string) =>
+      `${baseUrl}/financial-reports/agent-account-statements${filters}`,
+  },
   bankAccounts: {
     create: `${baseUrl}/bank-accounts`,
   },
