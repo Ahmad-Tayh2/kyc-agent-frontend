@@ -10,8 +10,8 @@ import { useDebounce } from "../utils/useDebounce";
 export interface AccountStatementsFilterState {
   search?: string;
 
-  types?: string[];
-  currency: string;
+  type?: string[];
+  currencies: string[];
   date_from?: string;
   date_to?: string;
   //pagination
@@ -22,8 +22,8 @@ export interface AccountStatementsFilterState {
 export const useAccountStatementsFilters = () => {
   const [filters, setFilters] = useState<AccountStatementsFilterState>({
     search: "",
-    types: [],
-    currency: "",
+    type: [],
+    currencies: [],
     date_from: "",
     date_to: "",
     //pagination
@@ -38,8 +38,8 @@ export const useAccountStatementsFilters = () => {
     applyFilters();
   }, [debouncedSearch, filters?.per_page, filters?.page]);
 
-  const updateTypes = useCallback((types: string[]) => {
-    setFilters((prev) => ({ ...prev, types }));
+  const updateTypes = useCallback((type: string[]) => {
+    setFilters((prev) => ({ ...prev, type }));
   }, []);
 
   const updateDateRange = useCallback(
@@ -52,8 +52,8 @@ export const useAccountStatementsFilters = () => {
     },
     []
   );
-  const updateCurrency = useCallback((currency: string) => {
-    setFilters((prev) => ({ ...prev, currency }));
+  const updateCurrencies = useCallback((currencies: string[]) => {
+    setFilters((prev) => ({ ...prev, currencies }));
   }, []);
   const resetFilters = useCallback(
     createFilterReset(filters, setFilters, setFilterString, ["search"]),
@@ -88,7 +88,7 @@ export const useAccountStatementsFilters = () => {
 
     updateTypes,
     updateDateRange,
-    updateCurrency,
+    updateCurrencies,
 
     resetFilters,
     applyFilters,

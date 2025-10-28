@@ -9,10 +9,9 @@ import { useDebounce } from "../utils/useDebounce";
 
 export interface CommissionEarnedFilterState {
   search?: string;
-  reference_number?: string;
   status?: string[];
-  send_country_id?: string;
-  receive_country_id?: string;
+  send_countries?: number[];
+  receive_countries?: number[];
   date_from?: string;
   date_to?: string;
   //pagination
@@ -23,10 +22,9 @@ export interface CommissionEarnedFilterState {
 export const useCommissionFilters = () => {
   const [filters, setFilters] = useState<CommissionEarnedFilterState>({
     search: "",
-    reference_number: "",
     status: [],
-    send_country_id: "",
-    receive_country_id: "",
+    send_countries: [],
+    receive_countries: [],
     date_from: "",
     date_to: "",
     //pagination
@@ -60,18 +58,15 @@ export const useCommissionFilters = () => {
     },
     []
   );
-  const updateSendingCountry = useCallback((send_country_id: string) => {
-    setFilters((prev) => ({ ...prev, send_country_id }));
+  const updateSendingCountry = useCallback((send_countries: number[]) => {
+    setFilters((prev) => ({ ...prev, send_countries }));
   }, []);
-  const updateReceivedCountry = useCallback((receive_country_id: string) => {
-    setFilters((prev) => ({ ...prev, receive_country_id }));
+  const updateReceivedCountry = useCallback((receive_countries: number[]) => {
+    setFilters((prev) => ({ ...prev, receive_countries }));
   }, []);
 
   const resetFilters = useCallback(
-    createFilterReset(filters, setFilters, setFilterString, [
-      "search",
-      "reference_number",
-    ]),
+    createFilterReset(filters, setFilters, setFilterString, ["search"]),
     [filters]
   );
 
@@ -81,7 +76,7 @@ export const useCommissionFilters = () => {
   );
 
   const hasActiveFilters = useMemo(
-    () => createHasActiveFilters(filters, ["search", "reference_number"]),
+    () => createHasActiveFilters(filters, ["search"]),
     [filters]
   );
 

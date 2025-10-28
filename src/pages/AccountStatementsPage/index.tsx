@@ -21,8 +21,7 @@ const AccountStatementsPage: React.FC = () => {
 
     updateTypes,
     updateDateRange,
-    updateCurrency,
-
+    updateCurrencies,
     resetFilters,
     applyFilters,
     updatePagination,
@@ -65,7 +64,7 @@ const AccountStatementsPage: React.FC = () => {
           filters={filters}
           onUpdateTypes={updateTypes}
           onUpdateDateRange={updateDateRange}
-          onUpdateCurrency={updateCurrency}
+          onUpdateCurrencies={updateCurrencies}
           onResetFilters={resetFilters}
           onApplyFilters={applyFilters}
         />

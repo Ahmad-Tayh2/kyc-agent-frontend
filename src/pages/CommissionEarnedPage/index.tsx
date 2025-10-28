@@ -38,7 +38,6 @@ const MoneyWithdrawalsPage: React.FC = () => {
 
   // Memoize customers data to prevent unnecessary re-renders
   const commissionData = useMemo(() => {
-    console.log(" commisssion data , === ", response);
     return response?.data || [];
   }, [response?.data]);
 

@@ -4,7 +4,7 @@ import type { AccountStatementsFilterState } from "@/hooks/data/useAccountStatem
 import { ExportButton } from "../shared/ExportButton";
 import MultiSelectDropdown from "../shared/MultiSelectDropdown";
 import DateRangeSelector from "../shared/DateRangeSelector";
-// import { useCurrencies } from "@/hooks/data/useCurrency";
+import { useCurrencies } from "@/hooks/data/useCurrency";
 import { TRASACTIONS_TYPES } from "@/constants/appConstants";
 
 interface AccountStatementsFiltersProps {
@@ -14,7 +14,7 @@ interface AccountStatementsFiltersProps {
     startDate: string | null;
     endDate: string | null;
   }) => void;
-  onUpdateCurrency: (currency: string) => void;
+  onUpdateCurrencies: (currencies: string[]) => void;
 
   onResetFilters: () => void;
   onApplyFilters: () => void;
@@ -28,7 +28,7 @@ const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
 
   onUpdateTypes,
   onUpdateDateRange,
-  // onUpdateCurrency,
+  onUpdateCurrencies,
 
   onResetFilters,
   onApplyFilters,
@@ -41,13 +41,13 @@ const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
     startDate: filters.date_from || null,
     endDate: filters.date_to || null,
   };
-  // const { data: currencies = [] } = useCurrencies();
+  const { data: currencies = [] } = useCurrencies();
 
-  // const currencyOptions =
-  //   currencies?.map((currency: any) => ({
-  //     label: `${currency.code} - ${currency.name}`,
-  //     value: currency.id.toString(),
-  //   })) || [];
+  const currencyOptions =
+    currencies?.map((currency: any) => ({
+      label: `${currency?.code} - ${currency?.name}`,
+      value: currency?.code,
+    })) || [];
 
   return (
     <div className="flex items-center justify-between flex-wrap">
@@ -63,7 +63,7 @@ const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
               label="Type"
               placeholder="All"
               options={typeOptions}
-              value={filters.types ?? []}
+              value={filters.type ?? []}
               onChange={onUpdateTypes}
               showSelectAll
             />
@@ -73,13 +73,13 @@ const AccountStatementsFilters: React.FC<AccountStatementsFiltersProps> = ({
               value={dateRangeValue}
               onChange={onUpdateDateRange}
             />
-            {/* <MultiSelectDropdown
+            <MultiSelectDropdown
               label={"Currency"}
               placeholder={"Select currency"}
               options={currencyOptions}
-              value={filters.currency}
-              onChange={onUpdateCurrency}
-            /> */}
+              value={filters.currencies}
+              onChange={onUpdateCurrencies}
+            />
           </div>
         </FilterButton>
       </div>

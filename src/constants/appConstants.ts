@@ -31,6 +31,14 @@ export const TRASACTIONS_STATUSES = [
   "blocked",
   "refunded",
 ];
+export const TRASACTIONS_STATUSES_COLORS = {
+  initiated: "#000000",
+  "in-progress": "#000000",
+  completed: "#000000",
+  cancelled: "#000000",
+  blocked: "#000000",
+  refunded: "#000000",
+} as const;
 export const TRASACTIONS_TYPES = [
   "transfer",
   "add_money",
