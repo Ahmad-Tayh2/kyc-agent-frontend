@@ -9,6 +9,7 @@ import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 // import { ROUTES } from "@/constants/routes";
 import { TRASACTIONS_STATUSES_COLORS } from "@/constants/appConstants";
 import { ROUTES } from "@/constants/routes";
+import { Link } from "react-router-dom";
 
 const menu = (transferRef: string) => {
   return [
@@ -32,6 +33,22 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
       {
         accessorKey: "transaction_reference",
         header: "Tr. #",
+        cell: ({ row }) => {
+          const transaction_reference: string = row.getValue(
+            "transaction_reference"
+          );
+
+          return (
+            <div className="capitalize">
+              <Link
+                to={ROUTES.SEND_REMITTANCE.EDIT(transaction_reference)}
+                className="font-medium text-xs hover:underline"
+              >
+                {transaction_reference}
+              </Link>
+            </div>
+          );
+        },
       },
 
       {
@@ -49,10 +66,28 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
       {
         accessorKey: "send_amount",
         header: "Sent Amount",
+        cell: ({ row }) => {
+          const currency = row.original.send_currency;
+          const send_amount = row.original.send_amount;
+          return (
+            <div>
+              {send_amount} {currency}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "receive_amount",
         header: "Received Amount",
+        cell: ({ row }) => {
+          const currency = row.original.receive_currency;
+          const receive_amount = row.original.receive_amount;
+          return (
+            <div>
+              {receive_amount} {currency}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "comm", //TODO: to verify what to display here
@@ -61,10 +96,28 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
       {
         accessorKey: "extra_fees",
         header: "Extra Fees",
+        cell: ({ row }) => {
+          const currency = row.original.default_currency;
+          const extra_fees = row.original.extra_fees;
+          return (
+            <div>
+              {extra_fees} {currency}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "total_commission",
         header: "Total Comm.",
+        cell: ({ row }) => {
+          const currency = row.original.default_currency;
+          const total_commission = row.original.total_commission;
+          return (
+            <div>
+              {total_commission} {currency}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "transaction_status",
