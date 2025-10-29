@@ -54,21 +54,7 @@ export default function AgentDocumentUpload(props: any) {
             </p>
           </label>
         </div>
-        {/* {errors.identityFiles && (
-          <span className="text-destructive text-xs">
-            {errors.identityFiles}
-          </span>
-        )} */}
-        <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
-          <span>
-            {/* You can use an icon here */}
-            <FileIcon color="var(--primary)" />
-          </span>
-          <div>
-            <div className="font-medium">name</div>
-          </div>
-          {/* Optional: Remove button */}
-        </div>
+
         {[...docsData?.files]?.length ? (
           [...docsData?.files]?.map((file: File, idx: number) => (
             <div
