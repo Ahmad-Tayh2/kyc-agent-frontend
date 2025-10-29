@@ -194,7 +194,7 @@ const RecipientEditPage: React.FC = () => {
         address: {
           street_name: formData?.street_name,
           house_number: formData.house_number,
-          postal_code: formData?.postal_code,
+          postal_code: formData?.postal_code ?? "",
           extra_address_details: formData?.extra_address_details,
           city_id: formData?.city_id,
           state_id: formData?.state_id,

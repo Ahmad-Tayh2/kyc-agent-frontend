@@ -54,6 +54,7 @@ interface DataTableProps {
     setPage: (p: number) => void;
   };
   tableTitle?: string;
+  tableHeaderComponent?: React.ReactElement;
   isLoading?: boolean;
   error?: any;
   className?: string;
@@ -63,6 +64,7 @@ export function DataTable({
   data = [],
   columns,
   tableTitle,
+  tableHeaderComponent,
   pagination,
   isLoading = false,
   className,
@@ -149,15 +151,22 @@ export function DataTable({
     }
     return display;
   }, [pagesLength, pagination?.page]);
-
+  const TableHeadComponent = () => {
+    return (
+      <div>
+        {tableTitle && (
+          <h1 className="p-5 text-2xl font-semibold">{tableTitle}</h1>
+        )}
+        {tableHeaderComponent && <div>{tableHeaderComponent}</div>}
+      </div>
+    );
+  };
   // Show loading state
   if (isLoading) {
     return (
       <div className="w-full rounded-md bg-white overflow-hidden">
-        {tableTitle && (
-          <h1 className="p-5 text-2xl font-semibold">{tableTitle}</h1>
-        )}
-        <div className="flex items-center justify-center h-32">
+        {(tableTitle || tableHeaderComponent) && <TableHeadComponent />}
+        <div className="flex items-center justify-center h-45">
           <Loader size="50px" className="h-8 w-8 animate-spin" />
         </div>
       </div>
@@ -168,9 +177,8 @@ export function DataTable({
   if (error) {
     return (
       <div className="w-full rounded-md bg-white overflow-hidden">
-        {tableTitle && (
-          <h1 className="p-5 text-2xl font-semibold">{tableTitle}</h1>
-        )}
+        {(tableTitle || tableHeaderComponent) && <TableHeadComponent />}
+
         <div className="flex items-center justify-center h-32 text-red-500">
           <span>Error loading data. Please try again.</span>
         </div>
@@ -182,9 +190,8 @@ export function DataTable({
       <div
         className={cn("w-full rounded-md bg-white overflow-hidden", className)}
       >
-        {tableTitle && (
-          <h1 className="p-5 text-[18px] font-semibold">{tableTitle}</h1>
-        )}
+        {(tableTitle || tableHeaderComponent) && <TableHeadComponent />}
+
         <div className=" bg-white border-b border-b-1 border-[#E4E7EC]">
           <Table>
             <TableHeader>

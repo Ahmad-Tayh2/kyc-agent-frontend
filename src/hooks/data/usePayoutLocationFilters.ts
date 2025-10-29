@@ -1,11 +1,11 @@
-import type { paginationProps } from '@/types/shared/pagination';
+import type { paginationProps } from "@/types/shared/pagination";
 import {
   createFilterApply,
   createFilterReset,
   createHasActiveFilters,
-} from '@/utils/filterHelpers';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDebounce } from '../utils/useDebounce';
+} from "@/utils/filterHelpers";
+import { useCallback, useMemo, useState } from "react";
+import { useDebounce } from "../utils/useDebounce";
 
 export interface PayoutLocationFilterState {
   search?: string;
@@ -17,7 +17,7 @@ export interface PayoutLocationFilterState {
 
 export const usePayoutLocationFilters = () => {
   const [filters, setFilters] = useState<PayoutLocationFilterState>({
-    search: '',
+    search: "",
     country_codes: [],
     //pagination
     page: 1,
@@ -25,7 +25,7 @@ export const usePayoutLocationFilters = () => {
   });
   const debouncedSearch = useDebounce(filters?.search);
 
-  const [filtersString, setFilterString] = useState<string>('');
+  const [filtersString, setFilterString] = useState<string>("");
 
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
@@ -37,7 +37,10 @@ export const usePayoutLocationFilters = () => {
   }, []);
 
   const resetFilters = useCallback(() => {
-    createFilterReset(filters, setFilters, setFilterString, ['search', 'country_codes'])();
+    createFilterReset(filters, setFilters, setFilterString, [
+      "search",
+      // "country_codes",
+    ])();
   }, [filters]);
 
   const applyFilters = useCallback(() => {
@@ -47,12 +50,12 @@ export const usePayoutLocationFilters = () => {
     )();
   }, [filters, debouncedSearch]);
 
-  useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
+  // useEffect(() => {
+  //   applyFilters();
+  // }, [applyFilters]);
 
   const hasActiveFilters = useMemo(
-    () => createHasActiveFilters(filters, ['search', 'country_codes']),
+    () => createHasActiveFilters(filters, ["search", "country_codes"]),
     [filters]
   );
 
