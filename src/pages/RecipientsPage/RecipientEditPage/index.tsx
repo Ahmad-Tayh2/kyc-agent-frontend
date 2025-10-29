@@ -18,12 +18,12 @@ import { format } from "date-fns";
 // import RecipientBankDetails from "./RecipientBankDetails";
 import { z } from "zod";
 
-export const recipientSchema = z.object({
-  customer_id: z.union([z.string(), z.number()]).refine((val) => {
-    if (typeof val === "string") return val.trim() !== "";
-    if (typeof val === "number") return !isNaN(val);
-    return false;
-  }, "Customer is required"),
+export const editRecipientSchema = z.object({
+  // customer_id: z.union([z.string(), z.number()]).refine((val) => {
+  //   if (typeof val === "string") return val.trim() !== "";
+  //   if (typeof val === "number") return !isNaN(val);
+  //   return false;
+  // }, "Customer is required"),
   first_name: z
     .string()
     .min(2, "First name must contain at least 2 characters")
@@ -188,13 +188,13 @@ const RecipientEditPage: React.FC = () => {
         last_name: formData?.last_name,
         email: formData?.email,
         date_of_birth: formData?.date_of_birth
-          ? format(formData?.date_of_birth, "dd-MM-yyyy")
+          ? format(formData?.date_of_birth, "yyyy-MM-dd")
           : "",
         gender: formData?.gender,
         address: {
           street_name: formData?.street_name,
           house_number: formData.house_number,
-          postal_code: formData?.postal_code,
+          postal_code: formData?.postal_code ?? "",
           extra_address_details: formData?.extra_address_details,
           city_id: formData?.city_id,
           state_id: formData?.state_id,
@@ -211,7 +211,7 @@ const RecipientEditPage: React.FC = () => {
         ...payloadToUpdate.address,
       };
 
-      const validationResult = recipientSchema.safeParse(flattenedData);
+      const validationResult = editRecipientSchema.safeParse(flattenedData);
 
       if (!validationResult.success) {
         const errors = validationResult.error.flatten().fieldErrors;

@@ -78,6 +78,10 @@ export function buildFilterString(filters: Record<string, any>): string {
           key === "remittance_methods_ids" ||
           key === "ids" ||
           key === "countries" ||
+          key === "currencies" ||
+          key === "type" ||
+          key === "send_countries" ||
+          key === "receive_countries" ||
           key === "country_codes" ||
           key === "customer_ids"
         ) {

@@ -8,13 +8,13 @@ import { FilterButton } from "@/components/shared/FilterButton";
 import type { PaymentLinksFilterState } from "@/hooks/data/usePaymentLinksFilters";
 import DateRangeSelector from "../shared/DateRangeSelector";
 import MultiSelectDropdown from "../shared/MultiSelectDropdown";
-// import { CUSTOMER_STATUSES } from "@/constants/appConstants";
 import type { CustomerType } from "@/types/customers";
+import { PAYMENT_LINKS_STATUSES } from "@/constants/appConstants";
 
-// const statusOptions = CUSTOMER_STATUSES.map((status) => ({
-//   value: status,
-//   label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-// }));
+const statusOptions = PAYMENT_LINKS_STATUSES.map((status) => ({
+  value: status,
+  label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+}));
 
 interface PaymentLinksFiltersProps {
   filters: PaymentLinksFilterState;
@@ -80,7 +80,7 @@ const PaymentLinksFilters: React.FC<PaymentLinksFiltersProps> = ({
             <MultiSelectDropdown
               label="Status"
               placeholder="All"
-              options={[]}
+              options={statusOptions}
               value={filters.status ?? []}
               onChange={onUpdateStatus}
               showSelectAll

@@ -7,49 +7,48 @@ import StatusLabel from "@/components/shared/StatusLabel";
 // import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 // import EditIcon from "@/assets/icons/edit.svg?react";
 // import { ROUTES } from "@/constants/routes";
-import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
+import { TRASACTIONS_STATUSES_COLORS } from "@/constants/appConstants";
 
 export const AccountStatementsTableColumns = (): ColumnDef<any>[] => {
   return useMemo(
     () => [
       {
-        accessorKey: "reference_number",
+        accessorKey: "transaction_reference",
         header: "Tr. #",
       },
 
       {
-        accessorKey: "",
+        accessorKey: "transaction_date",
         header: "Date",
       },
       {
-        accessorKey: "",
+        accessorKey: "extra_transaction_type",
         header: "Type",
       },
       {
-        accessorKey: "",
+        accessorKey: "comment",
         header: "Comment",
       },
       {
-        accessorKey: "",
+        accessorKey: "debit",
         header: "Debit",
       },
       {
-        accessorKey: "",
+        accessorKey: "credit",
         header: "Credit",
       },
       {
-        accessorKey: "",
+        accessorKey: "wallet_balance_after",
         header: "Balance After",
       },
-
       {
-        accessorKey: "status",
+        accessorKey: "transaction_status",
         header: "Status",
         cell: ({ row }) => {
-          const value: string = row.getValue("status");
+          const value: string = row.getValue("transaction_status");
           const color =
-            CUSTOMER_STATUS_COLORS[
-              value as keyof typeof CUSTOMER_STATUS_COLORS
+            TRASACTIONS_STATUSES_COLORS[
+              value as keyof typeof TRASACTIONS_STATUSES_COLORS
             ] || "#000000";
           return <StatusLabel value={value} color={color} />;
         },

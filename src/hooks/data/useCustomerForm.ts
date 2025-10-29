@@ -8,6 +8,7 @@ export const useCustomerForm = (filters: string = "") => {
   return useQuery({
     queryKey: ["customerForm", filters],
     queryFn: () => customerFormService.getCustomerForms(filters),
+    refetchInterval: 60 * 1000,
   });
 };
 

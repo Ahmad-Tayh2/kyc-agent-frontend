@@ -1,12 +1,28 @@
 import React from "react";
 import { SearchInput } from "@/components/shared/SearchInput";
 import { FilterButton } from "@/components/shared/FilterButton";
-import type { CustomerFilterState } from "@/hooks/data/useCustomerFilters";
+import type { CommissionEarnedFilterState } from "@/hooks/data/useCommissionFilters";
 import { ExportButton } from "../shared/ExportButton";
+import MultiSelectDropdown from "../shared/MultiSelectDropdown";
+import DateRangeSelector from "../shared/DateRangeSelector";
+import CountrySelector from "../shared/CountrySelector";
+import { useCountries } from "@/hooks/data/useAddress";
+import { TRASACTIONS_STATUSES } from "@/constants/appConstants";
 
+const statusOptions = TRASACTIONS_STATUSES.map((status) => ({
+  value: status,
+  label: status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+}));
 interface CommissionFiltersProps {
-  filters: CustomerFilterState;
+  filters: CommissionEarnedFilterState;
   onUpdateSearchTerm: (search: string) => void;
+  onUpdateTransactionStatus: (status: string[]) => void;
+  onUpdateDateRange: (dateRange: {
+    startDate: string | null;
+    endDate: string | null;
+  }) => void;
+  onUpdateSendingCountry: (countries: number[]) => void;
+  onUpdateReceivedCountry: (countries: number[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
@@ -14,9 +30,31 @@ interface CommissionFiltersProps {
 const CommissionFilters: React.FC<CommissionFiltersProps> = ({
   filters,
   onUpdateSearchTerm,
+
+  onUpdateTransactionStatus,
+  onUpdateDateRange,
+  onUpdateSendingCountry,
+  onUpdateReceivedCountry,
+
   onResetFilters,
   onApplyFilters,
 }) => {
+  const { data: countriesData = [] } = useCountries();
+
+  const countries = React.useMemo(() => {
+    if (!countriesData) return [];
+    return countriesData?.map((country: any) => ({
+      id: country.id,
+      code: country?.iso2,
+      name: country.name,
+    }));
+  }, [countriesData]);
+
+  const dateRangeValue = {
+    startDate: filters.date_from || null,
+    endDate: filters.date_to || null,
+  };
+
   const exportCommissionOptions = [
     { label: "Export to Excel", onClick: () => {} },
     { label: "Export to PDF", onClick: () => {} },
@@ -41,12 +79,12 @@ const CommissionFilters: React.FC<CommissionFiltersProps> = ({
           onApplyFilters={onApplyFilters}
         >
           <div className="flex gap-2 w-fit">
-            {/* <MultiSelectDropdown
+            <MultiSelectDropdown
               label="Status"
               placeholder="All"
               options={statusOptions}
               value={filters.status ?? []}
-              onChange={onUpdateStatus}
+              onChange={onUpdateTransactionStatus}
               showSelectAll
             />
             <DateRangeSelector
@@ -56,12 +94,19 @@ const CommissionFilters: React.FC<CommissionFiltersProps> = ({
               onChange={onUpdateDateRange}
             />
             <CountrySelector
-              label="Country"
+              label="Sending Country"
               placeholder="Select countries"
               countries={countries}
-              value={filters.countries ?? []}
-              onChange={onUpdateCountryIds}
-            /> */}
+              value={filters.send_countries ?? []}
+              onChange={onUpdateSendingCountry}
+            />
+            <CountrySelector
+              label="Destination Country"
+              placeholder="Select countries"
+              countries={countries}
+              value={filters.receive_countries ?? []}
+              onChange={onUpdateReceivedCountry}
+            />
           </div>
         </FilterButton>
       </div>

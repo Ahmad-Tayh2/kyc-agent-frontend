@@ -7,18 +7,20 @@ import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 // import EditIcon from "@/assets/icons/edit.svg?react";
 // import { ROUTES } from "@/constants/routes";
-import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
+import { TRASACTIONS_STATUSES_COLORS } from "@/constants/appConstants";
+import { ROUTES } from "@/constants/routes";
 
-const menu = () => {
+const menu = (transferRef: string) => {
   return [
-    {
-      label: "Report Issue",
-      // icon: <SendMoneyIcon />,
-      onClick: () => {},
-    },
+    // {
+    //   label: "Report Issue",
+    //   // icon: <SendMoneyIcon />,
+    //   onClick: () => {},
+    // },
     {
       label: "View Transaction",
       icon: <ViewDetailsIcon />,
+      link: ROUTES.TRANSFERS.DETAILS(transferRef),
       onClick: () => {},
     },
   ];
@@ -28,50 +30,50 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
   return useMemo(
     () => [
       {
-        accessorKey: "reference_number",
+        accessorKey: "transaction_reference",
         header: "Tr. #",
       },
 
       {
-        accessorKey: "",
+        accessorKey: "transaction_date",
         header: "Sending Date",
       },
       {
-        accessorKey: "",
+        accessorKey: "sender_name",
         header: "Sender",
       },
       {
-        accessorKey: "",
+        accessorKey: "receiver_name",
         header: "Recipient Full Name",
       },
       {
-        accessorKey: "",
+        accessorKey: "send_amount",
         header: "Sent Amount",
       },
       {
-        accessorKey: "",
+        accessorKey: "receive_amount",
         header: "Received Amount",
       },
       {
-        accessorKey: "",
+        accessorKey: "comm", //TODO: to verify what to display here
         header: "Comm.",
       },
       {
-        accessorKey: "",
+        accessorKey: "extra_fees",
         header: "Extra Fees",
       },
       {
-        accessorKey: "",
+        accessorKey: "total_commission",
         header: "Total Comm.",
       },
       {
-        accessorKey: "status",
+        accessorKey: "transaction_status",
         header: "Status",
         cell: ({ row }) => {
-          const value: string = row.getValue("status");
+          const value: string = row.getValue("transaction_status");
           const color =
-            CUSTOMER_STATUS_COLORS[
-              value as keyof typeof CUSTOMER_STATUS_COLORS
+            TRASACTIONS_STATUSES_COLORS[
+              value as keyof typeof TRASACTIONS_STATUSES_COLORS
             ] || "#000000";
           return <StatusLabel value={value} color={color} />;
         },
@@ -81,11 +83,11 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
         header: "Actions",
         enableHiding: false,
         cell: ({ row }) => {
-          // const rowww = row.original;
+          const transferRef = row.original?.transaction_reference;
           console.log(row);
           return (
             <DropdownMenuOptions
-              menu={menu()}
+              menu={menu(transferRef)}
               trigger={
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <MoreHorizontal />

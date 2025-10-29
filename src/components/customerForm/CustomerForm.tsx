@@ -1,6 +1,6 @@
 import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import UncheckedIcon from "@/assets/icons/unchecked-icon.svg?react";
-import NomadRemLogo from "@/assets/logo.svg?react";
+import NomadRemLogo from "@/assets/black-logo.svg?react";
 import DatePicker from "@/components/shared/DatePicker";
 import Loader from "@/components/shared/Loader";
 import PhoneInput from "@/components/shared/PhoneInput";
@@ -28,10 +28,10 @@ import { cn } from "@/lib/utils";
 import type { Country } from "@/services/address";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { z } from "zod";
 
 // Simple authentication check
@@ -73,7 +73,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   onClose,
 }) => {
   const { token: urlToken } = useParams<{ token: string }>();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [t] = useTranslation("global");
   const effectiveToken = token || urlToken;
   const isUserAuthenticated = isAuthenticated();
@@ -104,7 +104,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
   // NomadRem branding component
   const brandingSection = (
-    <div className="text-center bg-gray-50 border border-gray-200 p-4 ">
+    <div className="text-center bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
       <div className="flex justify-center mb-2">
         <NomadRemLogo className="h-6" />
       </div>
@@ -149,7 +149,9 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     code: country.phone_code,
     countryCode: country.iso2,
   }));
-
+  useEffect(() => {
+    console.log("tokenValidation== ", tokenValidation);
+  }, [tokenValidation]);
   const handleSubmit = async (data: CustomerFormData) => {
     // Don't submit if it's preview mode
     if (isPreviewMode) {
@@ -253,7 +255,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           <p className="text-gray-600">
             {t("modules.pages.customerForm.linkUsed.message")}
           </p>
-          {mode === "fullpage" && (
+          {/* {mode === "fullpage" && (
             <Button
               onClick={() => navigate("/")}
               className="mt-4"
@@ -261,7 +263,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             >
               {t("common.actions.goHome")}
             </Button>
-          )}
+          )} */}
           {isPreviewMode && (
             <Button onClick={onClose} className="mt-4" variant="outline">
               {t("modules.pages.customerForm.closePreview")}
@@ -284,7 +286,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           <p className="text-gray-600">
             {t("modules.pages.customerForm.linkExpired.message")}
           </p>
-          {mode === "fullpage" && (
+          {/* {mode === "fullpage" && (
             <Button
               onClick={() => navigate("/")}
               className="mt-4"
@@ -292,7 +294,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             >
               {t("common.actions.goHome")}
             </Button>
-          )}
+          )} */}
           {isPreviewMode && (
             <Button onClick={onClose} className="mt-4" variant="outline">
               {t("modules.pages.customerForm.closePreview")}
@@ -568,7 +570,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <SearchableSelect
-              label={`${t("common.fields.country.label")}*`}
+              label={`${t("common.fields.country.label")}`}
               placeholder={t("common.fields.country.placeholder")}
               options={countryOptions}
               value={form.watch("countryId")?.toString() || ""}
@@ -583,7 +585,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             />
 
             <SearchableSelect
-              label={`${t("common.fields.city.label")}*`}
+              label={`${t("common.fields.city.label")}`}
               placeholder={t("common.fields.city.placeholder")}
               options={cityOptions}
               value={form.watch("cityId")?.toString() || ""}
