@@ -188,7 +188,7 @@ const RecipientEditPage: React.FC = () => {
         last_name: formData?.last_name,
         email: formData?.email,
         date_of_birth: formData?.date_of_birth
-          ? format(formData?.date_of_birth, "dd-MM-yyyy")
+          ? format(formData?.date_of_birth, "yyyy-MM-dd")
           : "",
         gender: formData?.gender,
         address: {

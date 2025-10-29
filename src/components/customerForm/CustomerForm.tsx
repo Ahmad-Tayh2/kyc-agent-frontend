@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import type { Country } from "@/services/address";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -149,7 +149,9 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     code: country.phone_code,
     countryCode: country.iso2,
   }));
-
+  useEffect(() => {
+    console.log("tokenValidation== ", tokenValidation);
+  }, [tokenValidation]);
   const handleSubmit = async (data: CustomerFormData) => {
     // Don't submit if it's preview mode
     if (isPreviewMode) {
@@ -568,7 +570,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             </div>
 
             <SearchableSelect
-              label={`${t("common.fields.country.label")}*`}
+              label={`${t("common.fields.country.label")}`}
               placeholder={t("common.fields.country.placeholder")}
               options={countryOptions}
               value={form.watch("countryId")?.toString() || ""}
@@ -583,7 +585,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             />
 
             <SearchableSelect
-              label={`${t("common.fields.city.label")}*`}
+              label={`${t("common.fields.city.label")}`}
               placeholder={t("common.fields.city.placeholder")}
               options={cityOptions}
               value={form.watch("cityId")?.toString() || ""}
