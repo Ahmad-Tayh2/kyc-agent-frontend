@@ -373,7 +373,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
 
             <DialogFooter className="sm:justify-between">
               <div className="flex items-center gap-2">
-                {customerFormLink && (
+                {customerFormLink && generatedToken && (
                   <>
                     <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-md max-w-sm">
                       <span className="text-sm text-gray-600 truncate">

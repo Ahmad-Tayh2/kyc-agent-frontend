@@ -47,8 +47,10 @@ export function useExpireLink() {
       toast.success("Payment link is expired now!");
       queryClient.invalidateQueries({ queryKey: ["get-payment-links"] });
     },
-    onError: () => {
-      toast.error("Payment link expiration failed!");
+    onError: (err: any) => {
+      toast.error(
+        err?.response?.data?.message ?? "Payment link expiration failed!"
+      );
     },
   });
 }
