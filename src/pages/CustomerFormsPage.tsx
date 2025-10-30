@@ -239,7 +239,7 @@ const CustomerFormsPage: React.FC = () => {
   ];
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center p-2">
+      <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">
           {t("modules.pages.customerForm.title")}
         </h1>
@@ -260,13 +260,8 @@ const CustomerFormsPage: React.FC = () => {
           />
         </div>
       </div>
-      <div className="p-5">
-        <DataTable
-          data={customerFormData}
-          columns={columns}
-          tableTitle={t("modules.pages.customerForm.title")}
-        />
-      </div>
+
+      <DataTable data={customerFormData} columns={columns} />
 
       {/* Preview Dialog - Only opens for valid links */}
       {previewToken && (

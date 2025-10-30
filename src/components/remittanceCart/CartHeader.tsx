@@ -4,9 +4,13 @@ import StatusLabel from "../shared/StatusLabel";
 import CopyLinkIcon from "@/assets/icons/copy-link.svg?react";
 import { format } from "date-fns";
 import { copyToClipboard } from "@/helpers/text";
-import { useCreatePaymentLink } from "@/hooks/data/usePaymentLinks";
+import {
+  useCreatePaymentLink,
+  useGetPaymentLinkByCart,
+} from "@/hooks/data/usePaymentLinks";
 import { useState, useEffect } from "react";
 import { ROUTES } from "@/constants/routes";
+import { PAYMENT_LINKS_STATUSES_COLORS } from "@/constants/appConstants";
 
 interface CartItemProps {
   title: string;
@@ -18,18 +22,26 @@ interface CartHeaderProps {
   customer: { id: number; first_name: string; last_name: string };
   date: string;
   totalPayableAmount: number | string;
-  paymentLinkData?: any;
   cartId?: number;
 }
+interface PaymentLinkType {
+  token: string;
+  status: string;
+}
 const CartHeader = (props: CartHeaderProps) => {
-  const { customer, date, totalPayableAmount, paymentLinkData, cartId } = props;
+  const { customer, date, totalPayableAmount, cartId } = props;
+
   const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
-  const [paymentLink, setPaymentLink] = useState(paymentLinkData);
+  const { data } = useGetPaymentLinkByCart(String(cartId));
+  const [paymentLink, setPaymentLink] = useState<PaymentLinkType>({
+    token: "",
+    status: "",
+  });
   useEffect(() => {
-    if (paymentLinkData) {
-      setPaymentLink(paymentLinkData);
+    if (data?.data[0]) {
+      setPaymentLink(data?.data[0]);
     }
-  }, [paymentLinkData]);
+  }, [data]);
   const handleSendPaymentLink = async () => {
     const response = await createPaymentLink({
       payable_type: "RemittanceCart",
@@ -65,7 +77,14 @@ const CartHeader = (props: CartHeaderProps) => {
       </div>
       <div className="flex items-center gap-0">
         {paymentLink?.status && (
-          <StatusLabel value={paymentLink?.status} color="#ff0000" />
+          <StatusLabel
+            value={paymentLink?.status}
+            color={
+              PAYMENT_LINKS_STATUSES_COLORS?.[
+                paymentLink?.status as keyof typeof PAYMENT_LINKS_STATUSES_COLORS
+              ]
+            }
+          />
         )}
         <ActionButton
           type="link"
