@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { serverUrl } from "@/constants/api";
+import { X } from "lucide-react";
+import { detectFileType } from "@/helpers/files";
 export default function AgentDocumentUpload(props: any) {
   const { editMode, setDocsData, docsData, gotDocs } = props;
   const [t] = useTranslation("global");
@@ -14,6 +16,7 @@ export default function AgentDocumentUpload(props: any) {
   const handleOpenFile = (pathLink: string) => {
     window.open(pathLink, "_blank", "noopener,noreferrer");
   };
+
   return (
     <div className="p-5">
       <div className="md:col-span-2 flex flex-col gap-2">
@@ -52,11 +55,6 @@ export default function AgentDocumentUpload(props: any) {
           </label>
         </div>
 
-        {/* {errors.identityFiles && (
-          <span className="text-destructive text-xs">
-            {errors.identityFiles}
-          </span>
-        )} */}
         {[...docsData?.files]?.length ? (
           [...docsData?.files]?.map((file: File, idx: number) => (
             <div
@@ -83,14 +81,38 @@ export default function AgentDocumentUpload(props: any) {
                 className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2 cursor-pointer hover:bg-primary/5"
                 onClick={() => handleOpenFile(serverUrl + gotDocs.path1)}
               >
-                <span>
-                  {/* You can use an icon here */}
+                {detectFileType(gotDocs.path1) === "image" ? (
+                  <img
+                    src={serverUrl + gotDocs.path2}
+                    alt={"Image"}
+                    width="180px"
+                    height="100px"
+                    className="overflow-hidden rounded-md bg-primary/20"
+                  />
+                ) : (
+                  <iframe
+                    src={serverUrl + gotDocs.path2}
+                    width="180px"
+                    height="100px"
+                    className="overflow-hidden rounded-md"
+                  />
+                )}
+                {/* <span>
+                
                   <FileIcon color="var(--primary)" />
-                </span>
+                </span> */}
                 <div>
                   <div className="font-medium">ID Document 1</div>
                   <div className="text-xs text-[#656565]"></div>
                 </div>
+                {editMode && (
+                  <button
+                    type="button"
+                    className="mb-auto ml-auto text-red-500 cursor-pointer"
+                  >
+                    <X width={22} height={22} />
+                  </button>
+                )}
               </div>
             )}
             {gotDocs.path2 && (
@@ -98,14 +120,38 @@ export default function AgentDocumentUpload(props: any) {
                 className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2 cursor-pointer hover:bg-primary/5"
                 onClick={() => handleOpenFile(serverUrl + gotDocs.path2)}
               >
-                <span>
-                  {/* You can use an icon here */}
+                {detectFileType(gotDocs.path2) === "image" ? (
+                  <img
+                    src={serverUrl + gotDocs.path2}
+                    alt={"Image"}
+                    width="180px"
+                    height="100px"
+                    className="overflow-hidden rounded-md"
+                  />
+                ) : (
+                  <iframe
+                    src={serverUrl + gotDocs.path2}
+                    width="180px"
+                    height="100px"
+                    className="overflow-hidden rounded-md"
+                  />
+                )}
+                {/* <span>
+                 
                   <FileIcon color="var(--primary)" />
-                </span>
+                </span> */}
                 <div>
                   <div className="font-medium">ID Document 2</div>
                   <div className="text-xs text-[#656565]"></div>
                 </div>
+                {editMode && (
+                  <button
+                    type="button"
+                    className="mb-auto ml-auto text-red-500 cursor-pointer"
+                  >
+                    <X width={22} height={22} />
+                  </button>
+                )}
               </div>
             )}
           </>
