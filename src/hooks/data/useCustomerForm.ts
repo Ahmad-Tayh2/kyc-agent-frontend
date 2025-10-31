@@ -3,6 +3,7 @@ import { customerFormService } from "@/services/customerForm";
 import type { CreateCustomerFormRequest } from "../../types/customerForm/CreateCustomerFormRequest";
 import type { CustomerForm } from "../../types/customerForm/CustomerForm";
 import type { CustomerFormSubmissionRequest } from "../../types/customerForm/CustomerFormSubmission";
+import { toast } from "sonner";
 
 export const useCustomerForm = (filters: string = "") => {
   return useQuery({
@@ -51,6 +52,25 @@ export const useSubmitCustomerForm = (token: string) => {
       customerFormService.submitCustomerForm(token, data),
     onError: (error) => {
       console.error("Error submitting customer form:", error);
+    },
+  });
+};
+
+export const useRegenerateCustomerFormToken = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string | number) =>
+      customerFormService.regenerateToken(id),
+    onError: (error: any) => {
+      console.error(
+        error?.response?.data?.message ??
+          "Error regenerating customer form link"
+      );
+    },
+    onSuccess: () => {
+      toast.success("Customer form link regenerated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["customerForm"] });
     },
   });
 };

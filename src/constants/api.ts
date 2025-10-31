@@ -143,6 +143,8 @@ export const API_URLS = {
     validateToken: (token: string) =>
       `${baseUrl}/customer-forms/validate-token/${token}`,
     submit: (token: string) => `${baseUrl}/customer-forms/${token}/submit`,
+    regenerateToken: (id: string | number) =>
+      `${baseUrl}/customer-forms/${id}/regenerate-token`,
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,

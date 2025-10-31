@@ -1,7 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable } from "../components/shared/DataTable";
-import { useCustomerForm } from "@/hooks/data/useCustomerForm";
+import {
+  useCustomerForm,
+  useRegenerateCustomerFormToken,
+} from "@/hooks/data/useCustomerForm";
 import type { CustomerForm } from "@/types/customerForm/CustomerForm";
 import copyIcon from "@/assets/icons/clipboard.svg";
 import { Button } from "@/components/ui/button";
@@ -13,6 +16,9 @@ import CustomerFormFilters from "@/components/customerForm/CustomerFormFilters";
 import { useCustomerFormFilters } from "@/hooks/data/useCustomerFormFilters";
 
 import { copyToClipboard } from "@/helpers/text";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+import ActionButton from "@/components/shared/ActionButton";
 
 type CustomerFormTableData = {
   id: number;
@@ -37,6 +43,8 @@ const CustomerFormsPage: React.FC = () => {
   } = useCustomerFormFilters();
 
   const { data: customerForms } = useCustomerForm(filtersString);
+  const { mutateAsync: regenerateCustomerFormToken } =
+    useRegenerateCustomerFormToken();
   const [previewToken, setPreviewToken] = useState<string | null>(null);
 
   // Prepare the data for the table
@@ -102,7 +110,7 @@ const CustomerFormsPage: React.FC = () => {
         const token = row.original.token;
         const url = window.location.origin + "/customer-form/" + token;
         const displayUrl = url.length > 55 ? `${url.slice(0, 55)}...` : url;
-
+        const status = row.original.status;
         return (
           <div className="flex items-center">
             <span className="text-sm text-gray-600 break-all">
@@ -122,18 +130,20 @@ const CustomerFormsPage: React.FC = () => {
               </a>
             </span>
 
-            <button
-              onClick={() => copyToClipboard(url)}
-              className="p-1 hover:bg-gray-100 rounded ml-[10px] cursor-pointer group"
-              title="Copy URL"
-            >
-              <img
-                src={copyIcon}
-                alt="Copy"
-                className="w-4 h-4 group-hover:cursor-pointer"
-                style={{ cursor: "inherit" }}
-              />
-            </button>
+            {status !== "expired_link" && (
+              <button
+                onClick={() => copyToClipboard(url)}
+                className="p-1 hover:bg-gray-100 rounded ml-[10px] cursor-pointer group"
+                title="Copy URL"
+              >
+                <img
+                  src={copyIcon}
+                  alt="Copy"
+                  className="w-4 h-4 group-hover:cursor-pointer"
+                  style={{ cursor: "inherit" }}
+                />
+              </button>
+            )}
           </div>
         );
       },
@@ -173,63 +183,84 @@ const CustomerFormsPage: React.FC = () => {
       size: 250,
 
       cell: ({ row }: { row: { original: CustomerFormTableData } }) => {
+        const navigate = useNavigate();
+        const id = row?.original?.id;
         const renderActions = () => {
           switch (row.original.status) {
             case "valid_link":
-              return (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() =>
-                      console.log("Resend clicked for:", row.original.id)
-                    }
-                    className="text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap"
-                  >
-                    {t("modules.pages.customerForm.actions.resend")}
-                  </button>
-                </div>
-              );
+              return null;
+            // return (
+            //   <ActionButton
+            //     title={t("modules.pages.customerForm.actions.resend")}
+            //     type="link"
+            //     onClick={() =>
+            //       console.log("Resend clicked for:", row.original.id)
+            //     }
+            //   />
+            // );
 
             case "expired_link":
               return (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() =>
-                      console.log(
-                        "Generate new link clicked for:",
+                <ActionButton
+                  title={t(
+                    "modules.pages.customerForm.actions.generateNewLink"
+                  )}
+                  type="link"
+                  onClick={() => regenerateCustomerFormToken(id)}
+                />
+                // <div className="flex gap-2">
+                //   <button
+                //     onClick={() =>
+                //       console.log(
+                //         "Generate new link clicked for:",
 
-                        row.original.id
-                      )
-                    }
-                    className="text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap"
-                  >
-                    {t("modules.pages.customerForm.actions.generateNewLink")}
-                  </button>
-                </div>
+                //         row.original.id
+                //       )
+                //     }
+                //     className="text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap"
+                //   >
+                //     {t("modules.pages.customerForm.actions.generateNewLink")}
+                //   </button>
+                // </div>
               );
 
             case "successful_registration":
               return (
-                <div className="flex gap-2">
-                  <a
-                    href={`/customers/${row.original.customer_id}/edit`}
-                    className="text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap"
-                  >
-                    {t("modules.pages.customerForm.actions.customerDetails")}
-                  </a>
-                </div>
+                <ActionButton
+                  title={t(
+                    "modules.pages.customerForm.actions.customerDetails"
+                  )}
+                  type="link"
+                  onClick={() =>
+                    navigate(ROUTES.CUSTOMERS.DETAILS(row.original.customer_id))
+                  }
+                />
               );
 
             default:
-              return (
-                <div className="flex gap-2">
-                  <a
-                    href={`/customer-forms/${row.original.id}`}
-                    className="text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap"
-                  >
-                    {t("modules.pages.customerForm.actions.view")}
-                  </a>
-                </div>
-              );
+              return row.original.customer_id ? (
+                <ActionButton
+                  title={t(
+                    "modules.pages.customerForm.actions.customerDetails"
+                  )}
+                  type="link"
+                  onClick={() =>
+                    navigate(ROUTES.CUSTOMERS.DETAILS(row.original.customer_id))
+                  }
+                />
+              ) : null;
+
+            // default:
+            //   return (
+            //     <div className="flex gap-2">
+            //       <a
+            //         href={`/customer-forms/${row.original.id}`}
+            //         className="text-[#00B386] hover:text-[#009973] underline text-sm whitespace-nowrap"
+            //       >
+            //         {t("modules.pages.customerForm.actions.view")}
+            //       </a>
+            //     </div>
+            //   );
           }
         };
 
