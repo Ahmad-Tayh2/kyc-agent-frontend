@@ -82,10 +82,6 @@ const PayoutLocationsPage: React.FC = () => {
       header: "Description",
       accessorKey: "description",
     },
-    {
-      header: "Status",
-      accessorKey: "status",
-    },
   ];
 
   const PayoutLocationColumns = [
@@ -110,34 +106,31 @@ const PayoutLocationsPage: React.FC = () => {
   return (
     <div className="space-y-4 flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Payout Locations/Methods</h1>
-      <div className="p-5">
-        <DataTable
-          data={remittanceData}
-          columns={RemittanceMethodColumns}
-          tableTitle="Remittance Methods"
-        />
-      </div>
+      <DataTable
+        data={remittanceData}
+        columns={RemittanceMethodColumns}
+        tableTitle="Supported Remittance methods"
+        enableFrontEndPagination
+      />
 
-      <div className="p-5">
-        <div className="bg-white rounded-t-md">
-          <h1 className="p-5 text-2xl font-semibold">Payout Locations</h1>
-          <PayoutLocationsFilters
-            filters={filters}
-            onUpdateCountryFilter={updateCountryFilter}
-            onResetFilters={resetFilters}
-            onApplyFilters={applyFilters}
-          />
-        </div>
-        <DataTable
-          data={payoutLocationData}
-          columns={PayoutLocationColumns}
-          // tableTitle="Payout Locations"
-          isLoading={payoutLocationsLoading}
-          error={payoutLocationsError}
-          pagination={payoutLocationsPagination}
-          className="min-h-[500px] rounded-t-none"
+      <div className="bg-white rounded-t-md">
+        <h1 className="p-5 text-2xl font-semibold">Payout Locations</h1>
+        <PayoutLocationsFilters
+          filters={filters}
+          onUpdateCountryFilter={updateCountryFilter}
+          onResetFilters={resetFilters}
+          onApplyFilters={applyFilters}
         />
       </div>
+      <DataTable
+        data={payoutLocationData}
+        columns={PayoutLocationColumns}
+        // tableTitle="Payout Locations"
+        isLoading={payoutLocationsLoading}
+        error={payoutLocationsError}
+        pagination={payoutLocationsPagination}
+        className="min-h-[500px] rounded-t-none"
+      />
     </div>
   );
 };
