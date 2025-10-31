@@ -247,14 +247,16 @@ const RecipientCreateForm: React.FC = () => {
   });
 
   // console.log("formData:", formData.payout_agents);
-
   const { isPending: isCreatingRecipient } = useCreateRecipient();
   const {
     mutateAsync: createRecipientIntermediate,
     isPending: isCreatingRecipientIntermediate,
   } = useCreateRecipientIntermediate();
   const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } =
-    useCreateBankAccount();
+    useCreateBankAccount({
+      onSuccess: () => navigate(ROUTES.RECIPIENTS.LIST),
+      keyToInvalidate: "get-recipients",
+    });
   const {
     mutateAsync: createRecipientPayout,
     isPending: isCreatingRecipientPayout,
@@ -279,52 +281,67 @@ const RecipientCreateForm: React.FC = () => {
     return customersResponse?.data || [];
   }, [customersResponse?.data]);
 
-  const countryOptions =
-    countries?.map((country: any) => ({
-      value: country.id,
-      label: country.name,
-      iso2: country.iso2,
-    })) || [];
+  const countryOptions = useMemo(() => {
+    return (
+      countries?.map((country: any) => ({
+        value: country.id,
+        label: country.name,
+        iso2: country.iso2,
+      })) || []
+    );
+  }, [countries]);
 
-  const cityOptions =
-    cities?.map((city: any) => ({
-      value: city.id,
-      label: city.name,
-    })) || [];
+  const cityOptions = useMemo(() => {
+    return (
+      cities?.map((city: any) => ({
+        value: city.id,
+        label: city.name,
+      })) || []
+    );
+  }, [cities]);
 
-  const stateOptions =
-    states?.map((state: any) => ({
-      value: state.id,
-      label: state.name,
-    })) || [];
+  const stateOptions = useMemo(() => {
+    return (
+      states?.map((state: any) => ({
+        value: state.id,
+        label: state.name,
+      })) || []
+    );
+  }, [states]);
 
-  const countryPhoneOptions =
-    countries?.map((country: any) => ({
-      value: country.phone_code,
-      label: country.name,
-      code: country.phone_code,
-      countryCode: country.iso2,
-    })) || [];
+  const countryPhoneOptions = useMemo(() => {
+    return (
+      countries?.map((country: any) => ({
+        value: country.phone_code,
+        label: country.name,
+        code: country.phone_code,
+        countryCode: country.iso2,
+      })) || []
+    );
+  }, [countries]);
 
-  const customerOptions = [
-    ...customersData?.map((customer: any) => ({
-      label: customer.full_name,
-      value: customer.id,
-    })),
-  ];
-
+  const currencyOptions = useMemo(() => {
+    return (
+      currencies?.map((currency: any) => ({
+        label: `${currency.code} - ${currency.name}`,
+        value: currency.id.toString(),
+      })) || []
+    );
+  }, [currencies]);
+  const customerOptions = useMemo(() => {
+    return (
+      customersData?.map((customer: any) => ({
+        label: customer.full_name,
+        value: customer.id,
+      })) ?? []
+    );
+  }, [customersData]);
   const accountTypeOptions = [
     { label: "Savings", value: "savings" },
     { label: "Checking", value: "checking" },
     { label: "Current", value: "current" },
     { label: "Business", value: "business" },
   ];
-
-  const currencyOptions =
-    currencies?.map((currency: any) => ({
-      label: `${currency.code} - ${currency.name}`,
-      value: currency.id.toString(),
-    })) || [];
 
   const handleInputChange = (field: string, value: any) => {
     if (field === "country_id") {
@@ -712,7 +729,13 @@ const RecipientCreateForm: React.FC = () => {
   const handleCancel = () => {
     navigate(ROUTES.RECIPIENTS.LIST);
   };
-
+  const handleBack = () => {
+    const currentStepNumber =
+      steps?.find((step) => step.name === currentStep)?.number ?? -1;
+    if (currentStepNumber > 1) {
+      setCurrentStep(steps?.[currentStepNumber - 1 - 1].name);
+    }
+  };
   const steps = [
     {
       number: 1,
@@ -828,53 +851,61 @@ const RecipientCreateForm: React.FC = () => {
           />
         )}
         {/* Action Buttons */}
-        <div className="flex justify-end items-end gap-4 m-5 pt-5 border-t-1">
-          <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
+        <div className="flex justify-between items-end gap-4 m-5 pt-5 border-t-1">
+          <ActionButton
+            title="back"
+            onClick={handleBack}
+            type="cancel"
+            disabled={currentStep === "basic"}
+          />
+          <div className="flex justify-end items-end gap-4">
+            <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
+            {currentStep === "bank" ? (
+              <ActionButton
+                title="save & continue"
+                onClick={handleSubmit}
+                buttonProps={{
+                  disabled:
+                    isCreatingRecipient ||
+                    isCreatingBankAccount ||
+                    isCreatingRecipientPayout,
+                }}
+              />
+            ) : currentStep === "remittance" ? (
+              <ActionButton
+                title="save & continue"
+                onClick={handleNext}
+                //disabled to refactor later
 
-          {currentStep === "bank" ? (
-            <ActionButton
-              title="save & continue"
-              onClick={handleSubmit}
-              buttonProps={{
-                disabled:
-                  isCreatingRecipient ||
-                  isCreatingBankAccount ||
-                  isCreatingRecipientPayout,
-              }}
-            />
-          ) : currentStep === "remittance" ? (
-            <ActionButton
-              title="save & continue"
-              onClick={handleNext}
-              buttonProps={{
-                disabled:
-                  formData.remittance_methods.length === 0 ||
-                  !formData.remittance_methods.some(
-                    (method) => method.added_to_recipient
-                  ) ||
-                  formData.remittance_methods.some((method) => {
-                    if (!method.added_to_recipient) return false;
-                    const remittanceMethod = remittanceMethods?.data?.find(
-                      (m: any) => m.id === method.remittance_method_id
-                    );
-                    return (
-                      remittanceMethod?.validator_id &&
-                      method.verification_status !== "verified"
-                    );
-                  }),
-              }}
-              className="bg-teal-600 hover:bg-teal-700"
-            />
-          ) : (
-            <ActionButton
-              title="save & continue"
-              onClick={handleNext}
-              buttonProps={{
-                disabled: isCreatingRecipientIntermediate,
-              }}
-              className="bg-teal-600 hover:bg-teal-700"
-            />
-          )}
+                // disabled={
+                //   formData.remittance_methods.length === 0 ||
+                //   !formData.remittance_methods.some(
+                //     (method) => method.added_to_recipient
+                //   ) ||
+                //   formData.remittance_methods.some((method) => {
+                //     if (!method.added_to_recipient) return false;
+                //     const remittanceMethod = remittanceMethods?.data?.find(
+                //       (m: any) => m.id === method.remittance_method_id
+                //     );
+                //     return (
+                //       remittanceMethod?.validator_id &&
+                //       method.verification_status !== "verified"
+                //     );
+                //   })
+                // }
+                className="bg-teal-600 hover:bg-teal-700"
+              />
+            ) : (
+              <ActionButton
+                title="save & continue"
+                onClick={handleNext}
+                buttonProps={{
+                  disabled: isCreatingRecipientIntermediate,
+                }}
+                className="bg-teal-600 hover:bg-teal-700"
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
