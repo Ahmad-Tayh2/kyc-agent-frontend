@@ -12,6 +12,7 @@ import type {
 import SearchableSelect from "../ui/searchable-select";
 import { cn } from "@/lib/utils";
 import ErrorField from "../shared/ErrorField";
+import { serverUrl } from "@/constants/api";
 
 export default function CustomerDocumentUpload(props: any) {
   const {
@@ -81,6 +82,9 @@ const RenderCustomerIdentity = (props: any) => {
   useEffect(() => {
     console.log(" identityData = = ", identityData);
   }, [identityData]);
+  const handleOpenFile = (pathLink: string) => {
+    window.open(pathLink, "_blank", "noopener,noreferrer");
+  };
   return (
     <div className="flex flex-col gap-5">
       <h3 className="text-lg font-semibold">Identity files</h3>
@@ -147,7 +151,8 @@ const RenderCustomerIdentity = (props: any) => {
               handleIdentityChange("expiry_date", date)
             }
             disabled={!editMode}
-            // endMonth={documentExpiryEndMonth}
+            startMonth={new Date()}
+            endMonth={new Date(new Date().getFullYear() + 20, 0)}
           />
           {identityErrors?.expiry_date && (
             <ErrorField errors={[identityErrors?.expiry_date[0]]} />
@@ -190,7 +195,7 @@ const RenderCustomerIdentity = (props: any) => {
               ✓ {identityData?.front_image?.name}
             </p>
           )} */}
-          {identityData?.front_image && (
+          {identityData?.front_image ? (
             <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
               <span>
                 {/* You can use an icon here */}
@@ -205,6 +210,21 @@ const RenderCustomerIdentity = (props: any) => {
                 </div>
               </div>
             </div>
+          ) : (
+            identityData?.front_file_url && (
+              <div
+                className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2 cursor-pointer hover:bg-primary/5"
+                onClick={() =>
+                  handleOpenFile(serverUrl + identityData?.front_file_url)
+                }
+              >
+                <span>
+                  {/* You can use an icon here */}
+                  <FileIcon color="var(--primary)" />
+                </span>
+                Front Document
+              </div>
+            )
           )}
           {identityErrors?.front_image && (
             <ErrorField errors={[identityErrors?.front_image[0]]} />
@@ -242,7 +262,7 @@ const RenderCustomerIdentity = (props: any) => {
               ✓ {identityData?.back_image?.name}
             </p>
           )} */}
-          {identityData?.back_image && (
+          {identityData?.back_image ? (
             <div className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2">
               <span>
                 {/* You can use an icon here */}
@@ -257,6 +277,21 @@ const RenderCustomerIdentity = (props: any) => {
                 </div>
               </div>
             </div>
+          ) : (
+            identityData?.back_file_url && (
+              <div
+                className="flex items-center gap-2 border border-[#656565] rounded-md p-2 mt-2 cursor-pointer hover:bg-primary/5"
+                onClick={() =>
+                  handleOpenFile(serverUrl + identityData?.back_file_url)
+                }
+              >
+                <span>
+                  {/* You can use an icon here */}
+                  <FileIcon color="var(--primary)" />
+                </span>
+                Back Document
+              </div>
+            )
           )}
         </div>
       </div>

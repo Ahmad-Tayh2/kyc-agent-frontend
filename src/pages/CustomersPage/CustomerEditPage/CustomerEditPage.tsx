@@ -298,7 +298,7 @@ const CustomerEditPage = () => {
     CUSTOMER_STATUS_COLORS[
       formData.status as keyof typeof CUSTOMER_STATUS_COLORS
     ] || "#000000";
-
+  React.useEffect(() => {});
   const [identityData, setIdentityData] = useState<CustomerIdentityFileData>({
     document_type: "",
     document_number: "",
@@ -307,9 +307,20 @@ const CustomerEditPage = () => {
     front_image: null,
     back_image: null,
   });
+  useEffect(() => {
+    if (identityDataResponse?.data?.length) {
+      setIdentityData(identityDataResponse?.data[0]);
+    }
+  }, [identityDataResponse]);
   const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
   useEffect(() => {
-    console.log("identityDataResponse = ", identityDataResponse);
+    // if (identityDataResponse.front_image) {
+    //   console.log(
+    //     "identityDataResponse front_image*** = ",
+    //     identityDataResponse
+    //   );
+    // }
+    console.log(" identityDataResponse ******** ", identityDataResponse);
   }, [identityDataResponse]);
   useEffect(() => {
     console.log("incomeDataResponse = ", incomeDataResponse);
