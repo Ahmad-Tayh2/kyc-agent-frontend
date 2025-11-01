@@ -8,6 +8,7 @@ import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { Link } from "react-router-dom";
 import ActionButton from "../shared/ActionButton";
+import LinkList from "../shared/LinkList";
 
 export type Recipient = {
   id: string;
@@ -206,22 +207,15 @@ export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
         header: "Rem. Methods",
         cell: ({ row }) => {
           const remittance_methods: any[] = row.getValue("remittance_methods");
-
-          return (
-            <div className="flex flex-wrap">
-              {remittance_methods?.map((rm: any, index: number) => (
-                <div key={index}>
-                  {index !== 0 && ", "}
-                  {rm?.remittance_method?.name}
-                </div>
-              ))}
-            </div>
-          );
+          const data = remittance_methods?.map((rm) => ({
+            label: rm?.remittance_method?.name,
+          }));
+          return <LinkList data={data} />;
         },
       },
       {
-        accessorKey: "transfer",
-        header: "Transfer",
+        accessorKey: "number_transactions",
+        header: "Transactions",
       },
       {
         id: "actions",

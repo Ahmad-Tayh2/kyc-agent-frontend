@@ -32,6 +32,10 @@ export interface CustomerIdentityFileData {
   expiry_date: string;
   front_image: File | null;
   back_image: File | null;
+  //got from api in get request
+  front_file_url?: string;
+  back_file_url?: string | null;
+  id?: number;
 }
 
 export interface CustomerIncomeFileData {
