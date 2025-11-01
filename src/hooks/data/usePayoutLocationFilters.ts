@@ -4,7 +4,7 @@ import {
   createFilterReset,
   createHasActiveFilters,
 } from "@/utils/filterHelpers";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "../utils/useDebounce";
 
 export interface PayoutLocationFilterState {
@@ -26,7 +26,9 @@ export const usePayoutLocationFilters = () => {
   const debouncedSearch = useDebounce(filters?.search);
 
   const [filtersString, setFilterString] = useState<string>("");
-
+  useEffect(() => {
+    applyFilters();
+  }, [debouncedSearch, filters?.per_page, filters?.page]);
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search }));

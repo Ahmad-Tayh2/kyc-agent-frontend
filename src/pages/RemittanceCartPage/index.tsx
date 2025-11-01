@@ -12,6 +12,12 @@ const RemittanceCartPage: React.FC = () => {
   const remittanceCartsData = useMemo(() => {
     return response?.data?.data || [];
   }, [response?.data]);
+
+  if (isLoading) return <div className="p-8">Loading...</div>;
+  if (error)
+    return (
+      <div className="p-8 text-red-500">Error loading remittance carts.</div>
+    );
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -19,13 +25,7 @@ const RemittanceCartPage: React.FC = () => {
       </div>
       <div className="flex flex-col gap-10">
         {remittanceCartsData?.map((cartData: any) => {
-          const {
-            customer,
-            created_at,
-            total_amount,
-            payment_links,
-            currency,
-          } = cartData;
+          const { customer, created_at, total_amount, currency } = cartData;
           return (
             <div>
               <div className="font-semibold my-2">
@@ -44,7 +44,6 @@ const RemittanceCartPage: React.FC = () => {
                     customer={customer}
                     date={created_at}
                     totalPayableAmount={total_amount}
-                    paymentLinkData={payment_links?.[0]}
                     cartId={cartData?.id}
                   />
                 </div>

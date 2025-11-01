@@ -74,9 +74,16 @@ export function useCreateRecipient() {
 }
 
 export function useCreateRecipientIntermediate() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (data: RecipientCreateData) =>
       recipientsService.createRecipient(data),
+    onSuccess: () => {
+      toast.success("Recipient created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["get-recipients"] });
+      // navigate(ROUTES.RECIPIENTS.LIST);
+    },
     onError: (error: AxiosError<ErrorResponseData>) => {
       toast.error(error?.response?.data?.message);
     },

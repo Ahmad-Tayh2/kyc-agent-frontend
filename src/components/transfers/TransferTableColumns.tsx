@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { MoreHorizontal } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
+import { TRASACTIONS_STATUSES_COLORS } from "@/constants/appConstants";
 
 export const transferColumns = (): ColumnDef<Transfer>[] => {
   const [t] = useTranslation("global");
@@ -161,8 +162,12 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       accessorKey: "status",
       header: t("modules.pages.transfers.table.columns.status"),
       cell: ({ row }) => {
-        const status = row.getValue("status") as string;
-        return <StatusLabel value={status} />;
+        const value: string = row.getValue("status") as string;
+        const color =
+          TRASACTIONS_STATUSES_COLORS[
+            value as keyof typeof TRASACTIONS_STATUSES_COLORS
+          ] || "#000000";
+        return <StatusLabel value={value} color={color} />;
       },
     },
     {

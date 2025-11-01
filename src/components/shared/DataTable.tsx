@@ -31,14 +31,30 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SingleSelectDropdown } from "./SingleSelectDropdown";
-import { paginationsPagesOptions } from "@/constants/options";
+import {
+  frontEndPaginationsPagesOptions,
+  paginationsPagesOptions,
+} from "@/constants/options";
 import { cn } from "@/lib/utils";
+import { useEffect, useMemo, useState } from "react";
+import { getPagesLength, getPagesNumberToShow } from "@/helpers/pagination";
 
 // interface PaginationObject {
 //   per_page: number;
 //   page: number;
 //   total
 // }
+
+type FrontEndPaginationState = {
+  enable: boolean;
+  page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
+  last_page: number;
+};
+
 interface DataTableProps {
   data: any[];
   columns: any[];
@@ -58,6 +74,7 @@ interface DataTableProps {
   isLoading?: boolean;
   error?: any;
   className?: string;
+  enableFrontEndPagination?: boolean;
 }
 
 export function DataTable({
@@ -69,6 +86,7 @@ export function DataTable({
   isLoading = false,
   className,
   error,
+  enableFrontEndPagination = false,
 }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -78,7 +96,76 @@ export function DataTable({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  // Pagination control
+  // Frontend pagination
+
+  const [frontEndPaginationStates, setFrontEndPaginationStates] =
+    useState<FrontEndPaginationState>({
+      enable: false,
+      page: 1,
+      per_page: Number(frontEndPaginationsPagesOptions[0]?.value),
+      total: 0,
+      from: 0,
+      to: 0,
+      last_page: 1,
+    });
+
+  useEffect(() => {
+    setFrontEndPaginationStates((prev) => ({
+      ...prev,
+      enable: enableFrontEndPagination,
+    }));
+  }, [enableFrontEndPagination]);
+  const frontEndPaginatedData = useMemo(() => {
+    if (!frontEndPaginationStates.enable) return [];
+
+    const start =
+      (frontEndPaginationStates.page - 1) * frontEndPaginationStates.per_page;
+    const end = start + frontEndPaginationStates.per_page;
+    const sliced = data.slice(start, end);
+
+    setFrontEndPaginationStates((prev) => ({
+      ...prev,
+      total: data.length,
+      from: start + 1,
+      to: Math.min(end, data.length),
+      last_page: Math.ceil(data.length / prev.per_page),
+    }));
+
+    return sliced;
+  }, [
+    data,
+    frontEndPaginationStates.page,
+    frontEndPaginationStates.per_page,
+    frontEndPaginationStates.enable,
+  ]);
+  const handlePageChange = (page: number) => {
+    setFrontEndPaginationStates((prev) => ({
+      ...prev,
+      page: page < 1 ? 1 : page > prev.last_page ? prev.last_page : page,
+    }));
+  };
+  const handleChangeRowsPerPage = (rows: number) => {
+    setFrontEndPaginationStates((prev) => ({
+      ...prev,
+      per_page: rows,
+    }));
+  };
+  const frontEndPagesLength = useMemo(
+    () => getPagesLength(frontEndPaginationStates?.last_page),
+    [frontEndPaginationStates?.last_page]
+  );
+
+  const frontEndPagesNumberToShow = useMemo(
+    () =>
+      getPagesNumberToShow(
+        frontEndPaginationStates?.page ?? 1,
+        frontEndPaginationStates?.last_page ?? 0
+      ),
+    [frontEndPaginationStates?.page, frontEndPaginationStates?.last_page]
+  );
+  // end of Frontend pagination
+
+  // Backend pagination control
   const [currentPage, setCurrentPage] = React.useState(1);
 
   // Reset to first page when data changes
@@ -95,10 +182,24 @@ export function DataTable({
     );
   }, [data, currentPage, pagination?.per_page]);
 
+  const pagesLength = useMemo(
+    () => getPagesLength(pagination?.last_page),
+    [pagination?.last_page]
+  );
+
+  const pagesNumberToShow = useMemo(
+    () =>
+      getPagesNumberToShow(pagination?.page ?? 1, pagination?.last_page ?? 0),
+    [pagination?.page, pagination?.last_page]
+  );
+  // end of Backend pagination
+
   // Handlers for pagination
 
   const table = useReactTable({
-    data: paginatedData,
+    data: frontEndPaginationStates.enable
+      ? frontEndPaginatedData
+      : paginatedData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -115,42 +216,6 @@ export function DataTable({
       rowSelection,
     },
   });
-
-  const pagesLength = React.useMemo(() => {
-    if (pagination?.last_page && pagination?.last_page > 0)
-      return pagination?.last_page;
-    return 0;
-  }, [pagination?.last_page]);
-
-  const pagesNumberToShow = React.useMemo(() => {
-    let display: (number | string)[] = [];
-    if (pagination?.last_page && pagesLength) {
-      if (pagesLength < 7) {
-        // Show all pages
-        display = Array.from({ length: pagesLength }, (_, i) => i + 1);
-      } else {
-        // pagesLength >= 7 : defining the start and the end of the middle pages range
-        const windowStart = Math.max(pagination?.page - 1, 2);
-        const windowEnd = Math.min(pagination?.page + 1, pagesLength - 1);
-        display.push(1);
-
-        // first gap
-        if (windowStart > 2) display.push("...");
-
-        // middle window
-        for (let p = windowStart; p <= windowEnd; p++) {
-          display.push(p);
-        }
-
-        // second gap
-        if (windowEnd < pagesLength - 1) display.push("...");
-
-        // last page
-        display.push(pagesLength);
-      }
-    }
-    return display;
-  }, [pagesLength, pagination?.page]);
   const TableHeadComponent = () => {
     return (
       <div>
@@ -249,8 +314,105 @@ export function DataTable({
           </Table>
         </div>
         {/* pagination */}
+        {enableFrontEndPagination ? (
+          <Pagination className="py-2 px-5">
+            <PaginationContent className="w-full flex justify-between items-center">
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    handlePageChange(frontEndPaginationStates.page - 1)
+                  }
+                  disabled={frontEndPaginationStates.page === 1}
+                  className="cursor-pointer hover:bg-primary/10"
+                >
+                  <ArrowLeft /> <span>Previous</span>
+                </Button>
+              </PaginationItem>
+              <div className="flex justify-between items-center gap-1">
+                {frontEndPagesNumberToShow?.map(
+                  (page: string | number, index) => {
+                    if (page === "...") {
+                      return (
+                        <PaginationItem key={index + 1}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    } else {
+                      let isActive = frontEndPaginationStates?.page === page;
+                      return (
+                        <PaginationItem key={index + 1}>
+                          <PaginationLink
+                            className={cn(
+                              "border-none cursor-pointer",
+                              isActive && "bg-primary/20"
+                            )}
+                            onClick={() => handlePageChange(Number(page))}
+                            isActive={isActive}
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+                  }
+                )}
+              </div>
 
-        {pagination?.enable &&
+              <PaginationItem className="flex items-center gap-2">
+                {handleChangeRowsPerPage && (
+                  <SingleSelectDropdown
+                    options={frontEndPaginationsPagesOptions}
+                    onValueChange={handleChangeRowsPerPage}
+                    selectedValue={String(frontEndPaginationStates?.per_page)}
+                    className="w-[120px]"
+                  />
+                )}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    handlePageChange(frontEndPaginationStates.page + 1)
+                  }
+                  disabled={
+                    frontEndPaginationStates?.page === frontEndPagesLength
+                  }
+                  className="cursor-pointer hover:bg-primary/10"
+                >
+                  <span>Next</span>
+                  <ArrowRight />
+                </Button>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        ) : (
+          // <div className="flex justify-between items-center mt-4">
+          //   <button
+          //     onClick={() =>
+          //       handlePageChange(frontEndPaginationStates.page - 1)
+          //     }
+          //     disabled={frontEndPaginationStates.page === 1}
+          //   >
+          //     Previous
+          //   </button>
+
+          //   <span>
+          //     Page {frontEndPaginationStates.page} of{" "}
+          //     {frontEndPaginationStates.last_page}
+          //   </span>
+
+          //   <button
+          //     onClick={() =>
+          //       handlePageChange(frontEndPaginationStates.page + 1)
+          //     }
+          //     disabled={
+          //       frontEndPaginationStates.page ===
+          //       frontEndPaginationStates.last_page
+          //     }
+          //   >
+          //     Next
+          //   </button>
+          // </div>
+          pagination?.enable &&
           (data?.length >= 10 || pagination?.page > 1) && ( //if the page is > 1 you should allow the user the navigate may be the previous page (because in that page the data.length may be less than 10)
             <Pagination className="py-2 px-5">
               <PaginationContent className="w-full flex justify-between items-center">
@@ -317,7 +479,8 @@ export function DataTable({
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          )}
+          )
+        )}
       </div>
     </div>
   );
