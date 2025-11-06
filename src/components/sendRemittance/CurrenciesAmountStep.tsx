@@ -17,8 +17,9 @@ import {
   useGetCountrySendingCurrencies,
   useGetCountryReceivingCurrencies,
 } from "@/hooks/data/useCountryAllowedCurrency";
-import SummaryCard, { type SummaryData } from "./SummaryCard";
+import SummaryCard from "./SummaryCard";
 import type { SendRemittanceExchangeDetails } from "@/types/sendRemittance";
+import { useSummaryData } from "@/hooks/useSummaryData";
 
 const CurrenciesAmountStep: React.FC = () => {
   // For now, we'll use a placeholder agent ID. In a real app, this would come from auth context
@@ -203,28 +204,8 @@ const CurrenciesAmountStep: React.FC = () => {
     };
   }, [previewData]);
 
-  // TODO: Get real data from previous step context/state
-  // For now using mock data, but this should come from CustomerRecipientStep selections
-  const summaryData: SummaryData = {
-    sendingCustomer: stepOne?.customer?.fullName,
-    sendingCountryIso: stepOne?.sendCountry?.iso3,
-    recipient: stepOne?.recipient?.fullName,
-    recipientCountryIso: stepOne?.receiveCountry?.iso3,
-    remittanceMethod: stepOne?.remittanceMethod?.name,
-    sendingCountry: stepOne?.sendCountry?.name,
-    receivingCountry: stepOne?.receiveCountry?.name,
-    sendingAmount: sendAmount,
-    exchangeRate: `1${
-      sendCurrency?.code
-    } = ${exchangeDetails?.applied_exchange_rate?.toFixed(2)} ${
-      receiveCurrency?.code
-    }`, //applied_exchange_rate,
-    // feesAndCharges: "",
-    // commission: "",
-    // extraFees: "",
-    recipientGets: `${exchangeDetails?.to_amount}${receiveCurrency?.code}`,
-    // totalPayableAmount: "",
-  };
+  // Get computed summary data from centralized hook
+  const summaryData = useSummaryData();
 
   // Calculate fees and total payable amount using real exchange data
   // const feesAndCharges = conversionInfo ? conversionInfo.charges + 1 : 10; // margin fee + $1 fixed fee
