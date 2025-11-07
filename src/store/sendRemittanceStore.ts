@@ -23,6 +23,7 @@ const createInitialData = (): SendRemittanceData => ({
     receiveCurrency: null,
     receiveAmount: 0,
     exchangeDetails: null,
+    extraFeesPercent: 0,
   },
   stepThree: {
     sourceOfIncome: null,
@@ -205,6 +206,11 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
           // if (details) {
           //   state.data.stepTwo.receiveAmount = details.total;
           // }
+        }),
+
+      setExtraFeesPercent: (percent) =>
+        set((state) => {
+          state.data.stepTwo.extraFeesPercent = percent;
         }),
 
       // Step 3 Actions
@@ -419,6 +425,7 @@ export const useSendRemittanceActions = () => {
     setReceiveCurrency: state.setReceiveCurrency,
     setReceiveAmount: state.setReceiveAmount,
     setExchangeDetails: state.setExchangeDetails,
+    setExtraFeesPercent: state.setExtraFeesPercent,
     setSourceOfIncome: state.setSourceOfIncome,
     setRemittancePurpose: state.setRemittancePurpose,
     setExtraDetails: state.setExtraDetails,

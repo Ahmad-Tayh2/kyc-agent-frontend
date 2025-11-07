@@ -55,3 +55,12 @@ export function useAttachCustomerToAgent() {
     },
   });
 }
+
+export function useAgentExtraFees(agentId: string | number | null) {
+  return useQuery({
+    queryKey: ["agent-extra-fees", agentId],
+    queryFn: () => agentService.getExtraFees(agentId!),
+    enabled: !!agentId,
+    staleTime: 5 * 60 * 1000,
+  });
+}

@@ -21,11 +21,12 @@ export const useSummaryData = (): SummaryData => {
     // Calculate commission (30% of margin as per CurrenciesAmountStep)
     const commission = marginFee * 0.3;
 
-    // Extra fees (placeholder - should come from step 2 when implemented)
-    const extraFees = 0;
+    // Calculate extra fees based on percentage and send amount
+    const sendAmount = Number(stepTwo.sendAmount) || 0;
+    const extraFeesPercent = Number(stepTwo.extraFeesPercent) || 0;
+    const extraFees = (sendAmount * extraFeesPercent) / 100;
 
     // Total payable amount - ensure sendAmount is a number
-    const sendAmount = Number(stepTwo.sendAmount) || 0;
     const totalPayableAmount = sendAmount + feesAndCharges + extraFees;
 
     // Format exchange rate display
@@ -37,6 +38,13 @@ export const useSummaryData = (): SummaryData => {
     const recipientGetsDisplay = stepTwo.receiveCurrency?.code
       ? `${Number(stepTwo.receiveAmount || 0).toFixed(2)} ${stepTwo.receiveCurrency.code}`
       : undefined;
+
+    // Format extra fees with currency
+    const extraFeesDisplay = stepTwo.sendCurrency?.code && extraFees > 0
+      ? `${extraFees.toFixed(2)} ${stepTwo.sendCurrency.code}`
+      : extraFees > 0
+        ? extraFees.toFixed(2)
+        : undefined;
 
     return {
       // Step 1 data
@@ -55,7 +63,7 @@ export const useSummaryData = (): SummaryData => {
       exchangeRate: exchangeRateDisplay,
       feesAndCharges,
       commission,
-      extraFees,
+      extraFees: extraFeesDisplay,
       recipientGets: recipientGetsDisplay,
       totalPayableAmount,
     };

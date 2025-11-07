@@ -19,6 +19,7 @@ export interface TransferPayload {
   payout_agent_id?: number;
   remittance_purpose_id?: number;
   source_income_id?: number;
+  extra_fees_applied_percent?: number;
 }
 
 /**
@@ -68,6 +69,11 @@ export const buildDraftTransferPayload = (
     stepOne.payoutAgent?.id
   ) {
     payload.payout_agent_id = stepOne.payoutAgent.id;
+  }
+
+  // Add extra fees percentage if set
+  if (stepTwo.extraFeesPercent && stepTwo.extraFeesPercent > 0) {
+    payload.extra_fees_applied_percent = stepTwo.extraFeesPercent;
   }
 
   return payload;

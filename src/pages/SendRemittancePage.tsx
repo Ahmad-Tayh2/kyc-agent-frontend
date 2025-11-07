@@ -32,8 +32,6 @@ import {
   buildDraftTransferPayload,
   buildUpdateTransferPayload,
 } from '@/utils/sendRemittancePayload';
-
-type StepName = 'customer' | 'currencies' | 'review' | 'pay';
 interface SendRemittancePageProps {
   mode?: 'create' | 'edit';
 }
@@ -108,10 +106,15 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     setRemittancePurpose,
     setCartAddedTo,
     setExchangeDetails,
+    setExtraFeesPercent,
   } = useSendRemittanceStore((state) => state);
   // Get markStepCompleted from store for initialization
-  const markStepCompleted = useSendRemittanceStore((state) => state.markStepCompleted);
-  const setCurrentStep = useSendRemittanceStore((state) => state.setCurrentStep);
+  const markStepCompleted = useSendRemittanceStore(
+    (state) => state.markStepCompleted
+  );
+  const setCurrentStep = useSendRemittanceStore(
+    (state) => state.setCurrentStep
+  );
 
   // Initialize store for create mode when component mounts
   // Only run once when component mounts or when mode/reference_number changes
@@ -145,7 +148,9 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           id: transferData.customer.id,
           firstName: transferData.customer.first_name,
           lastName: transferData.customer.last_name,
-          fullName: transferData.customer.full_name || `${transferData.customer.first_name} ${transferData.customer.last_name}`,
+          fullName:
+            transferData.customer.full_name ||
+            `${transferData.customer.first_name} ${transferData.customer.last_name}`,
           countryId: transferData.customer.country?.id || 0,
           countryIso3: transferData.customer.country?.iso3 || '',
           countryName: transferData.customer.country?.name || '',
@@ -169,12 +174,16 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           countryId: transferData.recipient.country?.id || 0,
           countryIso3: transferData.recipient.country?.iso3 || '',
           // API returns country as string directly, not an object
-          countryName: typeof transferData.recipient.country === 'string'
-            ? transferData.recipient.country
-            : transferData.recipient.country?.name || '',
+          countryName:
+            typeof transferData.recipient.country === 'string'
+              ? transferData.recipient.country
+              : transferData.recipient.country?.name || '',
           countryPhoneCode: transferData.recipient.country_phone_code || '',
           // API returns 'phone' not 'phone_number'
-          phoneNumber: transferData.recipient.phone || transferData.recipient.phone_number || '',
+          phoneNumber:
+            transferData.recipient.phone ||
+            transferData.recipient.phone_number ||
+            '',
           email: transferData.recipient.email || '',
           address: {
             streetName: transferData.recipient.address?.street || '',
@@ -184,8 +193,11 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
             city: transferData.recipient.address?.city?.name || '',
             state: transferData.recipient.address?.state?.name || '',
             // Use country string from recipient if address.country is not available
-            country: transferData.recipient.address?.country?.name ||
-                    (typeof transferData.recipient.country === 'string' ? transferData.recipient.country : ''),
+            country:
+              transferData.recipient.address?.country?.name ||
+              (typeof transferData.recipient.country === 'string'
+                ? transferData.recipient.country
+                : ''),
           },
           customers: transferData.recipient.customers || [],
         });
@@ -231,6 +243,11 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
         });
       }
 
+      // Set extra fees percentage if available
+      if (transferData.extra_fees_applied_percent !== undefined && transferData.extra_fees_applied_percent !== null) {
+        setExtraFeesPercent(Number(transferData.extra_fees_applied_percent));
+      }
+
       // Set step 3 data
       if (transferData.source_income) {
         setSourceOfIncome({
@@ -263,6 +280,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     setSendCurrency,
     setReceiveCurrency,
     setExchangeDetails,
+    setExtraFeesPercent,
     setSourceOfIncome,
     setRemittancePurpose,
     setCartAddedTo,

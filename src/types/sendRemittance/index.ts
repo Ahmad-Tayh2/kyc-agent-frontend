@@ -100,6 +100,7 @@ export interface SendRemittanceStepTwo {
   receiveCurrency: SendRemittanceCurrency | null;
   receiveAmount: number;
   exchangeDetails: SendRemittanceExchangeDetails | null;
+  extraFeesPercent: number;
 }
 
 // Step 3 Data
@@ -165,6 +166,7 @@ export interface SendRemittanceActions {
   setReceiveCurrency: (currency: SendRemittanceCurrency | null) => void;
   setReceiveAmount: (amount: number) => void;
   setExchangeDetails: (details: SendRemittanceExchangeDetails | null) => void;
+  setExtraFeesPercent: (percent: number) => void;
 
   // Step 3 actions
   setSourceOfIncome: (source: SendRemittanceSourceIncome | null) => void;

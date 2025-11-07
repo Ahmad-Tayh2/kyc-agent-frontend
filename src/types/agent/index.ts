@@ -175,3 +175,16 @@ export interface agentDocsData {
   files: File[];
   document_type: string;
 }
+
+export interface AgentExtraFeesData {
+  agent_id: number;
+  country_id: number | null;
+  extra_fees_percentage: number;
+}
+
+export interface AgentExtraFeesResponse {
+  status: boolean;
+  message: string;
+  data: AgentExtraFeesData;
+  errors: null | string[];
+}

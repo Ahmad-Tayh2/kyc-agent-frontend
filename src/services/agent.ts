@@ -3,6 +3,7 @@ import apiClient from "@/lib/axiosInstance";
 import type {
   AgentProfileResponse,
   UpdateAgentProfileRequest,
+  AgentExtraFeesResponse,
 } from "@/types/agent";
 
 function getAuthHeaders() {
@@ -70,5 +71,16 @@ export const agentService = {
         return response.data;
       }
     }
+  },
+
+  getExtraFees: async (
+    agentId: string | number
+  ): Promise<AgentExtraFeesResponse> => {
+    const authHeaders = getAuthHeaders();
+    const res = await fetch(API_URLS.agents.getExtraFees(agentId), {
+      ...(authHeaders ? { headers: authHeaders } : {}),
+    });
+    if (!res.ok) throw new Error("Failed to fetch agent extra fees");
+    return res.json();
   },
 };
