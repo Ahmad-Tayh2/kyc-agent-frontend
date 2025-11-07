@@ -1,38 +1,38 @@
-import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
-import SearchableSelect from "@/components/ui/searchable-select";
-import { ROUTES } from "@/constants/routes";
+import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
+import SearchableSelect from '@/components/ui/searchable-select';
+import { ROUTES } from '@/constants/routes';
 import {
   useGetReceivingCurrencies,
   useGetSendingCurrencies,
-} from "@/hooks/data/useCountryAllowedCurrency";
+} from '@/hooks/data/useCountryAllowedCurrency';
 import {
   useAttachRecipientToCustomer,
   useGetCustomerRecipients,
   useGetCustomers,
-} from "@/hooks/data/useCustomers";
-import { useRecipientPayouts } from "@/hooks/data/useRecipientPayout";
-import { useRecipientRemittanceMethods } from "@/hooks/data/useRecipientRemittanceMethods";
-import { useSearchRecipient } from "@/hooks/data/useRecipients";
-import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
-import type { CustomerType } from "@/types/customers";
-import type { CustomerRecipient } from "@/types/customers/recipients";
-import type { RecipientDataType } from "@/types/recipients";
+} from '@/hooks/data/useCustomers';
+import { useRecipientPayouts } from '@/hooks/data/useRecipientPayout';
+import { useRecipientRemittanceMethods } from '@/hooks/data/useRecipientRemittanceMethods';
+import { useSearchRecipient } from '@/hooks/data/useRecipients';
+import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
+import type { CustomerType } from '@/types/customers';
+import type { CustomerRecipient } from '@/types/customers/recipients';
+import type { RecipientDataType } from '@/types/recipients';
 
-import type { RecipientPayout } from "@/types/recipientPayout/RecipientPayout";
-import type { RecipientRemittanceMethod } from "@/types/recipientRemittanceMethod/RecipientRemittanceMethod";
-import type { CountryAllowedCurrency } from "@/types/shared/countryAllowedCurrency";
-import { ChevronDownIcon, ChevronUpIcon, Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
-import AddPaymentMethodModal from "./AddPaymentMethodModal";
+import type { RecipientPayout } from '@/types/recipientPayout/RecipientPayout';
+import type { RecipientRemittanceMethod } from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
+import type { CountryAllowedCurrency } from '@/types/shared/countryAllowedCurrency';
+import { ChevronDownIcon, ChevronUpIcon, Search } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../ui/button';
+import AddPaymentMethodModal from './AddPaymentMethodModal';
 
 const CustomerRecipientStep = (props: any) => {
   const { customerId, recipientId } = props;
   const navigate = useNavigate();
   const [isExpandedText, setIsExpandedText] = useState(false);
-  const [customerSearchTerm, setCustomerSearchTerm] = useState("");
-  const [recipientSearchTerm, setRecipientSearchTerm] = useState("");
+  const [customerSearchTerm, setCustomerSearchTerm] = useState('');
+  const [recipientSearchTerm, setRecipientSearchTerm] = useState('');
   const [isAddPaymentMethodModalOpen, setIsAddPaymentMethodModalOpen] =
     useState(false);
 
@@ -65,7 +65,7 @@ const CustomerRecipientStep = (props: any) => {
   // Only call useGetCustomerRecipients when we have a customer selected
   const { data: recipientsResponse, isLoading: recipientsLoading } =
     useGetCustomerRecipients(
-      stepOne.customer?.id ? stepOne.customer.id.toString() : ""
+      stepOne.customer?.id ? stepOne.customer.id.toString() : ''
     );
 
   const recipientsData = useMemo(() => {
@@ -73,11 +73,11 @@ const CustomerRecipientStep = (props: any) => {
   }, [recipientsResponse?.data]);
 
   const { data: sendCountriesData } = useGetSendingCurrencies(true);
-  const { data: receiveCountriesData } = useGetReceivingCurrencies(false);
+  const { data: receiveCountriesData } = useGetReceivingCurrencies(true);
 
   const { data: recipientRemittanceMethodsData = [] } =
     useRecipientRemittanceMethods(
-      stepOne.recipient?.id ? stepOne.recipient.id.toString() : ""
+      stepOne.recipient?.id ? stepOne.recipient.id.toString() : ''
     );
   const { data: recipientPayoutsResponse } = useRecipientPayouts(
     stepOne.recipient?.id ? { recipient_id: stepOne.recipient.id } : {}
@@ -207,7 +207,7 @@ const CustomerRecipientStep = (props: any) => {
   ]);
 
   // Debug logging for paymentMethodOptions
-  console.log("Payment Method Options:", paymentMethodOptions);
+  console.log('Payment Method Options:', paymentMethodOptions);
 
   useEffect(() => {
     if (stepOne?.customer?.id) {
@@ -226,11 +226,11 @@ const CustomerRecipientStep = (props: any) => {
         if (customerCountryInAllowed) {
           setSendCountry({
             id:
-              typeof customerCountryInAllowed.country.id === "string"
+              typeof customerCountryInAllowed.country.id === 'string'
                 ? parseInt(customerCountryInAllowed.country.id)
                 : customerCountryInAllowed.country.id,
             name: customerCountryInAllowed.country.name,
-            iso3: customerCountryInAllowed.country.iso3 || "",
+            iso3: customerCountryInAllowed.country.iso3 || '',
           });
         }
       }
@@ -255,7 +255,7 @@ const CustomerRecipientStep = (props: any) => {
         lastName: customer.last_name,
         fullName: customer.full_name,
         countryId: 0, // Will be updated when we set send country
-        countryIso3: "",
+        countryIso3: '',
         countryName: customer.country.name,
       });
     }
@@ -277,19 +277,19 @@ const CustomerRecipientStep = (props: any) => {
         lastName: recipient.last_name,
         fullName: `${recipient.first_name} ${recipient.last_name}`,
         countryId: 0, // Will be updated when we set receive country
-        countryIso3: "",
-        countryName: "",
+        countryIso3: '',
+        countryName: '',
         countryPhoneCode: recipient.country_phone_code,
         phoneNumber: recipient.phone_number,
         email: recipient.email,
         address: {
-          streetName: recipient.address.street || "",
-          houseNumber: "", // Not available in current API response
-          postalCode: recipient.address.postal_code || "",
-          extraDetails: "", // Not available in current API response
-          city: recipient.address.city?.name || "",
-          state: recipient.address.state?.name || "",
-          country: recipient.address.country?.name || "",
+          streetName: recipient.address.street || '',
+          houseNumber: '', // Not available in current API response
+          postalCode: recipient.address.postal_code || '',
+          extraDetails: '', // Not available in current API response
+          city: recipient.address.city?.name || '',
+          state: recipient.address.state?.name || '',
+          country: recipient.address.country?.name || '',
         },
         customers: recipient?.customers,
       });
@@ -303,11 +303,11 @@ const CustomerRecipientStep = (props: any) => {
         if (recipientCountryInAllowed) {
           setReceiveCountry({
             id:
-              typeof recipientCountryInAllowed.country.id === "string"
+              typeof recipientCountryInAllowed.country.id === 'string'
                 ? parseInt(recipientCountryInAllowed.country.id)
                 : recipientCountryInAllowed.country.id,
             name: recipientCountryInAllowed.country.name,
-            iso3: recipientCountryInAllowed.country.iso3 || "",
+            iso3: recipientCountryInAllowed.country.iso3 || '',
           });
         }
       }
@@ -332,10 +332,10 @@ const CustomerRecipientStep = (props: any) => {
         {
           onSuccess: () => {
             // The mutation should automatically invalidate the customer recipients query
-            console.log("Recipient attached successfully");
+            console.log('Recipient attached successfully');
           },
           onError: (error) => {
-            console.error("Failed to attach recipient:", error);
+            console.error('Failed to attach recipient:', error);
           },
         }
       );
@@ -353,11 +353,11 @@ const CustomerRecipientStep = (props: any) => {
     if (countryItem) {
       setSendCountry({
         id:
-          typeof countryItem.country.id === "string"
+          typeof countryItem.country.id === 'string'
             ? parseInt(countryItem.country.id)
             : countryItem.country.id,
         name: countryItem.country.name,
-        iso3: countryItem.country.iso3 || "",
+        iso3: countryItem.country.iso3 || '',
       });
     }
   };
@@ -370,11 +370,11 @@ const CustomerRecipientStep = (props: any) => {
     if (countryItem) {
       setReceiveCountry({
         id:
-          typeof countryItem.country.id === "string"
+          typeof countryItem.country.id === 'string'
             ? parseInt(countryItem.country.id)
             : countryItem.country.id,
         name: countryItem.country.name,
-        iso3: countryItem.country.iso3 || "",
+        iso3: countryItem.country.iso3 || '',
       });
     }
   };
@@ -382,9 +382,9 @@ const CustomerRecipientStep = (props: any) => {
   const handlePaymentMethodSelect = (methodId: string | number) => {
     const methodValue = methodId.toString();
 
-    if (methodValue.startsWith("rm_")) {
+    if (methodValue.startsWith('rm_')) {
       // Handle remittance method selection
-      const rmId = methodValue.replace("rm_", "");
+      const rmId = methodValue.replace('rm_', '');
       const rm = recipientRemittanceMethodsData?.find(
         (r: RecipientRemittanceMethod) => r.id.toString() === rmId
       );
@@ -393,15 +393,15 @@ const CustomerRecipientStep = (props: any) => {
         setRemittanceMethod({
           id: rm.remittance_method_id,
           name: `Remittance Method ${rm.remittance_method_id}`,
-          type: "remittance_method",
+          type: 'remittance_method',
         });
         // Clear payout agent
         setPayoutAgent(null);
-        setSelectedPaymentMethodType("remittance_method");
+        setSelectedPaymentMethodType('remittance_method');
       }
-    } else if (methodValue.startsWith("payout_")) {
+    } else if (methodValue.startsWith('payout_')) {
       // Handle payout agent selection
-      const payoutId = methodValue.replace("payout_", "");
+      const payoutId = methodValue.replace('payout_', '');
       const payout = recipientPayoutsResponse?.data?.find(
         (p: RecipientPayout) => p.id.toString() === payoutId
       );
@@ -411,46 +411,46 @@ const CustomerRecipientStep = (props: any) => {
           id: payout.payout_agent_id,
           name: payout.payout_agent.business_name,
           business_name: payout.payout_agent.business_name,
-          type: "payout_agent",
+          type: 'payout_agent',
         });
         // Clear remittance method
         setRemittanceMethod(null);
-        setSelectedPaymentMethodType("payout_agent");
+        setSelectedPaymentMethodType('payout_agent');
       }
     }
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className='p-6 space-y-6'>
       {/* Customer/Sender and Recipient Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Customer/Sender */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+        <div className='space-y-2'>
+          <label className='block text-sm font-medium text-gray-700'>
             Customer/Sender
           </label>
           <SearchableSelect
             options={customerOptions}
-            value={stepOne.customer?.id || ""}
+            value={stepOne.customer?.id || ''}
             onChange={handleCustomerSelect}
-            placeholder="Select an existing customer"
+            placeholder='Select an existing customer'
             loading={customersLoading}
             enableBackendSearch={true}
             onSearch={setCustomerSearchTerm}
-            disabled={mode === "edit" || customerId} //when we are in edit mode or there is a default customer
+            disabled={mode === 'edit' || customerId} //when we are in edit mode or there is a default customer
           />
         </div>
 
         {/* Recipient */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium text-gray-700">
+        <div className='space-y-2'>
+          <div className='flex items-center justify-between'>
+            <label className='block text-sm font-medium text-gray-700'>
               Recipient
             </label>
             {!recipientId && (
               <button
                 onClick={handleCreateRecipient}
-                className="text-sm text-teal-600 hover:text-teal-700 font-medium underline cursor-pointer"
+                className='text-sm text-teal-600 hover:text-teal-700 font-medium underline cursor-pointer'
               >
                 CREATE A RECIPIENT
               </button>
@@ -458,9 +458,9 @@ const CustomerRecipientStep = (props: any) => {
           </div>
           <SearchableSelect
             options={recipientOptions}
-            value={stepOne.recipient?.id || ""}
+            value={stepOne.recipient?.id || ''}
             onChange={handleRecipientSelect}
-            placeholder="Select an existing recipient"
+            placeholder='Select an existing recipient'
             loading={recipientsLoading}
             disabled={!stepOne.customer || recipientId}
             enableBackendSearch={false}
@@ -468,34 +468,34 @@ const CustomerRecipientStep = (props: any) => {
 
           {/* Expandable Text Section - Search recipients from other customers */}
           {stepOne.customer && !recipientId && (
-            <div className="mt-2">
+            <div className='mt-2'>
               <button
                 onClick={() => setIsExpandedText(!isExpandedText)}
-                className="w-full text-left flex"
+                className='w-full text-left flex'
               >
-                <span className="text-sm text-gray-600 underline cursor-pointer">
+                <span className='text-sm text-gray-600 underline cursor-pointer'>
                   Search recipient for another customer and add it to the
                   selected customer
                 </span>
                 {isExpandedText ? (
-                  <ChevronUpIcon className="ml-2 h-4 w-4 text-gray-500" />
+                  <ChevronUpIcon className='ml-2 h-4 w-4 text-gray-500' />
                 ) : (
-                  <ChevronDownIcon className="ml-2 h-4 w-4 text-gray-500" />
+                  <ChevronDownIcon className='ml-2 h-4 w-4 text-gray-500' />
                 )}
               </button>
 
               {isExpandedText && (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <div className="mb-3">
-                    <div className="flex gap-2">
+                <div className='mt-3 pt-3 border-t border-gray-200'>
+                  <div className='mb-3'>
+                    <div className='flex gap-2'>
                       <input
-                        type="text"
+                        type='text'
                         value={recipientSearchTerm}
                         onChange={(e) => setRecipientSearchTerm(e.target.value)}
-                        placeholder="Search recipient by name or phone..."
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder='Search recipient by name or phone...'
+                        className='flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                         onKeyPress={(e) => {
-                          if (e.key === "Enter") {
+                          if (e.key === 'Enter') {
                             handleRecipientSearch();
                           }
                         }}
@@ -507,10 +507,10 @@ const CustomerRecipientStep = (props: any) => {
                           searchRecipientMutation.isPending
                         }
                       >
-                        <Search className="h-4 w-4" />
+                        <Search className='h-4 w-4' />
                         {searchRecipientMutation.isPending
-                          ? "Searching..."
-                          : "Search"}
+                          ? 'Searching...'
+                          : 'Search'}
                       </Button>
                     </div>
                   </div>
@@ -518,42 +518,42 @@ const CustomerRecipientStep = (props: any) => {
                   {/* Show search results */}
                   {searchRecipientMutation.data?.data &&
                   searchRecipientMutation.data.data.length > 0 ? (
-                    <div className="space-y-2">
-                      <p className="text-sm text-gray-600 font-medium">
+                    <div className='space-y-2'>
+                      <p className='text-sm text-gray-600 font-medium'>
                         Search Results:
                       </p>
                       {searchRecipientMutation.data.data.map(
                         (recipient: RecipientDataType) => (
                           <div
                             key={recipient.id}
-                            className="flex justify-between items-center p-3 border border-gray-200 rounded-md bg-gray-100"
+                            className='flex justify-between items-center p-3 border border-gray-200 rounded-md bg-gray-100'
                           >
                             <div>
-                              <span className="font-medium">
+                              <span className='font-medium'>
                                 {recipient.first_name} {recipient.last_name}
                               </span>
-                              <span className="text-gray-500 ml-2">
+                              <span className='text-gray-500 ml-2'>
                                 - {recipient.phone_number}
                               </span>
                             </div>
                             {recipientOptions.some(
                               (r) => r.value === recipient.id
                             ) ? (
-                              <span className="text-green-600 text-sm font-medium">
+                              <span className='text-green-600 text-sm font-medium'>
                                 Already Attached
                               </span>
                             ) : (
                               <Button
-                                variant="outline"
-                                className="text-teal-600 text-sm hover:text-teal-700 px-3 py-1 border border-teal-600 rounded-md hover:bg-teal-50"
+                                variant='outline'
+                                className='text-teal-600 text-sm hover:text-teal-700 px-3 py-1 border border-teal-600 rounded-md hover:bg-teal-50'
                                 onClick={() =>
                                   handleAttachRecipient(recipient.id)
                                 }
                                 disabled={attachRecipientMutation.isPending}
                               >
                                 {attachRecipientMutation.isPending
-                                  ? "Adding..."
-                                  : "Add"}
+                                  ? 'Adding...'
+                                  : 'Add'}
                               </Button>
                             )}
                           </div>
@@ -562,11 +562,11 @@ const CustomerRecipientStep = (props: any) => {
                     </div>
                   ) : searchRecipientMutation.data?.data &&
                     searchRecipientMutation.data.data.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-3">
+                    <p className='text-sm text-gray-500 text-center py-3'>
                       No recipients found. Try a different search term.
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-500 text-center py-3">
+                    <p className='text-sm text-gray-500 text-center py-3'>
                       Enter a search term and click "Search" to find recipients
                       from other customers.
                     </p>
@@ -579,65 +579,65 @@ const CustomerRecipientStep = (props: any) => {
       </div>
 
       {/* Send and Receive Countries - User can select any country */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Sending Country */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+        <div className='space-y-2'>
+          <label className='block text-sm font-medium text-gray-700'>
             Sending Country
           </label>
           <SearchableSelect
             options={sendCountryOptions}
-            value={stepOne.sendCountry?.id || ""}
+            value={stepOne.sendCountry?.id || ''}
             onChange={handleSendCountrySelect}
-            placeholder="Select sending country"
+            placeholder='Select sending country'
             loading={false}
-            disabled={mode === "edit"}
+            disabled={mode === 'edit'}
           />
         </div>
 
         {/* Receiving Country */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+        <div className='space-y-2'>
+          <label className='block text-sm font-medium text-gray-700'>
             Receiving Country
           </label>
           <SearchableSelect
             options={receiveCountryOptions}
-            value={stepOne.receiveCountry?.id || ""}
+            value={stepOne.receiveCountry?.id || ''}
             onChange={handleReceiveCountrySelect}
-            placeholder="Select receiving country"
+            placeholder='Select receiving country'
             loading={false}
           />
         </div>
       </div>
 
       {/* Recipient's Payment Methods */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+      <div className='space-y-2'>
+        <label className='block text-sm font-medium text-gray-700'>
           Recipient's Payment Methods
         </label>
         <SearchableSelect
           options={paymentMethodOptions}
           value={
-            stepOne.selectedPaymentMethodType === "remittance_method" &&
+            stepOne.selectedPaymentMethodType === 'remittance_method' &&
             stepOne.remittanceMethod
               ? `rm_${stepOne.remittanceMethod.id}`
-              : stepOne.selectedPaymentMethodType === "payout_agent" &&
+              : stepOne.selectedPaymentMethodType === 'payout_agent' &&
                 stepOne.payoutAgent
               ? `payout_${stepOne.payoutAgent.id}`
-              : ""
+              : ''
           }
           onChange={handlePaymentMethodSelect}
-          placeholder="Select recipient payment method"
+          placeholder='Select recipient payment method'
           disabled={!stepOne.recipient}
         />
 
         {/* Add Payment Method Button */}
         {stepOne.recipient && (
-          <div className="text-center">
+          <div className='text-center'>
             <button
-              type="button"
+              type='button'
               onClick={() => setIsAddPaymentMethodModalOpen(true)}
-              className="text-sm text-teal-600 hover:text-teal-700 font-medium underline cursor-pointer"
+              className='text-sm text-teal-600 hover:text-teal-700 font-medium underline cursor-pointer'
             >
               + Add New Payment Method for Recipient
             </button>
@@ -646,9 +646,9 @@ const CustomerRecipientStep = (props: any) => {
       </div>
 
       {/* Step Validation Info */}
-      {isStepValid("customer") && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 text-sm text-green-800 font-medium flex items-center gap-1 rounded-md">
-          <CheckedIcon />{" "}
+      {isStepValid('customer') && (
+        <div className='mt-4 p-3 bg-green-50 border border-green-200 text-sm text-green-800 font-medium flex items-center gap-1 rounded-md'>
+          <CheckedIcon />{' '}
           <span> Step completed! You can now proceed to the next step.</span>
         </div>
       )}

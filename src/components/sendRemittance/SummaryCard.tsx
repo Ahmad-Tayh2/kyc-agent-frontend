@@ -13,7 +13,7 @@ export interface SummaryData {
   exchangeRate?: number | string;
   feesAndCharges?: number;
   commission?: number;
-  extraFees?: number;
+  extraFees?: number | string;
   recipientGets?: number | string;
   totalPayableAmount?: number;
 }
@@ -22,6 +22,35 @@ interface SummaryCardProps {
   data: SummaryData;
   className?: string;
 }
+
+/**
+ * Helper function to format currency values
+ */
+const formatCurrency = (value: number | undefined, currency?: string): string => {
+  if (value === undefined || value === null) return '—';
+  return `${value.toFixed(2)}${currency ? ` ${currency}` : ''}`;
+};
+
+/**
+ * Helper component for summary row
+ */
+const SummaryRow: React.FC<{
+  label: string;
+  value: string | number | undefined;
+  showInfo?: boolean;
+  className?: string;
+}> = ({ label, value, showInfo = false, className = "" }) => (
+  <>
+    <div className={`flex justify-between items-center ${className}`}>
+      <span className="text-gray-600">{label}</span>
+      <span className="font-medium flex items-center gap-1">
+        {value || '—'}
+        {showInfo && <Info className="w-3 h-3 text-gray-400" />}
+      </span>
+    </div>
+    <hr className="my-3" />
+  </>
+);
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
   return (
@@ -32,91 +61,84 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
       <hr />
 
       <div className="space-y-3 text-sm">
-        <div className="flex justify-between">
-          <span className="text-gray-600">Sending Customer</span>
-          <span className="font-medium">
-            {data?.sendingCustomer} ({data?.sendingCountryIso})
-          </span>
-        </div>
+        <SummaryRow
+          label="Sending Customer"
+          value={
+            data.sendingCustomer && data.sendingCountryIso
+              ? `${data.sendingCustomer} (${data.sendingCountryIso})`
+              : data.sendingCustomer
+          }
+        />
 
-        <hr className="my-3" />
+        <SummaryRow
+          label="Recipient"
+          value={
+            data.recipient && data.recipientCountryIso
+              ? `${data.recipient} (${data.recipientCountryIso})`
+              : data.recipient
+          }
+        />
 
-        <div className="flex justify-between">
-          <span className="text-gray-600">Recipient</span>
-          <span className="font-medium">
-            {data?.recipient} ({data?.recipientCountryIso})
-          </span>
-        </div>
+        <SummaryRow
+          label="Remittance Method"
+          value={data.remittanceMethod}
+          showInfo
+        />
 
-        <hr className="my-3" />
+        <SummaryRow
+          label="Sending Country"
+          value={data.sendingCountry}
+        />
 
-        <div className="flex justify-between">
-          <span className="text-gray-600">Remittance Method</span>
-          <span className="font-medium flex items-center">
-            {data?.remittanceMethod}
-            <Info className="w-3 h-3 ml-1 text-gray-400" />
-          </span>
-        </div>
+        <SummaryRow
+          label="Receiver Country"
+          value={data.receivingCountry}
+        />
 
-        <hr className="my-3" />
+        <SummaryRow
+          label="Sending Amount"
+          value={data.sendingAmount !== undefined ? formatCurrency(data.sendingAmount) : undefined}
+        />
 
-        <div className="flex justify-between">
-          <span className="text-gray-600">Sending Country</span>
-          <span className="font-medium">{data?.sendingCountry}</span>
-        </div>
+        <SummaryRow
+          label="Exchange Rate"
+          value={data.exchangeRate}
+        />
 
-        <hr className="my-3" />
+        <SummaryRow
+          label="Fees and Charges"
+          value={data.feesAndCharges !== undefined ? formatCurrency(data.feesAndCharges) : undefined}
+        />
 
-        <div className="flex justify-between">
-          <span className="text-gray-600">Receiver Country</span>
-          <span className="font-medium">{data?.receivingCountry}</span>
-        </div>
+        <SummaryRow
+          label="Commission"
+          value={data.commission !== undefined ? formatCurrency(data.commission) : undefined}
+        />
 
-        <hr className="my-3" />
+        <SummaryRow
+          label="Extra Fees"
+          value={
+            data.extraFees !== undefined
+              ? typeof data.extraFees === 'string'
+                ? data.extraFees
+                : formatCurrency(data.extraFees)
+              : undefined
+          }
+        />
 
-        <div className="flex justify-between">
-          <span className="text-gray-600">Sending Amount</span>
-          <span className="font-medium">{data?.sendingAmount}</span>
-        </div>
+        <SummaryRow
+          label="Recipient Gets"
+          value={data.recipientGets}
+        />
 
-        <hr className="my-3" />
-
-        <div className="flex justify-between">
-          <span className="text-gray-600">Exchange Rate</span>
-          <span className="font-medium">{data?.exchangeRate}</span>
-        </div>
-
-        <hr className="my-3" />
-
-        <div className="flex justify-between">
-          <span className="text-gray-600">Fees and Charges</span>
-          <span className="font-medium">{data?.feesAndCharges}</span>
-        </div>
-
-        <hr className="my-3" />
-        <div className="flex justify-between">
-          <span className="text-gray-600">Commission</span>
-          <span className="font-medium">{data?.commission}</span>
-        </div>
-
-        <hr className="my-3" />
-        <div className="flex justify-between">
-          <span className="text-gray-600">Extra Fees</span>
-          <span className="font-medium">{data?.extraFees}</span>
-        </div>
-
-        <hr className="my-3" />
-
-        <div className="flex justify-between">
-          <span className="text-gray-600">Recipient Gets</span>
-          <span className="font-medium">{data?.recipientGets}</span>
-        </div>
-
-        <hr className="my-3" />
-
-        <div className="flex justify-between text-base font-semibold text-teal-600">
+        {/* Total Payable Amount - No trailing hr */}
+        <div className="flex justify-between text-base font-semibold text-teal-600 pt-2">
           <span>Total Payable Amount</span>
-          <span>{data?.totalPayableAmount}</span>
+          <span>
+            {data.totalPayableAmount !== undefined
+              ? formatCurrency(data.totalPayableAmount)
+              : '—'}
+          </span>
         </div>
       </div>
     </div>

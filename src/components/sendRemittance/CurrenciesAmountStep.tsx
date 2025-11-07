@@ -17,8 +17,11 @@ import {
   useGetCountrySendingCurrencies,
   useGetCountryReceivingCurrencies,
 } from "@/hooks/data/useCountryAllowedCurrency";
-import SummaryCard, { type SummaryData } from "./SummaryCard";
+import SummaryCard from "./SummaryCard";
 import type { SendRemittanceExchangeDetails } from "@/types/sendRemittance";
+import { useSummaryData } from "@/hooks/useSummaryData";
+import { useAgentExtraFees } from "@/hooks/data/useAgent";
+import { Input } from "@/components/ui/input";
 
 const CurrenciesAmountStep: React.FC = () => {
   // For now, we'll use a placeholder agent ID. In a real app, this would come from auth context
@@ -51,8 +54,11 @@ const CurrenciesAmountStep: React.FC = () => {
   const setExchangeDetails = useSendRemittanceStore(
     (state) => state.setExchangeDetails
   );
-  const exchangeDetails = useSendRemittanceStore(
-    (state) => state.data.stepTwo?.exchangeDetails
+  const extraFeesPercent = useSendRemittanceStore(
+    (state) => state.data.stepTwo.extraFeesPercent
+  );
+  const setExtraFeesPercent = useSendRemittanceStore(
+    (state) => state.setExtraFeesPercent
   );
   // Form state
   const [toCurrencyId, setToCurrencyId] = useState<number>(0);
@@ -61,6 +67,7 @@ const CurrenciesAmountStep: React.FC = () => {
   // Data hooks
   const { data: wallet } = useWallet(agentId);
   const { data: allCurrencies = [] } = useCurrencies();
+  const { data: extraFeesData } = useAgentExtraFees(agentId);
 
   const { data: sendingCurrencies } = useGetCountrySendingCurrencies(
     stepOne?.sendCountry?.id ?? ""
@@ -203,28 +210,8 @@ const CurrenciesAmountStep: React.FC = () => {
     };
   }, [previewData]);
 
-  // TODO: Get real data from previous step context/state
-  // For now using mock data, but this should come from CustomerRecipientStep selections
-  const summaryData: SummaryData = {
-    sendingCustomer: stepOne?.customer?.fullName,
-    sendingCountryIso: stepOne?.sendCountry?.iso3,
-    recipient: stepOne?.recipient?.fullName,
-    recipientCountryIso: stepOne?.receiveCountry?.iso3,
-    remittanceMethod: stepOne?.remittanceMethod?.name,
-    sendingCountry: stepOne?.sendCountry?.name,
-    receivingCountry: stepOne?.receiveCountry?.name,
-    sendingAmount: sendAmount,
-    exchangeRate: `1${
-      sendCurrency?.code
-    } = ${exchangeDetails?.applied_exchange_rate?.toFixed(2)} ${
-      receiveCurrency?.code
-    }`, //applied_exchange_rate,
-    // feesAndCharges: "",
-    // commission: "",
-    // extraFees: "",
-    recipientGets: `${exchangeDetails?.to_amount}${receiveCurrency?.code}`,
-    // totalPayableAmount: "",
-  };
+  // Get computed summary data from centralized hook
+  const summaryData = useSummaryData();
 
   // Calculate fees and total payable amount using real exchange data
   // const feesAndCharges = conversionInfo ? conversionInfo.charges + 1 : 10; // margin fee + $1 fixed fee
@@ -239,6 +226,18 @@ const CurrenciesAmountStep: React.FC = () => {
     if (!currency) return parseFloat("0");
     return parseFloat(currency?.amount);
   }, [walletCurrencies, sendCurrency]);
+
+  // Get max allowed extra fees percentage
+  const maxExtraFeesPercent = useMemo(() => {
+    return extraFeesData?.data?.extra_fees_percentage || 0;
+  }, [extraFeesData]);
+
+  // Calculate extra fees amount based on send amount
+  const extraFeesAmount = useMemo(() => {
+    if (!sendAmount || !extraFeesPercent) return 0;
+    return (sendAmount * extraFeesPercent) / 100;
+  }, [sendAmount, extraFeesPercent]);
+
   const currentStep = useSendRemittanceStore((state) => state.currentStep);
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
 
@@ -341,10 +340,43 @@ const CurrenciesAmountStep: React.FC = () => {
             <span className="font-semibold">10 USD</span>
           </div>
           <div className="pb-5">
-            <div>Add your extra fees percentage (Max 2.5%)</div>
-            <div className="mt-2 p-4 bg-green-50 flex items-center gap-1 rounded-md">
-              0%
+            <div className="flex items-center gap-2 mb-2">
+              <Label>
+                Add your extra fees percentage (Max {maxExtraFeesPercent}%)
+              </Label>
+              <Info className="w-4 h-4 text-gray-400" />
             </div>
+            <div className="flex items-center gap-4">
+              <Input
+                type="number"
+                min="0"
+                max={maxExtraFeesPercent}
+                step="0.1"
+                value={extraFeesPercent}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (value >= 0 && value <= maxExtraFeesPercent) {
+                    setExtraFeesPercent(value);
+                  } else if (value > maxExtraFeesPercent) {
+                    setExtraFeesPercent(maxExtraFeesPercent);
+                  }
+                }}
+                placeholder="0"
+                className="w-32"
+              />
+              <span className="text-sm text-gray-600">%</span>
+              {extraFeesAmount > 0 && sendCurrency && (
+                <span className="text-sm font-medium text-green-600">
+                  = {extraFeesAmount.toFixed(2)} {sendCurrency.code}
+                </span>
+              )}
+            </div>
+            {extraFeesPercent > 0 && (
+              <div className="mt-2 p-3 bg-green-50 border border-green-200 text-sm text-green-800 rounded-md">
+                Extra fees of {extraFeesPercent}% will be added (
+                {extraFeesAmount.toFixed(2)} {sendCurrency?.code})
+              </div>
+            )}
           </div>
         </div>
 

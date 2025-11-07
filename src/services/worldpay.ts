@@ -1,3 +1,4 @@
+import { baseUrl } from '@/constants/api';
 import axiosInstance from '@/lib/axiosInstance';
 import { handleApiResponse } from '@/lib/handleApiResponse';
 import type { AxiosResponse } from 'axios';
@@ -22,7 +23,7 @@ export interface WorldpaySessionResponse {
  */
 export const createWorldpaySession = async (data: WorldpaySessionRequest) => {
   return axiosInstance
-    .post('http://localhost:8000/api/worldpay/initialize', data)
+    .post(`${baseUrl}/worldpay/initialize`, data)
     .then((response: AxiosResponse) =>
       handleApiResponse<WorldpaySessionResponse>(response.data)
     );
