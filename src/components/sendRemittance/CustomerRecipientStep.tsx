@@ -12,7 +12,7 @@ import {
 } from '@/hooks/data/useCustomers';
 import { useRecipientPayouts } from '@/hooks/data/useRecipientPayout';
 import { useRecipientRemittanceMethods } from '@/hooks/data/useRecipientRemittanceMethods';
-import { useSearchRecipient } from '@/hooks/data/useRecipients';
+import { useInfiniteRecipients } from '@/hooks/data/useRecipients';
 import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
 import type { CustomerType } from '@/types/customers';
 import type { CustomerRecipient } from '@/types/customers/recipients';
@@ -21,8 +21,8 @@ import type { RecipientDataType } from '@/types/recipients';
 import type { RecipientPayout } from '@/types/recipientPayout/RecipientPayout';
 import type { RecipientRemittanceMethod } from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
 import type { CountryAllowedCurrency } from '@/types/shared/countryAllowedCurrency';
-import { ChevronDownIcon, ChevronUpIcon, Search } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { ChevronDownIcon, ChevronUpIcon, Loader2, Search } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import AddPaymentMethodModal from './AddPaymentMethodModal';
@@ -33,6 +33,8 @@ const CustomerRecipientStep = (props: any) => {
   const [isExpandedText, setIsExpandedText] = useState(false);
   const [customerSearchTerm, setCustomerSearchTerm] = useState('');
   const [recipientSearchTerm, setRecipientSearchTerm] = useState('');
+  const [activeSearchTerm, setActiveSearchTerm] = useState(''); // The actual search term used for API
+  const [hasSearched, setHasSearched] = useState(false); // Track if search button was clicked
   const [isAddPaymentMethodModalOpen, setIsAddPaymentMethodModalOpen] =
     useState(false);
 
@@ -83,8 +85,51 @@ const CustomerRecipientStep = (props: any) => {
     stepOne.recipient?.id ? { recipient_id: stepOne.recipient.id } : {}
   );
 
-  const searchRecipientMutation = useSearchRecipient();
+  // Infinite scroll for recipient search - only enabled after search button is clicked
+  const {
+    data: searchRecipientsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isSearching,
+  } = useInfiniteRecipients(
+    activeSearchTerm,
+    hasSearched && isExpandedText && !!stepOne.customer
+  );
+
   const attachRecipientMutation = useAttachRecipientToCustomer();
+
+  // Ref for infinite scroll observer
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  // Flatten paginated search results
+  const searchedRecipients = useMemo(() => {
+    if (!searchRecipientsData?.pages) return [];
+    return searchRecipientsData.pages.flatMap((page) => page.data || []);
+  }, [searchRecipientsData]);
+
+  // Infinite scroll observer effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const customerOptions = useMemo(() => {
     //if there is a default customer, it should not be changed
@@ -177,7 +222,7 @@ const CustomerRecipientStep = (props: any) => {
             label: `Wallet: ${
               rm.remittance_method?.name || `Method ${rm.remittance_method_id}`
             }`,
-            value: `rm_${rm.id}`,
+            value: `rm_${rm.remittance_method_id}`,
           });
         }
       );
@@ -194,7 +239,7 @@ const CustomerRecipientStep = (props: any) => {
             payout.payout_agent?.business_name ||
             `Agent ${payout.payout_agent_id}`
           }`,
-          value: `payout_${payout.id}`,
+          value: `payout_${payout.payout_agent_id}`,
         });
       });
     }
@@ -205,9 +250,6 @@ const CustomerRecipientStep = (props: any) => {
     recipientRemittanceMethodsData,
     recipientPayoutsResponse,
   ]);
-
-  // Debug logging for paymentMethodOptions
-  console.log('Payment Method Options:', paymentMethodOptions);
 
   useEffect(() => {
     if (stepOne?.customer?.id) {
@@ -316,9 +358,8 @@ const CustomerRecipientStep = (props: any) => {
 
   const handleRecipientSearch = () => {
     if (recipientSearchTerm.trim() && stepOne.customer) {
-      searchRecipientMutation.mutate({
-        name: recipientSearchTerm.trim(),
-      });
+      setActiveSearchTerm(recipientSearchTerm.trim());
+      setHasSearched(true);
     }
   };
 
@@ -384,15 +425,15 @@ const CustomerRecipientStep = (props: any) => {
 
     if (methodValue.startsWith('rm_')) {
       // Handle remittance method selection
-      const rmId = methodValue.replace('rm_', '');
+      const rmMethodId = methodValue.replace('rm_', '');
       const rm = recipientRemittanceMethodsData?.find(
-        (r: RecipientRemittanceMethod) => r.id.toString() === rmId
+        (r: RecipientRemittanceMethod) => r.remittance_method_id.toString() === rmMethodId
       );
 
       if (rm) {
         setRemittanceMethod({
           id: rm.remittance_method_id,
-          name: `Remittance Method ${rm.remittance_method_id}`,
+          name: rm.remittance_method?.name || `Remittance Method ${rm.remittance_method_id}`,
           type: 'remittance_method',
         });
         // Clear payout agent
@@ -401,9 +442,9 @@ const CustomerRecipientStep = (props: any) => {
       }
     } else if (methodValue.startsWith('payout_')) {
       // Handle payout agent selection
-      const payoutId = methodValue.replace('payout_', '');
+      const payoutAgentId = methodValue.replace('payout_', '');
       const payout = recipientPayoutsResponse?.data?.find(
-        (p: RecipientPayout) => p.id.toString() === payoutId
+        (p: RecipientPayout) => p.payout_agent_id.toString() === payoutAgentId
       );
 
       if (payout) {
@@ -502,38 +543,33 @@ const CustomerRecipientStep = (props: any) => {
                       />
                       <Button
                         onClick={handleRecipientSearch}
-                        disabled={
-                          !recipientSearchTerm.trim() ||
-                          searchRecipientMutation.isPending
-                        }
+                        disabled={!recipientSearchTerm.trim() || isSearching}
                       >
                         <Search className='h-4 w-4' />
-                        {searchRecipientMutation.isPending
-                          ? 'Searching...'
-                          : 'Search'}
+                        {isSearching ? 'Searching...' : 'Search'}
                       </Button>
                     </div>
                   </div>
 
-                  {/* Show search results */}
-                  {searchRecipientMutation.data?.data &&
-                  searchRecipientMutation.data.data.length > 0 ? (
-                    <div className='space-y-2'>
-                      <p className='text-sm text-gray-600 font-medium'>
-                        Search Results:
+                  {/* Show search results with infinite scroll */}
+                  {searchedRecipients.length > 0 ? (
+                    <div className='space-y-2 max-h-96 overflow-y-auto'>
+                      <p className='text-sm text-gray-600 font-medium sticky top-0 bg-white py-2'>
+                        Search Results ({searchedRecipients.length}):
                       </p>
-                      {searchRecipientMutation.data.data.map(
+                      {searchedRecipients.map(
                         (recipient: RecipientDataType) => (
                           <div
                             key={recipient.id}
-                            className='flex justify-between items-center p-3 border border-gray-200 rounded-md bg-gray-100'
+                            className='flex justify-between items-center p-3 border border-gray-200 rounded-md bg-gray-50 hover:bg-gray-100'
                           >
                             <div>
                               <span className='font-medium'>
                                 {recipient.first_name} {recipient.last_name}
                               </span>
-                              <span className='text-gray-500 ml-2'>
-                                - {recipient.phone_number}
+                              <span className='text-gray-500 ml-2 font-sm'>
+                                - (+{recipient.country_phone_code}){' '}
+                                {recipient.phone_number}
                               </span>
                             </div>
                             {recipientOptions.some(
@@ -559,18 +595,27 @@ const CustomerRecipientStep = (props: any) => {
                           </div>
                         )
                       )}
+                      {/* Infinite scroll trigger element */}
+                      <div ref={observerTarget} className='h-4' />
+                      {/* Loading indicator for next page */}
+                      {isFetchingNextPage && (
+                        <div className='flex justify-center py-2'>
+                          <Loader2 className='h-5 w-5 animate-spin text-teal-600' />
+                        </div>
+                      )}
                     </div>
-                  ) : searchRecipientMutation.data?.data &&
-                    searchRecipientMutation.data.data.length === 0 ? (
+                  ) : hasSearched &&
+                    searchedRecipients.length === 0 &&
+                    !isSearching ? (
                     <p className='text-sm text-gray-500 text-center py-3'>
                       No recipients found. Try a different search term.
                     </p>
-                  ) : (
+                  ) : !hasSearched ? (
                     <p className='text-sm text-gray-500 text-center py-3'>
                       Enter a search term and click "Search" to find recipients
                       from other customers.
                     </p>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>

@@ -11,7 +11,7 @@ export interface SummaryData {
   receivingCountry?: string;
   sendingAmount?: number;
   exchangeRate?: number | string;
-  feesAndCharges?: number;
+  feesAndCharges?: number | string; // Now displays as: total_commission + extra_fees = value (currency)
   commission?: number;
   extraFees?: number | string;
   recipientGets?: number | string;
@@ -107,7 +107,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
 
         <SummaryRow
           label="Fees and Charges"
-          value={data.feesAndCharges !== undefined ? formatCurrency(data.feesAndCharges) : undefined}
+          value={
+            data.feesAndCharges !== undefined
+              ? typeof data.feesAndCharges === 'string'
+                ? data.feesAndCharges
+                : formatCurrency(data.feesAndCharges)
+              : undefined
+          }
         />
 
         <SummaryRow

@@ -82,27 +82,21 @@ export interface TransferFilters {
 export interface TransactionCreateDataType {
   customer_id: number;
   recipient_id: number;
-  remittance_method_id: number;
+  remittance_method_id?: number | null;
   send_country_id: number;
   receive_country_id: number;
-  remittance_purpose_id: number;
-  source_income_id: number;
+  payout_agent_id?: number | null;
+  remittance_purpose_id?: number | null;
+  source_income_id?: number | null;
   payment_method?: string;
   comment?: string;
   send_currency: string;
   receive_currency: string;
-  sent_amount_in_send_currency: number;
-  sent_amount_in_default_currency: number;
-  receive_amount_in_send_currency: number;
-  receive_amount_in_default_currency?: number;
-  sending_agent_commission_currency?: string;
-  payout_agent_commission_percent?: number;
-  payout_agent_commission_amount?: number;
-  payout_agent_commission_currency?: string;
-  nomadrem_commission_amount?: number;
-  extra_fees_amount?: number;
-  total_commission_amount?: number;
-  payout_amount: number;
+  sent_amount: number;
+  receive_amount: number;
+  extra_fees_applied_percent: number;
+  is_all_included_in_send_amount: boolean;
+  do_calculate_from_receive_amount: boolean;
 }
 
 // get transfer by id
@@ -153,3 +147,56 @@ export type GetTransfersDataProps = {
   created_at: string;
   updated_at: string;
 };
+
+// Transaction Preview Types
+export interface TransactionPreviewPayload {
+  customer_id: number;
+  recipient_id: number;
+  remittance_method_id?: number | null;
+  send_country_id: number;
+  receive_country_id: number;
+  payout_agent_id?: number | null;
+  remittance_purpose_id?: number | null;
+  source_income_id?: number | null;
+  send_currency: string;
+  receive_currency: string;
+  sent_amount?: number;
+  receive_amount?: number;
+  extra_fees_applied_percent: number;
+  is_all_included_in_send_amount: boolean;
+  do_calculate_from_receive_amount: boolean;
+}
+
+// Transaction Preview by Reference (for edit mode)
+export interface TransactionPreviewByRefPayload {
+  transaction_reference: string;
+  send_amount?: number;
+  receive_amount?: number;
+  send_currency: string;
+  receive_currency: string;
+  extra_fees_applied_percent: number;
+  is_all_included_in_send_amount: boolean;
+  do_calculate_from_receive_amount: boolean;
+  remittance_method_id?: number | null;
+  payout_agent_id?: number | null;
+}
+
+export interface TransactionPreviewData {
+  send_amount: number;
+  send_currency_code: string;
+  total_commission: number;
+  send_agent_commission: number;
+  extra_fees: number;
+  total_paypal_amount: number;
+  platform_exchange_rate: number;
+  receive_amount: number;
+  receive_currency_code: string;
+  recipient_net_amount: number;
+}
+
+export interface TransactionPreviewResponse {
+  status: boolean;
+  message: string;
+  data: TransactionPreviewData;
+  errors: null | Record<string, string[]>;
+}

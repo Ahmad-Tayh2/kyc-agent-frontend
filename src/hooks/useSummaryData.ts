@@ -13,25 +13,21 @@ export const useSummaryData = (): SummaryData => {
   return useMemo(() => {
     const exchangeDetails = stepTwo.exchangeDetails;
 
-    // Calculate fees and charges - ensure all values are numbers
-    const marginFee = Number(exchangeDetails?.margin_amount) || 0;
-    const fixedFee = 0; // You can make this configurable
-    const feesAndCharges = marginFee + fixedFee;
+    // Use new transaction preview fields if available, fallback to legacy
+    const totalCommission = Number(exchangeDetails?.total_commission) || 0;
+    const extraFeesFromResponse = Number(exchangeDetails?.extra_fees) || 0;
+    const platformExchangeRate = Number(exchangeDetails?.platform_exchange_rate || exchangeDetails?.applied_exchange_rate) || 0;
+    const totalPaypalAmount = Number(exchangeDetails?.total_paypal_amount) || 0;
 
-    // Calculate commission (30% of margin as per CurrenciesAmountStep)
-    const commission = marginFee * 0.3;
-
-    // Calculate extra fees based on percentage and send amount
+    // Get send amount
     const sendAmount = Number(stepTwo.sendAmount) || 0;
-    const extraFeesPercent = Number(stepTwo.extraFeesPercent) || 0;
-    const extraFees = (sendAmount * extraFeesPercent) / 100;
 
-    // Total payable amount - ensure sendAmount is a number
-    const totalPayableAmount = sendAmount + feesAndCharges + extraFees;
+    // Total payable amount - use total_paypal_amount from response if available
+    const totalPayableAmount = totalPaypalAmount || sendAmount + totalCommission + extraFeesFromResponse;
 
-    // Format exchange rate display
-    const exchangeRateDisplay = exchangeDetails?.applied_exchange_rate
-      ? `1 ${stepTwo.sendCurrency?.code || ''} = ${Number(exchangeDetails.applied_exchange_rate).toFixed(4)} ${stepTwo.receiveCurrency?.code || ''}`
+    // Format exchange rate display - 2 decimal places
+    const exchangeRateDisplay = platformExchangeRate
+      ? `1 ${stepTwo.sendCurrency?.code || ''} = ${platformExchangeRate.toFixed(2)} ${stepTwo.receiveCurrency?.code || ''}`
       : undefined;
 
     // Format recipient gets display - show even if amount is 0
@@ -39,11 +35,18 @@ export const useSummaryData = (): SummaryData => {
       ? `${Number(stepTwo.receiveAmount || 0).toFixed(2)} ${stepTwo.receiveCurrency.code}`
       : undefined;
 
-    // Format extra fees with currency
-    const extraFeesDisplay = stepTwo.sendCurrency?.code && extraFees > 0
-      ? `${extraFees.toFixed(2)} ${stepTwo.sendCurrency.code}`
-      : extraFees > 0
-        ? extraFees.toFixed(2)
+    // Format fees and charges display: total_commission + extra_fees = value (send currency)
+    const sendCurrencyCode = stepTwo.sendCurrency?.code || '';
+    const feesAndCommissionTotal = totalCommission + extraFeesFromResponse;
+    const feesAndChargesDisplay = feesAndCommissionTotal > 0
+      ? `${totalCommission.toFixed(2)} + ${extraFeesFromResponse.toFixed(2)} = ${feesAndCommissionTotal.toFixed(2)} ${sendCurrencyCode}`
+      : undefined;
+
+    // Format extra fees display - just the extra fees value
+    const extraFeesDisplay = stepTwo.sendCurrency?.code && extraFeesFromResponse > 0
+      ? `${extraFeesFromResponse.toFixed(2)} ${stepTwo.sendCurrency.code}`
+      : extraFeesFromResponse > 0
+        ? extraFeesFromResponse.toFixed(2)
         : undefined;
 
     return {
@@ -58,12 +61,12 @@ export const useSummaryData = (): SummaryData => {
       sendingCountry: stepOne.sendCountry?.name,
       receivingCountry: stepOne.receiveCountry?.name,
 
-      // Step 2 data - use the safely converted sendAmount
+      // Step 2 data - use values from transaction preview
       sendingAmount: sendAmount,
       exchangeRate: exchangeRateDisplay,
-      feesAndCharges,
-      commission,
-      extraFees: extraFeesDisplay,
+      feesAndCharges: feesAndChargesDisplay, // Shows: total_commission + extra_fees = value (currency)
+      commission: totalCommission, // Just total_commission
+      extraFees: extraFeesDisplay, // Just extra fees
       recipientGets: recipientGetsDisplay,
       totalPayableAmount,
     };

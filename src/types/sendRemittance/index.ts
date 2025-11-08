@@ -74,6 +74,19 @@ export type PaymentMethod =
   | "credit_card";
 
 export interface SendRemittanceExchangeDetails {
+  // New transaction preview fields
+  send_amount: number;
+  send_currency_code: string;
+  total_commission: number;
+  send_agent_commission: number;
+  extra_fees: number;
+  total_paypal_amount: number;
+  platform_exchange_rate: number;
+  receive_amount: number;
+  receive_currency_code: string;
+  recipient_net_amount: number;
+
+  // Legacy fields for backward compatibility (optional)
   applied_exchange_rate?: number;
   from_amount?: number;
   to_amount?: number;
@@ -101,6 +114,8 @@ export interface SendRemittanceStepTwo {
   receiveAmount: number;
   exchangeDetails: SendRemittanceExchangeDetails | null;
   extraFeesPercent: number;
+  isAllFeesIncludedInSendAmount: boolean;
+  isCalculateFromReceiveAmount: boolean;
 }
 
 // Step 3 Data
@@ -175,6 +190,8 @@ export interface SendRemittanceActions {
   setReceiveAmount: (amount: number) => void;
   setExchangeDetails: (details: SendRemittanceExchangeDetails | null) => void;
   setExtraFeesPercent: (percent: number) => void;
+  setIsAllFeesIncludedInSendAmount: (value: boolean) => void;
+  setIsCalculateFromReceiveAmount: (value: boolean) => void;
 
   // Step 3 actions
   setSourceOfIncome: (source: SendRemittanceSourceIncome | null) => void;
