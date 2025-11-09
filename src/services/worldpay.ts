@@ -6,6 +6,8 @@ import type { AxiosResponse } from 'axios';
 export interface WorldpaySessionRequest {
   transactionReference?: string;
   paymentLinkToken?: string;
+  walletCurrencyId?: number;
+  amount?: number;
   description?: string;
 }
 
@@ -18,7 +20,7 @@ export interface WorldpaySessionResponse {
 
 /**
  * Creates a Worldpay payment session
- * @param data Object containing either transactionReference or paymentLinkToken
+ * @param data Object containing either transactionReference, paymentLinkToken, or walletCurrencyId (with amount)
  * @returns Promise with the Worldpay session data
  */
 export const createWorldpaySession = async (data: WorldpaySessionRequest) => {

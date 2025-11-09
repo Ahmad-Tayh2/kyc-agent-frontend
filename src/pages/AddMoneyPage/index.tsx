@@ -14,6 +14,9 @@ import ActionButton from "@/components/shared/ActionButton";
 import { useWallet } from "@/hooks/data/useWallet";
 import { geAgentIdFromStorage } from "@/utils/authHelpers";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { toast } from "sonner";
 // import { useAddMoneyFilters } from "@/hooks/data/useAddMoneyFilters";
 // import { ROUTES } from "@/constants/routes";
 
@@ -25,8 +28,20 @@ interface addMoneySummaryData {
   labelClassName?: string;
   valueClassName?: string;
 }
+
+// Validation schema for add money form
+const addMoneySchema = z.object({
+  walletCurrencyId: z.number({
+    required_error: "Please select a currency",
+  }),
+  amount: z.number({
+    required_error: "Please enter an amount",
+  }).min(0.01, "Amount must be at least 0.01"),
+});
+
 const AddMoneyPage: React.FC = () => {
   const [t] = useTranslation("global");
+  const navigate = useNavigate();
   const columns = AddMoneyTableColumns();
   const filters = {};
   const resetFilters = () => {};
@@ -49,6 +64,49 @@ const AddMoneyPage: React.FC = () => {
       name: wc.currency.name,
     }));
   }, [wallet]);
+
+  // Find the selected wallet currency to get its ID
+  const selectedWalletCurrency = useMemo(() => {
+    if (!selectedCurrencyId || !wallet?.wallet_currencies) return null;
+    return wallet.wallet_currencies.find(
+      (wc) => wc.currency.id === selectedCurrencyId
+    );
+  }, [selectedCurrencyId, wallet]);
+
+  // Handle add money button click
+  const handleAddMoney = () => {
+    try {
+      // Validate form data
+      const validationResult = addMoneySchema.safeParse({
+        walletCurrencyId: selectedWalletCurrency?.id,
+        amount,
+      });
+
+      if (!validationResult.success) {
+        // Show validation errors
+        validationResult.error.errors.forEach((error) => {
+          toast.error(error.message);
+        });
+        return;
+      }
+
+      // Store the data in sessionStorage to use in the payment page
+      sessionStorage.setItem(
+        "addMoneyData",
+        JSON.stringify({
+          walletCurrencyId: selectedWalletCurrency?.id,
+          amount,
+          currencyCode: selectedWalletCurrency?.currency.code,
+        })
+      );
+
+      // Navigate to payment page with walletCurrencyId
+      navigate(`/payment/add-${selectedWalletCurrency?.id}`);
+    } catch (error) {
+      console.error("Error handling add money:", error);
+      toast.error("An error occurred. Please try again.");
+    }
+  };
 
   // const {
   //   filters,
@@ -139,7 +197,7 @@ const AddMoneyPage: React.FC = () => {
             </div>
           </div>
           <div className="border-t-1 border-gray-200 mt-5 pt-5 flex justify-end">
-            <ActionButton title="add money" type="action" onClick={() => []} />
+            <ActionButton title="add money" type="action" onClick={handleAddMoney} />
           </div>
         </div>
       </div>

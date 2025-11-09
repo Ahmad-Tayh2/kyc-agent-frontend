@@ -23,6 +23,8 @@ import { useEffect, useRef, useState } from 'react';
 interface WorldpayPaymentFormProps {
   transactionId?: number | string;
   paymentLinkToken?: string;
+  walletCurrencyId?: number; // For wallet top-up
+  amount?: number; // Required when walletCurrencyId is provided
   description?: string;
   mode?: 'redirect' | 'iframe' | 'lightbox';
   onError: (error: string) => void;
@@ -42,6 +44,8 @@ type WorldpayFormStatus =
 const WorldpayPaymentForm = ({
   transactionId,
   paymentLinkToken,
+  walletCurrencyId,
+  amount,
   description,
   mode = 'iframe', // Default to iframe mode using official Worldpay library
   onError,
@@ -65,7 +69,9 @@ const WorldpayPaymentForm = ({
         showPaymentLoading('Initializing payment...');
 
         // Create session request data
-        const requestData = transactionId
+        const requestData = walletCurrencyId
+          ? { walletCurrencyId, amount, description }
+          : transactionId
           ? { transactionReference: String(transactionId), description }
           : { paymentLinkToken: String(paymentLinkToken), description };
 
@@ -129,7 +135,7 @@ const WorldpayPaymentForm = ({
     };
 
     processWorldpayPayment();
-  }, [transactionId, paymentLinkToken, description, mode, onError, onSuccess]);
+  }, [transactionId, paymentLinkToken, walletCurrencyId, amount, description, mode, onError, onSuccess]);
 
   // Handle retry after error
   const handleRetry = () => {
