@@ -9,6 +9,14 @@ export function useGetPaymentLinks(filters?: string) {
     refetchInterval: 60 * 1000,
   });
 }
+export function useGetPaymentLinkByTransaction(transactionId: string) {
+  return useQuery({
+    queryKey: ["get-payment-link-by-transaction", transactionId],
+    queryFn: () =>
+      paymentLinksService.getPaymentLinkByTransaction(transactionId),
+    refetchInterval: 60 * 1000,
+  });
+}
 
 export function useGetPaymentLinkByCart(cartId: string) {
   return useQuery({

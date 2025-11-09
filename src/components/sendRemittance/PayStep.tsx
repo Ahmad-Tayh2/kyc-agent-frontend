@@ -18,6 +18,7 @@ import { useSummaryData } from "@/hooks/useSummaryData";
 import {
   useCreatePaymentLink,
   useGetPaymentLinkByCart,
+  useGetPaymentLinkByTransaction,
 } from "@/hooks/data/usePaymentLinks";
 import { copyToClipboard } from "@/helpers/text";
 import {
@@ -40,6 +41,9 @@ const PayStep = (props: PayStepProps) => {
   const setPaymentLink = useSendRemittanceStore(
     (state) => state.setPaymentLink
   );
+  const setPaymentLinkByTransaction = useSendRemittanceStore(
+    (state) => state.setPaymentLinkByTransaction
+  );
   const setCartAddedTo = useSendRemittanceStore(
     (state) => state.setCartAddedTo
   );
@@ -54,14 +58,31 @@ const PayStep = (props: PayStepProps) => {
     `?customer_id=${stepOne?.customer?.id}&currency=USD`
   );
 
-  const { data: paymentLinkResponse } = useGetPaymentLinkByCart(
+  const { data: paymentLinkByCartResponse } = useGetPaymentLinkByCart(
     stepFour?.remittance_cart_id!
   );
-  useEffect(() => {
-    if (paymentLinkResponse?.data?.length) {
-      setPaymentLink(paymentLinkResponse?.data?.[0]);
+  const { data: paymentLinkByTrResponse } = useGetPaymentLinkByTransaction(
+    transferId!
+  );
+  const paymentLinkByTransactionString = useMemo(() => {
+    if (paymentLinkByTrResponse?.data?.[0]?.token) {
+      setPaymentLinkByTransaction(paymentLinkByTrResponse?.data?.[0]);
+      const link =
+        window.location.origin +
+        ROUTES.PAYMENT_LINKS.VALIDATION(
+          paymentLinkByTrResponse?.data?.[0]?.token
+        );
+      return link;
     }
-  }, [paymentLinkResponse]);
+    return "";
+    // return paymentLinkByTrResponse?.data?.[0]?.token || "";
+  }, [paymentLinkByTrResponse]);
+
+  useEffect(() => {
+    if (paymentLinkByCartResponse?.data?.length) {
+      setPaymentLink(paymentLinkByCartResponse?.data?.[0]);
+    }
+  }, [paymentLinkByCartResponse]);
   const existedRemittanceCart = useMemo(() => {
     return remittanceCartsResponse?.data?.data?.[0] ?? null;
   }, [remittanceCartsResponse]);
@@ -99,14 +120,11 @@ const PayStep = (props: PayStepProps) => {
   };
 
   const handleCopyPaymentLink = () => {
-    const token =
-      typeof stepFour?.paymentLink === "object"
-        ? stepFour?.paymentLink?.token
-        : undefined;
-    if (token) {
-      const url =
-        window.location.origin + ROUTES.PAYMENT_LINKS.VALIDATION(token);
-      copyToClipboard(url, "Payment link copied to clipboard!");
+    if (paymentLinkByTransactionString) {
+      copyToClipboard(
+        paymentLinkByTransactionString,
+        "Payment link copied to clipboard!"
+      );
     }
   };
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -218,20 +236,19 @@ const PayStep = (props: PayStepProps) => {
               </div>
 
               <div className="flex items-center space-x-4">
-                {stepFour?.paymentLink &&
-                typeof stepFour?.paymentLink === "object" &&
-                stepFour?.paymentLink?.token &&
-                stepFour?.paymentLink?.status !== "expired_link" ? (
+                {stepFour?.paymentLinkByTransaction &&
+                typeof stepFour?.paymentLinkByTransaction === "object" &&
+                stepFour?.paymentLinkByTransaction?.token &&
+                stepFour?.paymentLinkByTransaction?.status !==
+                  "expired_link" ? (
                   <div className="flex items-center space-x-4">
                     <Button
                       variant="link"
                       className="p-0 h-auto text-sm cursor-pointer"
                       onClick={handleCopyPaymentLink}
                     >
-                      {window.location.origin +
-                        ROUTES.PAYMENT_LINKS.VALIDATION(
-                          stepFour?.paymentLink?.token ?? ""
-                        )}
+                      {paymentLinkByTransactionString?.slice(0, 80)}
+                      {paymentLinkByTransactionString?.length > 80 && "..."}
                       <Copy className="w-4 h-4" />
                       {/* COPY PAYMENT LINK */}
                     </Button>
@@ -246,13 +263,13 @@ const PayStep = (props: PayStepProps) => {
                     SEND PAYMENT LINK
                   </Button>
                 )}
-                {typeof stepFour?.paymentLink === "object" &&
-                  stepFour?.paymentLink?.status && (
+                {typeof stepFour?.paymentLinkByTransaction === "object" &&
+                  stepFour?.paymentLinkByTransaction?.status && (
                     <StatusLabel
-                      value={stepFour?.paymentLink?.status}
+                      value={stepFour?.paymentLinkByTransaction?.status}
                       color={
                         PAYMENT_LINKS_STATUSES_COLORS[
-                          stepFour?.paymentLink
+                          stepFour?.paymentLinkByTransaction
                             ?.status as keyof typeof PAYMENT_LINKS_STATUSES_COLORS
                         ] || "#000000"
                       }
