@@ -307,7 +307,6 @@ const CurrenciesAmountStep: React.FC = () => {
   const conversionInfo = useMemo(() => {
     const activeData = isEditMode ? previewByRefData : previewData;
     if (!activeData?.data) return null;
-    console.log('previewData = ', activeData.data);
 
     const {
       send_amount,

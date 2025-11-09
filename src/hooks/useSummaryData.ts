@@ -12,7 +12,7 @@ export const useSummaryData = (): SummaryData => {
 
   return useMemo(() => {
     const exchangeDetails = stepTwo.exchangeDetails;
-    console.log('exchangeDetails', exchangeDetails);
+
     // Use new transaction preview fields if available, fallback to legacy
     const totalCommission = Number(exchangeDetails?.total_commission) || 0;
     const extraFeesFromResponse = Number(exchangeDetails?.extra_fees) || 0;

@@ -351,7 +351,6 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       // Wait a bit to ensure all data is loaded
       const timer = setTimeout(() => {
         originalDataSnapshot.current = JSON.parse(JSON.stringify(storeData));
-        console.log('Snapshot saved for edit mode');
       }, 500);
 
       return () => clearTimeout(timer);
@@ -652,7 +651,6 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     const transferDraftPayload = buildDraftTransferPayload(storeData);
 
     if (!transferDraftPayload) {
-      console.error('Failed to build transfer payload');
       return;
     }
 
@@ -735,18 +733,6 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
         return <CustomerRecipientStep />;
     }
   };
-
-  // Handler for updating transfer (only called when user confirms via dialog)
-  const handleUpdateTransfer = useCallback(async () => {
-    const transferUpdatePayload = buildUpdateTransferPayload(storeData);
-
-    if (!transferUpdatePayload) {
-      console.error('Failed to build update payload');
-      return;
-    }
-
-    await editTransfer(transferUpdatePayload);
-  }, [storeData, editTransfer]);
 
   const renderActionButtons = () => {
     if (mode === 'edit') {
