@@ -99,10 +99,7 @@ export const AppRoutes = () => (
       />
 
       {/* Unified Payment Route */}
-      <Route
-        path="/payment/:token"
-        element={<PaymentPage defaultProvider="worldpay" />}
-      />
+      <Route path="/payment/:token" element={<PaymentPage />} />
 
       <Route
         path={ROUTES.PAYMENT_LINKS.VALIDATION(":token")}

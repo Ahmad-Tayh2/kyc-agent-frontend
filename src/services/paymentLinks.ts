@@ -14,9 +14,9 @@ export const paymentLinksService = {
     return response.data;
   },
 
-  getPaymentLinkByTransaction: async (cartId: string) => {
+  getPaymentLinkByTransaction: async (transactionId: string) => {
     const response = await apiClient.get(
-      API_URLS.paymentLinks.getByTransaction(cartId)
+      API_URLS.paymentLinks.getByTransaction(transactionId)
     );
     return response.data;
   },

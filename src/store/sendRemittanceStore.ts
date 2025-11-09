@@ -1,10 +1,10 @@
 import type {
   SendRemittanceData,
   SendRemittanceStore,
-} from '@/types/sendRemittance';
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
+} from "@/types/sendRemittance";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
 // Initial state factory
 const createInitialData = (): SendRemittanceData => ({
@@ -28,13 +28,14 @@ const createInitialData = (): SendRemittanceData => ({
   stepThree: {
     sourceOfIncome: null,
     remittancePurpose: null,
-    extraDetails: '',
-    descriptionOrReference: '',
+    extraDetails: "",
+    descriptionOrReference: "",
   },
   stepFour: {
     paymentMethod: null,
     paymentLink: undefined,
-    remittance_cart_id: '',
+    paymentLinkByTransaction: undefined,
+    remittance_cart_id: "",
   },
 });
 
@@ -42,9 +43,9 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
   devtools(
     immer((set, get) => ({
       // Initial State
-      mode: 'create',
+      mode: "create",
       remittanceId: undefined,
-      currentStep: 'customer',
+      currentStep: "customer",
       completedSteps: [],
       data: createInitialData(),
       isLoading: false,
@@ -55,11 +56,11 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       setMode: (mode) =>
         set((state) => {
           state.mode = mode;
-          if (mode === 'create') {
+          if (mode === "create") {
             state.remittanceId = undefined;
             state.data = createInitialData();
             state.completedSteps = [];
-            state.currentStep = 'customer';
+            state.currentStep = "customer";
             state.errors = {};
             state.transferCreated = false;
           }
@@ -142,7 +143,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
           // Clear payout agent when remittance method is selected
           if (method) {
             state.data.stepOne.payoutAgent = null;
-            state.data.stepOne.selectedPaymentMethodType = 'remittance_method';
+            state.data.stepOne.selectedPaymentMethodType = "remittance_method";
           }
         }),
 
@@ -152,7 +153,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
           // Clear remittance method when payout agent is selected
           if (agent) {
             state.data.stepOne.remittanceMethod = null;
-            state.data.stepOne.selectedPaymentMethodType = 'payout_agent';
+            state.data.stepOne.selectedPaymentMethodType = "payout_agent";
           }
         }),
 
@@ -239,7 +240,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
         set((state) => {
           state.data.stepFour.paymentMethod = method;
           // Clear payment link if method is not payment_link
-          if (method !== 'payment_link') {
+          if (method !== "payment_link") {
             state.data.stepFour.paymentLink = undefined;
           }
         }),
@@ -248,10 +249,14 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
         set((state) => {
           state.data.stepFour.paymentLink = link;
         }),
+      setPaymentLinkByTransaction: (link: any) =>
+        set((state) => {
+          state.data.stepFour.paymentLinkByTransaction = link;
+        }),
       setCartAddedTo: (cart?: string | { id: string }) =>
         set((state) => {
           state.data.stepFour.remittance_cart_id =
-            typeof cart === 'string' ? cart : cart?.id || '';
+            typeof cart === "string" ? cart : cart?.id || "";
         }),
       setTransferCreated: (created: boolean) =>
         set((state) => {
@@ -271,9 +276,9 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
 
       resetStore: () =>
         set((state) => {
-          state.mode = 'create';
+          state.mode = "create";
           state.remittanceId = undefined;
-          state.currentStep = 'customer';
+          state.currentStep = "customer";
           state.completedSteps = [];
           state.data = createInitialData();
           state.isLoading = false;
@@ -284,7 +289,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       loadExistingRemittance: async (remittanceId) => {
         set((state) => {
           state.isLoading = true;
-          state.mode = 'edit';
+          state.mode = "edit";
           state.remittanceId = remittanceId;
         });
 
@@ -299,11 +304,11 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
           //   state.currentStep = 'review'; // Or appropriate step for editing
           // });
 
-          console.log('Loading existing remittance:', remittanceId);
+          console.log("Loading existing remittance:", remittanceId);
         } catch (error) {
-          console.error('Failed to load existing remittance:', error);
+          console.error("Failed to load existing remittance:", error);
           set((state) => {
-            state.errors.general = 'Failed to load remittance data';
+            state.errors.general = "Failed to load remittance data";
           });
         } finally {
           set((state) => {
@@ -317,20 +322,20 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
         const { completedSteps } = get();
 
         switch (step) {
-          case 'customer':
+          case "customer":
             return true; // Always accessible
-          case 'currencies':
-            return completedSteps.includes('customer');
-          case 'review':
+          case "currencies":
+            return completedSteps.includes("customer");
+          case "review":
             return (
-              completedSteps.includes('customer') &&
-              completedSteps.includes('currencies')
+              completedSteps.includes("customer") &&
+              completedSteps.includes("currencies")
             );
-          case 'pay':
+          case "pay":
             return (
-              completedSteps.includes('customer') &&
-              completedSteps.includes('currencies') &&
-              completedSteps.includes('review')
+              completedSteps.includes("customer") &&
+              completedSteps.includes("currencies") &&
+              completedSteps.includes("review")
             );
           default:
             return false;
@@ -346,7 +351,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
         const { data } = get();
 
         switch (step) {
-          case 'customer':
+          case "customer":
             return !!(
               data.stepOne.customer &&
               data.stepOne.recipient &&
@@ -354,7 +359,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
               data.stepOne.receiveCountry &&
               (data.stepOne.remittanceMethod || data.stepOne.payoutAgent)
             );
-          case 'currencies':
+          case "currencies":
             return !!(
               (
                 data.stepTwo.sendCurrency &&
@@ -364,11 +369,11 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
               // &&
               // data.stepTwo.exchangeDetails
             );
-          case 'review':
+          case "review":
             return !!(
               data.stepThree.sourceOfIncome && data.stepThree.remittancePurpose
             );
-          case 'pay':
+          case "pay":
             return !!data.stepFour.paymentMethod;
           default:
             return false;
@@ -376,7 +381,7 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       },
     })),
     {
-      name: 'send-remittance-store',
+      name: "send-remittance-store",
     }
   )
 );
@@ -432,6 +437,7 @@ export const useSendRemittanceActions = () => {
     setDescriptionOrReference: state.setDescriptionOrReference,
     setPaymentMethod: state.setPaymentMethod,
     setPaymentLink: state.setPaymentLink,
+    setPaymentLinkByTransaction: state.setPaymentLinkByTransaction,
     setCartAddedTo: state.setCartAddedTo,
     clearErrors: state.clearErrors,
     setError: state.setError,

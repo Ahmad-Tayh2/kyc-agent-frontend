@@ -52,7 +52,8 @@ const CartHeader = (props: CartHeaderProps) => {
   const handleCopyLink = () => {
     paymentLink?.token;
     copyToClipboard(
-      ROUTES.PAYMENT_LINKS.VALIDATION(paymentLink?.token),
+      window.location.origin +
+        ROUTES.PAYMENT_LINKS.VALIDATION(paymentLink?.token),
       "Payment link copied to clipboard!"
     );
   };
