@@ -29,7 +29,7 @@ import {
   buildDraftTransferPayload,
   buildUpdateTransferPayload,
 } from '@/utils/sendRemittancePayload';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 interface SendRemittancePageProps {
@@ -87,10 +87,6 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   // Track original data snapshot for edit mode change detection
   const originalDataSnapshot = useRef<typeof storeData | null>(null);
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<
-    'next' | 'back' | null
-  >(null);
 
   const location = useLocation();
   const pathSegments = location.pathname.split('/');
@@ -253,11 +249,36 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
       // Set exchange details from transaction data
       if (transferData.platform_exchange_rate) {
+        // Handle both API response formats
+        const sentAmount =
+          transferData.sent_amount ||
+          transferData.sent_amount_in_send_currency ||
+          0;
+        const receiveAmount =
+          transferData.receive_amount ||
+          transferData.receive_amount_in_send_currency ||
+          0;
+
         setExchangeDetails({
+          // New transaction preview fields
+          send_amount: Number(sentAmount),
+          send_currency_code: transferData.send_currency || '',
+          total_commission: Number(transferData.total_commission_amount) || 0,
+          send_agent_commission:
+            Number(transferData.sending_agent_commission_amount) || 0,
+          extra_fees: Number(transferData.extra_fees_amount) || 0,
+          total_paypal_amount: Number(transferData.total_payable_amount) || 0,
+          platform_exchange_rate:
+            Number(transferData.platform_exchange_rate) || 0,
+          receive_amount: Number(receiveAmount),
+          receive_currency_code: transferData.receive_currency || '',
+          recipient_net_amount: Number(transferData.payout_amount) || 0,
+
+          // Legacy fields for backward compatibility
           applied_exchange_rate: transferData.platform_exchange_rate,
-          to_amount: transferData.receive_amount,
+          to_amount: receiveAmount,
           margin_amount: transferData.extra_fees_amount || '0',
-          from_amount: transferData.sent_amount,
+          from_amount: sentAmount,
         });
       }
 
@@ -417,8 +438,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     }
     setCurrentStep('review');
   });
-  const { mutateAsync: editTransfer, isPending: isUpdating } =
-    useUpdateTransfer(reference_number!);
+  const { mutateAsync: editTransfer } = useUpdateTransfer(reference_number!);
 
   // Function to detect if data has changed
   const hasDataChanged = useCallback(() => {
@@ -647,12 +667,15 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   }, [storeData, createDraftTransfer, navigate]);
 
   // Handler for next button
-  const handleNext = useCallback(() => {
-    // Check for changes in edit mode
+  const handleNext = useCallback(async () => {
+    // Check for changes in edit mode and auto-save
     if (isEditMode && hasDataChanged()) {
-      setPendingNavigation('next');
-      setShowUpdateDialog(true);
-      return;
+      const transferUpdatePayload = buildUpdateTransferPayload(storeData);
+      if (transferUpdatePayload) {
+        await editTransfer(transferUpdatePayload);
+        // Update snapshot after successful update
+        originalDataSnapshot.current = JSON.parse(JSON.stringify(storeData));
+      }
     }
 
     // Currencies step needs special handling for create mode
@@ -669,19 +692,24 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     handleCurrenciesValidation,
     isEditMode,
     hasDataChanged,
+    storeData,
+    editTransfer,
   ]);
 
   // Handler for back button
-  const handleBack = useCallback(() => {
-    // Check for changes in edit mode
+  const handleBack = useCallback(async () => {
+    // Check for changes in edit mode and auto-save
     if (isEditMode && hasDataChanged()) {
-      setPendingNavigation('back');
-      setShowUpdateDialog(true);
-      return;
+      const transferUpdatePayload = buildUpdateTransferPayload(storeData);
+      if (transferUpdatePayload) {
+        await editTransfer(transferUpdatePayload);
+        // Update snapshot after successful update
+        originalDataSnapshot.current = JSON.parse(JSON.stringify(storeData));
+      }
     }
 
     navigation.goToPreviousStep();
-  }, [navigation, isEditMode, hasDataChanged]);
+  }, [navigation, isEditMode, hasDataChanged, storeData, editTransfer]);
 
   const renderCurrentStep = () => {
     switch (navigation.currentStep) {
@@ -829,6 +857,9 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     navigate(ROUTES.TRANSFERS.LIST);
   };
 
+  // Check if there are unsaved changes
+  const hasUnsavedChanges = isEditMode && hasDataChanged();
+
   return (
     <div className='space-y-4'>
       <div className='flex justify-start items-center gap-3'>
@@ -842,6 +873,11 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           </button>
         )}
         <PageTitle title={t('modules.pages.sendRemittance.title')} />
+        {hasUnsavedChanges && (
+          <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300'>
+            Unsaved changes
+          </span>
+        )}
       </div>
       <div className='bg-white rounded-lg border'>
         <StepIndicator
@@ -868,15 +904,6 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           />
         </div>
       )}
-
-      {/* Update Confirmation Dialog */}
-      <UpdateConfirmationDialog
-        isOpen={showUpdateDialog}
-        onClose={handleCloseDialog}
-        onContinueWithoutUpdate={handleContinueWithoutUpdate}
-        onApplyUpdates={handleApplyUpdates}
-        isUpdating={isUpdating}
-      />
     </div>
   );
 };
