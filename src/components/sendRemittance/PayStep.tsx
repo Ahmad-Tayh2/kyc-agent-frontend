@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Info,
   AlertCircle,
@@ -27,13 +27,14 @@ import {
 } from "@/hooks/data/useRemittanceCarts";
 import { ROUTES } from "@/constants/routes";
 import StatusLabel from "../shared/StatusLabel";
+import { PAYMENT_LINKS_STATUSES_COLORS } from "@/constants/appConstants";
 interface PayStepProps {
   transferId?: string;
+  transferRef?: string;
 }
 const PayStep = (props: PayStepProps) => {
-  const { transferId } = props;
+  const { transferId, transferRef } = props;
   // const [paymentMethod, setPaymentMethod] = useState<string>('customer');
-
   const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
   const stepFour = useSendRemittanceStore((state) => state.data.stepFour);
   const setPaymentLink = useSendRemittanceStore(
@@ -98,15 +99,30 @@ const PayStep = (props: PayStepProps) => {
   };
 
   const handleCopyPaymentLink = () => {
-    const token = typeof stepFour?.paymentLink === 'object' ? stepFour?.paymentLink?.token : undefined;
+    const token =
+      typeof stepFour?.paymentLink === "object"
+        ? stepFour?.paymentLink?.token
+        : undefined;
     if (token) {
-      copyToClipboard(
-        ROUTES.PAYMENT_LINKS.VALIDATION(token),
-        "Payment link copied to clipboard!"
-      );
+      const url =
+        window.location.origin + ROUTES.PAYMENT_LINKS.VALIDATION(token);
+      copyToClipboard(url, "Payment link copied to clipboard!");
     }
   };
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>("wallet");
 
+  const handlePayOnBehalfClick = () => {
+    if (selectedPaymentMethod === "credit-card") {
+      if (transferRef) {
+        const url =
+          window.location.origin + ROUTES.PAYMENT_LINKS.VALIDATION(transferRef);
+        window.location.href = url;
+      }
+    }
+
+    // ... handle other cases or proceed normally
+  };
   return (
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -203,16 +219,21 @@ const PayStep = (props: PayStepProps) => {
 
               <div className="flex items-center space-x-4">
                 {stepFour?.paymentLink &&
-                typeof stepFour?.paymentLink === 'object' &&
+                typeof stepFour?.paymentLink === "object" &&
+                stepFour?.paymentLink?.token &&
                 stepFour?.paymentLink?.status !== "expired_link" ? (
                   <div className="flex items-center space-x-4">
                     <Button
                       variant="link"
-                      className="text-teal-600 hover:text-teal-700 p-0 h-auto text-sm cursor-pointer"
+                      className="p-0 h-auto text-sm cursor-pointer"
                       onClick={handleCopyPaymentLink}
                     >
+                      {window.location.origin +
+                        ROUTES.PAYMENT_LINKS.VALIDATION(
+                          stepFour?.paymentLink?.token ?? ""
+                        )}
                       <Copy className="w-4 h-4" />
-                      COPY PAYMENT LINK
+                      {/* COPY PAYMENT LINK */}
                     </Button>
                   </div>
                 ) : (
@@ -225,9 +246,18 @@ const PayStep = (props: PayStepProps) => {
                     SEND PAYMENT LINK
                   </Button>
                 )}
-                {typeof stepFour?.paymentLink === 'object' && stepFour?.paymentLink?.status && (
-                  <StatusLabel value={stepFour?.paymentLink?.status} />
-                )}
+                {typeof stepFour?.paymentLink === "object" &&
+                  stepFour?.paymentLink?.status && (
+                    <StatusLabel
+                      value={stepFour?.paymentLink?.status}
+                      color={
+                        PAYMENT_LINKS_STATUSES_COLORS[
+                          stepFour?.paymentLink
+                            ?.status as keyof typeof PAYMENT_LINKS_STATUSES_COLORS
+                        ] || "#000000"
+                      }
+                    />
+                  )}
               </div>
             </div>
             <hr className="my-3" />
@@ -265,6 +295,7 @@ const PayStep = (props: PayStepProps) => {
                       name="agent-payment-method"
                       value="wallet"
                       className="w-4 h-4 text-teal-600"
+                      onChange={() => setSelectedPaymentMethod("wallet")}
                     />
                     <label htmlFor="wallet-balance" className="text-gray-900">
                       From Wallet Balance (1200.00 USD)
@@ -286,6 +317,7 @@ const PayStep = (props: PayStepProps) => {
                     name="agent-payment-method"
                     value="credit-card"
                     className="w-4 h-4 text-teal-600"
+                    onChange={() => setSelectedPaymentMethod("credit-card")}
                   />
                   <label htmlFor="credit-card" className="text-gray-900">
                     Credit Card
@@ -298,6 +330,8 @@ const PayStep = (props: PayStepProps) => {
               <Button
                 variant="outline"
                 className="border-teal-500 text-teal-600 hover:bg-teal-50"
+                onClick={handlePayOnBehalfClick}
+                disabled={selectedPaymentMethod !== "credit-card"}
               >
                 PAY ON BEHALF OF CUSTOMER
               </Button>

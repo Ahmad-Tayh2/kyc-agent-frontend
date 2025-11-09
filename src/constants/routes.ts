@@ -33,7 +33,7 @@ export const ROUTES = {
   CUSTOMER_FORMS: "/customer-forms",
   PAYMENT_LINKS: {
     LIST: "/payment-links",
-    VALIDATION: (token: string) => `/pay/${token}`,
+    VALIDATION: (token: string) => `/payment/${token}`,
   },
   PAYMENT: {
     UNIFIED: (token: string) => `/payment/${token}`, // New unified route
