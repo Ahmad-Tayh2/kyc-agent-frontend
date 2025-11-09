@@ -7,10 +7,13 @@ import AddMoneyFilters from "@/components/addMoney/AddMoneyFilters";
 import { AddMoneyTableColumns } from "@/components/addMoney/AddMoneyTableColumns";
 import SummaryCard from "@/components/shared/SummaryCard";
 import type { ReactElement } from "react";
-import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
+// import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
 import CurrencyInput from "@/components/CurrencyInput";
 import { Label } from "@/components/ui/label";
 import ActionButton from "@/components/shared/ActionButton";
+import { useWallet } from "@/hooks/data/useWallet";
+import { geAgentIdFromStorage } from "@/utils/authHelpers";
+import { useState, useMemo } from "react";
 // import { useAddMoneyFilters } from "@/hooks/data/useAddMoneyFilters";
 // import { ROUTES } from "@/constants/routes";
 
@@ -28,6 +31,24 @@ const AddMoneyPage: React.FC = () => {
   const filters = {};
   const resetFilters = () => {};
   const applyFilters = () => {};
+
+  // Get agent ID and fetch wallet
+  const agentId = geAgentIdFromStorage();
+  const { data: wallet, isLoading: isLoadingWallet } = useWallet(agentId || "");
+
+  // State for currency and amount
+  const [selectedCurrencyId, setSelectedCurrencyId] = useState<number | undefined>();
+  const [amount, setAmount] = useState<number>(0);
+
+  // Prepare currency options from wallet
+  const currencyOptions = useMemo(() => {
+    if (!wallet?.wallet_currencies) return [];
+    return wallet.wallet_currencies.map((wc) => ({
+      id: wc.currency.id,
+      code: wc.currency.code,
+      name: wc.currency.name,
+    }));
+  }, [wallet]);
 
   // const {
   //   filters,
@@ -76,10 +97,10 @@ const AddMoneyPage: React.FC = () => {
     },
   ];
 
-  const paymentGatewayOptions = [
-    { label: "Paypal", value: "paypal" },
-    { label: "Card", value: "card" },
-  ];
+  // const paymentGatewayOptions = [
+  //   { label: "Paypal", value: "paypal" },
+  //   { label: "Card", value: "card" },
+  // ];
   return (
     <div className="space-y-4">
       <div className="space-y-4 border-b-1 pb-5 border-b-gray-200">
@@ -88,7 +109,7 @@ const AddMoneyPage: React.FC = () => {
         </div>
         <div className="bg-white rounded-lg border p-5 ">
           <div className="flex gap-3">
-            <div className="flex flex-col gap-1 w-1/3">
+            {/* <div className="flex flex-col gap-1 w-1/3">
               <Label className="text-[14px]">
                 Payment Gateway<span>*</span>
               </Label>
@@ -97,14 +118,23 @@ const AddMoneyPage: React.FC = () => {
                 selectedValue=""
                 onValueChange={() => {}}
               />
-            </div>
-            <div className="flex flex-col gap-1 w-1/3">
+            </div> */}
+            <div className="flex flex-col gap-1 w-1/2">
               <Label className="text-[14px]">
-                Amount<span>*</span>
+                Currency & Amount<span>*</span>
               </Label>
-              <CurrencyInput currencyOptions={[]} amount={0} />
+              <CurrencyInput
+                currencyOptions={currencyOptions}
+                selectedCurrencyId={selectedCurrencyId}
+                amount={amount}
+                onCurrencyChange={setSelectedCurrencyId}
+                onAmountChange={setAmount}
+                loading={isLoadingWallet}
+                placeholder="Select currency"
+                amountPlaceholder="Enter amount"
+              />
             </div>
-            <div className="w-1/3">
+            <div className="w-1/2">
               <SummaryCard title="Summary" data={dataList} />
             </div>
           </div>
