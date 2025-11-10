@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import SearchableSelect from '@/components/ui/searchable-select';
 import { useCountries } from '@/hooks/data/useAddress';
-import { usePayoutLocations } from '@/hooks/data/usePayoutLocation';
+import { useInfinitePayoutLocations } from '@/hooks/data/usePayoutLocation';
 import { usePayoutLocationFilters } from '@/hooks/data/usePayoutLocationFilters';
 import { useCreateRecipientPayout } from '@/hooks/data/useRecipientPayout';
 import { useCreateRecipientRemittanceMethod } from '@/hooks/data/useRecipientRemittanceMethods';
-import { useGetRecipient } from '@/hooks/data/useRecipients';
+// import { useGetRecipient } from '@/hooks/data/useRecipients'; // Commented out - only used for country filter
 import {
   useRemittanceMethods,
   useVerifyAccountInfo,
@@ -58,12 +58,26 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   // API Hooks
   const { data: remittanceMethodsData = [] } = useRemittanceMethods();
   const { data: countries } = useCountries();
-  const { data: recipientData } = useGetRecipient(recipientId);
+  // const { data: recipientData } = useGetRecipient(recipientId); // Commented out - only used for country filter
 
   // Payout location filtering
-  const { filtersString, updateCountryFilter, filters } =
-    usePayoutLocationFilters();
-  const { data: payoutLocationsData = [] } = usePayoutLocations(filtersString);
+  const { filtersString } = usePayoutLocationFilters();
+  // const { filtersString, updateCountryFilter, filters } = usePayoutLocationFilters(); // Commented out for country filter
+  const {
+    data: payoutLocationsInfiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfinitePayoutLocations(filtersString);
+
+  // Flatten all pages into a single array
+  const payoutLocationsData = React.useMemo(() => {
+    if (!payoutLocationsInfiniteData) return { data: [] };
+    const allData = payoutLocationsInfiniteData.pages.flatMap(
+      (page) => page.data || []
+    );
+    return { data: allData };
+  }, [payoutLocationsInfiniteData]);
 
   const createRmMutation = useCreateRecipientRemittanceMethod();
   const createPayoutMutation = useCreateRecipientPayout();
@@ -78,31 +92,32 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
       countryCode: country.iso2,
     })) || [];
 
-  const countryOptions =
-    countries?.map((country: Country) => ({
-      value: country.iso2,
-      label: country.name,
-    })) || [];
+  // Commented out - country filter is disabled
+  // const countryOptions =
+  //   countries?.map((country: Country) => ({
+  //     value: country.iso2,
+  //     label: country.name,
+  //   })) || [];
 
-  // Set default country filter to recipient's country
-  React.useEffect(() => {
-    if (
-      recipientData?.data?.address?.country?.id &&
-      (countries?.length ?? 0) > 0
-    ) {
-      const recipientCountry = countries?.find(
-        (country: Country) =>
-          country.id === recipientData.data.address.country.id
-      );
-      if (recipientCountry?.iso2) {
-        updateCountryFilter([recipientCountry.iso2]);
-      }
-    }
-  }, [
-    recipientData?.data?.address?.country?.id,
-    countries,
-    updateCountryFilter,
-  ]);
+  // Set default country filter to recipient's country - Commented out as country filter is disabled
+  // React.useEffect(() => {
+  //   if (
+  //     recipientData?.data?.address?.country?.id &&
+  //     (countries?.length ?? 0) > 0
+  //   ) {
+  //     const recipientCountry = countries?.find(
+  //       (country: Country) =>
+  //         country.id === recipientData.data.address.country.id
+  //     );
+  //     if (recipientCountry?.iso2) {
+  //       updateCountryFilter([recipientCountry.iso2]);
+  //     }
+  //   }
+  // }, [
+  //   recipientData?.data?.address?.country?.id,
+  //   countries,
+  //   updateCountryFilter,
+  // ]);
 
   // Get selected method details
   const selectedMethod = remittanceMethodsData?.data?.find(
@@ -422,8 +437,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
             </>
           ) : (
             <>
-              {/* Country Filter */}
-              <div className='space-y-2 mb-4'>
+              {/* Country Filter - Commented out as requested */}
+              {/* <div className='space-y-2 mb-4'>
                 <Label>Filter by Country</Label>
                 <SearchableSelect
                   value={filters.country_codes?.[0] || ''}
@@ -434,7 +449,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                   options={countryOptions}
                   placeholder='Select a country to filter payout locations'
                 />
-              </div>
+              </div> */}
 
               {/* Payout Location Selection */}
               <div className='space-y-2 mb-6'>
@@ -447,18 +462,18 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                   }
                   placeholder={
                     payoutLocationsData?.data?.length === 0
-                      ? 'No payout locations available for selected country'
+                      ? 'No payout locations available'
                       : 'Choose a payout location'
                   }
+                  onLoadMore={fetchNextPage}
+                  hasMore={hasNextPage}
+                  isLoadingMore={isFetchingNextPage}
                 />
-                {payoutLocationsData?.data?.length === 0 &&
-                  Array.isArray(filters.country_codes) &&
-                  filters.country_codes.length > 0 && (
-                    <p className='text-sm text-gray-500'>
-                      No payout locations found for the selected country. Try
-                      selecting a different country.
-                    </p>
-                  )}
+                {payoutLocationsData?.data?.length === 0 && (
+                  <p className='text-sm text-gray-500'>
+                    No payout locations found. Try adjusting your filters.
+                  </p>
+                )}
               </div>
             </>
           )}
