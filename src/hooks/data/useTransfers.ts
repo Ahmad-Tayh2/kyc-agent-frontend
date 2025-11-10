@@ -69,7 +69,7 @@ export function useTransactionPreview(payload?: TransactionPreviewPayload) {
       !!payload.receive_country_id &&
       !!payload.send_currency &&
       !!payload.receive_currency &&
-      payload.sent_amount > 0,
+      (payload.sent_amount ? payload.sent_amount > 0 : true),
     staleTime: 3000, // 3 seconds
   });
 }
