@@ -1,7 +1,11 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { transfersService } from '@/services/transfers';
-import type { TransactionCreateDataType } from '@/types/transfers';
+import type {
+  TransactionCreateDataType,
+  TransactionPreviewByRefPayload,
+  TransactionPreviewPayload,
+} from '@/types/transfers';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export function useGetTransfers(filters?: string) {
   return useQuery({
@@ -50,5 +54,39 @@ export function useUpdateTransfer(ref: string) {
       // toast.success("Transfer updated successfully!");
       //queryClient.invalidateQueries({ queryKey: ["get-transfers"] });
     },
+  });
+}
+
+export function useTransactionPreview(payload?: TransactionPreviewPayload) {
+  return useQuery({
+    queryKey: ['transactionPreview', payload],
+    queryFn: () => transfersService.previewTransaction(payload!),
+    enabled:
+      !!payload &&
+      !!payload.customer_id &&
+      !!payload.recipient_id &&
+      !!payload.send_country_id &&
+      !!payload.receive_country_id &&
+      !!payload.send_currency &&
+      !!payload.receive_currency &&
+      (payload.sent_amount ? payload.sent_amount > 0 : true),
+    staleTime: 3000, // 3 seconds
+  });
+}
+
+export function useTransactionPreviewByRef(
+  ref: string | undefined,
+  payload?: Omit<TransactionPreviewByRefPayload, 'transaction_reference'>
+) {
+  return useQuery({
+    queryKey: ['transactionPreviewByRef', ref, payload],
+    queryFn: () => transfersService.previewTransactionByRef(ref!, payload!),
+    enabled:
+      !!ref &&
+      !!payload &&
+      !!payload.send_currency &&
+      !!payload.receive_currency &&
+      (!!payload.send_amount || !!payload.receive_amount),
+    staleTime: 3000, // 3 seconds
   });
 }

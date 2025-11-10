@@ -24,6 +24,8 @@ const createInitialData = (): SendRemittanceData => ({
     receiveAmount: 0,
     exchangeDetails: null,
     extraFeesPercent: 0,
+    isAllFeesIncludedInSendAmount: false,
+    isCalculateFromReceiveAmount: false,
   },
   stepThree: {
     sourceOfIncome: null,
@@ -182,8 +184,8 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       setSendAmount: (amount) =>
         set((state) => {
           state.data.stepTwo.sendAmount = amount;
-          // Reset exchange details when amount changes
-          state.data.stepTwo.exchangeDetails = null;
+          // Don't reset exchange details here - let the preview API update it
+          // The useTransactionPreview hook will automatically fetch new details when amount changes
         }),
 
       setReceiveCurrency: (currency) =>
@@ -212,6 +214,20 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
       setExtraFeesPercent: (percent) =>
         set((state) => {
           state.data.stepTwo.extraFeesPercent = percent;
+        }),
+
+      setIsAllFeesIncludedInSendAmount: (value) =>
+        set((state) => {
+          state.data.stepTwo.isAllFeesIncludedInSendAmount = value;
+        }),
+
+      setIsCalculateFromReceiveAmount: (value) =>
+        set((state) => {
+          state.data.stepTwo.isCalculateFromReceiveAmount = value;
+          // When calculating from receive amount, disable the other checkbox
+          if (value) {
+            state.data.stepTwo.isAllFeesIncludedInSendAmount = false;
+          }
         }),
 
       // Step 3 Actions
@@ -361,13 +377,12 @@ export const useSendRemittanceStore = create<SendRemittanceStore>()(
             );
           case "currencies":
             return !!(
+              data.stepTwo.sendCurrency &&
+              data.stepTwo.receiveCurrency &&
               (
-                data.stepTwo.sendCurrency &&
-                data.stepTwo.receiveCurrency &&
-                data.stepTwo.sendAmount > 0
+                (data.stepTwo.isCalculateFromReceiveAmount && data.stepTwo.receiveAmount > 0) ||
+                (!data.stepTwo.isCalculateFromReceiveAmount && data.stepTwo.sendAmount > 0)
               )
-              // &&
-              // data.stepTwo.exchangeDetails
             );
           case "review":
             return !!(
@@ -431,6 +446,8 @@ export const useSendRemittanceActions = () => {
     setReceiveAmount: state.setReceiveAmount,
     setExchangeDetails: state.setExchangeDetails,
     setExtraFeesPercent: state.setExtraFeesPercent,
+    setIsAllFeesIncludedInSendAmount: state.setIsAllFeesIncludedInSendAmount,
+    setIsCalculateFromReceiveAmount: state.setIsCalculateFromReceiveAmount,
     setSourceOfIncome: state.setSourceOfIncome,
     setRemittancePurpose: state.setRemittancePurpose,
     setExtraDetails: state.setExtraDetails,

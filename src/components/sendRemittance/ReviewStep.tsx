@@ -39,7 +39,6 @@ const ReviewStep: React.FC = () => {
     pickupLocation: '323, Metro line 3, New Delhi (fake data)',
   };
   const recipient = { ...stepOne?.recipient };
-  console.log('recipient review step:', recipient);
 
   // Get computed summary data from centralized hook
   const summaryData = useSummaryData();

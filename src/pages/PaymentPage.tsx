@@ -14,7 +14,7 @@ import type {
 } from "@/types/payment";
 import { Elements } from "@stripe/react-stripe-js";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Function to get Stripe promise only when needed to avoid conflicts with Worldpay
@@ -84,21 +84,50 @@ export default function PaymentPage({
   const [detectedPaymentLinkToken, setDetectedPaymentLinkToken] = useState<
     string | undefined
   >();
+  const [walletCurrencyId, setWalletCurrencyId] = useState<number | undefined>();
+  const [walletAmount, setWalletAmount] = useState<number | undefined>();
+  const [walletCurrencyCode, setWalletCurrencyCode] = useState<string | undefined>();
 
   useEffect(() => {
     if (token) {
-      // Detect token type based on "TR-" prefix
+      // Detect token type based on prefix
       if (token.startsWith("TR-")) {
+        // Transaction reference
         setDetectedTransactionId(token);
         setDetectedPaymentLinkToken(undefined);
+        setWalletCurrencyId(undefined);
+        setWalletAmount(undefined);
+        setWalletCurrencyCode(undefined);
+      } else if (token.startsWith("add-")) {
+        // Wallet top-up: extract walletCurrencyId from token
+        const wcId = parseInt(token.replace("add-", ""));
+        setWalletCurrencyId(wcId);
+
+        // Get amount and currency from sessionStorage
+        const addMoneyData = sessionStorage.getItem("addMoneyData");
+        if (addMoneyData) {
+          const parsed = JSON.parse(addMoneyData);
+          setWalletAmount(parsed.amount);
+          setWalletCurrencyCode(parsed.currencyCode);
+        }
+
+        setDetectedTransactionId(undefined);
+        setDetectedPaymentLinkToken(undefined);
       } else {
+        // Payment link token
         setDetectedPaymentLinkToken(token);
         setDetectedTransactionId(undefined);
+        setWalletCurrencyId(undefined);
+        setWalletAmount(undefined);
+        setWalletCurrencyCode(undefined);
       }
     } else {
       // Fallback to existing parameters
       setDetectedTransactionId(transactionId);
       setDetectedPaymentLinkToken(paymentLinkToken);
+      setWalletCurrencyId(undefined);
+      setWalletAmount(undefined);
+      setWalletCurrencyCode(undefined);
     }
   }, [token, transactionId, paymentLinkToken]);
 
@@ -106,26 +135,29 @@ export default function PaymentPage({
     detectedTransactionId ? parseInt(detectedTransactionId) : ""
   );
 
-  // Sample payment info - in real app, this would come from API
-  const [paymentInfo] = useState({
-    amount: transferData?.data?.total_payable_amount || 0,
-    currency: transferData?.data?.send_currency || "USD",
-    description: `Payment for transaction #${
-      detectedTransactionId || detectedPaymentLinkToken
-    }`,
-  });
+  // Payment info - uses wallet data if available, otherwise transfer data
+  const paymentInfo = useMemo(() => ({
+    amount: walletAmount || transferData?.data?.total_payable_amount || 0,
+    currency: walletCurrencyCode || transferData?.data?.send_currency || "USD",
+    description: walletCurrencyId
+      ? `Add money to wallet - ${walletCurrencyCode}`
+      : `Payment for transaction #${
+          detectedTransactionId || detectedPaymentLinkToken
+        }`,
+  }), [walletAmount, walletCurrencyCode, walletCurrencyId, transferData, detectedTransactionId, detectedPaymentLinkToken]);
 
   useEffect(() => {
     // Only validate if we have processed the token detection
     const hasAnyToken = token || transactionId || paymentLinkToken;
-    const hasDetectedValues = detectedTransactionId || detectedPaymentLinkToken;
+    const hasDetectedValues =
+      detectedTransactionId || detectedPaymentLinkToken || walletCurrencyId;
 
     if (hasAnyToken && !hasDetectedValues) {
       setErrorMessage("Invalid payment link. Unable to process payment token.");
       setPaymentStatus("error");
     } else if (!hasAnyToken) {
       setErrorMessage(
-        "Invalid payment link. Missing transaction ID or payment link token."
+        "Invalid payment link. Missing transaction ID, payment link token, or wallet information."
       );
       setPaymentStatus("error");
     } else if (hasDetectedValues) {
@@ -138,6 +170,7 @@ export default function PaymentPage({
   }, [
     detectedTransactionId,
     detectedPaymentLinkToken,
+    walletCurrencyId,
     token,
     transactionId,
     paymentLinkToken,
@@ -384,6 +417,7 @@ export default function PaymentPage({
                     <StripePaymentForm
                       transactionId={detectedTransactionId} // Pass the detected transaction ID
                       paymentLinkToken={detectedPaymentLinkToken}
+                      walletCurrencyId={walletCurrencyId}
                       amount={paymentInfo.amount}
                       currency={paymentInfo.currency}
                       description={paymentInfo.description}
@@ -409,6 +443,8 @@ export default function PaymentPage({
                 <WorldpayPaymentForm
                   transactionId={detectedTransactionId} // Pass the detected transaction ID
                   paymentLinkToken={detectedPaymentLinkToken}
+                  walletCurrencyId={walletCurrencyId}
+                  amount={walletAmount}
                   description={paymentInfo.description}
                   mode="iframe" // Iframe mode using official Worldpay library
                   onError={handlePaymentError}

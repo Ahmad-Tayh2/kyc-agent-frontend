@@ -9,6 +9,7 @@ import { useState } from "react";
 interface StripePaymentFormProps {
   transactionId?: number | string; // Allow string transaction references
   paymentLinkToken?: string;
+  walletCurrencyId?: number; // For wallet top-up
   amount?: number;
   currency?: string;
   description?: string;
@@ -37,6 +38,7 @@ const cardElementOptions = {
 export default function StripePaymentForm({
   transactionId,
   paymentLinkToken,
+  walletCurrencyId,
   amount,
   currency,
   description,
@@ -101,6 +103,8 @@ export default function StripePaymentForm({
       const paymentRequest: PaymentRequest = {
         transactionId: transactionId || null,
         paymentLinkToken: paymentLinkToken || null,
+        walletCurrencyId: walletCurrencyId || null,
+        amount: walletCurrencyId ? amount : null, // Include amount for wallet top-up
         provider: "stripe",
         payment_method: paymentMethod.id, // Send the payment method token instead of 'card'
         description: description || `Payment for ${amount} ${currency}`,

@@ -31,8 +31,11 @@ export const useSendRemittanceValidation = (step?: StepName) => {
       case 'currencies':
         if (!stepTwo.sendCurrency) return 'Please select send currency';
         if (!stepTwo.receiveCurrency) return 'Please select receive currency';
-        if (stepTwo.sendAmount <= 0) return 'Please enter a valid send amount';
-        if (!stepTwo.exchangeDetails) return 'Please get exchange rate details';
+        if (stepTwo.isCalculateFromReceiveAmount) {
+          if (stepTwo.receiveAmount <= 0) return 'Please enter a valid receive amount';
+        } else {
+          if (stepTwo.sendAmount <= 0) return 'Please enter a valid send amount';
+        }
         return 'Please complete currency and amount information';
 
       case 'review':
