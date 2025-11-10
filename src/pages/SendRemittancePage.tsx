@@ -193,7 +193,9 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     }
 
     if (mode === 'edit') {
-      setCurrentStep('customer');
+      markStepCompleted('customer');
+      markStepCompleted('currencies');
+      setCurrentStep('review');
     } else if (mode === 'create') {
       updateStatus(['draft']);
     }
