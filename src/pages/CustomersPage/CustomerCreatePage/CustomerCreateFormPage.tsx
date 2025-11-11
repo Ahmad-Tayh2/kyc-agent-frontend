@@ -477,7 +477,9 @@ const CustomerCreateFormPage: React.FC = () => {
                 handleIdentityChange("expiry_date", date)
               }
               endMonth={documentExpiryEndMonth}
+              disabledBefore={new Date()}
             />
+
             {identityErrors?.expiry_date && (
               <ErrorField errors={[identityErrors?.expiry_date[0]]} />
             )}

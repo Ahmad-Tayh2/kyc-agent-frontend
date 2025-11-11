@@ -325,7 +325,7 @@
           "label": "$t(common.fields.password.label)",
           "placeholder": "$t(common.fields.password.placeholder)",
           "error": "$t(common.validation.required)",
-          "minLength": "$t(common.validation.passwordMinLength)"
+          "minLength": "$t(common.validation.minLength)"
         },
         "confirmPassword": {
           "label": "$t(common.fields.confirmPassword.label)",
