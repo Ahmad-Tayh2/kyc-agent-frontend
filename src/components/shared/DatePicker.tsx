@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface DatePickerProps {
   label?: string;
@@ -19,6 +20,9 @@ interface DatePickerProps {
   disabled?: boolean;
   startMonth?: Date;
   endMonth?: Date;
+  disabledBefore?: Date;
+  disabledAfter?: Date;
+  prop?: string;
 }
 
 function formatDate(date: Date | undefined) {
@@ -47,9 +51,21 @@ export default function DatePicker({
   disabled,
   startMonth,
   endMonth,
+  disabledBefore,
+  disabledAfter,
+  prop,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
+  const disableRange = React.useMemo(() => {
+    let range = null;
+    if (disabledBefore) range = { before: disabledBefore };
+    if (disabledAfter) {
+      if (!range) range = { after: disabledAfter };
+      else range = { ...range, after: disabledAfter };
+    }
+    return range;
+  }, [disabledBefore, disabledAfter]);
   // Initialize date state from value prop (ISO string)
   const initialDate = value ? new Date(value) : undefined;
   const [date, setDate] = React.useState<Date | undefined>(initialDate);
@@ -57,7 +73,9 @@ export default function DatePicker({
   const [displayValue, setDisplayValue] = React.useState<string>(
     formatDate(initialDate)
   );
-
+  React.useEffect(() => {
+    console.log("prop = ", prop);
+  }, [prop]);
   // When value prop changes, update internal state
   React.useEffect(() => {
     const newDate = value ? new Date(value) : undefined;
@@ -77,7 +95,6 @@ export default function DatePicker({
       setOpen(false);
     }
   };
-
   return (
     <div>
       {label && (
@@ -90,9 +107,11 @@ export default function DatePicker({
           id="date"
           value={displayValue}
           placeholder="Select a Date"
-          className="bg-background pr-10 h-[40px] "
+          className={cn(
+            "bg-background pr-10 h-[40px]",
+            !disabled && "disabled:opacity-100 disabled:bg-transparent" //remove the low opacity when editing the input because this field should be always disabled and should not show the disabled bg
+          )}
           onChange={(e) => {
-            console.log(" value ", e.target.value);
             const newValue = e.target.value;
             setDisplayValue(newValue);
             // Try to parse date from input (optional: you can enhance parsing)
@@ -109,7 +128,7 @@ export default function DatePicker({
               setOpen(true);
             }
           }}
-          disabled={disabled}
+          disabled //always disabled, user can only choose date from calendar
         />
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -129,16 +148,30 @@ export default function DatePicker({
             alignOffset={-8}
             sideOffset={10}
           >
-            <Calendar
-              mode="single"
-              selected={date}
-              captionLayout="dropdown"
-              month={month}
-              onMonthChange={setMonth}
-              onSelect={handleDateSelect}
-              startMonth={startMonth}
-              endMonth={endMonth}
-            />
+            {disableRange ? (
+              <Calendar
+                mode="single"
+                selected={date}
+                captionLayout="dropdown"
+                month={month}
+                onMonthChange={setMonth}
+                onSelect={handleDateSelect}
+                startMonth={startMonth}
+                endMonth={endMonth}
+                disabled={disableRange}
+              />
+            ) : (
+              <Calendar
+                mode="single"
+                selected={date}
+                captionLayout="dropdown"
+                month={month}
+                onMonthChange={setMonth}
+                onSelect={handleDateSelect}
+                startMonth={startMonth}
+                endMonth={endMonth}
+              />
+            )}
           </PopoverContent>
         </Popover>
       </div>

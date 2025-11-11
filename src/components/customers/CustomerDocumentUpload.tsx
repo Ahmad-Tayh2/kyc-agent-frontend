@@ -45,6 +45,7 @@ export default function CustomerDocumentUpload(props: any) {
 
 const RenderCustomerIdentity = (props: any) => {
   const { identityData, setIdentityData, editMode, identityErrors } = props;
+  console.log("identityData=== ", identityData);
 
   const documentTypesOptions = [
     { label: "Passport", value: "passport" },
@@ -153,6 +154,7 @@ const RenderCustomerIdentity = (props: any) => {
             disabled={!editMode}
             startMonth={new Date()}
             endMonth={new Date(new Date().getFullYear() + 20, 0)}
+            disabledBefore={new Date()}
           />
           {identityErrors?.expiry_date && (
             <ErrorField errors={[identityErrors?.expiry_date[0]]} />
