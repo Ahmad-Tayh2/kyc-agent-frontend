@@ -38,9 +38,15 @@ export const paymentService = {
   validatePaymentRequest: (data: PaymentRequest): string[] => {
     const errors: string[] = [];
 
-    // Check required fields - at least one of transactionId, paymentLinkToken, or walletCurrencyId is required
-    if (!data.transactionId && !data.paymentLinkToken && !data.walletCurrencyId) {
-      errors.push('Either transactionId, paymentLinkToken, or walletCurrencyId is required');
+    // Check required fields - at least one of transactionReference, paymentLinkToken, or walletCurrencyId is required
+    if (
+      !data.transactionReference &&
+      !data.paymentLinkToken &&
+      !data.walletCurrencyId
+    ) {
+      errors.push(
+        'Either transactionReference, paymentLinkToken, or walletCurrencyId is required'
+      );
     }
 
     // If walletCurrencyId is provided, amount is required
@@ -49,7 +55,11 @@ export const paymentService = {
     }
 
     // Validate amount if provided
-    if (data.amount !== undefined && data.amount !== null && data.amount < 0.01) {
+    if (
+      data.amount !== undefined &&
+      data.amount !== null &&
+      data.amount < 0.01
+    ) {
       errors.push('Amount must be at least 0.01');
     }
 
