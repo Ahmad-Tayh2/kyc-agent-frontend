@@ -278,7 +278,7 @@
         "uploadError": "File upload failed. You can add identity files later in your profile.",
 
         "goToLogin": "Go to Login",
-        "resendVerification": "Resend Verification Email",
+        "resendingActivation": "Resend Activation Email",
         "resendingVerification": "Resending...",
         "verificationEmailSent": "Verification email sent successfully!",
         "verificationEmailError": "Failed to send verification email. Please try again."

@@ -176,7 +176,7 @@ const LoginForm: React.FC<{
       </div>
 
       {error?.message && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <ErrorField errors={[error?.message]} />
           {error?.status === "inactive" && (
             <button
@@ -184,7 +184,7 @@ const LoginForm: React.FC<{
               onClick={onResendVerificationEmail}
               className="text-primary text-sm hover:underline ml-auto"
             >
-              Resend Email
+              {t("modules.register.success.resendingActivation")}
             </button>
           )}
         </div>

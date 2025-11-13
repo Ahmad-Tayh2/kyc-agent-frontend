@@ -165,10 +165,10 @@ const RegistrationSuccessDialog: React.FC<RegistrationSuccessDialogProps> = ({
                   {isResending ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("modules.register.success.resendingVerification")}
+                      {t("modules.register.success.resendingActivation")}
                     </>
                   ) : (
-                    t("modules.register.success.resendVerification")
+                    t("modules.register.success.resendingActivation")
                   )}
                 </Button>
               </>
