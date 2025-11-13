@@ -19,18 +19,21 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useLogout } from "@/hooks/data/useAuth";
+import { useAuthStore } from "@/store/authStore";
 interface TopbarProps {
   onMenuClick?: () => void;
 }
 const UserMenu = () => {
   const { t } = useTranslation("global");
   // const { handleLogout, user } = useAuth();
+  const { user, logout: logoutFromStore } = useAuthStore();
   const { mutateAsync: logoutAsync, status } = useLogout();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await logoutAsync();
+      logoutFromStore();
       navigate(ROUTES.AUTH.LOGIN);
     } catch (error) {
       console.error("Logout failed:", error);
@@ -73,7 +76,8 @@ const UserMenu = () => {
               </Avatar>
             </div>
             <div className="mt-[-10px] px-2 py-0 rounded-full bg-[#E88D7D] text-white text-xs font-semibold border-1 border-[#E88D7D] shadow-md z-1">
-              {t("modules.topbar.agent")}
+              {/* {t("modules.topbar.agent")} */}
+              {user?.first_name} {user?.last_name}
             </div>
           </div>
           <ArrowDownIcon width={18} height={20} />

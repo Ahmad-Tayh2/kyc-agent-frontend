@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { validate } from "@/lib/validate";
 import ErrorField from "@/components/shared/ErrorField";
+import { useAuthStore } from "@/store/authStore";
 
 interface LoginErrorsTypes {
   email?: string[];
@@ -51,6 +52,8 @@ const LoginForm: React.FC<{
 
   const { mutateAsync: loginAsync, status } = useLogin();
   const { mutateAsync: sendVerificationEmail } = useResendVerification();
+  const { login: loginInStore } = useAuthStore();
+
   const navigate = useNavigate();
   const resetEveryThing = () => {
     setData({
@@ -99,6 +102,7 @@ const LoginForm: React.FC<{
         localStorage.setItem("token", response.data.access_token);
         if (response.data.user) {
           localStorage.setItem("user", JSON.stringify(response.data.user));
+          loginInStore(response.data.user, response.data.access_token); //save the auth data in zustand store
         }
         navigate(ROUTES.DASHBOARD);
       } else {

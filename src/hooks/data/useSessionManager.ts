@@ -281,11 +281,13 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRefreshToken, useLogout } from "@/hooks/data/useAuth";
 import { tokenManager } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
 
 export function useSessionManager() {
   const navigate = useNavigate();
   const refreshTokenMutation = useRefreshToken();
   const logoutMutation = useLogout();
+  const { login: loginInStore } = useAuthStore();
 
   const [showExpirationWarning, setShowExpirationWarning] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -310,7 +312,7 @@ export function useSessionManager() {
       if (response.access_token) {
         tokenManager.setToken(response.access_token);
         localStorage.setItem("user", JSON.stringify(response.user));
-
+        loginInStore(response.user, response.access_token); //save the auth data in zustand store
         tokenExpirationTimeRef.current =
           Date.now() + response.expires_in * 1000;
 
