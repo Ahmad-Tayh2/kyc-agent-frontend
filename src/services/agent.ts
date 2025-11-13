@@ -23,22 +23,32 @@ export const agentService = {
     return res.json();
   },
 
+  // updateProfile: async (
+  //   agentId: string | number,
+  //   data: UpdateAgentProfileRequest
+  // ): Promise<AgentProfileResponse> => {
+  //   const authHeaders = getAuthHeaders();
+  //   const headers = authHeaders
+  //     ? { "Content-Type": "application/json", ...authHeaders }
+  //     : { "Content-Type": "application/json" };
+  //   console.log(" data = ", data);
+  //   const res = await fetch(API_URLS.agents.update(agentId), {
+  //     method: "PATCH",
+  //     headers,
+  //     body: JSON.stringify(data),
+  //   });
+  //   if (!res.ok) throw new Error("Failed to update agent profile");
+  //   return res.json();
+  // },
   updateProfile: async (
     agentId: string | number,
     data: UpdateAgentProfileRequest
-  ): Promise<AgentProfileResponse> => {
-    const authHeaders = getAuthHeaders();
-    const headers = authHeaders
-      ? { "Content-Type": "application/json", ...authHeaders }
-      : { "Content-Type": "application/json" };
-    console.log(" data = ", data);
-    const res = await fetch(API_URLS.agents.update(agentId), {
-      method: "PATCH",
-      headers,
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error("Failed to update agent profile");
-    return res.json();
+  ) => {
+    const response = await apiClient.patch(
+      API_URLS.agents.update(agentId),
+      data
+    );
+    return response.data;
   },
 
   uploadDocs: async (id: string | number, data: any) => {

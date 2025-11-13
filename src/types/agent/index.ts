@@ -139,7 +139,7 @@ export interface ProfileFormData {
   // Personal Information
   firstName: string;
   lastName: string;
-  dob: string;
+  date_of_birth: string;
   email: string;
   phone: string;
   countryCode: string;
