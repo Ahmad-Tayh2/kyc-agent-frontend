@@ -1,14 +1,15 @@
-import { API_URLS } from '@/constants/api';
-import { handleApiResponse } from '@/lib/handleApiResponse';
-import type { Wallet, WalletResponse } from '@/types/wallet';
+import { API_URLS } from "@/constants/api";
+import apiClient from "@/lib/axiosInstance";
+import { handleApiResponse } from "@/lib/handleApiResponse";
+import type { Wallet, WalletResponse } from "@/types/wallet";
 
 export async function getWallet(agentId: string | number): Promise<Wallet> {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   const response = await fetch(API_URLS.wallet.get(agentId), {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
@@ -25,12 +26,12 @@ export async function deleteCurrency(
   walletId: string | number,
   currencyId: string | number
 ): Promise<void> {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const url = API_URLS.wallet.deleteCurrency();
 
   // URL is empty for now, so we'll just return early
   if (!url) {
-    console.log('Delete currency URL not implemented yet', {
+    console.log("Delete currency URL not implemented yet", {
       walletId,
       currencyId,
     });
@@ -38,9 +39,9 @@ export async function deleteCurrency(
   }
 
   const response = await fetch(url, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
@@ -54,12 +55,12 @@ export async function addCurrency(
   walletId: string | number,
   currencyId: number
 ): Promise<void> {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   const response = await fetch(API_URLS.wallet.addCurrency(walletId), {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
@@ -73,4 +74,11 @@ export async function addCurrency(
 
   const data = await response.json();
   return handleApiResponse(data);
+}
+
+export async function getAddMoneyTransactions(filters: string = "") {
+  const response = await apiClient.get(
+    API_URLS.wallet.getAddMoneyTransactions(filters)
+  );
+  return response.data;
 }

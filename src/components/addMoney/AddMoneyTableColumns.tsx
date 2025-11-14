@@ -18,26 +18,34 @@ export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
       },
 
       {
-        accessorKey: "",
+        accessorKey: "created_at",
         header: "Date",
       },
       {
-        accessorKey: "",
+        accessorKey: "currency",
         header: "Currency",
+        cell: ({ row }) => {
+          const currency: any = row.getValue("currency");
+          return <div>{currency?.code}</div>;
+        },
       },
       {
-        accessorKey: "",
+        accessorKey: "amount",
         header: "Amount",
       },
       {
-        accessorKey: "",
+        accessorKey: "payment",
         header: "Payment Method",
+        cell: ({ row }) => {
+          const payment: any = row.getValue("payment");
+          return <div>{payment?.provider_payment_method}</div>;
+        },
       },
       {
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-          const value: string = row.getValue("status");
+          const value: string = row.original?.payment?.status;
           const color =
             CUSTOMER_STATUS_COLORS[
               value as keyof typeof CUSTOMER_STATUS_COLORS

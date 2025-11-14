@@ -11,9 +11,9 @@ import type { ReactElement } from "react";
 import CurrencyInput from "@/components/CurrencyInput";
 import { Label } from "@/components/ui/label";
 import ActionButton from "@/components/shared/ActionButton";
-import { useWallet } from "@/hooks/data/useWallet";
+import { useAddMoneyTransactions, useWallet } from "@/hooks/data/useWallet";
 import { geAgentIdFromStorage } from "@/utils/authHelpers";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -34,9 +34,11 @@ const addMoneySchema = z.object({
   walletCurrencyId: z.number({
     required_error: "Please select a currency",
   }),
-  amount: z.number({
-    required_error: "Please enter an amount",
-  }).min(0.01, "Amount must be at least 0.01"),
+  amount: z
+    .number({
+      required_error: "Please enter an amount",
+    })
+    .min(0.01, "Amount must be at least 0.01"),
 });
 
 const AddMoneyPage: React.FC = () => {
@@ -50,9 +52,15 @@ const AddMoneyPage: React.FC = () => {
   // Get agent ID and fetch wallet
   const agentId = geAgentIdFromStorage();
   const { data: wallet, isLoading: isLoadingWallet } = useWallet(agentId || "");
+  const { data: addMoneyTransactions } = useAddMoneyTransactions("");
+  const addMoneyTransactionsData = useMemo(() => {
+    return addMoneyTransactions?.data || [];
+  }, [addMoneyTransactions]);
 
   // State for currency and amount
-  const [selectedCurrencyId, setSelectedCurrencyId] = useState<number | undefined>();
+  const [selectedCurrencyId, setSelectedCurrencyId] = useState<
+    number | undefined
+  >();
   const [amount, setAmount] = useState<number>(0);
 
   // Prepare currency options from wallet
@@ -197,7 +205,11 @@ const AddMoneyPage: React.FC = () => {
             </div>
           </div>
           <div className="border-t-1 border-gray-200 mt-5 pt-5 flex justify-end">
-            <ActionButton title="add money" type="action" onClick={handleAddMoney} />
+            <ActionButton
+              title="add money"
+              type="action"
+              onClick={handleAddMoney}
+            />
           </div>
         </div>
       </div>
@@ -212,7 +224,7 @@ const AddMoneyPage: React.FC = () => {
         </div>
         <div>
           <DataTable
-            data={[]}
+            data={addMoneyTransactionsData}
             columns={columns}
             // isLoading={isLoading}
             // error={error}
