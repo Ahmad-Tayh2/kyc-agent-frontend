@@ -136,7 +136,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         },
       },
       {
-        accessorKey: "transfer",
+        accessorKey: "number_transactions",
         header: "Transfer",
       },
       {
