@@ -13,11 +13,11 @@ import { Label } from "@/components/ui/label";
 import ActionButton from "@/components/shared/ActionButton";
 import { useAddMoneyTransactions, useWallet } from "@/hooks/data/useWallet";
 import { geAgentIdFromStorage } from "@/utils/authHelpers";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-// import { useAddMoneyFilters } from "@/hooks/data/useAddMoneyFilters";
+import { useAddMoneyFilters } from "@/hooks/data/useAddMoneyFilters";
 // import { ROUTES } from "@/constants/routes";
 
 interface addMoneySummaryData {
@@ -45,17 +45,32 @@ const AddMoneyPage: React.FC = () => {
   const [t] = useTranslation("global");
   const navigate = useNavigate();
   const columns = AddMoneyTableColumns();
-  const filters = {};
-  const resetFilters = () => {};
-  const applyFilters = () => {};
+
+  const {
+    filters,
+    filtersString: addMoneyFiltersString,
+    updateStatus: updateAddMoneyTransactionsStatus,
+    resetFilters: resetAddMoneyTransactionsFilters,
+    applyFilters: applyAddMoneyTransactionsFilters,
+    // updatePagination,
+  } = useAddMoneyFilters();
 
   // Get agent ID and fetch wallet
   const agentId = geAgentIdFromStorage();
   const { data: wallet, isLoading: isLoadingWallet } = useWallet(agentId || "");
-  const { data: addMoneyTransactions } = useAddMoneyTransactions("");
+  const {
+    data: addMoneyTransactions,
+    isLoading: isLoadingAddMoneyTransactions,
+    error: errorAddMoneyTransactions,
+  } = useAddMoneyTransactions(addMoneyFiltersString);
+
   const addMoneyTransactionsData = useMemo(() => {
     return addMoneyTransactions?.data || [];
   }, [addMoneyTransactions]);
+
+  // const addMoneyTransactionsMeta = useMemo(() => {
+  //   return addMoneyTransactions?.meta || [];
+  // }, [addMoneyTransactions]);
 
   // State for currency and amount
   const [selectedCurrencyId, setSelectedCurrencyId] = useState<
@@ -116,34 +131,14 @@ const AddMoneyPage: React.FC = () => {
     }
   };
 
-  // const {
-  //   filters,
-  //   filtersString,
-  //   updateSearchTerm,
-  //   resetFilters,
-  //   applyFilters,
-  //   // updatePagination,
-  // } = useCommissionFilters();
-
-  // const { data: response, isLoading, error } = useGetCommission(filtersString);
-
-  // Memoize customers data to prevent unnecessary re-renders
-  // const commissionData = useMemo(() => {
-  //   return response?.data || [];
-  // }, [response?.data]);
-
-  // const commissionMeta = useMemo(() => {
-  //   return response?.meta || [];
-  // }, [response?.meta]);
-
-  // const pagination = {
+  // const addMoneyTransactionsPagination = {
   //   enable: true,
-  //   page: commissionMeta?.current_page,
-  //   per_page: commissionMeta?.per_page,
-  //   total: commissionMeta?.total,
-  //   from: commissionMeta?.from,
-  //   to: commissionMeta?.to,
-  //   last_page: commissionMeta?.last_page,
+  //   page: addMoneyTransactionsMeta?.current_page,
+  //   per_page: addMoneyTransactionsMeta?.per_page,
+  //   total: addMoneyTransactionsMeta?.total,
+  //   from: addMoneyTransactionsMeta?.from,
+  //   to: addMoneyTransactionsMeta?.to,
+  //   last_page: addMoneyTransactionsMeta?.last_page,
   //   onChangeRowsPerPage: (value: number) => {
   //     updatePagination({ per_page: value });
   //   },
@@ -167,6 +162,7 @@ const AddMoneyPage: React.FC = () => {
   //   { label: "Paypal", value: "paypal" },
   //   { label: "Card", value: "card" },
   // ];
+
   return (
     <div className="space-y-4">
       <div className="space-y-4 border-b-1 pb-5 border-b-gray-200">
@@ -218,17 +214,18 @@ const AddMoneyPage: React.FC = () => {
           <PageTitle title={t("modules.pages.addMoney.historyTitle")} />
           <AddMoneyFilters
             filters={filters}
-            onResetFilters={resetFilters}
-            onApplyFilters={applyFilters}
+            onUpdateStatus={updateAddMoneyTransactionsStatus}
+            onResetFilters={resetAddMoneyTransactionsFilters}
+            onApplyFilters={applyAddMoneyTransactionsFilters}
           />
         </div>
         <div>
           <DataTable
             data={addMoneyTransactionsData}
             columns={columns}
-            // isLoading={isLoading}
-            // error={error}
-            // pagination={pagination}
+            isLoading={isLoadingAddMoneyTransactions}
+            error={errorAddMoneyTransactions}
+            // pagination={addMoneyTransactionsPagination}
           />
         </div>
       </div>

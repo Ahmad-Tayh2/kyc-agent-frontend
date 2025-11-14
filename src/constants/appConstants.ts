@@ -45,3 +45,18 @@ export const TRASACTIONS_TYPES = [
   "withdraw_money",
   "exchange_money",
 ];
+
+export const ADD_MONEY_TRANSACTIONS_STATUS = [
+  "initiated",
+  "processing",
+  "completed",
+  "failed",
+  "cancelled",
+];
+export const ADD_MONEY_TRANSACTIONS_STATUS_COLORS = {
+  initiated: "#398EF0",
+  processing: "#9D7C5F",
+  completed: "#027A48",
+  failed: "#B42318",
+  cancelled: "#000000",
+};

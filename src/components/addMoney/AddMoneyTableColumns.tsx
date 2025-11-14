@@ -7,7 +7,7 @@ import StatusLabel from "@/components/shared/StatusLabel";
 // import ViewDetailsIcon from "@/assets/icons/view-details.svg?react";
 // import EditIcon from "@/assets/icons/edit.svg?react";
 // import { ROUTES } from "@/constants/routes";
-import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
+import { ADD_MONEY_TRANSACTIONS_STATUS_COLORS } from "@/constants/appConstants";
 
 export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
   return useMemo(
@@ -25,8 +25,8 @@ export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
         accessorKey: "currency",
         header: "Currency",
         cell: ({ row }) => {
-          const currency: any = row.getValue("currency");
-          return <div>{currency?.code}</div>;
+          const currency: string = row.original.payment.currency;
+          return <div>{currency}</div>;
         },
       },
       {
@@ -38,7 +38,7 @@ export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
         header: "Payment Method",
         cell: ({ row }) => {
           const payment: any = row.getValue("payment");
-          return <div>{payment?.provider_payment_method}</div>;
+          return <div>{payment?.provider}</div>;
         },
       },
       {
@@ -47,8 +47,8 @@ export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
         cell: ({ row }) => {
           const value: string = row.original?.payment?.status;
           const color =
-            CUSTOMER_STATUS_COLORS[
-              value as keyof typeof CUSTOMER_STATUS_COLORS
+            ADD_MONEY_TRANSACTIONS_STATUS_COLORS[
+              value as keyof typeof ADD_MONEY_TRANSACTIONS_STATUS_COLORS
             ] || "#000000";
           return <StatusLabel value={value} color={color} />;
         },

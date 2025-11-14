@@ -1,16 +1,24 @@
 import React from "react";
 import { FilterButton } from "@/components/shared/FilterButton";
-import type { CustomerFilterState } from "@/hooks/data/useCustomerFilters";
 import { ExportButton } from "../shared/ExportButton";
+import type { AddMoneyTransactionsFilterState } from "@/hooks/data/useAddMoneyFilters";
+import MultiSelectDropdown from "../shared/MultiSelectDropdown";
+import { ADD_MONEY_TRANSACTIONS_STATUS } from "@/constants/appConstants";
 
+const statusOptions = ADD_MONEY_TRANSACTIONS_STATUS.map((status) => ({
+  value: status,
+  label: status,
+}));
 interface AddMoneyFiltersProps {
-  filters: CustomerFilterState;
+  filters: AddMoneyTransactionsFilterState;
+  onUpdateStatus: (status: string[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
 
 const AddMoneyFilters: React.FC<AddMoneyFiltersProps> = ({
-  // filters,
+  filters,
+  onUpdateStatus,
   onResetFilters,
   onApplyFilters,
 }) => {
@@ -28,7 +36,7 @@ const AddMoneyFilters: React.FC<AddMoneyFiltersProps> = ({
           onApplyFilters={onApplyFilters}
         >
           <div className="flex gap-2 w-fit">
-            {/* <MultiSelectDropdown
+            <MultiSelectDropdown
               label="Status"
               placeholder="All"
               options={statusOptions}
@@ -36,6 +44,7 @@ const AddMoneyFilters: React.FC<AddMoneyFiltersProps> = ({
               onChange={onUpdateStatus}
               showSelectAll
             />
+            {/* 
             <DateRangeSelector
               label="Reg. date"
               placeholder="Select date range"
