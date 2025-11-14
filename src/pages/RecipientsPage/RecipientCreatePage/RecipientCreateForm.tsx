@@ -578,7 +578,6 @@ const RecipientCreateForm: React.FC = () => {
     }
   };
 
-  const [disableCstomerSelection, setDisableCstomerSelection] = useState(false);
   useEffect(() => {
     if (customerIdQuery && customerOptions?.length > 0) {
       const found = customerOptions?.find((item: any) => {
@@ -586,7 +585,6 @@ const RecipientCreateForm: React.FC = () => {
       });
       if (found) {
         handleInputChange("customer_id", found?.value);
-        setDisableCstomerSelection(true);
       }
     }
   }, [customerIdQuery, customerOptions]);
@@ -818,7 +816,6 @@ const RecipientCreateForm: React.FC = () => {
             countryOptions={countryOptions}
             cityOptions={cityOptions}
             countryPhoneOptions={countryPhoneOptions}
-            disableCstomerSelection={disableCstomerSelection}
             validationErrors={validationErrors}
           />
         )}

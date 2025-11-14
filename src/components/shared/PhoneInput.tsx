@@ -166,7 +166,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   return (
     <div className="flex flex-col gap-1">
       <div
-        className="relative flex items-center border border-input rounded-md bg-background
+        className="relative flex items-center h-11 border border-input rounded-md bg-background
             focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-colors duration-300"
         ref={containerRef}
       >
@@ -196,7 +196,9 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
               </>
             ) : (
               <>
-                <span className="text-lg"></span>
+                <span className="text-xs text-muted-foreground">
+                  Select country code
+                </span>
                 <ChevronDownIcon className="h-4 w-4 text-muted-foreground" />
               </>
             )}
