@@ -25,12 +25,18 @@ export const paymentLinksColumns = (): ColumnDef<any>[] => {
           const customer: any = row.getValue("customer");
           return (
             <div>
-              <Link
-                to={ROUTES.CUSTOMERS.DETAILS(customer.id)}
-                className="hover:underline"
-              >
-                {customer.first_name} {customer.last_name}
-              </Link>
+              {customer?.id && customer?.first_name ? (
+                <Link
+                  to={ROUTES.CUSTOMERS.DETAILS(customer.id)}
+                  className="hover:underline"
+                >
+                  {customer?.first_name} {customer?.last_name}
+                </Link>
+              ) : (
+                <span className="text-xs text-muted-foreground">
+                  No Customer found
+                </span>
+              )}
             </div>
           );
         },
