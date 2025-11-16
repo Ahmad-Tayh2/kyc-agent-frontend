@@ -36,6 +36,17 @@ export function useCreatePaymentLink() {
     },
   });
 }
+export function useRegeneratePaymentLink() {
+  return useMutation({
+    mutationFn: (id: number) => paymentLinksService.regeneratePaymentLink(id),
+    onSuccess: () => {
+      toast.success("Payment link regenerated successfully!");
+    },
+    onError: () => {
+      toast.error("Payment link regeneration failed!");
+    },
+  });
+}
 
 export function useCheckPaymentLinkValidation(token: string) {
   return useQuery({

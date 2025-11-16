@@ -62,6 +62,8 @@ export const API_URLS = {
   paymentLinks: {
     get: (filters: string) => `${baseUrl}/payment-links${filters}`,
     create: `${baseUrl}/payment-links`,
+    regenerate: (id: number) =>
+      `${baseUrl}/payment-links/${id}/regenerate-token`,
     validate: (token: string) => `${baseUrl}/payment-links/token/${token}`,
     getByTransaction: (transactionId: string) =>
       `${baseUrl}/payment-links/transaction/${transactionId}`,
