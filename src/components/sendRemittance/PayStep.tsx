@@ -249,8 +249,9 @@ const PayStep = (props: PayStepProps) => {
                     >
                       {paymentLinkByTransactionString?.slice(0, 80)}
                       {paymentLinkByTransactionString?.length > 80 && "..."}
-                      <Copy className="w-4 h-4" />
-                      {/* COPY PAYMENT LINK */}
+                      {paymentLinkByTransactionString && (
+                        <Copy className="w-4 h-4" />
+                      )}
                     </Button>
                   </div>
                 ) : (

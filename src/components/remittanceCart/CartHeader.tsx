@@ -52,9 +52,6 @@ const CartHeader = (props: CartHeaderProps) => {
     });
     setPaymentLink(response?.data);
   };
-  useEffect(() => {
-    console.log("paymentLink = ", paymentLink);
-  }, [paymentLink]);
   const handleRegeneratePaymentLink = async () => {
     if (paymentLink?.id) {
       const response = await regeneratePaymentLink(paymentLink?.id);
