@@ -1,6 +1,6 @@
-export const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
-export const serverUrl = "https://nomadrem.amazing-agileteam.com";
-//export const baseUrl = 'http://localhost:8000/api';
+//export const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
+export const serverUrl = 'https://nomadrem.amazing-agileteam.com';
+export const baseUrl = 'http://localhost:8000/api';
 
 export const API_URLS = {
   auth: {
@@ -154,7 +154,7 @@ export const API_URLS = {
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
-    deleteCurrency: () => "", // URL not ready yet
+    deleteCurrency: () => '', // URL not ready yet
     addCurrency: (walletId: string | number) =>
       `${baseUrl}/wallets/${walletId}/currencies`,
     getAddMoneyTransactions: (filters: string) =>
@@ -191,5 +191,19 @@ export const API_URLS = {
   },
   apisAndGateways: {
     getList: `${baseUrl}/apis/list`,
+  },
+  remittanceAvailability: {
+    receiveCountries: `${baseUrl}/remittance-availability/receive-countries`,
+    sendCountries: `${baseUrl}/remittance-availability/send-countries`,
+    methods: (receiveCountryId?: number) => {
+      const url = `${baseUrl}/remittance-availability/methods`;
+      return receiveCountryId ? `${url}?receive_country=${receiveCountryId}` : url;
+    },
+    recipientMethods: (recipientId: number, receiveCountryId: number) =>
+      `${baseUrl}/remittance-availability/recipients/${recipientId}/methods?receive_country=${receiveCountryId}`,
+    sendCountryCurrencies: (countryId: number) =>
+      `${baseUrl}/remittance-availability/send-countries/${countryId}/currencies`,
+    receiveCountryCurrencies: (countryId: number) =>
+      `${baseUrl}/remittance-availability/receive-countries/${countryId}/currencies`,
   },
 };
