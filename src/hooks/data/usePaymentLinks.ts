@@ -26,13 +26,29 @@ export function useGetPaymentLinkByCart(cartId: string) {
   });
 }
 export function useCreatePaymentLink() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (data: any) => paymentLinksService.createPaymentLinks(data),
     onSuccess: () => {
       toast.success("Payment link created successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["get-payment-link-by-transaction"],
+      });
     },
     onError: () => {
       toast.error("Payment link creation failed!");
+    },
+  });
+}
+export function useRegeneratePaymentLink() {
+  return useMutation({
+    mutationFn: (id: number) => paymentLinksService.regeneratePaymentLink(id),
+    onSuccess: () => {
+      toast.success("Payment link regenerated successfully!");
+    },
+    onError: () => {
+      toast.error("Payment link regeneration failed!");
     },
   });
 }

@@ -12,7 +12,13 @@ export function useAgentProfile(agentId: string | number | null) {
   });
 }
 
-export function useUpdateAgentProfile(agentId: string | number | null) {
+export function useUpdateAgentProfile({
+  agentId,
+  onError,
+}: {
+  agentId: string | number | null;
+  onError: (errorsData: any) => void;
+}) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: UpdateAgentProfileRequest) =>
@@ -20,6 +26,9 @@ export function useUpdateAgentProfile(agentId: string | number | null) {
     onSuccess: () => {
       toast.success("Profile updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["agent-profile", agentId] });
+    },
+    onError: (err: any) => {
+      onError(err?.response?.data?.errors);
     },
   });
 }

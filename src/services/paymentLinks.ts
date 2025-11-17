@@ -26,6 +26,11 @@ export const paymentLinksService = {
     return response.data;
   },
 
+  regeneratePaymentLink: async (id: number) => {
+    const response = await apiClient.post(API_URLS.paymentLinks.regenerate(id));
+    return response.data;
+  },
+
   getPaymentLinkValidation: async (token: string) => {
     const response = await apiClient.get(API_URLS.paymentLinks.validate(token));
     return response.data;

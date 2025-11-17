@@ -129,6 +129,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               onChange={(date: string) =>
                 handleDateChange("date_of_birth", date)
               }
+              disabledAfter={new Date()}
             />
             {validationErrors?.date_of_birth && (
               <ErrorField errors={[validationErrors?.date_of_birth[0]]} />

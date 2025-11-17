@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { copyToClipboard } from "@/helpers/text";
 import {
   useCreatePaymentLink,
+  useRegeneratePaymentLink,
   useGetPaymentLinkByCart,
 } from "@/hooks/data/usePaymentLinks";
 import { useState, useEffect } from "react";
@@ -25,6 +26,7 @@ interface CartHeaderProps {
   cartId?: number;
 }
 interface PaymentLinkType {
+  id?: number;
   token: string;
   status: string;
 }
@@ -32,6 +34,7 @@ const CartHeader = (props: CartHeaderProps) => {
   const { customer, date, totalPayableAmount, cartId } = props;
 
   const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
+  const { mutateAsync: regeneratePaymentLink } = useRegeneratePaymentLink();
   const { data } = useGetPaymentLinkByCart(String(cartId));
   const [paymentLink, setPaymentLink] = useState<PaymentLinkType>({
     token: "",
@@ -42,12 +45,18 @@ const CartHeader = (props: CartHeaderProps) => {
       setPaymentLink(data?.data[0]);
     }
   }, [data]);
-  const handleSendPaymentLink = async () => {
+  const handleGeneratePaymentLink = async () => {
     const response = await createPaymentLink({
       payable_type: "RemittanceCart",
       payable_id: cartId,
     });
     setPaymentLink(response?.data);
+  };
+  const handleRegeneratePaymentLink = async () => {
+    if (paymentLink?.id) {
+      const response = await regeneratePaymentLink(paymentLink?.id);
+      setPaymentLink(response?.data);
+    }
   };
   const handleCopyLink = () => {
     paymentLink?.token;
@@ -76,8 +85,9 @@ const CartHeader = (props: CartHeaderProps) => {
           valueClassName="text-primary"
         />
       </div>
+
       <div className="flex items-center gap-0">
-        {paymentLink?.status && (
+        {paymentLink?.status && paymentLink?.token && (
           <StatusLabel
             value={paymentLink?.status}
             color={
@@ -87,18 +97,28 @@ const CartHeader = (props: CartHeaderProps) => {
             }
           />
         )}
-        <ActionButton
-          type="link"
-          title="resend"
-          onClick={handleSendPaymentLink}
-        />
-        <ActionButton
-          type="link"
-          title="copy link"
-          icon={<CopyLinkIcon />}
-          className="p-1"
-          onClick={handleCopyLink}
-        />
+        {paymentLink?.token && paymentLink?.id ? (
+          <ActionButton
+            type="link"
+            title="Regenerate Link"
+            onClick={handleRegeneratePaymentLink}
+          />
+        ) : (
+          <ActionButton
+            type="link"
+            title="Generate Link"
+            onClick={handleGeneratePaymentLink}
+          />
+        )}
+        {paymentLink?.token && (
+          <ActionButton
+            type="link"
+            title="copy link"
+            icon={<CopyLinkIcon />}
+            className="p-1"
+            onClick={handleCopyLink}
+          />
+        )}
       </div>
     </div>
   );

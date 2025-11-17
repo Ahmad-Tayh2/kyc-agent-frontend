@@ -219,6 +219,7 @@ const RecipientCreatePage: React.FC = () => {
                     placeholder="Enter recipient name"
                     value={searchForm.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
+                    disabled={!!searchForm.phone_number}
                   />
                 </div>
 
@@ -241,6 +242,7 @@ const RecipientCreatePage: React.FC = () => {
                     onPhoneChange={(phoneNumber) =>
                       handleInputChange("phone_number", phoneNumber)
                     }
+                    disabled={!!searchForm.name}
                   />
                   {/* <Input
                     type="number"

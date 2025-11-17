@@ -156,6 +156,7 @@ const CustomerCreatePage: React.FC = () => {
               placeholder="Enter your email"
               value={searchForm.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
+              disabled={!!searchForm.phoneNumber} //disable email when the user choose to search by phoneNumber
             />
           </div>
           <div className="text-gray-500 mb-3">or</div>
@@ -176,6 +177,7 @@ const CustomerCreatePage: React.FC = () => {
               onPhoneChange={(phoneNumber) =>
                 handleInputChange("phoneNumber", phoneNumber)
               }
+              disabled={!!searchForm.email} //disable phoneNumber when the user choose to search by email
             />
             {/* <Input
               id="phoneNumber"

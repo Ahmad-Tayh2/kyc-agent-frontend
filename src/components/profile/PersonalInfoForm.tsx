@@ -95,10 +95,12 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           </Label>
           <DatePicker
             disabled={!editMode}
-            value={formData.dob || ""}
-            onChange={(date: string) => handleDateChange("dob", date)}
+            value={formData.date_of_birth || ""}
+            onChange={(date: string) => handleDateChange("date_of_birth", date)}
           />
-          {errors?.dob && <ErrorField errors={[errors?.dob]} />}
+          {errors?.date_of_birth && (
+            <ErrorField errors={[errors?.date_of_birth]} />
+          )}
         </div>
 
         <div className="flex flex-col gap-1">

@@ -1,5 +1,5 @@
-export const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
-export const serverUrl = 'https://nomadrem.amazing-agileteam.com';
+export const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
+export const serverUrl = "https://nomadrem.amazing-agileteam.com";
 //export const baseUrl = 'http://localhost:8000/api';
 
 export const API_URLS = {
@@ -62,6 +62,8 @@ export const API_URLS = {
   paymentLinks: {
     get: (filters: string) => `${baseUrl}/payment-links${filters}`,
     create: `${baseUrl}/payment-links`,
+    regenerate: (id: number) =>
+      `${baseUrl}/payment-links/${id}/regenerate-token`,
     validate: (token: string) => `${baseUrl}/payment-links/token/${token}`,
     getByTransaction: (transactionId: string) =>
       `${baseUrl}/payment-links/transaction/${transactionId}`,
@@ -152,10 +154,13 @@ export const API_URLS = {
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
-    deleteCurrency: () => '', // URL not ready yet
+    deleteCurrency: () => "", // URL not ready yet
     addCurrency: (walletId: string | number) =>
       `${baseUrl}/wallets/${walletId}/currencies`,
+    getAddMoneyTransactions: (filters: string) =>
+      `${baseUrl}/add-money-transactions${filters}`,
   },
+
   transactions: {
     get: () => `${baseUrl}/extra-transactions`,
   },

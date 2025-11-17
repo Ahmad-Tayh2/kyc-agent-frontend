@@ -45,3 +45,10 @@ export function useAddCurrency() {
     },
   });
 }
+
+export function useAddMoneyTransactions(filters?: string) {
+  return useQuery({
+    queryKey: ["get-add-money-transactions", filters],
+    queryFn: () => walletService.getAddMoneyTransactions(filters),
+  });
+}

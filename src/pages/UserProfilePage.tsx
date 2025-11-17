@@ -27,7 +27,7 @@ const initialFormData: ProfileFormData = {
   // Personal Information
   firstName: "",
   lastName: "",
-  dob: "",
+  date_of_birth: "",
   email: "",
   phone: "",
   countryCode: "",
@@ -65,8 +65,10 @@ const UserProfilePage = () => {
   const { data: profileData, isLoading } = useAgentProfile(agentId);
   const { mutateAsync: uploadDocs, isPending: isDocsPending } =
     useUploadAgentDocs();
-  const { mutateAsync: updateProfile, isPending } =
-    useUpdateAgentProfile(agentId);
+  const { mutateAsync: updateProfile, isPending } = useUpdateAgentProfile({
+    agentId,
+    onError: (errorsData: any) => setErrors(errorsData),
+  });
 
   const [formData, setFormData] = useState<ProfileFormData>(initialFormData);
   const [editMode, setEditMode] = useState(false);
@@ -81,7 +83,7 @@ const UserProfilePage = () => {
       // Personal Information
       firstName: user.first_name || "",
       lastName: user.last_name || "",
-      dob: agent.date_of_birth || "",
+      date_of_birth: agent.date_of_birth || "",
       email: user.email || "",
       phone: user.phone_number || "",
       countryCode: user.country_phone_code || "",
@@ -161,7 +163,8 @@ const UserProfilePage = () => {
       newErrors.firstName = t("modules.register.fields.firstName.error");
     if (!formData.lastName)
       newErrors.lastName = t("modules.register.fields.lastName.error");
-    if (!formData.dob) newErrors.dob = t("modules.register.fields.dob.error");
+    if (!formData.date_of_birth)
+      newErrors.date_of_birth = t("modules.register.fields.dob.error");
     if (!formData.email)
       newErrors.email = t("modules.register.fields.email.error");
     if (!formData.gender)
@@ -226,7 +229,7 @@ const UserProfilePage = () => {
     agent_type: formData.agentType,
     is_sending_partner: formData.isSendingPartner,
     is_payout_partner: formData.isPayoutPartner,
-    date_of_birth: formData.dob,
+    date_of_birth: formData.date_of_birth,
     gender: formData.gender,
     // sending_agent_group_id: formData.sendingAgentGroupId,
     // payout_agent_group_id: formData.payoutAgentGroupId,
@@ -249,6 +252,9 @@ const UserProfilePage = () => {
     }),
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  useEffect(() => {
+    console.log("errors == = ", errors);
+  }, [errors]);
   // Handle form submission
   const handleFormSave = async () => {
     try {

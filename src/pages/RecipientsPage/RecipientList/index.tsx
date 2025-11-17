@@ -62,7 +62,14 @@ const RecipientsPage: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <PageTitle title={t("modules.pages.recipients.title")} />
+        <div>
+          <PageTitle title={t("modules.pages.recipients.title")} />
+          {pagination?.total && (
+            <div>
+              Total: <b>{pagination?.total}</b>
+            </div>
+          )}
+        </div>
         <ActionButton
           title="add new recipient"
           icon={<AddRecipientIcon />}

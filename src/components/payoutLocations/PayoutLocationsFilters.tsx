@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import MultiSelectDropdown from "../shared/MultiSelectDropdown";
 import { Button } from "../ui/button";
 import { useTranslation } from "react-i18next";
+// import CountrySelector from "../shared/CountrySelector";
 interface PayoutLocationsFiltersProps {
   filters: PayoutLocationFilterState;
   onUpdateCountryFilter: (countries: string[]) => void;
@@ -20,7 +21,14 @@ const PayoutLocationsFilters: React.FC<PayoutLocationsFiltersProps> = ({
   const { t } = useTranslation("global");
 
   const { data: countriesData = [] } = useCountries();
-
+  // const countries = useMemo(() => {
+  //     if (!countriesData) return [];
+  //     return countriesData?.map((country: any) => ({
+  //       id: country.id,
+  //       code: country?.iso2,
+  //       name: country.name,
+  //     }));
+  //   }, [countriesData]);
   const countryOptions = useMemo(() => {
     if (!countriesData) return [];
     return countriesData?.map((country: any) => ({
@@ -40,7 +48,13 @@ const PayoutLocationsFilters: React.FC<PayoutLocationsFiltersProps> = ({
           showSelectAll
           className="w-1/4"
         />
-
+        {/* <CountrySelector
+              label="Country"
+              placeholder="Select countries"
+              countries={countries}
+              value={filters.countries ?? []}
+              onChange={onUpdateCountryIds}
+            /> */}
         <Button
           variant="default"
           title={t("modules.components.filterButton.apply")}
