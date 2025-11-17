@@ -368,6 +368,7 @@ export function DataTable({
                     className="w-[120px]"
                   />
                 )}
+                {/* of {frontEndPaginationStates?.total} */}
                 <Button
                   variant="outline"
                   onClick={() =>
@@ -467,6 +468,7 @@ export function DataTable({
                       className="w-[120px]"
                     />
                   )}
+                  {/* of {pagination?.total} */}
                   <Button
                     variant="outline"
                     disabled={pagination?.page === pagesLength}

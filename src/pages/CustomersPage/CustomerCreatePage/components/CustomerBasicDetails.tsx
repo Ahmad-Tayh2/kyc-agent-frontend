@@ -117,6 +117,7 @@ const CustomerBasicDetails = (props: any) => {
             value={formData.date_of_birth || ""}
             onChange={(date: string) => handleDateChange("date_of_birth", date)}
             disabled={!editMode}
+            disabledAfter={new Date()}
           />
           {validationErrors?.date_of_birth && (
             <ErrorField errors={validationErrors?.date_of_birth} />

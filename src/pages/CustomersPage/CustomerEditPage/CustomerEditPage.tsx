@@ -376,9 +376,12 @@ const CustomerEditPage = () => {
           >
             <BackArrowIcon width={30} height={30} />
           </button>
-          <PageTitle
-            title={`${formData.first_name || ""} ${formData.last_name || ""}`}
-          />
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Customer: </span>
+            <PageTitle
+              title={`${formData.first_name || ""} ${formData.last_name || ""}`}
+            />
+          </div>
           <StatusLabel
             value={formData.status || "active"}
             color={statusColor}

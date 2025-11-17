@@ -67,7 +67,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   return (
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
-        placeholder="Search by customer's name or phone"
+        placeholder="Search by recipient's name or phone"
         value={filters.search ?? ""}
         onChange={onUpdateSearchTerm}
       />

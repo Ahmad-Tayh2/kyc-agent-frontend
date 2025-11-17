@@ -69,7 +69,7 @@ export const editRecipientSchema = z.object({
 const RecipientEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { data, error } = useGetRecipient(id!);
+  const { data, error, isLoading } = useGetRecipient(id!);
   const [formData, setFormData] = useState<any>({});
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
@@ -228,9 +228,9 @@ const RecipientEditPage: React.FC = () => {
     }
   };
 
-  // if (isLoading) return <div className="p-8">Loading...</div>;
-  // if (error)
-  //   return <div className="p-8 text-red-500">Error loading recipient.</div>;
+  if (isLoading) return <div className="p-8">Loading...</div>;
+  if (error)
+    return <div className="p-8 text-red-500">Error loading recipient.</div>;
 
   return (
     <div className="space-y-4">
@@ -243,11 +243,14 @@ const RecipientEditPage: React.FC = () => {
           >
             <BackArrowIcon width={30} height={30} />
           </button>
-          <PageTitle
-            title={`${recipientData?.first_name || ""} ${
-              recipientData?.last_name || ""
-            }`}
-          />
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Recipient: </span>
+            <PageTitle
+              title={`${recipientData?.first_name || ""} ${
+                recipientData?.last_name || ""
+              }`}
+            />
+          </div>
         </div>
         {recipientData?.created_at && (
           <div className="ml-10">
