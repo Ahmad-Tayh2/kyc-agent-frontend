@@ -171,13 +171,6 @@ export const API_URLS = {
     previewAnyExchange: () =>
       `${baseUrl}/exchange-money-transactions/preview-any`,
   },
-  countryAllowedCurrencies: {
-    get: (filters: string) => `${baseUrl}/country-allowed-currencies${filters}`,
-    getByCountry: (countryId: string | number, filters: string) =>
-      `${baseUrl}/countries/${countryId}/currencies${filters}`,
-    getByCurrency: (currencyId: string | number, filters: string) =>
-      `${baseUrl}/currencies/${currencyId}/countries${filters}`,
-  },
   remittancePurposes: {
     get: (filters: string) => `${baseUrl}/remittance-purposes${filters}`,
     getById: (id: string | number) => `${baseUrl}/remittance-purposes/${id}`,

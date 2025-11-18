@@ -15,7 +15,6 @@ import type {
   SendRemittanceStepThree,
   SendRemittanceStepTwo,
 } from "@/types/sendRemittance";
-import type { Currency as SimpleCountryAllowedCurrency } from "@/types/shared/countryAllowedCurrency";
 import type {
   RemittancePurpose,
   SourceIncome,
@@ -65,14 +64,6 @@ export const mapCustomerRecipientToStoreFormat = (
 
 export const mapCurrencyToStoreFormat = (
   currency: Currency
-): SendRemittanceCurrency => ({
-  id: currency.id,
-  code: currency.code,
-  name: currency.name,
-});
-
-export const mapSimpleCurrencyToStoreFormat = (
-  currency: SimpleCountryAllowedCurrency
 ): SendRemittanceCurrency => ({
   id: currency.id,
   code: currency.code,

@@ -1,19 +1,19 @@
-import React from "react";
+import React from 'react';
 // import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { z } from 'zod';
 // import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/constants/routes";
-import { useLogin } from "@/hooks/data/useAuth";
-import { useResendVerification } from "@/hooks/data/useAuth";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { validate } from "@/lib/validate";
-import ErrorField from "@/components/shared/ErrorField";
-import { useAuthStore } from "@/store/authStore";
+import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { ROUTES } from '@/constants/routes';
+import { useLogin } from '@/hooks/data/useAuth';
+import { useResendVerification } from '@/hooks/data/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { validate } from '@/lib/validate';
+import ErrorField from '@/components/shared/ErrorField';
+import { useAuthStore } from '@/store/authStore';
 
 interface LoginErrorsTypes {
   email?: string[];
@@ -22,10 +22,10 @@ interface LoginErrorsTypes {
 
 const createLoginSchema = (t: (key: string) => string) => {
   return z.object({
-    email: z.string().email(t("modules.login.fields.email.validationError")),
+    email: z.string().email(t('modules.login.fields.email.validationError')),
     password: z
       .string()
-      .min(8, t("modules.login.fields.password.minLengthError")),
+      .min(8, t('modules.login.fields.password.minLengthError')),
     remember: z.boolean().optional(),
   });
 };
@@ -34,20 +34,20 @@ const LoginForm: React.FC<{
   onSuccess: (identifier: string) => void;
   onForgotPassword: () => void;
 }> = ({ onSuccess, onForgotPassword }) => {
-  const [t] = useTranslation("global");
+  const [t] = useTranslation('global');
   const loginSchema = React.useMemo(() => createLoginSchema(t), [t]);
 
   const [data, setData] = React.useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
     remember: false,
   });
   const [errors, setErrors] = React.useState<LoginErrorsTypes | null>(null);
   const [error, setError] = React.useState({
-    message: "",
-    status: "",
+    message: '',
+    status: '',
   });
-  const [emailToVerify, setEmailToVerify] = React.useState("");
+  const [emailToVerify, setEmailToVerify] = React.useState('');
   const [hasSubmitted, setHasSubmitted] = React.useState(false);
 
   const { mutateAsync: loginAsync, status } = useLogin();
@@ -57,13 +57,13 @@ const LoginForm: React.FC<{
   const navigate = useNavigate();
   const resetEveryThing = () => {
     setData({
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       remember: false,
     });
     setError({
-      message: "",
-      status: "",
+      message: '',
+      status: '',
     });
     setErrors(null);
   };
@@ -81,8 +81,8 @@ const LoginForm: React.FC<{
     e.preventDefault();
     setHasSubmitted(true);
     setError({
-      message: "",
-      status: "",
+      message: '',
+      status: '',
     });
 
     // Validate on submit
@@ -99,16 +99,15 @@ const LoginForm: React.FC<{
         remember: data.remember,
       });
       if (response.data && response.data.access_token) {
-        localStorage.setItem("token", response.data.access_token);
+        localStorage.setItem('token', response.data.access_token);
         if (response.data.user) {
-          localStorage.setItem("user", JSON.stringify(response.data.user));
+          localStorage.setItem('user', JSON.stringify(response.data.user));
           loginInStore(response.data.user, response.data.access_token); //save the auth data in zustand store
         }
         navigate(ROUTES.DASHBOARD);
       } else {
         onSuccess(data.email);
       }
-      console.log(" success  response= ", response);
     } catch (err: any) {
       // Access error response data if available
       const errorResponse = err.response?.data;
@@ -118,7 +117,7 @@ const LoginForm: React.FC<{
         status: errorResponse?.errors?.status,
         message: errorResponse?.message,
       });
-      if (errorResponse?.errors?.status === "inactive") {
+      if (errorResponse?.errors?.status === 'inactive') {
         setEmailToVerify(data?.email);
       }
 
@@ -137,92 +136,92 @@ const LoginForm: React.FC<{
     }
   };
   return (
-    <form onSubmit={onSubmit} className="space-y-6 my-60">
+    <form onSubmit={onSubmit} className='space-y-6 my-60'>
       {/* Header Section */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">{t("modules.login.title")}</h1>
-        <p className="text-muted-foreground mb-6">
-          {t("modules.login.subtitle")}
+        <h1 className='text-3xl font-bold mb-2'>{t('modules.login.title')}</h1>
+        <p className='text-muted-foreground mb-6'>
+          {t('modules.login.subtitle')}
         </p>
       </div>
       {/* Email Input */}
-      <div className="flex flex-col gap-1">
-        <Label className="text-[14px]">
-          {t("modules.login.fields.email.label")}
-          <span className="text-red-500">*</span>
+      <div className='flex flex-col gap-1'>
+        <Label className='text-[14px]'>
+          {t('modules.login.fields.email.label')}
+          <span className='text-red-500'>*</span>
         </Label>
         <Input
-          id="email"
-          type="text"
-          autoComplete="email"
-          className="w-full"
-          placeholder={t("modules.login.fields.email.placeholder")}
+          id='email'
+          type='text'
+          autoComplete='email'
+          className='w-full'
+          placeholder={t('modules.login.fields.email.placeholder')}
           value={data.email}
-          onChange={handleChange("email")}
+          onChange={handleChange('email')}
         />
         <ErrorField errors={errors?.email} />
       </div>
       {/* Password Input */}
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="password" className="text-[14px]">
-          {t("modules.login.fields.password.label")}
-          <span className="text-red-500">*</span>
+      <div className='flex flex-col gap-1'>
+        <Label htmlFor='password' className='text-[14px]'>
+          {t('modules.login.fields.password.label')}
+          <span className='text-red-500'>*</span>
         </Label>
         <PasswordInput
-          id="password"
-          autoComplete="current-password"
-          className="w-full"
-          placeholder={t("modules.login.fields.password.placeholder")}
+          id='password'
+          autoComplete='current-password'
+          className='w-full'
+          placeholder={t('modules.login.fields.password.placeholder')}
           value={data.password}
-          onChange={handleChange("password")}
+          onChange={handleChange('password')}
         />
         <ErrorField errors={errors?.password} />
       </div>
 
       {error?.message && (
-        <div className="flex items-center gap-1">
+        <div className='flex items-center gap-1'>
           <ErrorField errors={[error?.message]} />
-          {error?.status === "inactive" && (
+          {error?.status === 'inactive' && (
             <button
-              type="button"
+              type='button'
               onClick={onResendVerificationEmail}
-              className="text-primary text-sm hover:underline ml-auto"
+              className='text-primary text-sm hover:underline ml-auto'
             >
-              {t("modules.register.success.resendingActivation")}
+              {t('modules.register.success.resendingActivation')}
             </button>
           )}
         </div>
       )}
-      <div className="flex items-center justify-between ">
+      <div className='flex items-center justify-between '>
         <button
-          type="button"
+          type='button'
           onClick={onForgotPassword}
-          className="text-primary text-sm hover:underline ml-auto"
+          className='text-primary text-sm hover:underline ml-auto'
         >
-          {t("modules.login.forgotPassword")}
+          {t('modules.login.forgotPassword')}
         </button>
       </div>
       {/* Submit Button */}
       <Button
-        type="submit"
-        variant="default"
-        className="w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]"
-        disabled={status === "pending"}
+        type='submit'
+        variant='default'
+        className='w-fit px-8 py-5 border-b-2 border-t-2 border-t-[#31dada] border-b-[#149393]'
+        disabled={status === 'pending'}
       >
-        {status === "pending"
-          ? t("common.messages.loggingIn")
-          : t("common.buttons.login")}
+        {status === 'pending'
+          ? t('common.messages.loggingIn')
+          : t('common.buttons.login')}
       </Button>
-      <p className="text-muted-foreground mb-2">
-        {t("modules.login.dontHaveAccount")}
+      <p className='text-muted-foreground mb-2'>
+        {t('modules.login.dontHaveAccount')}
       </p>
-      <p className="text-muted-foreground">
-        {t("modules.login.becomePartner")}{" "}
+      <p className='text-muted-foreground'>
+        {t('modules.login.becomePartner')}{' '}
         <a
           href={ROUTES.AUTH.REGISTER}
-          className="text-primary hover:underline font-medium"
+          className='text-primary hover:underline font-medium'
         >
-          {t("modules.login.registerLink")}
+          {t('modules.login.registerLink')}
         </a>
       </p>
     </form>

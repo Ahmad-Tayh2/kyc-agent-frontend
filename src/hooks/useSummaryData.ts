@@ -75,6 +75,8 @@ export const useSummaryData = (): SummaryData => {
 
       // Step 2 data - use values from transaction preview
       sendingAmount: sendAmount,
+      sendingCurrency: stepTwo.sendCurrency?.code,
+      receivingCurrency: stepTwo.receiveCurrency?.code,
       exchangeRate: exchangeRateDisplay,
       feesAndCharges: feesAndChargesDisplay, // Shows: total_commission + extra_fees = value (currency)
       commission: totalCommission, // Just total_commission
