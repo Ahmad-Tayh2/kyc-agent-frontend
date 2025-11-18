@@ -80,3 +80,124 @@ export interface PaymentError {
   type: 'card_error' | 'validation_error' | 'api_error' | 'network_error';
   param?: string;
 }
+
+// Payment Validation Types
+export interface PaymentValidationRequest {
+  transactionReference?: string | null;
+  paymentLinkToken?: string | null;
+  walletCurrencyId?: number | null;
+  amount?: number | null;
+}
+
+// Common interfaces for validation response data
+export interface Agent {
+  id: number;
+  name: string;
+}
+
+export interface Customer {
+  id: number;
+  name: string;
+  email?: string;
+  phone?: string;
+  country?: {
+    id: number;
+    name: string;
+    code: string;
+  };
+}
+
+export interface Recipient {
+  id: number;
+  name: string;
+  phone: string;
+  country_id?: number;
+  country_name?: string;
+  country_code?: string;
+  country?: {
+    id: number;
+    name: string;
+    code: string;
+  };
+}
+
+export interface Country {
+  id: number;
+  name: string;
+  code: string;
+}
+
+// Transaction Reference Validation Response
+export interface TransactionValidationData {
+  type: 'transaction';
+  transaction_reference: string;
+  payment_link_token: null;
+  wallet_currency_id: null;
+  total_amount: number;
+  currency: string;
+  agent: Agent;
+  customer: Customer;
+  recipient: Recipient;
+  send_country: Country;
+  receive_country: Country;
+}
+
+// Payment Link - Single Transaction Response
+export interface PaymentLinkTransactionValidationData {
+  type: 'payment_link';
+  payment_link_type: 'transaction';
+  transaction_reference: string;
+  payment_link_token: string;
+  wallet_currency_id: null;
+  total_amount: number;
+  currency: string;
+  agent: Agent;
+  customer: Customer;
+  recipient: Recipient;
+  send_country: Country;
+  receive_country: Country;
+}
+
+// Payment Link - Remittance Cart Response
+export interface PaymentLinkCartValidationData {
+  type: 'payment_link';
+  payment_link_type: 'remittance_cart';
+  transaction_reference: null;
+  payment_link_token: string;
+  wallet_currency_id: null;
+  total_amount: number;
+  currency: string;
+  agent: Agent;
+  customer: Customer;
+  recipients: Recipient[];
+  send_country: Country;
+  receive_countries: Country[];
+  transactions_count: number;
+}
+
+// Add Money to Wallet Response
+export interface AddMoneyValidationData {
+  type: 'add_money';
+  transaction_reference: null;
+  payment_link_token: null;
+  wallet_currency_id: number;
+  total_amount: number;
+  currency: string;
+  agent: Agent;
+  wallet_current_balance: number;
+}
+
+// Union type for all possible validation data types
+export type PaymentValidationData =
+  | TransactionValidationData
+  | PaymentLinkTransactionValidationData
+  | PaymentLinkCartValidationData
+  | AddMoneyValidationData;
+
+// Validation Response
+export interface PaymentValidationResponse {
+  status: boolean;
+  message: string;
+  data: PaymentValidationData | null;
+  errors: string[] | null;
+}

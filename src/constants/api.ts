@@ -181,6 +181,7 @@ export const API_URLS = {
   },
   payments: {
     create: `${baseUrl}/payments`,
+    validate: `${baseUrl}/payments/validate`,
   },
   apisAndGateways: {
     getList: `${baseUrl}/apis/list`,
