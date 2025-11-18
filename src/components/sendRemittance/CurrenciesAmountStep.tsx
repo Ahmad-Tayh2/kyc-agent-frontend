@@ -12,9 +12,9 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAgentExtraFees } from '@/hooks/data/useAgent';
 import {
-  useGetCountryReceivingCurrencies,
-  useGetCountrySendingCurrencies,
-} from '@/hooks/data/useCountryAllowedCurrency';
+  useSendCountryCurrencies,
+  useReceiveCountryCurrencies,
+} from '@/hooks/data/useRemittanceAvailability';
 import {
   useTransactionPreview,
   useTransactionPreviewByRef,
@@ -22,7 +22,7 @@ import {
 import { useSummaryData } from '@/hooks/useSummaryData';
 import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
 import type { SendRemittanceExchangeDetails } from '@/types/sendRemittance';
-import type { CountryCurrency } from '@/types/shared/countryAllowedCurrency';
+import type { RemittanceCurrency } from '@/types/remittanceAvailability';
 import { useLocation } from 'react-router-dom';
 import SummaryCard from './SummaryCard';
 
@@ -92,12 +92,12 @@ const CurrenciesAmountStep: React.FC = () => {
   const { data: wallet } = useWallet(agentId);
   const { data: extraFeesData } = useAgentExtraFees(agentId);
 
-  const { data: sendingCurrencies } = useGetCountrySendingCurrencies(
-    stepOne?.sendCountry?.id ?? ''
+  const { data: sendingCurrencies } = useSendCountryCurrencies(
+    stepOne?.sendCountry?.id ?? null
   );
 
-  const { data: receivingCurrencies } = useGetCountryReceivingCurrencies(
-    stepOne?.receiveCountry?.id ?? ''
+  const { data: receivingCurrencies } = useReceiveCountryCurrencies(
+    stepOne?.receiveCountry?.id ?? null
   );
 
   // Get wallet currencies - memoized to prevent dependency issues
@@ -119,11 +119,11 @@ const CurrenciesAmountStep: React.FC = () => {
 
   useEffect(() => {
     if (sendingCurrencies?.length) {
-      const defaultCurrency = sendingCurrencies?.[0]?.currency;
+      const defaultCurrency = sendingCurrencies[0];
       setSendCurrency({
-        id: defaultCurrency?.id,
-        name: defaultCurrency?.name,
-        code: defaultCurrency?.code,
+        id: defaultCurrency.id,
+        name: defaultCurrency.name,
+        code: defaultCurrency.code,
       });
     }
   }, [sendingCurrencies, setSendCurrency]);
@@ -132,16 +132,16 @@ const CurrenciesAmountStep: React.FC = () => {
     if (receivingCurrencies?.length && sendCurrency) {
       let defaultCurrency = null;
       for (const item of receivingCurrencies) {
-        if (item.currency.id !== sendCurrency?.id) {
-          defaultCurrency = item.currency;
+        if (item.id !== sendCurrency?.id) {
+          defaultCurrency = item;
           break;
         }
       }
       if (defaultCurrency) {
         setReceiveCurrency({
-          id: defaultCurrency?.id,
-          name: defaultCurrency?.name,
-          code: defaultCurrency?.code,
+          id: defaultCurrency.id,
+          name: defaultCurrency.name,
+          code: defaultCurrency.code,
         });
       }
     }
@@ -397,26 +397,28 @@ const CurrenciesAmountStep: React.FC = () => {
                   placeholder='Select from wallet'
                   amountPlaceholder='Enter amount'
                   currencyOptions={sendingCurrencies?.map(
-                    (item: CountryCurrency) => {
+                    (item: RemittanceCurrency) => {
                       return {
-                        id: item?.currency?.id,
-                        code: item?.currency?.code,
-                        name: item?.currency?.name,
+                        id: item.id,
+                        code: item.code,
+                        name: item.name,
                       };
                     }
-                  )}
+                  ) || []}
                   selectedCurrencyId={sendCurrency?.id || undefined}
                   amount={sendAmount}
                   onCurrencyChange={(currencyId) => {
                     const currency = sendingCurrencies?.find(
-                      (item: CountryCurrency) =>
-                        item.currency?.id === currencyId
-                    )?.currency;
-                    setSendCurrency({
-                      id: currencyId,
-                      name: currency?.name,
-                      code: currency?.code,
-                    });
+                      (item: RemittanceCurrency) =>
+                        item.id === currencyId
+                    );
+                    if (currency) {
+                      setSendCurrency({
+                        id: currencyId,
+                        name: currency.name,
+                        code: currency.code,
+                      });
+                    }
                   }}
                   onAmountChange={(amount) => setSendAmount(amount)}
                   showBalance
@@ -436,26 +438,28 @@ const CurrenciesAmountStep: React.FC = () => {
                   placeholder='Select target currency'
                   amountPlaceholder='Amount to receive'
                   currencyOptions={receivingCurrencies?.map(
-                    (item: CountryCurrency) => {
+                    (item: RemittanceCurrency) => {
                       return {
-                        id: item?.currency?.id,
-                        code: item?.currency?.code,
-                        name: item?.currency?.name,
+                        id: item.id,
+                        code: item.code,
+                        name: item.name,
                       };
                     }
-                  )}
+                  ) || []}
                   selectedCurrencyId={receiveCurrency?.id || undefined}
                   amount={receiveAmount}
                   onCurrencyChange={(currencyId) => {
                     const currency = receivingCurrencies?.find(
-                      (item: CountryCurrency) =>
-                        item.currency?.id === currencyId
-                    )?.currency;
-                    setReceiveCurrency({
-                      id: currencyId,
-                      name: currency?.name,
-                      code: currency?.code,
-                    });
+                      (item: RemittanceCurrency) =>
+                        item.id === currencyId
+                    );
+                    if (currency) {
+                      setReceiveCurrency({
+                        id: currencyId,
+                        name: currency.name,
+                        code: currency.code,
+                      });
+                    }
                   }}
                   onAmountChange={(amount) => setReceiveAmount(amount)}
                   readOnly={!isCalculateFromReceiveAmount}

@@ -360,7 +360,6 @@ const RegisterForm: React.FC<{
     }
     try {
       const result = await registerAndUpload({ payload, files: identityFiles });
-      console.log(" general result ", result);
       // Determine registration and upload status
       type ErrorsMap = Record<string, any[]>; // example: { "user.email": ["Invalid email"], "user.name": ["Required"] }
 
@@ -436,7 +435,6 @@ const RegisterForm: React.FC<{
   };
   const handleDateChange = (date: string) => {
     if (date) {
-      console.log();
       setFormData((prev) => ({
         ...prev,
         dob: date,

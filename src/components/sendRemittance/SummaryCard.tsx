@@ -10,6 +10,8 @@ export interface SummaryData {
   sendingCountry?: string;
   receivingCountry?: string;
   sendingAmount?: number;
+  sendingCurrency?: string; // Currency code for sending amount
+  receivingCurrency?: string; // Currency code for receiving amount
   exchangeRate?: number | string;
   feesAndCharges?: number | string; // Now displays as: total_commission + extra_fees = value (currency)
   commission?: number;
@@ -97,7 +99,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
 
         <SummaryRow
           label="Sending Amount"
-          value={data.sendingAmount !== undefined ? formatCurrency(data.sendingAmount) : undefined}
+          value={data.sendingAmount !== undefined ? formatCurrency(data.sendingAmount, data.sendingCurrency) : undefined}
         />
 
         <SummaryRow
@@ -111,14 +113,14 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
             data.feesAndCharges !== undefined
               ? typeof data.feesAndCharges === 'string'
                 ? data.feesAndCharges
-                : formatCurrency(data.feesAndCharges)
+                : formatCurrency(data.feesAndCharges, data.sendingCurrency)
               : undefined
           }
         />
 
         <SummaryRow
           label="Commission"
-          value={data.commission !== undefined ? formatCurrency(data.commission) : undefined}
+          value={data.commission !== undefined ? formatCurrency(data.commission, data.sendingCurrency) : undefined}
         />
 
         <SummaryRow
@@ -127,7 +129,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
             data.extraFees !== undefined
               ? typeof data.extraFees === 'string'
                 ? data.extraFees
-                : formatCurrency(data.extraFees)
+                : formatCurrency(data.extraFees, data.sendingCurrency)
               : undefined
           }
         />
@@ -142,7 +144,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
           <span>Total Payable Amount</span>
           <span>
             {data.totalPayableAmount !== undefined
-              ? formatCurrency(data.totalPayableAmount)
+              ? formatCurrency(data.totalPayableAmount, data.sendingCurrency)
               : '—'}
           </span>
         </div>

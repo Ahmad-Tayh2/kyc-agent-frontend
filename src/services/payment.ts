@@ -5,6 +5,8 @@ import type {
   PaymentProvider,
   PaymentRequest,
   PaymentResponse,
+  PaymentValidationRequest,
+  PaymentValidationResponse,
 } from '@/types/payment';
 
 // Re-export types for easy access
@@ -18,10 +20,32 @@ export type {
   PaymentRequest,
   PaymentResponse,
   PaymentStatus,
+  PaymentValidationData,
+  PaymentValidationRequest,
+  PaymentValidationResponse,
   StripePaymentRequest,
 } from '@/types/payment';
 
 export const paymentService = {
+  // Validate payment before processing
+  validatePayment: async (
+    validationData: PaymentValidationRequest
+  ): Promise<PaymentValidationResponse> => {
+    try {
+      const response = await apiClient.post(
+        API_URLS.payments.validate,
+        validationData
+      );
+      return response.data;
+    } catch (error: any) {
+      // Handle validation errors
+      if (error.response?.data) {
+        return error.response.data;
+      }
+      throw error;
+    }
+  },
+
   // Create and process payment
   createPayment: async (
     paymentData: PaymentRequest

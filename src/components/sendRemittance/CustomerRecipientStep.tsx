@@ -2,25 +2,26 @@ import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
 import SearchableSelect from '@/components/ui/searchable-select';
 import { ROUTES } from '@/constants/routes';
 import {
-  useGetReceivingCurrencies,
-  useGetSendingCurrencies,
-} from '@/hooks/data/useCountryAllowedCurrency';
-import {
   useAttachRecipientToCustomer,
   useGetCustomerRecipients,
   useGetCustomers,
 } from '@/hooks/data/useCustomers';
-import { useRecipientPayouts } from '@/hooks/data/useRecipientPayout';
-import { useRecipientRemittanceMethods } from '@/hooks/data/useRecipientRemittanceMethods';
 import { useInfiniteRecipients } from '@/hooks/data/useRecipients';
+import {
+  useReceiveCountries,
+  useSendCountries,
+  useRecipientMethods,
+} from '@/hooks/data/useRemittanceAvailability';
 import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
 import type { CustomerType } from '@/types/customers';
 import type { CustomerRecipient } from '@/types/customers/recipients';
 import type { RecipientDataType } from '@/types/recipients';
 
-import type { RecipientPayout } from '@/types/recipientPayout/RecipientPayout';
-import type { RecipientRemittanceMethod } from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
-import type { CountryAllowedCurrency } from '@/types/shared/countryAllowedCurrency';
+import type {
+  RemittanceCountry,
+  RemittanceMethodAvailability,
+  RecipientPayoutAgent,
+} from '@/types/remittanceAvailability';
 import { ChevronDownIcon, ChevronUpIcon, Loader2, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -74,15 +75,15 @@ const CustomerRecipientStep = (props: any) => {
     return recipientsResponse?.data || [];
   }, [recipientsResponse?.data]);
 
-  const { data: sendCountriesData } = useGetSendingCurrencies(true);
-  const { data: receiveCountriesData } = useGetReceivingCurrencies(true);
+  // Use new remittance availability endpoints for countries
+  const { data: sendCountriesData } = useSendCountries();
+  const { data: receiveCountriesData } = useReceiveCountries();
 
-  const { data: recipientRemittanceMethodsData = [] } =
-    useRecipientRemittanceMethods(
-      stepOne.recipient?.id ? stepOne.recipient.id.toString() : ''
-    );
-  const { data: recipientPayoutsResponse } = useRecipientPayouts(
-    stepOne.recipient?.id ? { recipient_id: stepOne.recipient.id } : {}
+  // Use new recipient methods endpoint that combines remittance methods and payout agents
+  // Only fetches when BOTH recipient and receive country are selected
+  const { data: recipientMethodsData } = useRecipientMethods(
+    stepOne.recipient?.id || null,
+    stepOne.receiveCountry?.id || null
   );
 
   // Infinite scroll for recipient search - only enabled after search button is clicked
@@ -187,42 +188,45 @@ const CustomerRecipientStep = (props: any) => {
 
   const sendCountryOptions = useMemo(() => {
     return (
-      sendCountriesData?.map((item: CountryAllowedCurrency) => ({
-        label: item.country.name,
-        value: item.country.id,
+      sendCountriesData?.map((item: RemittanceCountry) => ({
+        label: item.name,
+        value: item.id,
       })) || []
     );
   }, [sendCountriesData]);
 
   const receiveCountryOptions = useMemo(() => {
     return (
-      receiveCountriesData?.map((item: CountryAllowedCurrency) => ({
-        label: item.country.name,
-        value: item.country.id,
+      receiveCountriesData?.map((item: RemittanceCountry) => ({
+        label: item.name,
+        value: item.id,
       })) || []
     );
   }, [receiveCountriesData]);
 
   // Get recipient's payment methods (remittance methods + payout agents)
   const paymentMethodOptions = useMemo(() => {
-    if (!stepOne.recipient) {
+    if (!stepOne.recipient || !stepOne.receiveCountry || !recipientMethodsData) {
       return [];
     }
 
     const options: Array<{ label: string; value: string }> = [];
 
+    // Filter out "cash pickup" methods (case insensitive)
+    const filteredRemittanceMethods = recipientMethodsData.remittance_methods?.filter(
+      (rm: RemittanceMethodAvailability) =>
+        !rm.name.toLowerCase().includes('cash pickup') &&
+        !rm.description.toLowerCase().includes('cash pickup')
+    ) || [];
+
     // Add Remittance Methods (with RM prefix for clarity)
-    if (
-      recipientRemittanceMethodsData &&
-      recipientRemittanceMethodsData.length > 0
-    ) {
-      recipientRemittanceMethodsData.forEach(
-        (rm: RecipientRemittanceMethod) => {
+    // Only add if there are methods other than "cash pickup"
+    if (filteredRemittanceMethods.length > 0) {
+      filteredRemittanceMethods.forEach(
+        (rm: RemittanceMethodAvailability) => {
           options.push({
-            label: `Wallet: ${
-              rm.remittance_method?.name || `Method ${rm.remittance_method_id}`
-            }`,
-            value: `rm_${rm.remittance_method_id}`,
+            label: `Wallet: ${rm.name}`,
+            value: `rm_${rm.id}`,
           });
         }
       );
@@ -230,15 +234,12 @@ const CustomerRecipientStep = (props: any) => {
 
     // Add Payout Agents (with Payout prefix for clarity)
     if (
-      recipientPayoutsResponse?.data &&
-      recipientPayoutsResponse.data.length > 0
+      recipientMethodsData.payout_agents &&
+      recipientMethodsData.payout_agents.length > 0
     ) {
-      recipientPayoutsResponse.data.forEach((payout: RecipientPayout) => {
+      recipientMethodsData.payout_agents.forEach((payout: RecipientPayoutAgent) => {
         options.push({
-          label: `Cash Pickup: ${
-            payout.payout_agent?.business_name ||
-            `Agent ${payout.payout_agent_id}`
-          }`,
+          label: `Cash Pickup: ${payout.payout_agent_business_name}`,
           value: `payout_${payout.payout_agent_id}`,
         });
       });
@@ -247,8 +248,8 @@ const CustomerRecipientStep = (props: any) => {
     return options;
   }, [
     stepOne.recipient,
-    recipientRemittanceMethodsData,
-    recipientPayoutsResponse,
+    stepOne.receiveCountry,
+    recipientMethodsData,
   ]);
 
   useEffect(() => {
@@ -259,25 +260,23 @@ const CustomerRecipientStep = (props: any) => {
       );
       if (customer) {
         // Auto-set send country based on customer's country if available in allowed countries
-        const customerCountryInAllowed = (
-          sendCountriesData as CountryAllowedCurrency[]
-        )?.find(
-          (item: CountryAllowedCurrency) =>
-            item.country.name === customer.country.name
+        const customerCountryInAllowed = sendCountriesData?.find(
+          (item: RemittanceCountry) =>
+            item.name === customer.country.name
         );
         if (customerCountryInAllowed) {
           setSendCountry({
             id:
-              typeof customerCountryInAllowed.country.id === 'string'
-                ? parseInt(customerCountryInAllowed.country.id)
-                : customerCountryInAllowed.country.id,
-            name: customerCountryInAllowed.country.name,
-            iso3: customerCountryInAllowed.country.iso3 || '',
+              typeof customerCountryInAllowed.id === 'string'
+                ? parseInt(customerCountryInAllowed.id)
+                : customerCountryInAllowed.id,
+            name: customerCountryInAllowed.name,
+            iso3: customerCountryInAllowed.iso3 || '',
           });
         }
       }
     }
-  }, [stepOne.customer]);
+  }, [stepOne.customer, customersData, sendCountriesData, setSendCountry]);
 
   // Handler functions
   const handleCustomerSelect = (customerId: string | number) => {
@@ -339,17 +338,17 @@ const CustomerRecipientStep = (props: any) => {
       // Auto-set receive country based on recipient's country if available in allowed countries
       if (recipient.address.country?.name) {
         const recipientCountryInAllowed = receiveCountriesData?.find(
-          (item: CountryAllowedCurrency) =>
-            item.country.name === recipient.address.country.name
+          (item: RemittanceCountry) =>
+            item.name === recipient.address.country.name
         );
         if (recipientCountryInAllowed) {
           setReceiveCountry({
             id:
-              typeof recipientCountryInAllowed.country.id === 'string'
-                ? parseInt(recipientCountryInAllowed.country.id)
-                : recipientCountryInAllowed.country.id,
-            name: recipientCountryInAllowed.country.name,
-            iso3: recipientCountryInAllowed.country.iso3 || '',
+              typeof recipientCountryInAllowed.id === 'string'
+                ? parseInt(recipientCountryInAllowed.id)
+                : recipientCountryInAllowed.id,
+            name: recipientCountryInAllowed.name,
+            iso3: recipientCountryInAllowed.iso3 || '',
           });
         }
       }
@@ -389,33 +388,33 @@ const CustomerRecipientStep = (props: any) => {
 
   const handleSendCountrySelect = (countryId: string | number) => {
     const countryItem = sendCountriesData?.find(
-      (item: CountryAllowedCurrency) => item.country.id === countryId
+      (item: RemittanceCountry) => item.id === countryId
     );
     if (countryItem) {
       setSendCountry({
         id:
-          typeof countryItem.country.id === 'string'
-            ? parseInt(countryItem.country.id)
-            : countryItem.country.id,
-        name: countryItem.country.name,
-        iso3: countryItem.country.iso3 || '',
+          typeof countryItem.id === 'string'
+            ? parseInt(countryItem.id)
+            : countryItem.id,
+        name: countryItem.name,
+        iso3: countryItem.iso3 || '',
       });
     }
   };
 
   const handleReceiveCountrySelect = (countryId: string | number) => {
     const countryItem = receiveCountriesData?.find(
-      (item: CountryAllowedCurrency) =>
-        item.country.id.toString() === countryId.toString()
+      (item: RemittanceCountry) =>
+        item.id.toString() === countryId.toString()
     );
     if (countryItem) {
       setReceiveCountry({
         id:
-          typeof countryItem.country.id === 'string'
-            ? parseInt(countryItem.country.id)
-            : countryItem.country.id,
-        name: countryItem.country.name,
-        iso3: countryItem.country.iso3 || '',
+          typeof countryItem.id === 'string'
+            ? parseInt(countryItem.id)
+            : countryItem.id,
+        name: countryItem.name,
+        iso3: countryItem.iso3 || '',
       });
     }
   };
@@ -423,17 +422,19 @@ const CustomerRecipientStep = (props: any) => {
   const handlePaymentMethodSelect = (methodId: string | number) => {
     const methodValue = methodId.toString();
 
+    if (!recipientMethodsData) return;
+
     if (methodValue.startsWith('rm_')) {
       // Handle remittance method selection
-      const rmMethodId = methodValue.replace('rm_', '');
-      const rm = recipientRemittanceMethodsData?.find(
-        (r: RecipientRemittanceMethod) => r.remittance_method_id.toString() === rmMethodId
+      const rmMethodId = parseInt(methodValue.replace('rm_', ''));
+      const rm = recipientMethodsData.remittance_methods?.find(
+        (r: RemittanceMethodAvailability) => r.id === rmMethodId
       );
 
       if (rm) {
         setRemittanceMethod({
-          id: rm.remittance_method_id,
-          name: rm.remittance_method?.name || `Remittance Method ${rm.remittance_method_id}`,
+          id: rm.id,
+          name: rm.name,
           type: 'remittance_method',
         });
         // Clear payout agent
@@ -442,16 +443,16 @@ const CustomerRecipientStep = (props: any) => {
       }
     } else if (methodValue.startsWith('payout_')) {
       // Handle payout agent selection
-      const payoutAgentId = methodValue.replace('payout_', '');
-      const payout = recipientPayoutsResponse?.data?.find(
-        (p: RecipientPayout) => p.payout_agent_id.toString() === payoutAgentId
+      const payoutAgentId = parseInt(methodValue.replace('payout_', ''));
+      const payout = recipientMethodsData.payout_agents?.find(
+        (p: RecipientPayoutAgent) => p.payout_agent_id === payoutAgentId
       );
 
       if (payout) {
         setPayoutAgent({
           id: payout.payout_agent_id,
-          name: payout.payout_agent.business_name,
-          business_name: payout.payout_agent.business_name,
+          name: payout.payout_agent_business_name,
+          business_name: payout.payout_agent_business_name,
           type: 'payout_agent',
         });
         // Clear remittance method
@@ -704,6 +705,7 @@ const CustomerRecipientStep = (props: any) => {
           isOpen={isAddPaymentMethodModalOpen}
           onClose={() => setIsAddPaymentMethodModalOpen(false)}
           recipientId={stepOne.recipient?.id || 0}
+          receiveCountryId={stepOne.receiveCountry?.id || null}
           onMethodAdded={() => {
             setIsAddPaymentMethodModalOpen(false);
             // The TanStack Query cache will automatically refresh the data

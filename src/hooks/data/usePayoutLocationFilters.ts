@@ -28,7 +28,7 @@ export const usePayoutLocationFilters = () => {
   const [filtersString, setFilterString] = useState<string>("");
   useEffect(() => {
     applyFilters();
-  }, [debouncedSearch, filters?.per_page, filters?.page]);
+  }, [debouncedSearch, filters?.per_page, filters?.page, filters?.country_codes]);
   // Update functions for each filter
   const updateSearchTerm = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search }));

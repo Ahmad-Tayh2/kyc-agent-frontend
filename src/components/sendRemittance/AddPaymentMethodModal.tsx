@@ -9,12 +9,13 @@ import { useInfinitePayoutLocations } from '@/hooks/data/usePayoutLocation';
 import { usePayoutLocationFilters } from '@/hooks/data/usePayoutLocationFilters';
 import { useCreateRecipientPayout } from '@/hooks/data/useRecipientPayout';
 import { useCreateRecipientRemittanceMethod } from '@/hooks/data/useRecipientRemittanceMethods';
-// import { useGetRecipient } from '@/hooks/data/useRecipients'; // Commented out - only used for country filter
+import { useRemittanceMethods as useRemittanceMethodsAvailability } from '@/hooks/data/useRemittanceAvailability';
 import {
   useRemittanceMethods,
   useVerifyAccountInfo,
 } from '@/hooks/data/useRemittanceMethod';
 import type { PayoutLocation } from '@/types/payoutLocation/PayoutLocation';
+import type { RemittanceMethodAvailability } from '@/types/remittanceAvailability';
 import type { RemittanceMethod } from '@/types/remittanceMethod/RemittanceMethod';
 import type { Country } from '@/types/shared/location';
 import { X } from 'lucide-react';
@@ -24,6 +25,7 @@ interface AddPaymentMethodModalProps {
   isOpen: boolean;
   onClose: () => void;
   recipientId: number;
+  receiveCountryId: number | null;
   onMethodAdded: () => void;
 }
 
@@ -31,6 +33,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   isOpen,
   onClose,
   recipientId,
+  receiveCountryId,
   onMethodAdded,
 }) => {
   const [activeTab, setActiveTab] = useState<'remittance' | 'payout'>(
@@ -55,14 +58,23 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   // Form states for payout agent
   const [selectedPayoutId, setSelectedPayoutId] = useState<number | null>(null);
 
-  // API Hooks
-  const { data: remittanceMethodsData = [] } = useRemittanceMethods();
+  // Local state for country filters
+  const [rmCountryFilter, setRmCountryFilter] = useState<number | undefined>(
+    receiveCountryId || undefined
+  );
+
+  // API Hooks - Use new remittance availability endpoints for filtering by country
+  const { data: remittanceMethodsData = [] } = useRemittanceMethodsAvailability(
+    rmCountryFilter
+  );
+
+  // Get full remittance methods data with validator info
+  const { data: fullRemittanceMethodsData } = useRemittanceMethods();
+
   const { data: countries } = useCountries();
-  // const { data: recipientData } = useGetRecipient(recipientId); // Commented out - only used for country filter
 
   // Payout location filtering
-  const { filtersString } = usePayoutLocationFilters();
-  // const { filtersString, updateCountryFilter, filters } = usePayoutLocationFilters(); // Commented out for country filter
+  const { filtersString, updateCountryFilter, filters } = usePayoutLocationFilters();
   const {
     data: payoutLocationsInfiniteData,
     fetchNextPage,
@@ -92,12 +104,18 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
       countryCode: country.iso2,
     })) || [];
 
-  // Commented out - country filter is disabled
-  // const countryOptions =
-  //   countries?.map((country: Country) => ({
-  //     value: country.iso2,
-  //     label: country.name,
-  //   })) || [];
+  // Country options for filtering - need both iso2 for payout and id for remittance
+  const countryOptions =
+    countries?.map((country: Country) => ({
+      value: country.iso2,
+      label: country.name,
+    })) || [];
+
+  const countryOptionsById =
+    countries?.map((country: Country) => ({
+      value: country.id.toString(),
+      label: country.name,
+    })) || [];
 
   // Set default country filter to recipient's country - Commented out as country filter is disabled
   // React.useEffect(() => {
@@ -119,18 +137,24 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   //   updateCountryFilter,
   // ]);
 
-  // Get selected method details
-  const selectedMethod = remittanceMethodsData?.data?.find(
+  // Get selected method details - use full data for validator info
+  const selectedMethod = fullRemittanceMethodsData?.data?.find(
     (rm: RemittanceMethod) => rm.id === selectedRmId
   );
 
   const hasValidator = selectedMethod?.validator?.name;
 
   const rmOptions =
-    remittanceMethodsData?.data?.map((rm: RemittanceMethod) => ({
-      label: rm.name,
-      value: rm.id.toString(),
-    })) || [];
+    remittanceMethodsData
+      ?.filter(
+        (rm: RemittanceMethodAvailability) =>
+          !rm.name.toLowerCase().includes('cash pickup') &&
+          !rm.description.toLowerCase().includes('cash pickup')
+      )
+      .map((rm: RemittanceMethodAvailability) => ({
+        label: rm.name,
+        value: rm.id.toString(),
+      })) || [];
 
   const payoutOptions =
     payoutLocationsData?.data?.map((payout: PayoutLocation) => ({
@@ -307,6 +331,22 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
         <div className='p-4 space-y-4'>
           {activeTab === 'remittance' ? (
             <>
+              {/* Country Filter for Remittance Methods */}
+              <div className='space-y-2 mb-4'>
+                <Label>Filter by Country</Label>
+                <SearchableSelect
+                  value={rmCountryFilter?.toString() || ''}
+                  onChange={(value: string | number) => {
+                    const countryId = value ? parseInt(value.toString()) : undefined;
+                    setRmCountryFilter(countryId);
+                    // Reset selected method when changing country filter
+                    setSelectedRmId(null);
+                  }}
+                  options={countryOptionsById}
+                  placeholder='All countries'
+                />
+              </div>
+
               {/* Select Remittance Method */}
               <div className='space-y-2 mb-6'>
                 <Label>Select Payment Method *</Label>
@@ -437,8 +477,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
             </>
           ) : (
             <>
-              {/* Country Filter - Commented out as requested */}
-              {/* <div className='space-y-2 mb-4'>
+              {/* Country Filter */}
+              <div className='space-y-2 mb-4'>
                 <Label>Filter by Country</Label>
                 <SearchableSelect
                   value={filters.country_codes?.[0] || ''}
@@ -449,7 +489,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                   options={countryOptions}
                   placeholder='Select a country to filter payout locations'
                 />
-              </div> */}
+              </div>
 
               {/* Payout Location Selection */}
               <div className='space-y-2 mb-6'>
