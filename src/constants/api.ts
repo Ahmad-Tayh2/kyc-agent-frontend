@@ -1,6 +1,6 @@
-//export const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
+export const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
 export const serverUrl = 'https://nomadrem.amazing-agileteam.com';
-export const baseUrl = 'http://localhost:8000/api';
+//export const baseUrl = 'http://localhost:8000/api';
 
 export const API_URLS = {
   auth: {
@@ -191,7 +191,9 @@ export const API_URLS = {
     sendCountries: `${baseUrl}/remittance-availability/send-countries`,
     methods: (receiveCountryId?: number) => {
       const url = `${baseUrl}/remittance-availability/methods`;
-      return receiveCountryId ? `${url}?receive_country=${receiveCountryId}` : url;
+      return receiveCountryId
+        ? `${url}?receive_country=${receiveCountryId}`
+        : url;
     },
     recipientMethods: (recipientId: number, receiveCountryId: number) =>
       `${baseUrl}/remittance-availability/recipients/${recipientId}/methods?receive_country=${receiveCountryId}`,
