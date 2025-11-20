@@ -424,7 +424,9 @@ const CustomerEditPage = () => {
             title="see all recipients"
             type="cancel"
             className="m-auto"
-            onClick={() => navigate(ROUTES.RECIPIENTS.LIST)}
+            onClick={() =>
+              navigate(ROUTES.RECIPIENTS.LIST + `?customer_ids=${id}`)
+            }
           />
         </div>
       </EditSectionCard>

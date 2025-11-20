@@ -26,9 +26,9 @@ export interface RecipientCreateData {
     house_number: string;
     postal_code: string;
     extra_address_details?: string;
-    city_id: number;
-    state_id?: number;
-    country_id: number;
+    city_id: string;
+    state_id?: string;
+    country_id: string;
   };
 
   // Customer IDs

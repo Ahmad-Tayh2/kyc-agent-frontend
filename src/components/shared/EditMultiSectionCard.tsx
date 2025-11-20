@@ -34,6 +34,7 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
         <div className="flex items-center gap-5 mt-auto">
           {customerSections?.map((section: EditSection, index: number) => (
             <button
+              key={index}
               className={cn(
                 "text-lg font-semibold border-b-2  px-3 py-1 rounded-t-sm border-transparent hover:border-primary/50 hover:bg-primary/1 hover:text-primary/50",
                 selectedSection === index &&

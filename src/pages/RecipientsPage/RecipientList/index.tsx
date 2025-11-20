@@ -28,7 +28,6 @@ const RecipientsPage: React.FC = () => {
     applyFilters,
     updatePagination,
   } = useRecipientsFilters();
-
   const { data: response, isLoading, error } = useRecipients(filtersString);
 
   const recipientsData = useMemo(() => {
@@ -64,10 +63,12 @@ const RecipientsPage: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <PageTitle title={t("modules.pages.recipients.title")} />
-          {pagination?.total && (
+          {pagination?.total ? (
             <div>
               Total: <b>{pagination?.total}</b>
             </div>
+          ) : (
+            <></>
           )}
         </div>
         <ActionButton

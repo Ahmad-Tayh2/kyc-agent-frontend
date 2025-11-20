@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SearchInput } from "@/components/shared/SearchInput";
 import { FilterButton } from "@/components/shared/FilterButton";
 import MultiSelectDropdown from "@/components/shared/MultiSelectDropdown";
@@ -6,7 +6,10 @@ import CountrySelector from "@/components/shared/CountrySelector";
 import { useCountries } from "@/hooks/data/useAddress";
 import type { RecipientsFilterState } from "@/hooks/data/useRecipientsFilters";
 import type { CustomerType } from "@/types/customers";
-import { useGetCustomersWithSearch } from "@/hooks/data/useCustomers";
+import {
+  useGetCustomer,
+  useGetCustomersWithSearch,
+} from "@/hooks/data/useCustomers";
 import { useGetRemittanceMethods } from "@/hooks/data/useRemittanceMethods";
 
 interface RecipientsFiltersProps {
@@ -22,7 +25,6 @@ interface RecipientsFiltersProps {
 
 const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   filters,
-
   onUpdateSearchTerm,
   onUpdateCustomersIds,
   onUpdateCountryIds,
@@ -40,6 +42,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
       name: country.name,
     }));
   }, [countriesData]);
+
   const { data: customersResponse } = useGetCustomersWithSearch(searchCustomer);
   const customersData = useMemo(() => {
     return customersResponse?.data || [];
@@ -53,7 +56,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
   const customersOptions = [
     ...customersData?.map((customer: CustomerType) => ({
       label: customer.full_name,
-      value: customer.id,
+      value: String(customer.id),
     })),
   ];
 
@@ -63,7 +66,15 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
       value: rm_method?.id,
     })),
   ];
+  const { data: customerResponse } = useGetCustomer(
+    filters?.customer_ids?.[0]!
+  );
 
+  useEffect(() => {
+    if (filters?.customer_ids?.length === 1 && customerResponse?.data?.id) {
+      setSearchCustomer(`${customerResponse?.data?.first_name} `);
+    }
+  }, [filters?.customer_ids, customerResponse]);
   return (
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
@@ -86,6 +97,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
               onChange={onUpdateCustomersIds}
               isSearchable
               checkboxPlacement="right"
+              searchTermValue={searchCustomer}
               onSearchTermChange={(value: string) => setSearchCustomer(value)}
             />
             <CountrySelector

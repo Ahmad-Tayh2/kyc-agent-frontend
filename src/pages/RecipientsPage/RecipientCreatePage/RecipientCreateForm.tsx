@@ -251,6 +251,7 @@ const RecipientCreateForm: React.FC = () => {
   const {
     mutateAsync: createRecipientIntermediate,
     isPending: isCreatingRecipientIntermediate,
+    status: createRecipientStatus,
   } = useCreateRecipientIntermediate();
   const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } =
     useCreateBankAccount({
@@ -608,13 +609,13 @@ const RecipientCreateForm: React.FC = () => {
           house_number: formData.house_number,
           postal_code: formData.postal_code,
           extra_address_details: formData.bank_details.extra_address_details,
-          city_id: parseInt(formData.city_id),
+          city_id: formData.city_id,
           state_id:
             formData.bank_details.state_id &&
             formData.bank_details.state_id !== ""
-              ? parseInt(formData.bank_details.state_id)
+              ? formData.bank_details.state_id
               : undefined,
-          country_id: parseInt(formData.country_id),
+          country_id: formData.country_id,
         },
         customer_ids: formData.customer_id
           ? [parseInt(formData.customer_id)]
@@ -627,15 +628,17 @@ const RecipientCreateForm: React.FC = () => {
       const flattenedData = {
         ...recipientPayload,
         ...recipientPayload.address,
-        country_id: formData.customer_id,
+        customer_id: formData.customer_id,
       };
+      console.log("formDat * * * *a = ", formData);
+      console.log("recipientPayload = ", recipientPayload);
 
       const validationResult = createRecipientSchema.safeParse(flattenedData);
 
       if (!validationResult.success) {
         const errors = validationResult.error.flatten().fieldErrors;
         setValidationErrors(errors);
-        console.log("Validation errors:", errors);
+        console.log("Validation errors ------- :", errors);
         return;
       }
       if (!recipientId) {
@@ -717,7 +720,7 @@ const RecipientCreateForm: React.FC = () => {
       }
 
       // Final success and navigation
-      toast.success("Recipient created successfully!");
+      toast.success("Recipient bank account created successfully!");
       navigate(ROUTES.RECIPIENTS.LIST);
     } catch (error) {
       console.error("Error creating recipient:", error);
@@ -787,7 +790,12 @@ const RecipientCreateForm: React.FC = () => {
       </div>
     </div>
   );
-
+  const handleSkip = () => {
+    if (createRecipientStatus === "success" && recipientId) {
+      toast.info("You can add bank details later");
+      navigate(ROUTES.RECIPIENTS.LIST);
+    }
+  };
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -856,18 +864,27 @@ const RecipientCreateForm: React.FC = () => {
             disabled={currentStep === "basic"}
           />
           <div className="flex justify-end items-end gap-4">
+            {currentStep === "bank" && (
+              <ActionButton
+                title="skip step"
+                onClick={handleSkip}
+                type="link"
+              />
+            )}
             <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
             {currentStep === "bank" ? (
-              <ActionButton
-                title="save & continue"
-                onClick={handleSubmit}
-                buttonProps={{
-                  disabled:
-                    isCreatingRecipient ||
-                    isCreatingBankAccount ||
-                    isCreatingRecipientPayout,
-                }}
-              />
+              <>
+                <ActionButton
+                  title="save & continue"
+                  onClick={handleSubmit}
+                  buttonProps={{
+                    disabled:
+                      isCreatingRecipient ||
+                      isCreatingBankAccount ||
+                      isCreatingRecipientPayout,
+                  }}
+                />
+              </>
             ) : currentStep === "remittance" ? (
               <ActionButton
                 title="save & continue"
@@ -896,9 +913,7 @@ const RecipientCreateForm: React.FC = () => {
               <ActionButton
                 title="save & continue"
                 onClick={handleNext}
-                buttonProps={{
-                  disabled: isCreatingRecipientIntermediate,
-                }}
+                disabled={isCreatingRecipientIntermediate}
                 className="bg-teal-600 hover:bg-teal-700"
               />
             )}

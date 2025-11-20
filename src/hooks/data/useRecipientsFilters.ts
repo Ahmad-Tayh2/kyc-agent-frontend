@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import {
   createFilterApply,
   createFilterReset,
@@ -6,6 +6,7 @@ import {
 } from "@/utils/filterHelpers";
 import { useDebounce } from "../utils/useDebounce";
 import type { paginationProps } from "@/types/shared/pagination";
+import { useSearchParams } from "react-router-dom";
 
 export interface RecipientsFilterState {
   search?: string;
@@ -32,12 +33,37 @@ export const useRecipientsFilters = () => {
     per_page: 10,
   });
   const debouncedSearch = useDebounce(filters?.search);
-
+  const [searchParams] = useSearchParams();
   const [filtersString, setFilterString] = useState<string>("");
+  const hasInitializedFromURL = useRef(false);
 
+  // 1) Initialize filters from URL only once
   useEffect(() => {
+    if (hasInitializedFromURL.current) return;
+
+    const customers = searchParams?.getAll("customer_ids");
+
+    if (customers && customers.length > 0) {
+      updateCustomersIds(customers);
+    }
+
+    hasInitializedFromURL.current = true;
+
+    // Now trigger the FIRST API call after restoring URL filters
     applyFilters();
-  }, [debouncedSearch, filters?.per_page, filters?.page]);
+  }, [searchParams]);
+
+  // 2) Normal filters updates (search, pagination…)
+  useEffect(() => {
+    if (!hasInitializedFromURL.current) return; // Don't run until initial load is done
+    applyFilters();
+  }, [debouncedSearch, filters?.per_page, filters?.page, filtersString]);
+
+  // 3) Customer_ids updates (but avoid running twice during init)
+  useEffect(() => {
+    if (!hasInitializedFromURL.current) return;
+    applyFilters();
+  }, [filters?.customer_ids]);
 
   const updateSearchTerm = useCallback((term: string) => {
     setFilters((prev) => ({ ...prev, search: term }));
