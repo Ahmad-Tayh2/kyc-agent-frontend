@@ -170,7 +170,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
               placeholder="Enter phone number"
             />
             {validationErrors?.phone_number && (
-              <ErrorField errors={validationErrors.phone_number} />
+              <ErrorField errors={[validationErrors.phone_number[0]]} />
             )}
           </div>
         </div>

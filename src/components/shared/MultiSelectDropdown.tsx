@@ -23,6 +23,7 @@ interface MultiSelectDropdownProps {
   showSelectAll?: boolean;
   isSearchable?: boolean;
   checkboxPlacement?: "left" | "right";
+  searchTermValue?: string;
   onSearchTermChange?: (value: string) => void;
 }
 
@@ -38,6 +39,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   showSelectAll = false,
   isSearchable = false,
   checkboxPlacement = "left",
+  searchTermValue,
   onSearchTermChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,6 +50,11 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       onSearchTermChange?.("");
     }
   }, [value]);
+  React.useEffect(() => {
+    if (searchTermValue !== searchTerm) {
+      setSearchTerm(searchTermValue ?? "");
+    }
+  }, [searchTermValue]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const filteredOptions = React.useMemo(() => {
