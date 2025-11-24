@@ -1,25 +1,25 @@
-import ActionButton from '@/components/shared/ActionButton';
-import PhoneInput from '@/components/shared/PhoneInput';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import SearchableSelect from '@/components/ui/searchable-select';
-import { useCountries } from '@/hooks/data/useAddress';
-import { useInfinitePayoutLocations } from '@/hooks/data/usePayoutLocation';
-import { usePayoutLocationFilters } from '@/hooks/data/usePayoutLocationFilters';
-import { useCreateRecipientPayout } from '@/hooks/data/useRecipientPayout';
-import { useCreateRecipientRemittanceMethod } from '@/hooks/data/useRecipientRemittanceMethods';
-import { useRemittanceMethods as useRemittanceMethodsAvailability } from '@/hooks/data/useRemittanceAvailability';
+import ActionButton from "@/components/shared/ActionButton";
+import PhoneInput from "@/components/shared/PhoneInput";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import SearchableSelect from "@/components/ui/searchable-select";
+import { useCountries } from "@/hooks/data/useAddress";
+import { useInfinitePayoutLocations } from "@/hooks/data/usePayoutLocation";
+import { usePayoutLocationFilters } from "@/hooks/data/usePayoutLocationFilters";
+import { useCreateRecipientPayout } from "@/hooks/data/useRecipientPayout";
+import { useCreateRecipientRemittanceMethod } from "@/hooks/data/useRecipientRemittanceMethods";
+import { useRemittanceMethods as useRemittanceMethodsAvailability } from "@/hooks/data/useRemittanceAvailability";
 import {
   useRemittanceMethods,
   useVerifyAccountInfo,
-} from '@/hooks/data/useRemittanceMethod';
-import type { PayoutLocation } from '@/types/payoutLocation/PayoutLocation';
-import type { RemittanceMethodAvailability } from '@/types/remittanceAvailability';
-import type { RemittanceMethod } from '@/types/remittanceMethod/RemittanceMethod';
-import type { Country } from '@/types/shared/location';
-import { X } from 'lucide-react';
-import React, { useState } from 'react';
+} from "@/hooks/data/useRemittanceMethod";
+import type { PayoutLocation } from "@/types/payoutLocation/PayoutLocation";
+import type { RemittanceMethodAvailability } from "@/types/remittanceAvailability";
+import type { RemittanceMethod } from "@/types/remittanceMethod/RemittanceMethod";
+import type { Country } from "@/types/shared/location";
+import { X } from "lucide-react";
+import React, { useState } from "react";
 
 interface AddPaymentMethodModalProps {
   isOpen: boolean;
@@ -36,22 +36,22 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   receiveCountryId,
   onMethodAdded,
 }) => {
-  const [activeTab, setActiveTab] = useState<'remittance' | 'payout'>(
-    'remittance'
+  const [activeTab, setActiveTab] = useState<"remittance" | "payout">(
+    "remittance"
   );
 
   // Remittance Method States
   const [selectedRmId, setSelectedRmId] = useState<number | null>(null);
-  const [accountNumber, setAccountNumber] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryPhoneCode, setCountryPhoneCode] = useState('');
+  const [accountNumber, setAccountNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [countryPhoneCode, setCountryPhoneCode] = useState("");
 
   // Validation states
-  const [accountNamePrefix, setAccountNamePrefix] = useState('');
-  const [accountIdPrefix, setAccountIdPrefix] = useState('');
+  const [accountNamePrefix, setAccountNamePrefix] = useState("");
+  const [accountIdPrefix, setAccountIdPrefix] = useState("");
   const [verificationStatus, setVerificationStatus] = useState<
-    'pending' | 'verified' | 'failed'
-  >('pending');
+    "pending" | "verified" | "failed"
+  >("pending");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -64,9 +64,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   );
 
   // API Hooks - Use new remittance availability endpoints for filtering by country
-  const { data: remittanceMethodsData = [] } = useRemittanceMethodsAvailability(
-    rmCountryFilter
-  );
+  const { data: remittanceMethodsData = [] } =
+    useRemittanceMethodsAvailability(rmCountryFilter);
 
   // Get full remittance methods data with validator info
   const { data: fullRemittanceMethodsData } = useRemittanceMethods();
@@ -74,7 +73,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   const { data: countries } = useCountries();
 
   // Payout location filtering
-  const { filtersString, updateCountryFilter, filters } = usePayoutLocationFilters();
+  const { filtersString, updateCountryFilter, filters } =
+    usePayoutLocationFilters();
   const {
     data: payoutLocationsInfiniteData,
     fetchNextPage,
@@ -148,8 +148,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
     remittanceMethodsData
       ?.filter(
         (rm: RemittanceMethodAvailability) =>
-          !rm.name.toLowerCase().includes('cash pickup') &&
-          !rm.description.toLowerCase().includes('cash pickup')
+          !rm.name.toLowerCase().includes("cash pickup") &&
+          !rm.description.toLowerCase().includes("cash pickup")
       )
       .map((rm: RemittanceMethodAvailability) => ({
         label: rm.name,
@@ -158,8 +158,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
 
   const payoutOptions =
     payoutLocationsData?.data?.map((payout: PayoutLocation) => ({
-      label: `${payout.business_name} - ${payout.address?.location || ''}, ${
-        payout.address?.country || ''
+      label: `${payout.business_name} - ${payout.address?.location || ""}, ${
+        payout.address?.country || ""
       }`,
       value: payout.id.toString(),
     })) || [];
@@ -181,7 +181,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
       const verificationRequest = {
         validation_type: selectedMethod.validator.name,
         service_data: {
-          serviceCode: '00003',
+          serviceCode: "00003",
           phoneNumber: `+${countryPhoneCode}${phoneNumber}`,
         },
         verification_data: {
@@ -194,14 +194,14 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
         verificationRequest
       );
 
-      if (response.status && response.data.status === 'success') {
-        setVerificationStatus('verified');
+      if (response.status && response.data.status === "success") {
+        setVerificationStatus("verified");
       } else {
-        setVerificationStatus('failed');
+        setVerificationStatus("failed");
       }
     } catch (error) {
-      console.error('Verification error:', error);
-      setVerificationStatus('failed');
+      console.error("Verification error:", error);
+      setVerificationStatus("failed");
     } finally {
       setIsVerifying(false);
     }
@@ -224,7 +224,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
       onMethodAdded();
       handleClose();
     } catch (error) {
-      console.error('Error adding remittance method:', error);
+      console.error("Error adding remittance method:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -244,17 +244,17 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
       onMethodAdded();
       handleClose();
     } catch (error) {
-      console.error('Error adding payout agent:', error);
+      console.error("Error adding payout agent:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleSubmit = async () => {
-    if (activeTab === 'payout') {
+    if (activeTab === "payout") {
       await handleAddPayoutAgent();
-    } else if (activeTab === 'remittance') {
-      if (hasValidator && verificationStatus !== 'verified') {
+    } else if (activeTab === "remittance") {
+      if (hasValidator && verificationStatus !== "verified") {
         // For methods with validators, require verification first
         return;
       }
@@ -263,14 +263,14 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   };
 
   const handleClose = () => {
-    setActiveTab('remittance');
+    setActiveTab("remittance");
     setSelectedRmId(null);
-    setAccountNumber('');
-    setPhoneNumber('');
-    setCountryPhoneCode('');
-    setAccountNamePrefix('');
-    setAccountIdPrefix('');
-    setVerificationStatus('pending');
+    setAccountNumber("");
+    setPhoneNumber("");
+    setCountryPhoneCode("");
+    setAccountNamePrefix("");
+    setAccountIdPrefix("");
+    setVerificationStatus("pending");
     setIsVerifying(false);
     setIsSubmitting(false);
     setSelectedPayoutId(null);
@@ -280,102 +280,104 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className='fixed inset-0 z-40 flex items-center justify-center'>
+    <div className="fixed inset-0 z-40 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className='fixed inset-0 bg-black/15 bg-opacity-50'
+        className="fixed inset-0 bg-black/15 bg-opacity-50"
         onClick={handleClose}
       />
 
       {/* Modal */}
-      <div className='relative bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 z-50'>
+      <div className="relative bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 z-50">
         {/* Header */}
-        <div className='flex items-center justify-between p-4 border-b'>
-          <h2 className='text-lg font-semibold'>Add Payment Method</h2>
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-semibold">Add Payment Method</h2>
           <button
-            type='button'
+            type="button"
             onClick={handleClose}
-            className='p-1 hover:bg-gray-100 rounded'
+            className="p-1 hover:bg-gray-100 rounded"
           >
-            <X className='w-5 h-5' />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className='flex border-b'>
+        <div className="flex border-b">
           <button
-            type='button'
-            onClick={() => setActiveTab('remittance')}
+            type="button"
+            onClick={() => setActiveTab("remittance")}
             className={`flex-1 px-4 py-2 text-sm font-medium ${
-              activeTab === 'remittance'
-                ? 'text-teal-600 border-b-2 border-teal-600 bg-teal-50'
-                : 'text-gray-500 hover:text-gray-700'
+              activeTab === "remittance"
+                ? "text-teal-600 border-b-2 border-teal-600 bg-teal-50"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
-            Payment Method
+            Mobile/Bank Method
           </button>
           <button
-            type='button'
-            onClick={() => setActiveTab('payout')}
+            type="button"
+            onClick={() => setActiveTab("payout")}
             className={`flex-1 px-4 py-2 text-sm font-medium ${
-              activeTab === 'payout'
-                ? 'text-teal-600 border-b-2 border-teal-600 bg-teal-50'
-                : 'text-gray-500 hover:text-gray-700'
+              activeTab === "payout"
+                ? "text-teal-600 border-b-2 border-teal-600 bg-teal-50"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
-            Payout Agent
+            Cash Pickup
           </button>
         </div>
 
         {/* Content */}
-        <div className='p-4 space-y-4'>
-          {activeTab === 'remittance' ? (
+        <div className="p-4 space-y-4">
+          {activeTab === "remittance" ? (
             <>
               {/* Country Filter for Remittance Methods */}
-              <div className='space-y-2 mb-4'>
+              <div className="space-y-2 mb-4">
                 <Label>Filter by Country</Label>
                 <SearchableSelect
-                  value={rmCountryFilter?.toString() || ''}
+                  value={rmCountryFilter?.toString() || ""}
                   onChange={(value: string | number) => {
-                    const countryId = value ? parseInt(value.toString()) : undefined;
+                    const countryId = value
+                      ? parseInt(value.toString())
+                      : undefined;
                     setRmCountryFilter(countryId);
                     // Reset selected method when changing country filter
                     setSelectedRmId(null);
                   }}
                   options={countryOptionsById}
-                  placeholder='All countries'
+                  placeholder="All countries"
                 />
               </div>
 
               {/* Select Remittance Method */}
-              <div className='space-y-2 mb-6'>
+              <div className="space-y-2 mb-6">
                 <Label>Select Payment Method *</Label>
                 <SearchableSelect
                   options={rmOptions}
-                  value={selectedRmId?.toString() || ''}
+                  value={selectedRmId?.toString() || ""}
                   onChange={(value) => {
                     setSelectedRmId(parseInt(value.toString()));
                     // Reset validation states when changing method
-                    setVerificationStatus('pending');
-                    setAccountNamePrefix('');
-                    setAccountIdPrefix('');
+                    setVerificationStatus("pending");
+                    setAccountNamePrefix("");
+                    setAccountIdPrefix("");
                   }}
-                  placeholder='Choose a payment method'
+                  placeholder="Choose a payment method"
                 />
               </div>
 
               {/* Show method details if selected */}
               {selectedMethod && (
-                <div className='border rounded-lg p-4 space-y-4'>
-                  <div className='flex items-center space-x-2'>
-                    <div className='w-4 h-4 border border-gray-300 rounded-full'></div>
-                    <h4 className='font-medium text-gray-900'>
+                <div className="border rounded-lg p-4 space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border border-gray-300 rounded-full"></div>
+                    <h4 className="font-medium text-gray-900">
                       {selectedMethod.name}
                     </h4>
                   </div>
 
                   {/* Phone Number Input */}
-                  <div className='space-y-2'>
+                  <div className="space-y-2">
                     <Label>Phone Number *</Label>
                     <PhoneInput
                       countryOptions={countryPhoneOptions}
@@ -383,53 +385,53 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                       phoneNumber={phoneNumber}
                       onCountryChange={setCountryPhoneCode}
                       onPhoneChange={setPhoneNumber}
-                      placeholder='Enter phone number'
+                      placeholder="Enter phone number"
                     />
                   </div>
 
                   {/* Account Number for non-validator methods */}
                   {!hasValidator && (
-                    <div className='space-y-2'>
+                    <div className="space-y-2">
                       <Label>Account Number</Label>
                       <Input
-                        type='text'
+                        type="text"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
-                        placeholder='Enter account number'
+                        placeholder="Enter account number"
                       />
                     </div>
                   )}
 
                   {/* Validation Section for methods with validators */}
-                  {hasValidator && verificationStatus === 'pending' && (
+                  {hasValidator && verificationStatus === "pending" && (
                     <>
-                      <div className='flex gap-2 items-end'>
-                        <div className='flex-1 space-y-1'>
-                          <Label className='text-xs'>
+                      <div className="flex gap-2 items-end">
+                        <div className="flex-1 space-y-1">
+                          <Label className="text-xs">
                             Account Name Prefix *
                           </Label>
                           <Input
-                            className='h-8 text-xs'
+                            className="h-8 text-xs"
                             value={accountNamePrefix}
                             onChange={(e) =>
                               setAccountNamePrefix(e.target.value)
                             }
-                            placeholder='e.g., Joh'
+                            placeholder="e.g., Joh"
                           />
                         </div>
 
-                        <div className='flex-1 space-y-1'>
-                          <Label className='text-xs'>Account ID Prefix *</Label>
+                        <div className="flex-1 space-y-1">
+                          <Label className="text-xs">Account ID Prefix *</Label>
                           <Input
-                            className='h-8 text-xs'
+                            className="h-8 text-xs"
                             value={accountIdPrefix}
                             onChange={(e) => setAccountIdPrefix(e.target.value)}
-                            placeholder='e.g., 1-1'
+                            placeholder="e.g., 1-1"
                           />
                         </div>
 
                         <ActionButton
-                          title={isVerifying ? 'Verifying...' : 'Verify'}
+                          title={isVerifying ? "Verifying..." : "Verify"}
                           onClick={handleVerifyAccount}
                           buttonProps={{
                             disabled:
@@ -437,7 +439,7 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                               !accountNamePrefix ||
                               !accountIdPrefix ||
                               isVerifying,
-                            className: 'h-8 px-3 text-xs',
+                            className: "h-8 px-3 text-xs",
                           }}
                         />
                       </div>
@@ -445,18 +447,18 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
                   )}
 
                   {/* Verification Success */}
-                  {hasValidator && verificationStatus === 'verified' && (
-                    <div className='p-3 bg-green-50 border border-green-200 rounded'>
-                      <p className='text-green-800 text-sm'>
+                  {hasValidator && verificationStatus === "verified" && (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded">
+                      <p className="text-green-800 text-sm">
                         ✅ <strong>Account Verified Successfully!</strong>
                       </p>
                     </div>
                   )}
 
                   {/* Verification Failed */}
-                  {hasValidator && verificationStatus === 'failed' && (
-                    <div className='p-3 bg-red-50 border border-red-200 rounded'>
-                      <p className='text-red-800 text-sm'>
+                  {hasValidator && verificationStatus === "failed" && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded">
+                      <p className="text-red-800 text-sm">
                         ❌ <strong>Verification Failed:</strong> Please check
                         your details and try again.
                       </p>
@@ -465,8 +467,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
 
                   {/* Warning for non-validator methods */}
                   {!hasValidator && (
-                    <div className='p-3 bg-yellow-50 border border-yellow-200 rounded'>
-                      <p className='text-yellow-800 text-sm'>
+                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
+                      <p className="text-yellow-800 text-sm">
                         ⚠️ <strong>No Validator Available:</strong> You are
                         adding this information at your own responsibility.
                       </p>
@@ -478,39 +480,39 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
           ) : (
             <>
               {/* Country Filter */}
-              <div className='space-y-2 mb-4'>
+              <div className="space-y-2 mb-4">
                 <Label>Filter by Country</Label>
                 <SearchableSelect
-                  value={filters.country_codes?.[0] || ''}
+                  value={filters.country_codes?.[0] || ""}
                   onChange={(value: string | number) => {
                     const countryCode = value.toString();
                     updateCountryFilter(countryCode ? [countryCode] : []);
                   }}
                   options={countryOptions}
-                  placeholder='Select a country to filter payout locations'
+                  placeholder="Select a country to filter payout locations"
                 />
               </div>
 
               {/* Payout Location Selection */}
-              <div className='space-y-2 mb-6'>
+              <div className="space-y-2 mb-6">
                 <Label>Select Payout Location *</Label>
                 <SearchableSelect
                   options={payoutOptions}
-                  value={selectedPayoutId?.toString() || ''}
+                  value={selectedPayoutId?.toString() || ""}
                   onChange={(value) =>
                     setSelectedPayoutId(parseInt(value.toString()))
                   }
                   placeholder={
                     payoutLocationsData?.data?.length === 0
-                      ? 'No payout locations available'
-                      : 'Choose a payout location'
+                      ? "No payout locations available"
+                      : "Choose a payout location"
                   }
                   onLoadMore={fetchNextPage}
                   hasMore={hasNextPage}
                   isLoadingMore={isFetchingNextPage}
                 />
                 {payoutLocationsData?.data?.length === 0 && (
-                  <p className='text-sm text-gray-500'>
+                  <p className="text-sm text-gray-500">
                     No payout locations found. Try adjusting your filters.
                   </p>
                 )}
@@ -520,27 +522,27 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
         </div>
 
         {/* Actions */}
-        <div className='flex justify-end space-x-2 p-4 border-t bg-gray-50'>
+        <div className="flex justify-end space-x-2 p-4 border-t bg-gray-50">
           <Button
-            type='button'
-            variant='outline'
+            type="button"
+            variant="outline"
             onClick={handleClose}
             disabled={isSubmitting}
           >
             Cancel
           </Button>
           <Button
-            type='button'
+            type="button"
             onClick={handleSubmit}
             disabled={
               isSubmitting ||
-              (activeTab === 'remittance' &&
+              (activeTab === "remittance" &&
                 (!selectedRmId ||
-                  (hasValidator && verificationStatus !== 'verified'))) ||
-              (activeTab === 'payout' && !selectedPayoutId)
+                  (hasValidator && verificationStatus !== "verified"))) ||
+              (activeTab === "payout" && !selectedPayoutId)
             }
           >
-            {isSubmitting ? 'Adding...' : 'Add Method'}
+            {isSubmitting ? "Adding..." : "Add Method"}
           </Button>
         </div>
       </div>
