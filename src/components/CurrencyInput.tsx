@@ -45,8 +45,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   disabled = false,
   loading = false,
   readOnly = false,
-  showBalance = false,
-  availableBalance,
+  // showBalance = false,
+  // availableBalance,
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -258,14 +258,14 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       </div>
 
       {/* Balance Display */}
-      {showBalance && availableBalance !== undefined && selectedOption && (
+      {/* {showBalance && availableBalance !== undefined && selectedOption && (
         <div className="text-sm text-gray-600">
           Available balance:{" "}
           <span className="font-semibold text-gray-900">
             {availableBalance.toFixed(2)} {selectedOption.code}
           </span>
         </div>
-      )}
+      )} */}
 
       {error && <span className="text-destructive text-xs">{error}</span>}
     </div>
