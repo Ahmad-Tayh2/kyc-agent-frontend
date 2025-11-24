@@ -380,6 +380,10 @@ const CustomerCreateFormPage: React.FC = () => {
             <div
               key={step.name}
               className={`flex items-center p-2 rounded-full ${
+                (completedSteps.includes(step?.name) ||
+                  canNavigateToStep(step?.name)) &&
+                "cursor-pointer"
+              } ${
                 currentStep === step.name
                   ? "text-white bg-primary"
                   : "text-gray-400"
