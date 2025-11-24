@@ -82,9 +82,9 @@ const AddMoneyPage: React.FC = () => {
   const currencyOptions = useMemo(() => {
     if (!wallet?.wallet_currencies) return [];
     return wallet.wallet_currencies.map((wc) => ({
-      id: wc.currency.id,
-      code: wc.currency.code,
-      name: wc.currency.name,
+      id: wc?.currency?.id,
+      code: wc?.currency?.code,
+      name: wc?.currency?.name,
     }));
   }, [wallet]);
 
@@ -92,7 +92,7 @@ const AddMoneyPage: React.FC = () => {
   const selectedWalletCurrency = useMemo(() => {
     if (!selectedCurrencyId || !wallet?.wallet_currencies) return null;
     return wallet.wallet_currencies.find(
-      (wc) => wc.currency.id === selectedCurrencyId
+      (wc) => wc?.currency?.id === selectedCurrencyId
     );
   }, [selectedCurrencyId, wallet]);
 
@@ -119,7 +119,7 @@ const AddMoneyPage: React.FC = () => {
         JSON.stringify({
           walletCurrencyId: selectedWalletCurrency?.id,
           amount,
-          currencyCode: selectedWalletCurrency?.currency.code,
+          currencyCode: selectedWalletCurrency?.currency?.code,
         })
       );
 
@@ -162,7 +162,6 @@ const AddMoneyPage: React.FC = () => {
   //   { label: "Paypal", value: "paypal" },
   //   { label: "Card", value: "card" },
   // ];
-
   return (
     <div className="space-y-4">
       <div className="space-y-4 border-b-1 pb-5 border-b-gray-200">

@@ -72,7 +72,6 @@ const MyWalletPage: React.FC = () => {
       </div>
     );
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -86,7 +85,7 @@ const MyWalletPage: React.FC = () => {
             className="px-4 py-2 border border-cyan-500 text-cyan-500 rounded-lg hover:bg-cyan-50 transition-colors"
             disabled={
               !wallet?.wallet_currencies ||
-              wallet.wallet_currencies.length === 0
+              wallet?.wallet_currencies?.length === 0
             }
           >
             {t("modules.pages.wallet.buttons.exchangeCurrencies")}
@@ -104,7 +103,7 @@ const MyWalletPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-6 gap-0">
         {wallet?.wallet_currencies?.map((walletCurrency) => (
           <CurrencyCard
-            key={walletCurrency.id}
+            key={walletCurrency?.id}
             walletCurrency={walletCurrency}
             onDelete={handleDeleteCurrency}
           />
