@@ -44,12 +44,12 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
-  React.useEffect(() => {
-    if (!value || value?.length === 0) {
-      setSearchTerm("");
-      onSearchTermChange?.("");
-    }
-  }, [value]);
+  // React.useEffect(() => {
+  //   if (!value || value?.length === 0) {
+  //     setSearchTerm("");
+  //     onSearchTermChange?.("");
+  //   }
+  // }, [value]);
   React.useEffect(() => {
     if (searchTermValue !== searchTerm) {
       setSearchTerm(searchTermValue ?? "");
@@ -96,7 +96,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
 
   const getDisplayText = () => {
     if (value.length === 0) return placeholder;
-    if (value.length === options.length) return "All";
+    if (value.length === options.length && showSelectAll) return "All";
     if (value.length === 1) {
       const option = options.find((opt) => opt.value === value[0]);
       if (!option) return placeholder;
