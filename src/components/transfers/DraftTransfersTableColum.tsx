@@ -86,9 +86,9 @@ export const draftTransfersTableColum = (): ColumnDef<Transfer>[] => {
       header: "Recipient Gets",
     },
     {
-      accessorKey: "total_commission_amount",
+      accessorKey: "sending_agent_commission_amount",
       header: t(
-        "modules.pages.transfers.table.columns.total_commission_amount"
+        "modules.pages.transfers.table.columns.sending_agent_commission_amount"
       ),
     },
     {
