@@ -39,6 +39,7 @@ const ReviewStep: React.FC = () => {
     pickupLocation: "323, Metro line 3, New Delhi (fake data)",
   };
   const recipient = { ...stepOne?.recipient };
+  const customer = { ...stepOne?.customer };
 
   // Get computed summary data from centralized hook
   const summaryData = useSummaryData();
@@ -91,6 +92,10 @@ const ReviewStep: React.FC = () => {
     stepOne?.recipient?.id &&
       navigate(ROUTES.RECIPIENTS.DETAILS(stepOne?.recipient?.id));
   };
+  const handleEditCustomer = () => {
+    stepOne?.customer?.id &&
+      navigate(ROUTES.CUSTOMERS.DETAILS(stepOne?.customer?.id));
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -98,7 +103,7 @@ const ReviewStep: React.FC = () => {
         {/* Main Content - Left Side */}
         <div className="lg:col-span-2 space-y-6">
           {/* Recipient Details and Delivery Options Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Recipient Details Card */}
             <EditSectionCard
               sectionTitle="Recipient Details"
@@ -180,6 +185,54 @@ const ReviewStep: React.FC = () => {
                       {deliveryData.pickupLocation}
                     </span>
                   </div>
+                </div>
+              </div>
+            </EditSectionCard>
+            {/* customer details card */}
+            <EditSectionCard
+              sectionTitle="Customer Details"
+              editMode={false}
+              setEditMode={handleEditCustomer}
+            >
+              <div className="p-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Name</span>
+                    <span className="font-medium text-sm">
+                      {customer?.fullName}
+                    </span>
+                  </div>
+
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Phone</span>
+                    <span className="font-medium text-sm">_</span>
+                  </div>
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Email</span>
+                    <span className="font-medium text-sm">_</span>
+                  </div>
+
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Address</span>
+                    <span className="font-medium text-sm">_</span>
+                  </div>
+
+                  {/* <hr className="my-3" /> */}
+
+                  {/* <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Country</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.address?.country ||
+                        recipient?.countryName ||
+                        "—"}
+                    </span>
+                  </div> */}
                 </div>
               </div>
             </EditSectionCard>
