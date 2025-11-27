@@ -32,6 +32,7 @@ export const useRecipientsFilters = () => {
     page: 1,
     per_page: 10,
   });
+
   const debouncedSearch = useDebounce(filters?.search);
   const [searchParams] = useSearchParams();
   const [filtersString, setFilterString] = useState<string>("");
@@ -42,7 +43,6 @@ export const useRecipientsFilters = () => {
     if (hasInitializedFromURL.current) return;
 
     const customers = searchParams?.getAll("customer_ids");
-
     if (customers && customers.length > 0) {
       updateCustomersIds(customers);
     }
@@ -58,12 +58,6 @@ export const useRecipientsFilters = () => {
     if (!hasInitializedFromURL.current) return; // Don't run until initial load is done
     applyFilters();
   }, [debouncedSearch, filters?.per_page, filters?.page, filtersString]);
-
-  // 3) Customer_ids updates (but avoid running twice during init)
-  useEffect(() => {
-    if (!hasInitializedFromURL.current) return;
-    applyFilters();
-  }, [filters?.customer_ids]);
 
   const updateSearchTerm = useCallback((term: string) => {
     setFilters((prev) => ({ ...prev, search: term }));

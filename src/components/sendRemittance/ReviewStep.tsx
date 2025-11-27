@@ -1,18 +1,18 @@
-import React, { useMemo } from 'react';
-import SearchableSelect from '@/components/ui/searchable-select';
+import React, { useMemo } from "react";
+import SearchableSelect from "@/components/ui/searchable-select";
 // import { Textarea } from "@/components/ui/textarea";
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
-import SummaryCard from './SummaryCard';
-import EditSectionCard from '../shared/EditSectionCard';
-import { ROUTES } from '@/constants/routes';
-import { useNavigate } from 'react-router-dom';
-import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
+import SummaryCard from "./SummaryCard";
+import EditSectionCard from "../shared/EditSectionCard";
+import { ROUTES } from "@/constants/routes";
+import { useNavigate } from "react-router-dom";
+import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
 import {
   useGetRemittancePurposes,
   useGetSourceIncomes,
-} from '@/hooks/data/useTransferPurposeAndSource';
-import { useSummaryData } from '@/hooks/useSummaryData';
+} from "@/hooks/data/useTransferPurposeAndSource";
+import { useSummaryData } from "@/hooks/useSummaryData";
 
 const ReviewStep: React.FC = () => {
   // const [extraDetails, setExtraDetails] = useState("");
@@ -36,9 +36,10 @@ const ReviewStep: React.FC = () => {
 
   const deliveryData = {
     method: stepOne?.remittanceMethod?.name,
-    pickupLocation: '323, Metro line 3, New Delhi (fake data)',
+    pickupLocation: "323, Metro line 3, New Delhi (fake data)",
   };
   const recipient = { ...stepOne?.recipient };
+  const customer = { ...stepOne?.customer };
 
   // Get computed summary data from centralized hook
   const summaryData = useSummaryData();
@@ -91,107 +92,161 @@ const ReviewStep: React.FC = () => {
     stepOne?.recipient?.id &&
       navigate(ROUTES.RECIPIENTS.DETAILS(stepOne?.recipient?.id));
   };
+  const handleEditCustomer = () => {
+    stepOne?.customer?.id &&
+      navigate(ROUTES.CUSTOMERS.DETAILS(stepOne?.customer?.id));
+  };
 
   return (
-    <div className='p-6 space-y-6'>
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+    <div className="p-6 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content - Left Side */}
-        <div className='lg:col-span-2 space-y-6'>
+        <div className="lg:col-span-2 space-y-6">
           {/* Recipient Details and Delivery Options Row */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Recipient Details Card */}
             <EditSectionCard
-              sectionTitle='Recipient Details'
+              sectionTitle="Recipient Details"
               editMode={false}
               setEditMode={handleEditRecipient}
             >
-              <div className='p-6'>
-                <div className='space-y-3'>
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600 text-sm'>Name</span>
-                    <span className='font-medium text-sm'>
+              <div className="p-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Name</span>
+                    <span className="font-medium text-sm">
                       {recipient?.fullName}
                     </span>
                   </div>
 
-                  <hr className='my-3' />
+                  <hr className="my-3" />
 
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600 text-sm'>Phone</span>
-                    <span className='font-medium text-sm'>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Phone</span>
+                    <span className="font-medium text-sm">
                       {recipient?.countryPhoneCode && recipient?.phoneNumber
                         ? `${recipient.countryPhoneCode} ${recipient.phoneNumber}`
-                        : recipient?.phoneNumber || '—'}
+                        : recipient?.phoneNumber || "—"}
                     </span>
                   </div>
 
-                  <hr className='my-3' />
+                  <hr className="my-3" />
 
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600 text-sm'>Email</span>
-                    <span className='font-medium text-sm'>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Email</span>
+                    <span className="font-medium text-sm">
                       {recipient?.email}
                     </span>
                   </div>
 
-                  <hr className='my-3' />
+                  <hr className="my-3" />
 
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600 text-sm'>Address</span>
-                    <span className='font-medium text-sm'>
-                      {recipient?.address?.city}
-                    </span>
-                  </div>
-
-                  <hr className='my-3' />
-
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600 text-sm'>Country</span>
-                    <span className='font-medium text-sm'>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Address</span>
+                    <span className="font-medium text-sm">
                       {recipient?.address?.country ||
                         recipient?.countryName ||
-                        '—'}
+                        "—"}
                     </span>
                   </div>
+
+                  {/* <hr className="my-3" /> */}
+
+                  {/* <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Country</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.address?.country ||
+                        recipient?.countryName ||
+                        "—"}
+                    </span>
+                  </div> */}
                 </div>
               </div>
             </EditSectionCard>
             {/* Delivery Options Card */}
 
-            <EditSectionCard sectionTitle='Delivery Options' editMode={false}>
-              <div className='p-6'>
-                <div className='space-y-3'>
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600 text-sm'>Method</span>
-                    <span className='font-medium text-sm'>
+            <EditSectionCard sectionTitle="Delivery Options" editMode={false}>
+              <div className="p-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Method</span>
+                    <span className="font-medium text-sm">
                       {deliveryData.method}
                     </span>
                   </div>
 
-                  <hr className='my-3' />
+                  <hr className="my-3" />
 
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600 text-sm'>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">
                       Pickup Location
                     </span>
-                    <span className='font-medium text-sm'>
+                    <span className="font-medium text-sm">
                       {deliveryData.pickupLocation}
                     </span>
                   </div>
                 </div>
               </div>
             </EditSectionCard>
+            {/* customer details card */}
+            <EditSectionCard
+              sectionTitle="Customer Details"
+              editMode={false}
+              setEditMode={handleEditCustomer}
+            >
+              <div className="p-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Name</span>
+                    <span className="font-medium text-sm">
+                      {customer?.fullName}
+                    </span>
+                  </div>
+
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Phone</span>
+                    <span className="font-medium text-sm">_</span>
+                  </div>
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Email</span>
+                    <span className="font-medium text-sm">_</span>
+                  </div>
+
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Address</span>
+                    <span className="font-medium text-sm">_</span>
+                  </div>
+
+                  {/* <hr className="my-3" /> */}
+
+                  {/* <div className="flex justify-between">
+                    <span className="text-gray-600 text-sm">Country</span>
+                    <span className="font-medium text-sm">
+                      {recipient?.address?.country ||
+                        recipient?.countryName ||
+                        "—"}
+                    </span>
+                  </div> */}
+                </div>
+              </div>
+            </EditSectionCard>
           </div>
 
           {/* Source of Fund and Reason for Transfer Row */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Source of Fund */}
             <div>
               <SearchableSelect
-                label='Source of fund'
-                placeholder='Selected fund'
+                label="Source of fund"
+                placeholder="Selected fund"
                 options={sourceIncomesOptions}
-                value={sourceOfIncome?.id ?? ''}
+                value={sourceOfIncome?.id ?? ""}
                 onChange={handleChangeSourceIncomes}
               />
             </div>
@@ -199,10 +254,10 @@ const ReviewStep: React.FC = () => {
             {/* Reason for Transfer */}
             <div>
               <SearchableSelect
-                label='Reason for transfer'
-                placeholder='Selected reason'
+                label="Reason for transfer"
+                placeholder="Selected reason"
                 options={reasonForTransferOptions}
-                value={remittancePurpose?.id ?? ''}
+                value={remittancePurpose?.id ?? ""}
                 onChange={handleChangeRemittancePurpose}
               />
             </div>
@@ -231,7 +286,7 @@ const ReviewStep: React.FC = () => {
         </div>
 
         {/* Summary Card - Right Side */}
-        <div className='lg:col-span-1'>
+        <div className="lg:col-span-1">
           <SummaryCard data={summaryData} />
         </div>
       </div>

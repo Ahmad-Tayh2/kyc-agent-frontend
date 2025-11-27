@@ -1,19 +1,23 @@
-import { useQuery } from '@tanstack/react-query';
-import { remittanceAvailabilityService } from '@/services/remittanceAvailability';
+import { useQuery } from "@tanstack/react-query";
+import { remittanceAvailabilityService } from "@/services/remittanceAvailability";
 
 // Hook to get receive countries
 export const useReceiveCountries = () => {
   return useQuery({
-    queryKey: ['remittance-availability', 'receive-countries'],
+    queryKey: [
+      "remittance-availability-receive-countries",
+      "remittance-availability",
+      "receive-countries",
+    ],
     queryFn: remittanceAvailabilityService.getReceiveCountries,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    // staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
 // Hook to get send countries
 export const useSendCountries = () => {
   return useQuery({
-    queryKey: ['remittance-availability', 'send-countries'],
+    queryKey: ["remittance-availability", "send-countries"],
     queryFn: remittanceAvailabilityService.getSendCountries,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -22,7 +26,7 @@ export const useSendCountries = () => {
 // Hook to get remittance methods (optionally filtered by receive country)
 export const useRemittanceMethods = (receiveCountryId?: number) => {
   return useQuery({
-    queryKey: ['remittance-availability', 'methods', receiveCountryId],
+    queryKey: ["remittance-availability", "methods", receiveCountryId],
     queryFn: () =>
       remittanceAvailabilityService.getRemittanceMethods(receiveCountryId),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -36,8 +40,8 @@ export const useRecipientMethods = (
 ) => {
   return useQuery({
     queryKey: [
-      'remittance-availability',
-      'recipient-methods',
+      "remittance-availability",
+      "recipient-methods",
       recipientId,
       receiveCountryId,
     ],
@@ -54,7 +58,7 @@ export const useRecipientMethods = (
 // Hook to get send country currencies
 export const useSendCountryCurrencies = (countryId: number | null) => {
   return useQuery({
-    queryKey: ['remittance-availability', 'send-country-currencies', countryId],
+    queryKey: ["remittance-availability", "send-country-currencies", countryId],
     queryFn: () =>
       remittanceAvailabilityService.getSendCountryCurrencies(countryId!),
     enabled: !!countryId, // Only fetch when country ID is provided
@@ -66,8 +70,8 @@ export const useSendCountryCurrencies = (countryId: number | null) => {
 export const useReceiveCountryCurrencies = (countryId: number | null) => {
   return useQuery({
     queryKey: [
-      'remittance-availability',
-      'receive-country-currencies',
+      "remittance-availability",
+      "receive-country-currencies",
       countryId,
     ],
     queryFn: () =>

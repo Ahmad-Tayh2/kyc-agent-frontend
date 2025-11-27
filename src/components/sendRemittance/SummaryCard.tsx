@@ -28,9 +28,12 @@ interface SummaryCardProps {
 /**
  * Helper function to format currency values
  */
-const formatCurrency = (value: number | undefined, currency?: string): string => {
-  if (value === undefined || value === null) return '—';
-  return `${value.toFixed(2)}${currency ? ` ${currency}` : ''}`;
+const formatCurrency = (
+  value: number | undefined,
+  currency?: string
+): string => {
+  if (value === undefined || value === null) return "—";
+  return `${value.toFixed(2)}${currency ? ` ${currency}` : ""}`;
 };
 
 /**
@@ -46,7 +49,7 @@ const SummaryRow: React.FC<{
     <div className={`flex justify-between items-center ${className}`}>
       <span className="text-gray-600">{label}</span>
       <span className="font-medium flex items-center gap-1">
-        {value || '—'}
+        {value || "—"}
         {showInfo && <Info className="w-3 h-3 text-gray-400" />}
       </span>
     </div>
@@ -87,57 +90,52 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
           showInfo
         />
 
-        <SummaryRow
-          label="Sending Country"
-          value={data.sendingCountry}
-        />
+        <SummaryRow label="Sending Country" value={data.sendingCountry} />
 
-        <SummaryRow
-          label="Receiver Country"
-          value={data.receivingCountry}
-        />
+        <SummaryRow label="Receiver Country" value={data.receivingCountry} />
 
         <SummaryRow
           label="Sending Amount"
-          value={data.sendingAmount !== undefined ? formatCurrency(data.sendingAmount, data.sendingCurrency) : undefined}
+          value={
+            data.sendingAmount !== undefined
+              ? formatCurrency(data.sendingAmount, data.sendingCurrency)
+              : undefined
+          }
+        />
+
+        <SummaryRow label="Exchange Rate" value={data.exchangeRate} />
+
+        <SummaryRow
+          label="Total Transfer Commission"
+          value={
+            data.commission !== undefined
+              ? formatCurrency(data.commission, data.sendingCurrency)
+              : undefined
+          }
         />
 
         <SummaryRow
-          label="Exchange Rate"
-          value={data.exchangeRate}
+          label="Agent Added Fees"
+          value={
+            data.extraFees !== undefined
+              ? typeof data.extraFees === "string"
+                ? data.extraFees
+                : formatCurrency(data.extraFees, data.sendingCurrency)
+              : undefined
+          }
         />
-
         <SummaryRow
-          label="Fees and Charges"
+          label="Total Commission And Fees"
           value={
             data.feesAndCharges !== undefined
-              ? typeof data.feesAndCharges === 'string'
+              ? typeof data.feesAndCharges === "string"
                 ? data.feesAndCharges
                 : formatCurrency(data.feesAndCharges, data.sendingCurrency)
               : undefined
           }
         />
 
-        <SummaryRow
-          label="Commission"
-          value={data.commission !== undefined ? formatCurrency(data.commission, data.sendingCurrency) : undefined}
-        />
-
-        <SummaryRow
-          label="Extra Fees"
-          value={
-            data.extraFees !== undefined
-              ? typeof data.extraFees === 'string'
-                ? data.extraFees
-                : formatCurrency(data.extraFees, data.sendingCurrency)
-              : undefined
-          }
-        />
-
-        <SummaryRow
-          label="Recipient Gets"
-          value={data.recipientGets}
-        />
+        <SummaryRow label="Recipient Gets" value={data.recipientGets} />
 
         {/* Total Payable Amount - No trailing hr */}
         <div className="flex justify-between text-base font-semibold text-teal-600 pt-2">
@@ -145,7 +143,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
           <span>
             {data.totalPayableAmount !== undefined
               ? formatCurrency(data.totalPayableAmount, data.sendingCurrency)
-              : '—'}
+              : "—"}
           </span>
         </div>
       </div>

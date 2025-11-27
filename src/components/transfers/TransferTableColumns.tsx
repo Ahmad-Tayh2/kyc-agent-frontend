@@ -9,9 +9,9 @@ import DropdownMenuOptions from "@/components/shared/DropdownMenu";
 import type { Transfer } from "@/types/transfers";
 import { format } from "date-fns";
 import { MoreHorizontal } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { TRASACTIONS_STATUSES_COLORS } from "@/constants/appConstants";
+import LinkList from "../shared/LinkList";
 
 export const transferColumns = (): ColumnDef<Transfer>[] => {
   const [t] = useTranslation("global");
@@ -42,7 +42,7 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       header: t("modules.pages.transfers.table.columns.created_at"),
       cell: ({ row }) => {
         const date = row.getValue("created_at") as string;
-        return <div>{format(date, "yyyy-MM-dd")}</div>;
+        return <div>{format(date, "yy-MM-dd HH:mm")}</div>;
       },
     },
     {
@@ -51,7 +51,7 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       cell: ({ row }) => {
         const remittance_method = (row.original as any).remittance_method;
         return (
-          <span className="font-medium">
+          <span>
             {remittance_method?.name ? remittance_method.name : "N/A"}
           </span>
         );
@@ -63,11 +63,14 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       cell: ({ row }) => {
         const customer = (row.original as any).customer;
         return (
-          <span className="font-medium">
-            <Link to={ROUTES.CUSTOMERS.DETAILS(customer.id)}>
-              {customer.first_name + " " + customer.last_name}
-            </Link>
-          </span>
+          <LinkList
+            data={[
+              {
+                label: `${customer.first_name} ${customer.last_name}`,
+                link: ROUTES.CUSTOMERS.DETAILS(customer?.id ?? ""),
+              },
+            ]}
+          />
         );
       },
     },
@@ -77,11 +80,14 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       cell: ({ row }) => {
         const recipient = (row.original as any).recipient;
         return (
-          <span className="font-medium">
-            <Link to={ROUTES.RECIPIENTS.DETAILS(recipient.id)}>
-              {recipient?.first_name + " " + recipient?.last_name}
-            </Link>
-          </span>
+          <LinkList
+            data={[
+              {
+                label: `${recipient.first_name} ${recipient.last_name}`,
+                link: ROUTES.RECIPIENTS.DETAILS(recipient?.id ?? ""),
+              },
+            ]}
+          />
         );
       },
     },
@@ -90,11 +96,24 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       header: t("modules.pages.transfers.table.columns.send_currency"),
     },
     {
+      accessorKey: "sent_amount",
+      header: t("modules.pages.transfers.table.columns.sending_amount"),
+      cell: ({ row }) => {
+        const sent_amount = row.original.sent_amount;
+        const send_currency = row.original.send_currency;
+        return (
+          <span>
+            {sent_amount} {send_currency}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: "send_country",
       header: t("modules.pages.transfers.table.columns.send_country"),
       cell: ({ row }) => {
         const send_country = (row.original as any).send_country;
-        return <span className="font-medium">{send_country.name}</span>;
+        return <span title={send_country?.name}>{send_country?.iso2}</span>;
       },
     },
     {
@@ -102,62 +121,66 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
       header: t("modules.pages.transfers.table.columns.receive_country"),
       cell: ({ row }) => {
         const receive_country = (row.original as any).receive_country;
-        return <span className="font-medium">{receive_country.name}</span>;
+        return (
+          <span title={receive_country?.name}>{receive_country?.iso2}</span>
+        );
       },
     },
     {
-      accessorKey: "sent_amount",
-      header: t("modules.pages.transfers.table.columns.sending_amount"),
+      accessorKey: "receive_amount",
+      header: t("modules.pages.transfers.table.columns.receive_amount"),
+      cell: ({ row }) => {
+        const receive_amount = row.original.receive_amount;
+        const receive_currency = row.original.receive_currency;
+        return (
+          <span>
+            {receive_amount} {receive_currency}
+          </span>
+        );
+      },
     },
     {
-      accessorKey: "total_commission_amount",
+      accessorKey: "sending_agent_commission_amount",
       header: t(
-        "modules.pages.transfers.table.columns.total_commission_amount"
+        "modules.pages.transfers.table.columns.sending_agent_commission_amount"
       ),
+      cell: ({ row }) => {
+        const sending_agent_commission_amount =
+          row.original.sending_agent_commission_amount;
+        const send_currency = row.original.send_currency;
+        return (
+          <span>
+            {sending_agent_commission_amount} {send_currency}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "extra_fees_amount",
       header: t("modules.pages.transfers.table.columns.extra_fees_amount"),
+      cell: ({ row }) => {
+        const extra_fees_amount = row.original.extra_fees_amount;
+        const send_currency = row.original.send_currency;
+        return (
+          <span>
+            {extra_fees_amount} {send_currency}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "total_payable_amount",
       header: t("modules.pages.transfers.table.columns.payout_amount"),
+      cell: ({ row }) => {
+        const total_payable_amount = row.original.total_payable_amount;
+        const send_currency = row.original.send_currency;
+        return (
+          <span>
+            {total_payable_amount} {send_currency}
+          </span>
+        );
+      },
     },
-    // {
-    //   accessorKey: "sent_amount_in_send_currency",
-    //   header: t("modules.pages.transfers.table.columns.sent_amount"),
-    //   cell: ({ row }) => {
-    //     const amount = row.getValue("sent_amount_in_send_currency") as number;
-    //     const currency = row.getValue("send_currency") as string;
-    //     return (
-    //       <span className="font-medium">
-    //         {formatCurrency(amount, currency)}
-    //       </span>
-    //     );
-    //   },
-    // },
-    // {
-    //   accessorKey: "receive_currency",
-    //   header: t("modules.pages.transfers.table.columns.receive_currency"),
-    //   cell: ({ row }) => (
-    //     <span className="font-medium">{row.getValue("receive_currency")}</span>
-    //   ),
-    // },
-    // {
-    //   accessorKey: "receive_amount_in_send_currency",
-    //   header: t("modules.pages.transfers.table.columns.receive_amount"),
-    //   cell: ({ row }) => {
-    //     const amount = row.getValue(
-    //       "receive_amount_in_send_currency"
-    //     ) as number;
-    //     const currency = row.getValue("receive_currency") as string;
-    //     return (
-    //       <span className="font-medium">
-    //         {formatCurrency(amount, currency)}
-    //       </span>
-    //     );
-    //   },
-    // },
     {
       accessorKey: "status",
       header: t("modules.pages.transfers.table.columns.status"),

@@ -1,13 +1,13 @@
-import { recipientRemittanceMethodService } from '@/services/recipientRemittanceMethod';
+import { recipientRemittanceMethodService } from "@/services/recipientRemittanceMethod";
 import type {
   CreateRecipientRemittanceMethodRequest,
   UpdateRecipientRemittanceMethodRequest,
-} from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+} from "@/types/recipientRemittanceMethod/RecipientRemittanceMethod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useRecipientRemittanceMethods(recipientId: string | number) {
   return useQuery({
-    queryKey: ['recipient-remittance-methods', recipientId],
+    queryKey: ["recipient-remittance-methods", recipientId],
     queryFn: () =>
       recipientRemittanceMethodService.getRecipientRemittanceMethods({
         recipient_id: Number(recipientId),
@@ -18,7 +18,7 @@ export function useRecipientRemittanceMethods(recipientId: string | number) {
 
 export function useRecipientRemittanceMethod(id: string | number) {
   return useQuery({
-    queryKey: ['recipient-remittance-method', id],
+    queryKey: ["recipient-remittance-method", id],
     queryFn: () =>
       recipientRemittanceMethodService.getRecipientRemittanceMethodById(
         Number(id)
@@ -35,13 +35,17 @@ export function useCreateRecipientRemittanceMethod() {
       recipientRemittanceMethodService.createRecipientRemittanceMethod(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['recipient-remittance-methods'],
+        queryKey: ["recipient-remittance-methods"],
       });
       if (variables.recipient_id) {
         queryClient.invalidateQueries({
-          queryKey: ['recipient-remittance-methods', variables.recipient_id],
+          queryKey: ["recipient-remittance-methods", variables.recipient_id],
         });
       }
+      //added this to refetch data
+      queryClient.invalidateQueries({
+        queryKey: ["remittance-availability", "recipient-methods"],
+      });
     },
   });
 }
@@ -63,10 +67,10 @@ export function useUpdateRecipientRemittanceMethod() {
       ),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({
-        queryKey: ['recipient-remittance-methods'],
+        queryKey: ["recipient-remittance-methods"],
       });
       queryClient.invalidateQueries({
-        queryKey: ['recipient-remittance-method', id],
+        queryKey: ["recipient-remittance-method", id],
       });
     },
   });
@@ -82,7 +86,7 @@ export function useDeleteRecipientRemittanceMethod() {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['recipient-remittance-methods'],
+        queryKey: ["recipient-remittance-methods"],
       });
     },
   });

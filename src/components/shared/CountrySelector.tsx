@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import ReactCountryFlag from "react-country-flag";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ interface CountrySelectorProps {
   onChange: (value: number[]) => void;
   disabled?: boolean;
   className?: string;
+  dropdownClassName?: string;
 }
 
 const CountrySelector: React.FC<CountrySelectorProps> = ({
@@ -32,6 +33,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   onChange,
   disabled = false,
   className,
+  dropdownClassName,
 }) => {
   const { t } = useTranslation("global");
   const defaultPlaceholder =
@@ -71,9 +73,13 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
     }
   };
 
-  const filteredCountries = countries.filter((country) =>
-    country.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCountries = useMemo(() => {
+    return (
+      countries?.filter((country) =>
+        country?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+      ) ?? []
+    );
+  }, [countries]);
 
   const getDisplayText = () => {
     if (value.length === 0) return defaultPlaceholder;
@@ -117,7 +123,12 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
       </Button>
 
       {isOpen && (
-        <div className="absolute z-50 w-[320px] right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+        <div
+          className={cn(
+            dropdownClassName,
+            "absolute z-50 w-[320px] right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg"
+          )}
+        >
           <div className="p-2">
             {/* All option */}
             <div
@@ -146,7 +157,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
 
             {/* Country list */}
             <div className="overflow-y-auto max-h-60">
-              {filteredCountries.map((country) => (
+              {filteredCountries?.map((country) => (
                 <div
                   key={country.code}
                   className="flex items-center space-x-2 py-2 px-1 hover:bg-primary/5 rounded cursor-pointer"
@@ -164,12 +175,12 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                       />
                     </span>
                     <span className="text-sm text-gray-700">
-                      {country.name}
+                      {country?.name}
                     </span>
                   </div>
                   <Checkbox
-                    checked={value.includes(country.id)}
-                    onCheckedChange={() => handleCountryToggle(country.id)}
+                    checked={value.includes(country?.id)}
+                    onCheckedChange={() => handleCountryToggle(country?.id)}
                     className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
                   />
                 </div>

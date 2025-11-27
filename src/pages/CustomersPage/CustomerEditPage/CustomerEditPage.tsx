@@ -425,7 +425,10 @@ const CustomerEditPage = () => {
             type="cancel"
             className="m-auto"
             onClick={() =>
-              navigate(ROUTES.RECIPIENTS.LIST + `?customer_ids=${id}`)
+              navigate(
+                ROUTES.RECIPIENTS.LIST +
+                  `?customer_ids=${id}&search=${formData?.first_name}`
+              )
             }
           />
         </div>

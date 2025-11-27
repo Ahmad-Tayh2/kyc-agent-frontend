@@ -7,6 +7,8 @@ export interface Transfer {
   remittance_method_id: number;
   send_country_id: number;
   receive_country_id: number;
+  sent_amount: string;
+  receive_amount: string;
   status: TransferStatus;
   isPaid: boolean;
   payment_method: PaymentMethod;
@@ -36,18 +38,18 @@ export interface Transfer {
 }
 
 export type TransferStatus =
-  | 'draft'
-  | 'in-progress'
-  | 'completed'
-  | 'cancelled'
-  | 'blocked'
-  | 'refunded';
+  | "draft"
+  | "in-progress"
+  | "completed"
+  | "cancelled"
+  | "blocked"
+  | "refunded";
 
 export type PaymentMethod =
-  | 'bank_transfer'
-  | 'cash_pickup'
-  | 'mobile_money'
-  | 'digital_wallet';
+  | "bank_transfer"
+  | "cash_pickup"
+  | "mobile_money"
+  | "digital_wallet";
 
 export interface TransferResponse {
   status: boolean;

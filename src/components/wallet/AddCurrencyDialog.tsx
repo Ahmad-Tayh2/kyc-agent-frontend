@@ -54,7 +54,8 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
 
   // Get currencies that are not already in the wallet
   const availableCurrencies = allCurrencies.filter(
-    (currency) => !walletCurrencies.some((wc) => wc.currency.id === currency.id)
+    (currency) =>
+      !walletCurrencies.some((wc) => wc?.currency?.id === currency?.id)
   );
 
   const form = useForm<AddCurrencyFormData>({
@@ -152,11 +153,11 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
                         <CurrencyInput
                           placeholder="Select currency to add"
                           amountPlaceholder="Amount (0 by default)"
-                          currencyOptions={availableCurrencies.map(
+                          currencyOptions={availableCurrencies?.map(
                             (currency) => ({
-                              id: currency.id,
-                              code: currency.code,
-                              name: currency.name,
+                              id: currency?.id,
+                              code: currency?.code,
+                              name: currency?.name,
                             })
                           )}
                           selectedCurrencyId={field.value || undefined}

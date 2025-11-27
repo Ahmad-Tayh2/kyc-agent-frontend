@@ -6,11 +6,9 @@ import CountrySelector from "@/components/shared/CountrySelector";
 import { useCountries } from "@/hooks/data/useAddress";
 import type { RecipientsFilterState } from "@/hooks/data/useRecipientsFilters";
 import type { CustomerType } from "@/types/customers";
-import {
-  useGetCustomer,
-  useGetCustomersWithSearch,
-} from "@/hooks/data/useCustomers";
+import { useGetCustomersWithSearch } from "@/hooks/data/useCustomers";
 import { useGetRemittanceMethods } from "@/hooks/data/useRemittanceMethods";
+import { useSearchParams } from "react-router-dom";
 
 interface RecipientsFiltersProps {
   filters: RecipientsFilterState;
@@ -34,6 +32,18 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
 }) => {
   const { data: countriesData = [] } = useCountries();
   const [searchCustomer, setSearchCustomer] = useState("");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const search_term = searchParams?.get("search");
+    if (search_term) {
+      setSearchCustomer(search_term);
+    }
+  }, [searchParams]);
+  const handleResetFilters = () => {
+    setSearchCustomer("");
+    onResetFilters?.();
+  };
   const countries = React.useMemo(() => {
     if (!countriesData) return [];
     return countriesData?.map((country: any) => ({
@@ -66,15 +76,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
       value: rm_method?.id,
     })),
   ];
-  const { data: customerResponse } = useGetCustomer(
-    filters?.customer_ids?.[0]!
-  );
 
-  useEffect(() => {
-    if (filters?.customer_ids?.length === 1 && customerResponse?.data?.id) {
-      setSearchCustomer(`${customerResponse?.data?.first_name} `);
-    }
-  }, [filters?.customer_ids, customerResponse]);
   return (
     <div className="flex items-center justify-between flex-wrap">
       <SearchInput
@@ -85,7 +87,7 @@ const RecipientsFilters: React.FC<RecipientsFiltersProps> = ({
       <div className="flex items-center justify-start w-fit gap-1 flex-wrap">
         <FilterButton
           onClick={() => {}}
-          onResetClick={onResetFilters}
+          onResetClick={handleResetFilters}
           onApplyFilters={onApplyFilters}
         >
           <div className="flex gap-2 w-fit">

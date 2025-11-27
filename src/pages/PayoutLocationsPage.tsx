@@ -14,7 +14,7 @@ const PayoutLocationsPage: React.FC = () => {
     filtersString,
     filters,
     updatePagination,
-    updateCountryFilter,
+    updateCountryIds,
     resetFilters,
     applyFilters,
   } = usePayoutLocationFilters();
@@ -117,20 +117,20 @@ const PayoutLocationsPage: React.FC = () => {
         <h1 className="p-5 text-2xl font-semibold">Payout Locations</h1>
         <PayoutLocationsFilters
           filters={filters}
-          onUpdateCountryFilter={updateCountryFilter}
+          onUpdateCountryIds={updateCountryIds}
           onResetFilters={resetFilters}
           onApplyFilters={applyFilters}
         />
+        <DataTable
+          data={payoutLocationData}
+          columns={PayoutLocationColumns}
+          // tableTitle="Payout Locations"
+          isLoading={payoutLocationsLoading}
+          error={payoutLocationsError}
+          pagination={payoutLocationsPagination}
+          className="min-h-[500px] rounded-t-none"
+        />
       </div>
-      <DataTable
-        data={payoutLocationData}
-        columns={PayoutLocationColumns}
-        // tableTitle="Payout Locations"
-        isLoading={payoutLocationsLoading}
-        error={payoutLocationsError}
-        pagination={payoutLocationsPagination}
-        className="min-h-[500px] rounded-t-none"
-      />
     </div>
   );
 };

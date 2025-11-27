@@ -12,7 +12,7 @@ export default function LinkList(props: LinkListProps) {
               {index !== 0 && ", "}
               <Link
                 to={item?.link}
-                className="font-medium text-xs hover:underline"
+                className="hover:underline hover:text-primary"
               >
                 {item?.label}
               </Link>

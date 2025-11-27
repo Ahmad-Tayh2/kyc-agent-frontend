@@ -25,7 +25,7 @@ export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
         accessorKey: "currency",
         header: "Currency",
         cell: ({ row }) => {
-          const currency: string = row.original.payment.currency;
+          const currency: string = row.original?.payment?.currency ?? "";
           return <div>{currency}</div>;
         },
       },

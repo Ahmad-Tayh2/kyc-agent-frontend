@@ -1,60 +1,45 @@
 import { useCountries } from "@/hooks/data/useAddress";
 import type { PayoutLocationFilterState } from "@/hooks/data/usePayoutLocationFilters";
 import { useMemo } from "react";
-import MultiSelectDropdown from "../shared/MultiSelectDropdown";
 import { Button } from "../ui/button";
 import { useTranslation } from "react-i18next";
-// import CountrySelector from "../shared/CountrySelector";
+import CountrySelector from "../shared/CountrySelector";
 interface PayoutLocationsFiltersProps {
   filters: PayoutLocationFilterState;
-  onUpdateCountryFilter: (countries: string[]) => void;
+  onUpdateCountryIds: (countries: number[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
 
 const PayoutLocationsFilters: React.FC<PayoutLocationsFiltersProps> = ({
   filters,
-  onUpdateCountryFilter,
+  onUpdateCountryIds,
   onResetFilters,
   onApplyFilters,
 }) => {
   const { t } = useTranslation("global");
 
   const { data: countriesData = [] } = useCountries();
-  // const countries = useMemo(() => {
-  //     if (!countriesData) return [];
-  //     return countriesData?.map((country: any) => ({
-  //       id: country.id,
-  //       code: country?.iso2,
-  //       name: country.name,
-  //     }));
-  //   }, [countriesData]);
-  const countryOptions = useMemo(() => {
+
+  const countries = useMemo(() => {
     if (!countriesData) return [];
     return countriesData?.map((country: any) => ({
-      label: country.name,
-      value: country?.iso2,
+      id: country.id,
+      code: country?.iso2,
+      name: country.name,
     }));
   }, [countriesData]);
   return (
     <div className="p-5 border-t-1">
       <div className="flex flex-row gap-2 justify-start items-end ">
-        <MultiSelectDropdown
+        <CountrySelector
           label="Country"
-          placeholder="All"
-          options={countryOptions}
-          value={filters.country_codes ?? []}
-          onChange={onUpdateCountryFilter}
-          showSelectAll
-          className="w-1/4"
+          placeholder="Select countries"
+          countries={countries}
+          value={filters?.country_ids ?? []}
+          onChange={onUpdateCountryIds}
+          dropdownClassName="left-0"
         />
-        {/* <CountrySelector
-              label="Country"
-              placeholder="Select countries"
-              countries={countries}
-              value={filters.countries ?? []}
-              onChange={onUpdateCountryIds}
-            /> */}
         <Button
           variant="default"
           title={t("modules.components.filterButton.apply")}
