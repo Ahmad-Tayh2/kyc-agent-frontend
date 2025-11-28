@@ -1,6 +1,6 @@
-import type { SummaryData } from '@/components/sendRemittance/SummaryCard';
-import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
-import { useMemo } from 'react';
+import type { SummaryData } from "@/components/sendRemittance/SummaryCard";
+import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
+import { useMemo } from "react";
 
 /**
  * Custom hook to compute summary data from send remittance store
@@ -32,9 +32,9 @@ export const useSummaryData = (): SummaryData => {
 
     // Format exchange rate display - 2 decimal places
     const exchangeRateDisplay = platformExchangeRate
-      ? `1 ${stepTwo.sendCurrency?.code || ''} = ${platformExchangeRate.toFixed(
+      ? `1 ${stepTwo.sendCurrency?.code || ""} = ${platformExchangeRate.toFixed(
           2
-        )} ${stepTwo.receiveCurrency?.code || ''}`
+        )} ${stepTwo.receiveCurrency?.code || ""}`
       : undefined;
 
     // Format recipient gets display - show even if amount is 0
@@ -45,7 +45,7 @@ export const useSummaryData = (): SummaryData => {
       : undefined;
 
     // Format fees and charges display: total_commission + extra_fees = value (send currency)
-    const sendCurrencyCode = stepTwo.sendCurrency?.code || '';
+    const sendCurrencyCode = stepTwo.sendCurrency?.code || "";
     const feesAndCommissionTotal = totalCommission + extraFeesFromResponse;
     const feesAndChargesDisplay =
       feesAndCommissionTotal > 0
@@ -61,6 +61,12 @@ export const useSummaryData = (): SummaryData => {
         : extraFeesFromResponse > 0
         ? extraFeesFromResponse.toFixed(2)
         : undefined;
+    const agentCommission = `${
+      exchangeDetails?.send_agent_commission
+    } ${sendCurrencyCode} + ${extraFeesDisplay} = ${(
+      extraFeesFromResponse +
+      (Number(exchangeDetails?.send_agent_commission) ?? 0)
+    ).toFixed(2)} ${sendCurrencyCode} `;
 
     return {
       // Step 1 data
@@ -81,6 +87,8 @@ export const useSummaryData = (): SummaryData => {
       feesAndCharges: feesAndChargesDisplay, // Shows: total_commission + extra_fees = value (currency)
       commission: totalCommission, // Just total_commission
       extraFees: extraFeesDisplay, // Just extra fees
+      agentCommission: agentCommission,
+      // send_agent_commission
       recipientGets: recipientGetsDisplay,
       totalPayableAmount,
     };
