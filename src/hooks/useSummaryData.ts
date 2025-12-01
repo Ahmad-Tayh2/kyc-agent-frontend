@@ -49,24 +49,28 @@ export const useSummaryData = (): SummaryData => {
     const feesAndCommissionTotal = totalCommission + extraFeesFromResponse;
     const feesAndChargesDisplay =
       feesAndCommissionTotal > 0
-        ? `${totalCommission.toFixed(2)} + ${extraFeesFromResponse.toFixed(
+        ? `${totalCommission.toFixed(
             2
-          )} = ${feesAndCommissionTotal.toFixed(2)} ${sendCurrencyCode}`
+          )}  ${sendCurrencyCode} + ${extraFeesFromResponse.toFixed(
+            2
+          )}  ${sendCurrencyCode}  = ${feesAndCommissionTotal.toFixed(
+            2
+          )} ${sendCurrencyCode}`
         : undefined;
 
     // Format extra fees display - just the extra fees value
-    const extraFeesDisplay =
-      stepTwo.sendCurrency?.code && extraFeesFromResponse > 0
-        ? `${extraFeesFromResponse.toFixed(2)} ${stepTwo.sendCurrency.code}`
-        : extraFeesFromResponse > 0
-        ? extraFeesFromResponse.toFixed(2)
-        : undefined;
-    const agentCommission = `${
-      exchangeDetails?.send_agent_commission
-    } ${sendCurrencyCode} + ${extraFeesDisplay} = ${(
-      extraFeesFromResponse +
-      (Number(exchangeDetails?.send_agent_commission) ?? 0)
+    const extraFeesDisplay = `${extraFeesFromResponse.toFixed(2) ?? 0} ${
+      stepTwo?.sendCurrency?.code
+    }`;
+
+    const agentCommission = `${Number(
+      exchangeDetails?.send_agent_commission ?? 0
+    )?.toFixed(2)} ${sendCurrencyCode} + ${extraFeesDisplay} = ${(
+      Number(extraFeesFromResponse?.toFixed(2) ?? 0) +
+      Number(exchangeDetails?.send_agent_commission ?? 0)
     ).toFixed(2)} ${sendCurrencyCode} `;
+
+    // const agentCommission =
 
     return {
       // Step 1 data
