@@ -211,13 +211,14 @@ interface SessionRefreshDialogProps {
   showExpirationWarning: boolean;
   countdown: number; // ms
   onExpirationChoice: (extendSession: boolean) => void;
+  onLogout: () => void;
   isLoading: boolean;
 }
 
 interface SessionContextType {
-  isActive: boolean;
-  lastActivity: number;
-  handleRefreshToken: () => Promise<boolean>;
+  isActive?: boolean;
+  lastActivity?: number;
+  handleRefreshToken: () => void;
   handleLogout: () => Promise<void>;
 }
 
@@ -239,16 +240,16 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const {
     showExpirationWarning,
     countdown,
-    isActive,
-    lastActivity,
+    isUserActive,
+    // lastActivity,
     handleRefreshToken,
     handleLogout,
     isLoading,
   } = useSessionManager();
 
   const contextValue: SessionContextType = {
-    isActive,
-    lastActivity,
+    isActive: isUserActive,
+    // lastActivity,
     handleRefreshToken,
     handleLogout,
   };
@@ -259,6 +260,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
       <SessionRefreshDialog
         showExpirationWarning={showExpirationWarning}
         countdown={countdown}
+        onLogout={handleLogout}
         onExpirationChoice={handleRefreshToken} // extend session
         isLoading={isLoading}
       />
@@ -270,6 +272,7 @@ function SessionRefreshDialog({
   showExpirationWarning,
   countdown,
   onExpirationChoice,
+  onLogout,
   isLoading,
 }: SessionRefreshDialogProps) {
   const isOpen = showExpirationWarning;
@@ -277,8 +280,11 @@ function SessionRefreshDialog({
   if (!isOpen) return null;
 
   // Convert ms countdown to minutes:seconds
-  const minutes = Math.floor(countdown / 60000);
-  const seconds = Math.floor((countdown % 60000) / 1000);
+  countdown = countdown ? countdown - 30000 : countdown;
+  const minutesInCountDown = countdown / 1000;
+  const hours = Math.floor(minutesInCountDown / 3600);
+  const minutes = Math.floor((minutesInCountDown % 3600) / 60);
+  const seconds = Math.floor(minutesInCountDown % 60);
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
@@ -297,15 +303,23 @@ function SessionRefreshDialog({
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Your session will expire in{" "}
-            <span className="font-mono">
+            <span className="font-semibold text-base">
+              {hours.toString().padStart(2, "0")}:
               {minutes.toString().padStart(2, "0")}:
               {seconds.toString().padStart(2, "0")}
             </span>
             . Click "Extend Session" to stay logged in.
           </DialogDescription>
         </DialogHeader>
-
         <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+          <Button
+            onClick={onLogout}
+            variant={"outline"}
+            disabled={isLoading}
+            className="w-full sm:w-auto"
+          >
+            {isLoading ? "Processing..." : "Logout"}
+          </Button>
           <Button
             onClick={() => onExpirationChoice(true)}
             disabled={isLoading}

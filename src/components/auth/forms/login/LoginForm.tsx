@@ -105,13 +105,15 @@ const LoginForm: React.FC<{
           loginInStore(
             response.data.user,
             response.data.access_token,
-            response.data.expires_in
+            // response.data.expires_in
+            "900"
           ); //save the auth data in zustand store
         }
         if (response?.data?.expires_in) {
           localStorage.setItem(
             "expires_in",
-            JSON.stringify(response.data.expires_in)
+            JSON.stringify(900)
+            // JSON.stringify(response.data.expires_in)
           );
         }
         navigate(ROUTES.DASHBOARD);
