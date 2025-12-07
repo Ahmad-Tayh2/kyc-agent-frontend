@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import PhoneInput from "@/components/shared/PhoneInput";
 import { useCountries } from "@/hooks/data/useAddress";
-import { geAgentUserFromStorage } from "@/utils/authHelpers";
+import { useAuthStore } from "@/store/authStore";
 
 interface SearchFormData {
   name: string;
@@ -43,9 +43,7 @@ const RecipientCreatePage: React.FC = () => {
   const { mutateAsync: attachRecipientToCustomer } =
     useAttachRecipientToCustomer();
   const { data: countries = [] } = useCountries();
-  const agentUser: any = useMemo(() => {
-    return geAgentUserFromStorage();
-  }, []);
+  const { user } = useAuthStore();
   const attachRecipient = useCallback(
     async (recipientId: string | number) => {
       let payloadToSend: {
@@ -58,7 +56,7 @@ const RecipientCreatePage: React.FC = () => {
       if (searchForm?.customer_id === "agent_id") {
         payloadToSend = {
           ...payloadToSend,
-          agent_id: agentUser?.agent?.id,
+          agent_id: user?.agent?.id,
         };
       } else {
         payloadToSend = {
@@ -125,10 +123,10 @@ const RecipientCreatePage: React.FC = () => {
             ? searchForm.customer_id
             : undefined,
         agent_id:
-          agentUser?.agent?.id &&
+          user?.agent?.id &&
           searchForm.customer_id &&
           searchForm.customer_id === "agent_id"
-            ? agentUser?.agent?.id
+            ? user?.agent?.id
             : undefined,
       });
 
@@ -142,9 +140,13 @@ const RecipientCreatePage: React.FC = () => {
   };
 
   const handleCreateNew = () => {
-    navigate(
-      ROUTES.RECIPIENTS.CREATE_FORM + `?customer=${searchForm.customer_id}`
-    );
+    if (user?.agent?.id && searchForm?.customer_id === "agent_id") {
+      navigate(ROUTES.RECIPIENTS.CREATE_FORM + `?customer=myself`);
+    } else if (searchForm?.customer_id) {
+      navigate(
+        ROUTES.RECIPIENTS.CREATE_FORM + `?customer=${searchForm.customer_id}`
+      );
+    }
   };
 
   const handleBack = () => {
@@ -166,7 +168,7 @@ const RecipientCreatePage: React.FC = () => {
     };
   });
   const extraOption = {
-    label: `${agentUser?.first_name} ${agentUser?.last_name} (Myself)`,
+    label: `${user?.first_name} ${user?.last_name} (Myself)`,
     value: "agent_id",
   };
   return (

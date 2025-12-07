@@ -32,7 +32,8 @@ export interface RecipientCreateData {
   };
 
   // Customer IDs
-  customer_ids: number[];
+  customer_ids?: number[];
+  agent_id?: number;
 
   // Remittance Methods
   // remittance_methods: number[];

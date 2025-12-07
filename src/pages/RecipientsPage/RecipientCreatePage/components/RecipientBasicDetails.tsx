@@ -7,6 +7,7 @@ import DatePicker from "@/components/shared/DatePicker";
 import { genderOptions } from "@/constants/options";
 import RadioInput from "@/components/shared/RadioInput";
 import ErrorField from "@/components/shared/ErrorField";
+import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
 
 interface RecipientBasicDetailsProps {
   formData: {
@@ -27,6 +28,7 @@ interface RecipientBasicDetailsProps {
   handleInputChange: (field: string, value: any) => void;
   handleDateChange: (field: string, date: string) => void;
   customerOptions: Array<{ value: string; label: string }>;
+  extraCustomerOption: { label: string; value: string };
   countryOptions: Array<{ value: string; label: string }>;
   cityOptions: Array<{ value: string; label: string }>;
   countryPhoneOptions: Array<{
@@ -44,10 +46,10 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
   handleInputChange,
   handleDateChange,
   customerOptions,
+  extraCustomerOption,
   countryOptions,
   cityOptions,
   countryPhoneOptions,
-  disableCstomerSelection,
   validationErrors,
 }) => {
   return (
@@ -55,14 +57,16 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
       {/* Add recipient details */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Add recipient details</h3>
-        <SearchableSelect
+        <SingleSelectDropdown
           label="Customer"
-          options={customerOptions}
-          value={formData.customer_id || ""}
-          onChange={(value) => handleInputChange("customer_id", value)}
           placeholder="Select customer"
-          disabled={disableCstomerSelection}
-          error={validationErrors?.customer_id}
+          options={customerOptions}
+          extraOption={extraCustomerOption}
+          selectedValue={formData.customer_id || ""}
+          onValueChange={(value: string) =>
+            handleInputChange("customer_id", value)
+          }
+          required
         />
       </div>
 
