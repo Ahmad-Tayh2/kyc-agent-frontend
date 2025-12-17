@@ -4,7 +4,6 @@ import {
   // Wallet,
   // CreditCard,
   Copy,
-  Info,
   Link,
   Plus,
   ShoppingCart,
@@ -169,19 +168,20 @@ const PayStep = (props: PayStepProps) => {
 
           {/* Payment Method Section */}
           <div className='bg-white rounded-lg border p-6 space-y-6'>
-            <div className='flex flex-col'>
+            <div className='flex flex-col space-y-3'>
               <div className='flex items-center space-x-2'>
                 <h4 className='text-lg font-semibold text-gray-900'>
                   Payment Method
                 </h4>
               </div>
-              <p className='text-sm text-gray-600 flex items-center mt-1'>
-                <Info className='w-4 h-4 mr-2' />
-                Only single payment method should be used
-              </p>
+              <div className='bg-orange-50 border-2 border-orange-300 rounded-lg p-3 flex items-start space-x-2'>
+                <AlertCircle className='w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5' />
+                <p className='text-sm font-semibold text-orange-800'>
+                  Important: Payment method is final once started and cannot be
+                  changed later
+                </p>
+              </div>
             </div>
-
-            <hr className='my-3' />
 
             {/* Multiple Transfers Option - Remittance Cart */}
             <div

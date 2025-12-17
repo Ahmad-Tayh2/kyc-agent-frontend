@@ -28,7 +28,13 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import AddPaymentMethodModal from './AddPaymentMethodModal';
 
-const CustomerRecipientStep = (props: any) => {
+interface CustomerRecipientStepProps {
+  customerId?: string | null;
+  recipientId?: string | null;
+  isReadOnly?: boolean;
+}
+
+const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   const { customerId, recipientId } = props;
   const navigate = useNavigate();
   const [isExpandedText, setIsExpandedText] = useState(false);
@@ -479,7 +485,7 @@ const CustomerRecipientStep = (props: any) => {
             loading={customersLoading}
             enableBackendSearch={true}
             onSearch={setCustomerSearchTerm}
-            disabled={mode === 'edit' || customerId} //when we are in edit mode or there is a default customer
+            disabled={mode === 'edit' || !!customerId} //when we are in edit mode or there is a default customer
           />
         </div>
 
@@ -504,7 +510,7 @@ const CustomerRecipientStep = (props: any) => {
             onChange={handleRecipientSelect}
             placeholder='Select an existing recipient'
             loading={recipientsLoading}
-            disabled={!stepOne.customer || recipientId}
+            disabled={!stepOne.customer || !!recipientId}
             enableBackendSearch={false}
           />
 

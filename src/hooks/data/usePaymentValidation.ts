@@ -47,10 +47,8 @@ export function usePaymentValidation(
       const validationRequest: PaymentValidationRequest = {
         transactionReference:
           overrideOptions?.transactionReference ?? transactionReference,
-        paymentLinkToken:
-          overrideOptions?.paymentLinkToken ?? paymentLinkToken,
-        walletCurrencyId:
-          overrideOptions?.walletCurrencyId ?? walletCurrencyId,
+        paymentLinkToken: overrideOptions?.paymentLinkToken ?? paymentLinkToken,
+        walletCurrencyId: overrideOptions?.walletCurrencyId ?? walletCurrencyId,
         amount: overrideOptions?.amount ?? amount,
       };
 
