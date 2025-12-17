@@ -32,6 +32,26 @@ export const createWorldpaySession = async (data: WorldpaySessionRequest) => {
 };
 
 /**
+ * Marks a payment as processing after Worldpay redirect success
+ * @param data Object containing either payment_id or transaction_uuid
+ * @returns Promise with the updated payment status
+ */
+export const markPaymentProcessing = async (data: {
+  payment_id?: number | string;
+  transaction_uuid?: string;
+}) => {
+  return axiosInstance
+    .post(`${baseUrl}/worldpay/mark-processing`, data)
+    .then((response: AxiosResponse) =>
+      handleApiResponse<{
+        payment_id: number;
+        transaction_uuid: string;
+        status: string;
+      }>(response.data)
+    );
+};
+
+/**
  * Verifies payment status by order code
  * @param orderCode The Worldpay order code to verify
  * @returns Promise with the payment status data

@@ -14,7 +14,11 @@ import {
 } from "@/hooks/data/useTransferPurposeAndSource";
 import { useSummaryData } from "@/hooks/useSummaryData";
 
-const ReviewStep: React.FC = () => {
+interface ReviewStepProps {
+  isReadOnly?: boolean;
+}
+
+const ReviewStep: React.FC<ReviewStepProps> = ({ isReadOnly = false }) => {
   // const [extraDetails, setExtraDetails] = useState("");
   // const [transactionReference, setTransactionReference] = useState("");
 
@@ -248,6 +252,7 @@ const ReviewStep: React.FC = () => {
                 options={sourceIncomesOptions}
                 value={sourceOfIncome?.id ?? ""}
                 onChange={handleChangeSourceIncomes}
+                disabled={isReadOnly}
               />
             </div>
 
@@ -259,6 +264,7 @@ const ReviewStep: React.FC = () => {
                 options={reasonForTransferOptions}
                 value={remittancePurpose?.id ?? ""}
                 onChange={handleChangeRemittancePurpose}
+                disabled={isReadOnly}
               />
             </div>
           </div>

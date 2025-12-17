@@ -39,11 +39,21 @@ export const transfersService = {
     ref: string,
     data: Partial<TransactionCreateDataType>
   ) => {
-    const response = await apiClient.patch(
-      API_URLS.transfers.update(ref),
-      data
-    );
-    return response.data;
+    try {
+      const response = await apiClient.patch(
+        API_URLS.transfers.update(ref),
+        data
+      );
+      return response.data;
+    } catch (error: any) {
+      // If the error has a response with data, return that
+      // This handles cases where the API returns a structured error response
+      if (error.response?.data) {
+        return error.response.data;
+      }
+      // Otherwise, throw the error to be handled by the caller
+      throw error;
+    }
   },
 
   previewTransaction: async (data: TransactionPreviewPayload) => {

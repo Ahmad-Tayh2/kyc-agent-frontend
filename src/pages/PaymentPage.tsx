@@ -202,7 +202,13 @@ export default function PaymentPage({
   ]);
 
   useEffect(() => {
-    // Handle validation results
+    // Don't show errors while validating - wait for validation to complete
+    if (isValidating) {
+      // Keep pending state during validation
+      return;
+    }
+
+    // Handle validation results after validation completes
     if (isValidationError && validationError) {
       setErrorMessage(validationError);
       setPaymentStatus('error');
@@ -210,36 +216,15 @@ export default function PaymentPage({
       // Clear any previous errors when validation succeeds
       setPaymentStatus('pending');
       setErrorMessage('');
-    } else if (!isValidating) {
-      // Only validate basic token presence if not currently validating
-      const hasAnyToken = token || transactionId || paymentLinkToken;
-      const hasDetectedValues =
-        detectedTransactionId || detectedPaymentLinkToken || walletCurrencyId;
-
-      if (hasAnyToken && !hasDetectedValues) {
-        setErrorMessage(
-          'Invalid payment link. Unable to process payment token.'
-        );
-        setPaymentStatus('error');
-      } else if (!hasAnyToken) {
-        setErrorMessage(
-          'Invalid payment link. Missing transaction ID, payment link token, or wallet information.'
-        );
-        setPaymentStatus('error');
-      }
     }
+    // Don't set error states on initial render - only after validation has been attempted
+    // The validation hook will handle showing errors if needed
   }, [
     isValidating,
     isValidationError,
     validationError,
     isValid,
     validationData,
-    detectedTransactionId,
-    detectedPaymentLinkToken,
-    walletCurrencyId,
-    token,
-    transactionId,
-    paymentLinkToken,
   ]);
 
   const handlePaymentSuccess = (
@@ -269,6 +254,14 @@ export default function PaymentPage({
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
+    }
+
+    // Store validation data in sessionStorage to pass to success page
+    if (validationData) {
+      sessionStorage.setItem(
+        'paymentValidationData',
+        JSON.stringify(validationData)
+      );
     }
 
     // Redirect to success page with payment data
@@ -403,7 +396,7 @@ export default function PaymentPage({
             </div>
           )}
           {/* Error State */}
-          {paymentStatus === 'error' && (
+          {paymentStatus === 'error' && !isValidating && (
             <div className='text-center space-y-6'>
               <div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto'>
                 <XCircle className='w-8 h-8 text-red-600' />
@@ -441,13 +434,6 @@ export default function PaymentPage({
                   Go Back
                 </Button>
               </div>
-            </div>
-          )}
-          {/* Validation Loading State */}
-          {paymentStatus === 'pending' && isValidating && (
-            <div className='text-center space-y-4 py-8'>
-              <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto'></div>
-              <p className='text-gray-600'>Validating payment details...</p>
             </div>
           )}
 

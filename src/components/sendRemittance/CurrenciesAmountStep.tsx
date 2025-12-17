@@ -26,7 +26,11 @@ import type { RemittanceCurrency } from '@/types/remittanceAvailability';
 import { useLocation } from 'react-router-dom';
 import SummaryCard from './SummaryCard';
 
-const CurrenciesAmountStep: React.FC = () => {
+interface CurrenciesAmountStepProps {
+  isReadOnly?: boolean;
+}
+
+const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({ isReadOnly = false }) => {
   // Check if there's a transaction reference in the URL path
   const location = useLocation();
   const pathSegments = location.pathname.split('/');
@@ -282,19 +286,20 @@ const CurrenciesAmountStep: React.FC = () => {
   ]);
 
   // Fetch preview data from API - conditionally based on mode
+  // IMPORTANT: Disable preview requests when in readonly mode
   const {
     data: previewData,
     isLoading: previewLoading,
     error: previewError,
-  } = useTransactionPreview(isEditMode ? undefined : previewPayload);
+  } = useTransactionPreview(isEditMode || isReadOnly ? undefined : previewPayload);
 
   const {
     data: previewByRefData,
     isLoading: previewByRefLoading,
     error: previewByRefError,
   } = useTransactionPreviewByRef(
-    isEditMode ? transactionRef || undefined : undefined,
-    previewByRefPayload
+    isEditMode && !isReadOnly ? transactionRef || undefined : undefined,
+    isReadOnly ? undefined : previewByRefPayload
   );
 
   // Select the appropriate preview data based on mode
@@ -423,7 +428,8 @@ const CurrenciesAmountStep: React.FC = () => {
                   onAmountChange={(amount) => setSendAmount(amount)}
                   showBalance
                   availableBalance={availableBalance}
-                  readOnly={isCalculateFromReceiveAmount}
+                  readOnly={isCalculateFromReceiveAmount || isReadOnly}
+                  disabled={isReadOnly}
                 />
               </div>
 
@@ -462,7 +468,8 @@ const CurrenciesAmountStep: React.FC = () => {
                     }
                   }}
                   onAmountChange={(amount) => setReceiveAmount(amount)}
-                  readOnly={!isCalculateFromReceiveAmount}
+                  readOnly={!isCalculateFromReceiveAmount || isReadOnly}
+                  disabled={isReadOnly}
                 />
               </div>
             </div>
@@ -480,6 +487,7 @@ const CurrenciesAmountStep: React.FC = () => {
                       setIsCalculateFromReceiveAmount(false);
                     }
                   }}
+                  disabled={isReadOnly}
                 />
                 <label htmlFor='allFeesIncluded' className='text-sm text-gray-700 cursor-pointer'>
                   All fees and commissions included in send amount
@@ -503,6 +511,7 @@ const CurrenciesAmountStep: React.FC = () => {
                       setReceiveAmount(0);
                     }
                   }}
+                  disabled={isReadOnly}
                 />
                 <label htmlFor='calculateFromReceive' className='text-sm text-gray-700 cursor-pointer'>
                   Enter final receive amount
@@ -574,6 +583,7 @@ const CurrenciesAmountStep: React.FC = () => {
                 }}
                 placeholder='0'
                 className='w-32'
+                disabled={isReadOnly}
               />
               <span className='text-sm text-gray-600'>%</span>
               {extraFeesAmount > 0 && sendCurrency && (

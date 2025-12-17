@@ -47,12 +47,26 @@ export function useCreateTransfer(onSuccess?: () => void) {
 
 export function useUpdateTransfer(ref: string) {
   return useMutation({
-    mutationFn: (data: Partial<TransactionCreateDataType>) =>
-      transfersService.updateTransfer(ref, data),
+    mutationFn: async (data: Partial<TransactionCreateDataType>) => {
+      const response = await transfersService.updateTransfer(ref, data);
+
+      // Check if the response indicates failure
+      if (!response.status) {
+        // Throw an error with the message from the API
+        throw new Error(response.message || 'Failed to update transfer');
+      }
+
+      return response;
+    },
 
     onSuccess: () => {
       // toast.success("Transfer updated successfully!");
       //queryClient.invalidateQueries({ queryKey: ["get-transfers"] });
+    },
+
+    onError: (error: Error) => {
+      // Error will be automatically thrown and can be caught by the consumer
+      console.error('Transfer update error:', error.message);
     },
   });
 }
