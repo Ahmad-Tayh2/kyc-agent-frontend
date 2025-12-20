@@ -12,6 +12,40 @@ export function useAgentProfile(agentId: string | number | null) {
   });
 }
 
+export function useGetAgentBankAccount(agentId: string | number | null) {
+  return useQuery({
+    queryKey: ["agent-bank-accounts", agentId],
+    queryFn: () => agentService.getBankAccounts(agentId!),
+    enabled: !!agentId,
+    // staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useGetAgentRecipients(agentId: string | number | null) {
+  return useQuery({
+    queryKey: ["agent-recipients", agentId],
+    queryFn: () => agentService.getAgentRecipients(agentId!),
+    enabled: !!agentId,
+  });
+}
+export function useDetachAgentRecipients(agentId: string | number | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (recipientId: string | number | null) =>
+      agentService.detachAgentRecipient(agentId!, recipientId!),
+    onSuccess: () => {
+      toast.success("Recipient Detached successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["agent-recipients", agentId],
+      });
+    },
+    onError: (err: any) => {
+      toast.error(
+        err?.response?.data?.message ?? "Cannot Detach The Recipient!"
+      );
+    },
+  });
+}
 export function useUpdateAgentProfile({
   agentId,
   onError,

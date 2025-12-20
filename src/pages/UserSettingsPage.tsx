@@ -1,16 +1,18 @@
-import ActionButton from "@/components/shared/ActionButton";
 import EditSectionCard from "@/components/shared/EditSectionCard";
 import PageTitle from "@/components/shared/PageTitle";
-import { Label } from "@/components/ui/label";
-import { PasswordInput } from "@/components/ui/password-input";
-import { useChangePassword } from "@/hooks/data/useAuth";
+import ChangePasswordForm from "@/components/userSettings/ChangePasswordForm";
+import AgentCashRecipients from "@/components/userSettings/AgentCashRecipients";
+import AgentBankAccountDetails from "@/components/userSettings/AgentBankAccountDetails";
 import { cn } from "@/lib/utils";
 import { useState, type ReactElement } from "react";
-import { toast } from "sonner";
+import ActionButton from "@/components/shared/ActionButton";
+import { CirclePlus } from "lucide-react";
+import CreateAgentBankAccountDialog from "@/components/userSettings/CreateAgentBankAccountDialog";
 
 const UserSettingsPage = () => {
   const tabs = [
     {
+      key: "security",
       title: "Account Security",
       content: (
         <div className="flex gap-10">
@@ -27,6 +29,16 @@ const UserSettingsPage = () => {
         </div>
       ),
     },
+    {
+      key: "bank",
+      title: "Bank Account Details",
+      content: <AgentBankAccountDetails />,
+    },
+    {
+      key: "recipients",
+      title: "My Cash Recipients",
+      content: <AgentCashRecipients />,
+    },
   ];
   return (
     <div className="space-y-4">
@@ -40,6 +52,7 @@ const UserSettingsPage = () => {
 
 export default UserSettingsPage;
 interface Tab {
+  key: string;
   title: string;
   content: ReactElement;
 }
@@ -49,6 +62,8 @@ interface TabNavigatorProps {
 const TabNavigator = (props: TabNavigatorProps) => {
   const { tabs } = props;
   const [selectedTab, setSelectedTab] = useState(0);
+  const [openCreateBankDialog, setOpenCreateBankDialog] = useState(false);
+
   return (
     <div className="flex flex-col gap-10">
       <div className="flex items-center gap-5 border-b-1 border-gray-300">
@@ -57,7 +72,7 @@ const TabNavigator = (props: TabNavigatorProps) => {
             <button
               onClick={() => setSelectedTab(index)}
               className={cn(
-                "text-[20px] text-[#101828] font-400 border-b-3 border-transparent p-2",
+                "text-[20px] text-[#101828] font-400 border-b-3 border-transparent p-2 mt-auto",
                 selectedTab === index && "border-primary"
               )}
             >
@@ -65,115 +80,23 @@ const TabNavigator = (props: TabNavigatorProps) => {
             </button>
           );
         })}
+        {tabs?.[selectedTab]?.key === "bank" && (
+          <CreateAgentBankAccountDialog
+            trigger={
+              <ActionButton
+                className="ml-auto mb-2"
+                icon={
+                  <CirclePlus size={50} fill="white" color="var(--primary)" />
+                }
+                title="ADD NEW BANK DETAILS"
+              />
+            }
+            isOpen={openCreateBankDialog}
+            setIsOpen={setOpenCreateBankDialog}
+          />
+        )}
       </div>
       <div>{tabs?.[selectedTab]?.content}</div>
     </div>
-  );
-};
-
-const ChangePasswordForm = () => {
-  const { mutateAsync: changePassword, isPending } = useChangePassword();
-  const [passwordState, setPasswordState] = useState({
-    current_password: "",
-    new_password: "",
-    new_password_confirmation: "",
-  });
-  const [errors, setErrors] = useState({
-    current_password: "",
-    new_password: "",
-    new_password_confirmation: "",
-  });
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    // if(passwordState?.password && passwordState?.confirmPassword && )
-    //should validate before submit (try using zod)
-    const result = await changePassword(passwordState);
-    if (result.status) {
-      toast.success("Password changed successfully!");
-      setErrors({
-        current_password: "",
-        new_password: "",
-        new_password_confirmation: "",
-      });
-      setPasswordState({
-        current_password: "",
-        new_password: "",
-        new_password_confirmation: "",
-      });
-    } else {
-      setErrors(result?.errors);
-    }
-  };
-  return (
-    <form className="p-5 flex flex-col gap-5">
-      <div className="flex flex-col gap-2 border-b-1 border-gray-200 pb-8">
-        <Label>
-          Old Password
-          <span className="text-red-500">*</span>
-        </Label>
-        <PasswordInput
-          value={passwordState?.current_password}
-          onChange={(e: any) =>
-            setPasswordState((prev: any) => ({
-              ...prev,
-              current_password: e.target.value,
-            }))
-          }
-          disabled={isPending}
-        />
-        {errors?.current_password && (
-          <span className="text-destructive text-xs">
-            {errors?.current_password}
-          </span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label>
-          New Password
-          <span className="text-red-500">*</span>
-        </Label>
-        <PasswordInput
-          value={passwordState?.new_password}
-          onChange={(e: any) =>
-            setPasswordState((prev: any) => ({
-              ...prev,
-              new_password: e.target.value,
-            }))
-          }
-          disabled={isPending}
-        />
-        {errors?.new_password && (
-          <span className="text-destructive text-xs">
-            {errors?.new_password}
-          </span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label>
-          Confirm New Password
-          <span className="text-red-500">*</span>
-        </Label>
-        <PasswordInput
-          value={passwordState?.new_password_confirmation}
-          onChange={(e: any) =>
-            setPasswordState((prev: any) => ({
-              ...prev,
-              new_password_confirmation: e.target.value,
-            }))
-          }
-          disabled={isPending}
-        />
-        {errors?.new_password_confirmation && (
-          <span className="text-destructive text-xs">
-            {errors?.new_password_confirmation}
-          </span>
-        )}
-      </div>
-      <ActionButton
-        title="Change Password"
-        onClick={handleSubmit}
-        disabled={isPending}
-      />
-    </form>
   );
 };
