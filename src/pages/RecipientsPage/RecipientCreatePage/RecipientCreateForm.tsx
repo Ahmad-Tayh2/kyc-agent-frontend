@@ -30,6 +30,7 @@ import RecipientBankDetails from "./components/RecipientBankDetails";
 import RecipientBasicDetails from "./components/RecipientBasicDetails";
 import RemittanceMethodStep from "./components/RemittanceMethodStep";
 import { z } from "zod";
+import { useAuthStore } from "@/store/authStore";
 export const createRecipientSchema = z.object({
   customer_id: z.union([z.string(), z.number()]).refine((val) => {
     if (typeof val === "string") return val.trim() !== "";
@@ -134,6 +135,7 @@ type FormStep = "basic" | "remittance" | "bank";
 interface RecipientFormData {
   // Basic Details
   customer_id?: string;
+  agent_id?: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -578,7 +580,14 @@ const RecipientCreateForm: React.FC = () => {
         return false;
     }
   };
-
+  const { user } = useAuthStore();
+  const extraOption = useMemo(
+    () => ({
+      label: `${user?.first_name} ${user?.last_name} (Myself)`,
+      value: "agent_id",
+    }),
+    [user]
+  );
   useEffect(() => {
     if (customerIdQuery && customerOptions?.length > 0) {
       const found = customerOptions?.find((item: any) => {
@@ -589,6 +598,11 @@ const RecipientCreateForm: React.FC = () => {
       }
     }
   }, [customerIdQuery, customerOptions]);
+  useEffect(() => {
+    if (customerIdQuery && String(customerIdQuery) === "myself") {
+      handleInputChange("customer_id", "agent_id");
+    }
+  }, [customerIdQuery]);
   const handleNext = async () => {
     if (!completedSteps.includes(currentStep)) {
       setCompletedSteps((prev) => [...prev, currentStep]);
@@ -617,10 +631,19 @@ const RecipientCreateForm: React.FC = () => {
               : undefined,
           country_id: formData.country_id,
         },
-        customer_ids: formData.customer_id
-          ? [parseInt(formData.customer_id)]
-          : [],
-        customer_id: parseInt(formData.customer_id ?? ""),
+        customer_ids:
+          formData.customer_id === "agent_id"
+            ? undefined
+            : formData.customer_id
+            ? [parseInt(formData.customer_id)]
+            : [],
+        customer_id:
+          formData.customer_id === "agent_id"
+            ? undefined
+            : parseInt(formData.customer_id ?? ""),
+
+        agent_id:
+          formData.customer_id === "agent_id" ? user?.agent?.id : undefined,
 
         rm_service_providers: [],
       };
@@ -630,13 +653,13 @@ const RecipientCreateForm: React.FC = () => {
         ...recipientPayload.address,
         customer_id: formData.customer_id,
       };
-      console.log("formDat * * * *a = ", formData);
+      console.log("formData = ", formData);
       console.log("recipientPayload = ", recipientPayload);
 
       const validationResult = createRecipientSchema.safeParse(flattenedData);
 
       if (!validationResult.success) {
-        const errors = validationResult.error.flatten().fieldErrors;
+        const errors = validationResult?.error?.flatten().fieldErrors;
         setValidationErrors(errors);
         console.log("Validation errors ------- :", errors);
         return;
@@ -796,6 +819,7 @@ const RecipientCreateForm: React.FC = () => {
       navigate(ROUTES.RECIPIENTS.LIST);
     }
   };
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -821,6 +845,7 @@ const RecipientCreateForm: React.FC = () => {
             handleInputChange={handleInputChange}
             handleDateChange={handleDateChange}
             customerOptions={customerOptions}
+            extraCustomerOption={extraOption}
             countryOptions={countryOptions}
             cityOptions={cityOptions}
             countryPhoneOptions={countryPhoneOptions}

@@ -96,6 +96,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
+      console.log(" logout successsss = == ");
       navigate(ROUTES.AUTH.LOGIN);
       queryClient.clear();
     },

@@ -16,6 +16,7 @@ export interface SummaryData {
   feesAndCharges?: number | string; // Now displays as: total_commission + extra_fees = value (currency)
   commission?: number;
   extraFees?: number | string;
+  agentCommission?: number | string;
   recipientGets?: number | string;
   totalPayableAmount?: number;
 }
@@ -58,6 +59,7 @@ const SummaryRow: React.FC<{
 );
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
+  console.log("data ******************** === ", data);
   return (
     <div
       className={`bg-[#E4F2F2] rounded-lg border p-6 space-y-4 sticky top-6 ${className}`}
@@ -131,6 +133,16 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, className = "" }) => {
               ? typeof data.feesAndCharges === "string"
                 ? data.feesAndCharges
                 : formatCurrency(data.feesAndCharges, data.sendingCurrency)
+              : undefined
+          }
+        />
+        <SummaryRow
+          label="My Commission - Profit"
+          value={
+            data.agentCommission !== undefined
+              ? typeof data.agentCommission === "string"
+                ? data.agentCommission
+                : formatCurrency(data.agentCommission, data.sendingCurrency)
               : undefined
           }
         />

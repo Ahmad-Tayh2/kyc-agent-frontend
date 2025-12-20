@@ -19,7 +19,7 @@ import type { RemittanceMethodAvailability } from "@/types/remittanceAvailabilit
 import type { RemittanceMethod } from "@/types/remittanceMethod/RemittanceMethod";
 import type { Country } from "@/types/shared/location";
 import { X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface AddPaymentMethodModalProps {
   isOpen: boolean;
@@ -75,6 +75,16 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   // Payout location filtering
   const { filtersString, updateCountryFilter, filters } =
     usePayoutLocationFilters();
+
+  useEffect(() => {
+    if (countries?.length && receiveCountryId) {
+      const countryCode: string =
+        countries?.find((c: any) => c?.id === receiveCountryId)?.iso2 ?? "";
+      if (countryCode) {
+        updateCountryFilter([countryCode]);
+      }
+    }
+  }, [receiveCountryId, countries]);
   const {
     data: payoutLocationsInfiniteData,
     fetchNextPage,
@@ -278,7 +288,8 @@ const AddPaymentMethodModal: React.FC<AddPaymentMethodModalProps> = ({
   };
 
   if (!isOpen) return null;
-
+  console.log(" rmCountryFilter = = ", rmCountryFilter);
+  console.log(" filters contry codess = = ", filters?.country_codes);
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center">
       {/* Backdrop */}

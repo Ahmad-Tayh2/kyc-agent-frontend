@@ -1,6 +1,6 @@
-import type { SummaryData } from '@/components/sendRemittance/SummaryCard';
-import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
-import { useMemo } from 'react';
+import type { SummaryData } from "@/components/sendRemittance/SummaryCard";
+import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
+import { useMemo } from "react";
 
 /**
  * Custom hook to compute summary data from send remittance store
@@ -32,9 +32,9 @@ export const useSummaryData = (): SummaryData => {
 
     // Format exchange rate display - 2 decimal places
     const exchangeRateDisplay = platformExchangeRate
-      ? `1 ${stepTwo.sendCurrency?.code || ''} = ${platformExchangeRate.toFixed(
+      ? `1 ${stepTwo.sendCurrency?.code || ""} = ${platformExchangeRate.toFixed(
           2
-        )} ${stepTwo.receiveCurrency?.code || ''}`
+        )} ${stepTwo.receiveCurrency?.code || ""}`
       : undefined;
 
     // Format recipient gets display - show even if amount is 0
@@ -45,22 +45,32 @@ export const useSummaryData = (): SummaryData => {
       : undefined;
 
     // Format fees and charges display: total_commission + extra_fees = value (send currency)
-    const sendCurrencyCode = stepTwo.sendCurrency?.code || '';
+    const sendCurrencyCode = stepTwo.sendCurrency?.code || "";
     const feesAndCommissionTotal = totalCommission + extraFeesFromResponse;
     const feesAndChargesDisplay =
       feesAndCommissionTotal > 0
-        ? `${totalCommission.toFixed(2)} + ${extraFeesFromResponse.toFixed(
+        ? `${totalCommission.toFixed(
             2
-          )} = ${feesAndCommissionTotal.toFixed(2)} ${sendCurrencyCode}`
+          )}  ${sendCurrencyCode} + ${extraFeesFromResponse.toFixed(
+            2
+          )}  ${sendCurrencyCode}  = ${feesAndCommissionTotal.toFixed(
+            2
+          )} ${sendCurrencyCode}`
         : undefined;
 
     // Format extra fees display - just the extra fees value
-    const extraFeesDisplay =
-      stepTwo.sendCurrency?.code && extraFeesFromResponse > 0
-        ? `${extraFeesFromResponse.toFixed(2)} ${stepTwo.sendCurrency.code}`
-        : extraFeesFromResponse > 0
-        ? extraFeesFromResponse.toFixed(2)
-        : undefined;
+    const extraFeesDisplay = `${extraFeesFromResponse.toFixed(2) ?? 0} ${
+      stepTwo?.sendCurrency?.code
+    }`;
+
+    const agentCommission = `${Number(
+      exchangeDetails?.send_agent_commission ?? 0
+    )?.toFixed(2)} ${sendCurrencyCode} + ${extraFeesDisplay} = ${(
+      Number(extraFeesFromResponse?.toFixed(2) ?? 0) +
+      Number(exchangeDetails?.send_agent_commission ?? 0)
+    ).toFixed(2)} ${sendCurrencyCode} `;
+
+    // const agentCommission =
 
     return {
       // Step 1 data
@@ -81,6 +91,8 @@ export const useSummaryData = (): SummaryData => {
       feesAndCharges: feesAndChargesDisplay, // Shows: total_commission + extra_fees = value (currency)
       commission: totalCommission, // Just total_commission
       extraFees: extraFeesDisplay, // Just extra fees
+      agentCommission: agentCommission,
+      // send_agent_commission
       recipientGets: recipientGetsDisplay,
       totalPayableAmount,
     };

@@ -11,8 +11,9 @@ type AuthState = {
   //   user: User | null;
   user: any;
   token: string | null;
+  expires_in: string | null;
   isAuthenticated: boolean;
-  login: (user: any /*User*/, token: string) => void;
+  login: (user: any /*User*/, token: string, expires_in: string) => void;
   logout: () => void;
 };
 
@@ -22,12 +23,14 @@ export const useAuthStore = create<AuthState>()(
       (set) => ({
         user: null,
         token: null,
+        expires_in: null,
         isAuthenticated: false,
 
-        login: (user, token) =>
+        login: (user, token, expires_in) =>
           set({
             user,
             token,
+            expires_in,
             isAuthenticated: true,
           }),
 
@@ -35,6 +38,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: null,
             token: null,
+            expires_in: null,
             isAuthenticated: false,
           }),
       }),
