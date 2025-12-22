@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 // import { ROUTES } from "@/constants/routes";
@@ -15,6 +15,39 @@ export function useGetCustomers(filters?: string) {
   return useQuery({
     queryKey: ["get-customers", filters],
     queryFn: () => customersService.getCustomers(filters),
+  });
+}
+
+export function useGetActiveCustomers(filters?: string) {
+  return useQuery({
+    queryKey: ["get-active-customers", filters],
+    queryFn: () => customersService.getActiveCustomers(filters),
+  });
+}
+
+/**
+ * Hook for infinite scrolling active customers with search support
+ * @param searchTerm - Search term for filtering customers
+ * @param enabled - Whether the query should be enabled
+ */
+export function useInfiniteActiveCustomers(searchTerm: string = "", enabled: boolean = true) {
+  return useInfiniteQuery({
+    queryKey: ["infinite-active-customers", searchTerm],
+    queryFn: ({ pageParam = 1 }) => {
+      const filters = searchTerm
+        ? `?search=${encodeURIComponent(searchTerm)}&page=${pageParam}`
+        : `?page=${pageParam}`;
+      return customersService.getActiveCustomers(filters);
+    },
+    getNextPageParam: (lastPage) => {
+      // Assuming the API returns pagination info in the meta object
+      if (lastPage?.meta?.current_page < lastPage?.meta?.last_page) {
+        return lastPage.meta.current_page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+    enabled,
   });
 }
 

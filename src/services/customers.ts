@@ -24,6 +24,11 @@ export const customersService = {
     return response.data;
   },
 
+  getActiveCustomers: async (filters: string = "") => {
+    const response = await apiClient.get(API_URLS.customers.getActive(filters));
+    return response.data;
+  },
+
   getCustomerById: async (id: string | number) => {
     const response = await apiClient.get(API_URLS.customers.getById(id));
     return response.data;
