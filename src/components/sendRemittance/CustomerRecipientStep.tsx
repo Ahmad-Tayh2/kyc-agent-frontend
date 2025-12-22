@@ -4,7 +4,7 @@ import { ROUTES } from '@/constants/routes';
 import {
   useAttachRecipientToCustomer,
   useGetCustomerRecipients,
-  useGetCustomers,
+  useInfiniteActiveCustomers,
 } from '@/hooks/data/useCustomers';
 import { useInfiniteRecipients } from '@/hooks/data/useRecipients';
 import {
@@ -39,6 +39,8 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   const navigate = useNavigate();
   const [isExpandedText, setIsExpandedText] = useState(false);
   const [customerSearchTerm, setCustomerSearchTerm] = useState('');
+  const [activeCustomerSearchTerm, setActiveCustomerSearchTerm] = useState(''); // The actual search term used for API
+  const [hasCustomerSearched, setHasCustomerSearched] = useState(false); // Track if search button was clicked
   const [recipientSearchTerm, setRecipientSearchTerm] = useState('');
   const [activeSearchTerm, setActiveSearchTerm] = useState(''); // The actual search term used for API
   const [hasSearched, setHasSearched] = useState(false); // Track if search button was clicked
@@ -66,9 +68,17 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   );
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
   const mode = useSendRemittanceStore((state) => state.mode);
-  // API hooks
-  const { data: customersData, isLoading: customersLoading } = useGetCustomers(
-    customerSearchTerm ? `?search=${customerSearchTerm}` : undefined
+
+  // API hooks - Infinite scroll for customers
+  const {
+    data: customersInfiniteData,
+    fetchNextPage: fetchNextCustomersPage,
+    hasNextPage: hasNextCustomersPage,
+    isFetchingNextPage: isFetchingNextCustomersPage,
+    isLoading: customersLoading,
+  } = useInfiniteActiveCustomers(
+    activeCustomerSearchTerm,
+    hasCustomerSearched || !customerId // Enable when searched or no default customer
   );
 
   // Only call useGetCustomerRecipients when we have a customer selected
@@ -106,8 +116,16 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
 
   const attachRecipientMutation = useAttachRecipientToCustomer();
 
-  // Ref for infinite scroll observer
-  const observerTarget = useRef<HTMLDivElement>(null);
+  // Refs for infinite scroll observers
+  const customerObserverTarget = useRef<HTMLDivElement>(null);
+  const recipientObserverTarget = useRef<HTMLDivElement>(null);
+
+  // Flatten paginated customers data
+  const customersData = useMemo(() => {
+    if (!customersInfiniteData?.pages) return { data: [] };
+    const allCustomers = customersInfiniteData.pages.flatMap((page) => page.data || []);
+    return { data: allCustomers };
+  }, [customersInfiniteData]);
 
   // Flatten paginated search results
   const searchedRecipients = useMemo(() => {
@@ -115,7 +133,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
     return searchRecipientsData.pages.flatMap((page) => page.data || []);
   }, [searchRecipientsData]);
 
-  // Infinite scroll observer effect
+  // Infinite scroll observer effect for recipients
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -126,7 +144,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       { threshold: 1.0 }
     );
 
-    const currentTarget = observerTarget.current;
+    const currentTarget = recipientObserverTarget.current;
     if (currentTarget) {
       observer.observe(currentTarget);
     }
@@ -137,6 +155,29 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       }
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Infinite scroll observer effect for customers
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextCustomersPage && !isFetchingNextCustomersPage) {
+          fetchNextCustomersPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const currentTarget = customerObserverTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasNextCustomersPage, isFetchingNextCustomersPage, fetchNextCustomersPage]);
 
   const customerOptions = useMemo(() => {
     //if there is a default customer, it should not be changed
@@ -484,7 +525,14 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
             placeholder='Select an existing customer'
             loading={customersLoading}
             enableBackendSearch={true}
-            onSearch={setCustomerSearchTerm}
+            onSearch={(term) => {
+              setCustomerSearchTerm(term);
+              setActiveCustomerSearchTerm(term);
+              setHasCustomerSearched(true);
+            }}
+            onLoadMore={fetchNextCustomersPage}
+            hasMore={hasNextCustomersPage}
+            isLoadingMore={isFetchingNextCustomersPage}
             disabled={mode === 'edit' || !!customerId} //when we are in edit mode or there is a default customer
           />
         </div>
@@ -603,7 +651,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
                         )
                       )}
                       {/* Infinite scroll trigger element */}
-                      <div ref={observerTarget} className='h-4' />
+                      <div ref={recipientObserverTarget} className='h-4' />
                       {/* Loading indicator for next page */}
                       {isFetchingNextPage && (
                         <div className='flex justify-center py-2'>
