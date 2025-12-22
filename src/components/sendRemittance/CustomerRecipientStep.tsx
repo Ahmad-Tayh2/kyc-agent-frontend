@@ -38,7 +38,6 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   const { customerId, recipientId } = props;
   const navigate = useNavigate();
   const [isExpandedText, setIsExpandedText] = useState(false);
-  const [customerSearchTerm, setCustomerSearchTerm] = useState('');
   const [activeCustomerSearchTerm, setActiveCustomerSearchTerm] = useState(''); // The actual search term used for API
   const [hasCustomerSearched, setHasCustomerSearched] = useState(false); // Track if search button was clicked
   const [recipientSearchTerm, setRecipientSearchTerm] = useState('');
@@ -123,7 +122,9 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   // Flatten paginated customers data
   const customersData = useMemo(() => {
     if (!customersInfiniteData?.pages) return { data: [] };
-    const allCustomers = customersInfiniteData.pages.flatMap((page) => page.data || []);
+    const allCustomers = customersInfiniteData.pages.flatMap(
+      (page) => page.data || []
+    );
     return { data: allCustomers };
   }, [customersInfiniteData]);
 
@@ -160,7 +161,11 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasNextCustomersPage && !isFetchingNextCustomersPage) {
+        if (
+          entries[0].isIntersecting &&
+          hasNextCustomersPage &&
+          !isFetchingNextCustomersPage
+        ) {
           fetchNextCustomersPage();
         }
       },
@@ -177,7 +182,11 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
         observer.unobserve(currentTarget);
       }
     };
-  }, [hasNextCustomersPage, isFetchingNextCustomersPage, fetchNextCustomersPage]);
+  }, [
+    hasNextCustomersPage,
+    isFetchingNextCustomersPage,
+    fetchNextCustomersPage,
+  ]);
 
   const customerOptions = useMemo(() => {
     //if there is a default customer, it should not be changed
@@ -253,30 +262,33 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
 
   // Get recipient's payment methods (remittance methods + payout agents)
   const paymentMethodOptions = useMemo(() => {
-    if (!stepOne.recipient || !stepOne.receiveCountry || !recipientMethodsData) {
+    if (
+      !stepOne.recipient ||
+      !stepOne.receiveCountry ||
+      !recipientMethodsData
+    ) {
       return [];
     }
 
     const options: Array<{ label: string; value: string }> = [];
 
     // Filter out "cash pickup" methods (case insensitive)
-    const filteredRemittanceMethods = recipientMethodsData.remittance_methods?.filter(
-      (rm: RemittanceMethodAvailability) =>
-        !rm.name.toLowerCase().includes('cash pickup') &&
-        !rm.description.toLowerCase().includes('cash pickup')
-    ) || [];
+    const filteredRemittanceMethods =
+      recipientMethodsData.remittance_methods?.filter(
+        (rm: RemittanceMethodAvailability) =>
+          !rm.name.toLowerCase().includes('cash pickup') &&
+          !rm.description.toLowerCase().includes('cash pickup')
+      ) || [];
 
     // Add Remittance Methods (with RM prefix for clarity)
     // Only add if there are methods other than "cash pickup"
     if (filteredRemittanceMethods.length > 0) {
-      filteredRemittanceMethods.forEach(
-        (rm: RemittanceMethodAvailability) => {
-          options.push({
-            label: `Wallet: ${rm.name}`,
-            value: `rm_${rm.id}`,
-          });
-        }
-      );
+      filteredRemittanceMethods.forEach((rm: RemittanceMethodAvailability) => {
+        options.push({
+          label: `Wallet: ${rm.name}`,
+          value: `rm_${rm.id}`,
+        });
+      });
     }
 
     // Add Payout Agents (with Payout prefix for clarity)
@@ -284,20 +296,18 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       recipientMethodsData.payout_agents &&
       recipientMethodsData.payout_agents.length > 0
     ) {
-      recipientMethodsData.payout_agents.forEach((payout: RecipientPayoutAgent) => {
-        options.push({
-          label: `Cash Pickup: ${payout.payout_agent_business_name}`,
-          value: `payout_${payout.payout_agent_id}`,
-        });
-      });
+      recipientMethodsData.payout_agents.forEach(
+        (payout: RecipientPayoutAgent) => {
+          options.push({
+            label: `Cash Pickup: ${payout.payout_agent_business_name}`,
+            value: `payout_${payout.payout_agent_id}`,
+          });
+        }
+      );
     }
 
     return options;
-  }, [
-    stepOne.recipient,
-    stepOne.receiveCountry,
-    recipientMethodsData,
-  ]);
+  }, [stepOne.recipient, stepOne.receiveCountry, recipientMethodsData]);
 
   useEffect(() => {
     if (stepOne?.customer?.id) {
@@ -308,8 +318,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       if (customer) {
         // Auto-set send country based on customer's country if available in allowed countries
         const customerCountryInAllowed = sendCountriesData?.find(
-          (item: RemittanceCountry) =>
-            item.name === customer.country.name
+          (item: RemittanceCountry) => item.name === customer.country.name
         );
         if (customerCountryInAllowed) {
           setSendCountry({
@@ -451,8 +460,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
 
   const handleReceiveCountrySelect = (countryId: string | number) => {
     const countryItem = receiveCountriesData?.find(
-      (item: RemittanceCountry) =>
-        item.id.toString() === countryId.toString()
+      (item: RemittanceCountry) => item.id.toString() === countryId.toString()
     );
     if (countryItem) {
       setReceiveCountry({
