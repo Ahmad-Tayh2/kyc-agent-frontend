@@ -84,9 +84,19 @@ export function buildFilterString(filters: Record<string, any>): string {
           key === "send_countries" ||
           key === "receive_countries" ||
           key === "country_codes" ||
+          key === "countries_codes" ||
           key === "customer_ids"
         ) {
-          filterString = appendArrayQueryParam(filterString, key, value);
+          //unify the keys
+          if (key === "countries_codes") {
+            filterString = appendArrayQueryParam(
+              filterString,
+              "country_codes",
+              value
+            );
+          } else {
+            filterString = appendArrayQueryParam(filterString, key, value);
+          }
         } else {
           // For other arrays, use JSON format
           filterString = appendQueryParam(filterString, key, value);

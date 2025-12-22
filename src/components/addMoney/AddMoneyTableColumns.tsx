@@ -13,10 +13,13 @@ export const AddMoneyTableColumns = (): ColumnDef<any>[] => {
   return useMemo(
     () => [
       {
-        accessorKey: "reference_number",
+        accessorKey: "extra_transaction",
         header: "Transaction Number",
+        cell: ({ row }) => {
+          const extra_transaction: any = row.getValue("extra_transaction");
+          return <div>{extra_transaction?.reference_number}</div>;
+        },
       },
-
       {
         accessorKey: "created_at",
         header: "Date",
