@@ -79,7 +79,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         country?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
       ) ?? []
     );
-  }, [countries]);
+  }, [countries, searchTerm]);
 
   const getDisplayText = () => {
     if (value.length === 0) return defaultPlaceholder;
