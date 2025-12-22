@@ -534,7 +534,6 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
             loading={customersLoading}
             enableBackendSearch={true}
             onSearch={(term) => {
-              setCustomerSearchTerm(term);
               setActiveCustomerSearchTerm(term);
               setHasCustomerSearched(true);
             }}
