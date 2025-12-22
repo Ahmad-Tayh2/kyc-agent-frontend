@@ -5,11 +5,11 @@ export interface FeeCurrency {
 }
 
 export enum TransactionStatus {
-  INITIATED = 'initiated',
-  PROCESSING = 'processing',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  CANCELLED = 'cancelled',
+  INITIATED = "initiated",
+  PROCESSING = "processing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  CANCELLED = "cancelled",
 }
 
 export interface ExtraTransaction {
@@ -42,6 +42,7 @@ export interface ExtraTransaction {
   is_failed: boolean;
   is_cancelled: boolean;
   fee_currency: FeeCurrency;
+  currency: { id: number; name: string; code: string };
 }
 
 export interface ExtraTransactionsResponse {
