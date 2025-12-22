@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { recipientsService } from "@/services/recipients";
@@ -24,7 +29,10 @@ export function useRecipients(filters: string) {
  * @param searchTerm - Search term for filtering by name or phone number
  * @param enabled - Whether the query should be enabled
  */
-export function useInfiniteRecipients(searchTerm: string = "", enabled: boolean = true) {
+export function useInfiniteRecipients(
+  searchTerm: string = "",
+  enabled: boolean = true
+) {
   return useInfiniteQuery({
     queryKey: ["infinite-recipients", searchTerm],
     queryFn: ({ pageParam = 1 }) => {
@@ -99,7 +107,9 @@ export function useCreateRecipient() {
   });
 }
 
-export function useCreateRecipientIntermediate() {
+export function useCreateRecipientIntermediate({
+  keyToInvalidate = "get-recipients",
+}) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -107,7 +117,7 @@ export function useCreateRecipientIntermediate() {
       recipientsService.createRecipient(data),
     onSuccess: () => {
       toast.success("Recipient created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["get-recipients"] });
+      queryClient.invalidateQueries({ queryKey: [keyToInvalidate] });
       // navigate(ROUTES.RECIPIENTS.LIST);
     },
     onError: (error: AxiosError<ErrorResponseData>) => {

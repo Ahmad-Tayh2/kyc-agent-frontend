@@ -118,7 +118,14 @@ export const AppRoutes = () => (
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.PROFILE} element={<UserProfilePage />} />
-          <Route path={ROUTES.SETTINGS} element={<UserSettingsPage />} />
+          <Route
+            path={ROUTES.SETTINGS.TAB(":tabKey")}
+            element={<UserSettingsPage />}
+          />
+          <Route
+            path={ROUTES.SETTINGS.DEFAULT}
+            element={<UserSettingsPage />}
+          />
           <Route
             path={ROUTES.SEND_REMITTANCE.CREATE()}
             element={<SendRemittancePage mode={"create"} />}

@@ -1,5 +1,5 @@
 import { useGetAgentBankAccount } from "@/hooks/data/useAgent";
-import EditSectionCard from "../shared/EditSectionCard";
+// import EditSectionCard from "../shared/EditSectionCard";
 import { useAuthStore } from "@/store/authStore";
 import { useMemo } from "react";
 
@@ -18,11 +18,11 @@ const AgentBankAccountDetails = () => {
     );
   return (
     <div>
-      {bankAccountsData?.map((bankAccountData: any) => (
+      {/* {bankAccountsData?.map((bankAccountData: any) => (
         <EditSectionCard sectionTitle="Bank name">
           <div className="p-5 flex flex-col gap-5">AgentBankAccountDetails</div>
         </EditSectionCard>
-      ))}
+      ))} */}
     </div>
   );
 };

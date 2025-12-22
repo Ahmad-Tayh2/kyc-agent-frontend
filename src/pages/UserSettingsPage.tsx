@@ -4,10 +4,12 @@ import ChangePasswordForm from "@/components/userSettings/ChangePasswordForm";
 import AgentCashRecipients from "@/components/userSettings/AgentCashRecipients";
 import AgentBankAccountDetails from "@/components/userSettings/AgentBankAccountDetails";
 import { cn } from "@/lib/utils";
-import { useState, type ReactElement } from "react";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
 import ActionButton from "@/components/shared/ActionButton";
 import { CirclePlus } from "lucide-react";
 import CreateAgentBankAccountDialog from "@/components/userSettings/CreateAgentBankAccountDialog";
+import { useNavigate, useParams } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 const UserSettingsPage = () => {
   const tabs = [
@@ -59,18 +61,36 @@ interface Tab {
 interface TabNavigatorProps {
   tabs: Tab[];
 }
+
 const TabNavigator = (props: TabNavigatorProps) => {
   const { tabs } = props;
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [openCreateBankDialog, setOpenCreateBankDialog] = useState(false);
+  const { tabKey } = useParams();
+  // Init: read tab from URL, default to first tab
+  const initialTab = useMemo(() => {
+    const foundIndex = Math.max(
+      0,
+      tabs.findIndex((tab) => tab.key === tabKey)
+    );
+    return foundIndex || 0;
+  }, [tabKey]);
 
+  const [selectedTab, setSelectedTab] = useState(initialTab);
+  const [openCreateBankDialog, setOpenCreateBankDialog] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate(ROUTES.SETTINGS.TAB(tabs[selectedTab]?.key));
+  }, [selectedTab]);
   return (
     <div className="flex flex-col gap-10">
       <div className="flex items-center gap-5 border-b-1 border-gray-300">
         {tabs?.map((tab: Tab, index: number) => {
           return (
             <button
-              onClick={() => setSelectedTab(index)}
+              key={tab.key}
+              onClick={() => {
+                setSelectedTab(index);
+                // navigate(ROUTES.SETTINGS.TAB(tab.key));
+              }}
               className={cn(
                 "text-[20px] text-[#101828] font-400 border-b-3 border-transparent p-2 mt-auto",
                 selectedTab === index && "border-primary"
