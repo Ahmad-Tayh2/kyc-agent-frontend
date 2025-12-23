@@ -98,7 +98,6 @@ const MyWalletPage: React.FC = () => {
           </button>
         </div>
       </div>
-
       {/* Currency Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-6 gap-0">
         {wallet?.wallet_currencies?.map((walletCurrency) => (
@@ -109,7 +108,6 @@ const MyWalletPage: React.FC = () => {
           />
         ))}
       </div>
-
       {/* Empty State */}
       {(!wallet?.wallet_currencies ||
         wallet.wallet_currencies.length === 0) && (
@@ -120,19 +118,17 @@ const MyWalletPage: React.FC = () => {
           </p>
         </div>
       )}
-
       {/* Extra Transactions Table */}
       <div className="mt-8">
         <ExtraTransactionsTable />
       </div>
-
       {/* Exchange Currencies Dialog */}
+
       <ExchangeCurrenciesDialog
         isOpen={isExchangeDialogOpen}
         onOpenChange={setIsExchangeDialogOpen}
         walletCurrencies={wallet?.wallet_currencies || []}
       />
-
       {/* Add Currency Dialog */}
       <AddCurrencyDialog
         walletId={wallet?.id || 0}

@@ -14,7 +14,7 @@ const PayoutLocationsPage: React.FC = () => {
     filtersString,
     filters,
     updatePagination,
-    updateCountryIds,
+    updateCountryCodes,
     resetFilters,
     applyFilters,
   } = usePayoutLocationFilters();
@@ -117,7 +117,7 @@ const PayoutLocationsPage: React.FC = () => {
         <h1 className="p-5 text-2xl font-semibold">Payout Locations</h1>
         <PayoutLocationsFilters
           filters={filters}
-          onUpdateCountryIds={updateCountryIds}
+          onUpdateCountryCodes={updateCountryCodes}
           onResetFilters={resetFilters}
           onApplyFilters={applyFilters}
         />

@@ -91,10 +91,10 @@ export const transferColumns = (): ColumnDef<Transfer>[] => {
         );
       },
     },
-    {
-      accessorKey: "send_currency",
-      header: t("modules.pages.transfers.table.columns.send_currency"),
-    },
+    // {
+    //   accessorKey: "send_currency",
+    //   header: t("modules.pages.transfers.table.columns.send_currency"),
+    // },
     {
       accessorKey: "sent_amount",
       header: t("modules.pages.transfers.table.columns.sending_amount"),

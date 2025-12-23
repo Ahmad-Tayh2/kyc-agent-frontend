@@ -254,7 +254,12 @@ const RecipientCreateForm: React.FC = () => {
     mutateAsync: createRecipientIntermediate,
     isPending: isCreatingRecipientIntermediate,
     status: createRecipientStatus,
-  } = useCreateRecipientIntermediate();
+  } = useCreateRecipientIntermediate({
+    keyToInvalidate:
+      formData.customer_id === "agent_id"
+        ? "agent-recipients"
+        : "get-recipients",
+  });
   const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } =
     useCreateBankAccount({
       onSuccess: () => navigate(ROUTES.RECIPIENTS.LIST),
@@ -336,6 +341,7 @@ const RecipientCreateForm: React.FC = () => {
       customersData?.map((customer: any) => ({
         label: customer.full_name,
         value: customer.id,
+        name: "customer_id",
       })) ?? []
     );
   }, [customersData]);
@@ -589,12 +595,16 @@ const RecipientCreateForm: React.FC = () => {
     [user]
   );
   useEffect(() => {
-    if (customerIdQuery && customerOptions?.length > 0) {
-      const found = customerOptions?.find((item: any) => {
-        return String(item?.value) === String(customerIdQuery);
-      });
-      if (found) {
-        handleInputChange("customer_id", found?.value);
+    if (customerIdQuery) {
+      if (String(customerIdQuery) === "agent_id") {
+        handleInputChange("customer_id", String(customerIdQuery));
+      } else if (customerOptions?.length > 0) {
+        const found = customerOptions?.find((item: any) => {
+          return String(item?.value) === String(customerIdQuery);
+        });
+        if (found) {
+          handleInputChange("customer_id", found?.value);
+        }
       }
     }
   }, [customerIdQuery, customerOptions]);
@@ -744,7 +754,11 @@ const RecipientCreateForm: React.FC = () => {
 
       // Final success and navigation
       toast.success("Recipient bank account created successfully!");
-      navigate(ROUTES.RECIPIENTS.LIST);
+      if (formData.customer_id === "agent_id") {
+        navigate(ROUTES.SETTINGS.TAB("recipients"));
+      } else {
+        navigate(ROUTES.RECIPIENTS.LIST);
+      }
     } catch (error) {
       console.error("Error creating recipient:", error);
     }
@@ -816,7 +830,11 @@ const RecipientCreateForm: React.FC = () => {
   const handleSkip = () => {
     if (createRecipientStatus === "success" && recipientId) {
       toast.info("You can add bank details later");
-      navigate(ROUTES.RECIPIENTS.LIST);
+      if (formData.customer_id === "agent_id") {
+        navigate(ROUTES.SETTINGS.TAB("recipients"));
+      } else {
+        navigate(ROUTES.RECIPIENTS.LIST);
+      }
     }
   };
 

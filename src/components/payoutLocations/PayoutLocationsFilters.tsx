@@ -3,17 +3,17 @@ import type { PayoutLocationFilterState } from "@/hooks/data/usePayoutLocationFi
 import { useMemo } from "react";
 import { Button } from "../ui/button";
 import { useTranslation } from "react-i18next";
-import CountrySelector from "../shared/CountrySelector";
+import CountryCodesSelector from "@/components/shared/CountryCodesSelector";
 interface PayoutLocationsFiltersProps {
   filters: PayoutLocationFilterState;
-  onUpdateCountryIds: (countries: number[]) => void;
+  onUpdateCountryCodes: (codes: string[]) => void;
   onResetFilters: () => void;
   onApplyFilters: () => void;
 }
 
 const PayoutLocationsFilters: React.FC<PayoutLocationsFiltersProps> = ({
   filters,
-  onUpdateCountryIds,
+  onUpdateCountryCodes,
   onResetFilters,
   onApplyFilters,
 }) => {
@@ -32,12 +32,12 @@ const PayoutLocationsFilters: React.FC<PayoutLocationsFiltersProps> = ({
   return (
     <div className="p-5 border-t-1">
       <div className="flex flex-row gap-2 justify-start items-end ">
-        <CountrySelector
+        <CountryCodesSelector
           label="Country"
           placeholder="Select countries"
           countries={countries}
-          value={filters?.country_ids ?? []}
-          onChange={onUpdateCountryIds}
+          value={filters?.countries_codes ?? []}
+          onChange={onUpdateCountryCodes}
           dropdownClassName="left-0"
         />
         <Button

@@ -5,43 +5,58 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NavLink } from "react-router-dom";
-export default function DropdownMenuOptions(props: any) {
-  const { trigger, menu } = props;
+import { useState } from "react";
+
+export default function DropdownMenuOptions({ trigger, menu }: any) {
+  const [open, setOpen] = useState(false);
+
+  const handleMenuItemClick = (item: any) => {
+    // 1️⃣ Close dropdown menu first
+    setOpen(false);
+
+    // 2️⃣ Now run the action
+    if (item.onClick) item.onClick();
+  };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger className="outline-none cursor-pointer">
         {trigger}
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className="mx-3 p-0">
-        {menu?.map((menuItem: any) => (
+        {menu.map((item: any) => (
           <DropdownMenuItem
+            key={item.label}
             className="h-[35px] hover:bg-primary/5 cursor-pointer rounded-none p-2"
-            onClick={menuItem.onClick}
-            disabled={menuItem.isLoading}
-            key={menuItem.label}
-            asChild
+            disabled={item.isLoading}
+            onClick={() => (item.link ? null : handleMenuItemClick(item))}
+            asChild={!!item.link}
           >
-            {menuItem?.link ? (
-              <NavLink to={menuItem.link}>
-                <div className="flex items-center gap-2">
-                  <div className="bg-[#e8f7f7] p-1.5 rounded-sm flex items-center justify-center">
-                    {menuItem.icon}
-                  </div>
-                  <span className="text-[14px]">{menuItem.label}</span>
-                </div>
+            {item.link ? (
+              <NavLink
+                to={item.link}
+                onClick={() => setOpen(false)} // close dropdown when navigating
+              >
+                <MenuItemUI item={item} />
               </NavLink>
             ) : (
-              <div className="flex items-center gap-2">
-                <div className="bg-[#e8f7f7] p-1.5 rounded-sm flex items-center justify-center">
-                  {menuItem.icon}
-                </div>
-                <span className="text-[14px]">{menuItem.label}</span>
-              </div>
+              <MenuItemUI item={item} />
             )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function MenuItemUI({ item }: any) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="bg-[#e8f7f7] p-1.5 rounded-sm flex items-center justify-center">
+        {item.icon}
+      </div>
+      <span className="text-[14px]">{item.label}</span>
+    </div>
   );
 }

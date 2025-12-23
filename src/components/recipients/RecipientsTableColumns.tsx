@@ -87,14 +87,12 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
           );
         },
       },
-
       {
         accessorKey: "customers",
         header: "Customers",
         cell: ({ row }) => {
           const customers: { full_name: string; id: number }[] =
             row.getValue("customers");
-
           return (
             <div className="flex flex-wrap">
               {customers?.map(

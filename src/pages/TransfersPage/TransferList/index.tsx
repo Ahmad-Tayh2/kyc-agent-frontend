@@ -10,6 +10,8 @@ import TransferFilters from "@/components/transfers/TransferFilters";
 import { transferColumns } from "@/components/transfers/TransferTableColumns";
 import { useTransferFilters } from "@/hooks/data/useTransferFilters";
 import { useGetCustomers } from "@/hooks/data/useCustomers";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 const TransferList: React.FC = () => {
   const [t] = useTranslation("global");
@@ -44,10 +46,10 @@ const TransferList: React.FC = () => {
   const customersData = useMemo(() => {
     return CustomersResponse?.data || [];
   }, [CustomersResponse?.data]);
-
+  const navigate = useNavigate();
   const handleCreateTransfer = () => {
     // TODO: Implement transfer creation
-    console.log("Create transfer clicked");
+    navigate(ROUTES.SEND_REMITTANCE.CREATE());
   };
 
   const pagination = {

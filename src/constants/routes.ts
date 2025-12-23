@@ -47,7 +47,10 @@ export const ROUTES = {
   },
   HELP: "/help",
   PROFILE: "/profile",
-  SETTINGS: "/settings",
+  SETTINGS: {
+    TAB: (tabId: string) => `/settings/${tabId}`,
+    DEFAULT: "/settings",
+  },
   AUTH: {
     LOGIN: "/auth/login",
     REGISTER: "/auth/register",

@@ -22,6 +22,35 @@ export const agentService = {
     if (!res.ok) throw new Error("Failed to fetch agent profile");
     return res.json();
   },
+  getBankAccounts: async (agentId: string | number): Promise<any> => {
+    const authHeaders = getAuthHeaders();
+    const res = await fetch(
+      API_URLS.bankAccounts.get(
+        `?accountable_type=Agent&accountable_id=${agentId}`
+      ),
+      {
+        ...(authHeaders ? { headers: authHeaders } : {}),
+      }
+    );
+    if (!res.ok) throw new Error("Failed to fetch agent bank accounts");
+    return res.json();
+  },
+
+  getAgentRecipients: async (agentId: string | number) => {
+    const response = await apiClient.get(
+      API_URLS.agents.getAgentRecipients(agentId)
+    );
+    return response.data;
+  },
+  detachAgentRecipient: async (
+    agentId: string | number,
+    recipientId: string | number
+  ) => {
+    const response = await apiClient.delete(
+      API_URLS.agents.detachRecipient(agentId, recipientId)
+    );
+    return response.data;
+  },
 
   // updateProfile: async (
   //   agentId: string | number,

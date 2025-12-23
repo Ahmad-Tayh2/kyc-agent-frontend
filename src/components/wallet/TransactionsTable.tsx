@@ -74,11 +74,27 @@ export const ExtraTransactionsTable: React.FC = () => {
       ),
     },
     {
+      accessorKey: "amount",
+      header: "Amount",
+    },
+    {
+      accessorKey: "currency",
+      header: "Currency",
+      cell: ({ row }: { row: { original: ExtraTransaction } }) => {
+        const currency = row?.original?.currency;
+        return <span title={currency?.name}>{currency?.code}</span>;
+      },
+    },
+    {
       header: "Type",
       accessorKey: "type_label",
       cell: ({ row }: { row: { original: ExtraTransaction } }) => (
         <span className="text-gray-700">{row.original.type_label}</span>
       ),
+    },
+    {
+      header: "Notes",
+      accessorKey: "notes",
     },
     {
       header: "Status",
