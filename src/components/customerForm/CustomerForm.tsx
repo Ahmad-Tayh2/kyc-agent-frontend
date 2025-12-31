@@ -626,6 +626,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                       <DatePicker
                         value={field.value}
                         onChange={field.onChange}
+                        disabledAfter={new Date()}
                       />
                     </FormControl>
                     <FormMessage />

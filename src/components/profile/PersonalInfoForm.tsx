@@ -11,6 +11,7 @@ import ErrorField from "../shared/ErrorField";
 
 interface PersonalInfoFormProps {
   formData: any;
+  agentStatus?: string;
   errors: Record<string, string>;
   handleInputChange: (field: string, value: any) => void;
   handleDateChange: (field: string, value: any) => void;
@@ -19,13 +20,13 @@ interface PersonalInfoFormProps {
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   formData,
+  agentStatus,
   errors,
   handleInputChange,
   handleDateChange,
   editMode,
 }) => {
   const [t] = useTranslation("global");
-
   // Address data
   const { data: countries = [], isLoading: countriesLoading } = useCountries();
   const { data: cities = [], isLoading: citiesLoading } = useCitiesByCountry(
@@ -167,7 +168,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           />
           {errors?.houseNumber && <ErrorField errors={[errors?.houseNumber]} />}
         </div>
-
         <SearchableSelect
           label={t("modules.profile.fields.country.label")}
           placeholder={t("modules.profile.fields.country.placeholder")}
@@ -175,7 +175,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           value={formData.country || ""}
           onChange={(value) => handleInputChange("country", value.toString())}
           loading={countriesLoading}
-          disabled={!editMode}
+          disabled={!editMode || agentStatus === "active"} //always disabled with active agents cause they must not change his country
           required
           error={errors?.country}
         />

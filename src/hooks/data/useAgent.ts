@@ -78,6 +78,9 @@ export function useUploadAgentDocs() {
         queryKey: ["agent-docs-upload"],
       });
     },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message);
+    },
   });
 }
 

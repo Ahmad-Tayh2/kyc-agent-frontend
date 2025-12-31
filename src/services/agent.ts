@@ -86,7 +86,9 @@ export const agentService = {
       formData.append("files[]", file); // or "files" depending on server expectations
     });
     formData.append("document_type", data.document_type);
-
+    if (data?.files?.length === 1) {
+      formData.append("target_slot", "first");
+    }
     const response = await apiClient.post(
       API_URLS.agents.uploadDocuments(id),
       formData,
