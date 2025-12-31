@@ -185,6 +185,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     setRecipient,
     setReceiveCountry,
     setRemittanceMethod,
+    setPayoutAgent,
     setSendAmount,
     setReceiveAmount,
     setSendCurrency,
@@ -335,6 +336,13 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           name: transferData.remittance_method.name,
 
           type: "remittance_method",
+        });
+      }
+      if (transferData.payout_agent) {
+        setPayoutAgent({
+          id: transferData?.payout_agent?.id,
+          name: transferData?.payout_agent?.name ?? "",
+          business_name: transferData.payout_agent.business_name ?? "",
         });
       }
 

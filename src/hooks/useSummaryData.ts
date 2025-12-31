@@ -10,7 +10,7 @@ export const useSummaryData = (): SummaryData => {
   const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
   const stepTwo = useSendRemittanceStore((state) => state.data.stepTwo);
   const selectedPaymentMethod = useMemo(() => {
-    if (stepOne?.payoutAgent?.type === "payout_agent") {
+    if (stepOne?.payoutAgent?.business_name) {
       return `Cash Pickup: ${stepOne?.payoutAgent?.business_name}`;
     } else if (stepOne?.remittanceMethod) {
       return stepOne?.remittanceMethod?.name;
