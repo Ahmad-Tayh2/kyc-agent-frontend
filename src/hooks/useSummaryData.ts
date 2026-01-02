@@ -9,7 +9,14 @@ import { useMemo } from "react";
 export const useSummaryData = (): SummaryData => {
   const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
   const stepTwo = useSendRemittanceStore((state) => state.data.stepTwo);
-
+  const selectedPaymentMethod = useMemo(() => {
+    if (stepOne?.payoutAgent?.business_name) {
+      return `Cash Pickup: ${stepOne?.payoutAgent?.business_name}`;
+    } else if (stepOne?.remittanceMethod) {
+      return stepOne?.remittanceMethod?.name;
+    }
+    return "";
+  }, [stepOne.recipient, stepOne.receiveCountry, stepOne.payoutAgent]);
   return useMemo(() => {
     const exchangeDetails = stepTwo.exchangeDetails;
 
@@ -78,8 +85,8 @@ export const useSummaryData = (): SummaryData => {
       sendingCountryIso: stepOne.sendCountry?.iso3,
       recipient: stepOne.recipient?.fullName,
       recipientCountryIso: stepOne.receiveCountry?.iso3,
-      remittanceMethod:
-        stepOne.remittanceMethod?.name || stepOne.payoutAgent?.business_name,
+      remittanceMethod: selectedPaymentMethod,
+
       sendingCountry: stepOne.sendCountry?.name,
       receivingCountry: stepOne.receiveCountry?.name,
 

@@ -293,12 +293,12 @@ const UserProfilePage = () => {
         <>
           <PersonalInfoForm
             formData={formData}
+            agentStatus={profileData?.data?.user?.status}
             errors={errors}
             handleInputChange={handleInputChange}
             handleDateChange={handleDateChange}
             editMode={editMode}
           />
-
           {formData.agentType === "business_partner" && (
             <BusinessInfoForm
               formData={formData}
