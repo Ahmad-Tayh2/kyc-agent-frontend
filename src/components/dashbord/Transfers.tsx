@@ -19,7 +19,7 @@ export default function Transfers() {
 
 const StatStatus = () => {
   return (
-    <div className="bg-amber-100 text-amber-700 py-1 px-3 rounded-full">
+    <div className="bg-amber-100 text-sm sm:text-md text-amber-700 py-0 sm:py-1 px-3 rounded-full">
       In-Progress
     </div>
   );
