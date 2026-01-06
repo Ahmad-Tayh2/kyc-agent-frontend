@@ -34,24 +34,26 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
           {title || t("modules.components.filterButton.defaultTitle")}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="mx-2 flex items-end gap-2 w-fit">
+      <PopoverContent className="mx-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap items-end gap-2 w-fit">
         {children}
-        <Button
-          variant="default"
-          title={t("modules.components.filterButton.apply")}
-          className="ml-auto py-2 px-3"
-          onClick={onApplyFilters}
-        >
-          {t("modules.components.filterButton.apply")}
-        </Button>
-        <Button
-          variant="outline"
-          title={t("modules.components.filterButton.reset")}
-          className="ml-auto py-2 px-3"
-          onClick={onResetClick}
-        >
-          {t("modules.components.filterButton.reset")}
-        </Button>
+        <div className="flex gap-1 flex-row w-full sm:w-auto">
+          <Button
+            variant="default"
+            title={t("modules.components.filterButton.apply")}
+            className="ml-auto py-2 px-3 flex-1"
+            onClick={onApplyFilters}
+          >
+            {t("modules.components.filterButton.apply")}
+          </Button>
+          <Button
+            variant="outline"
+            title={t("modules.components.filterButton.reset")}
+            className="ml-auto py-2 px-3 flex-1"
+            onClick={onResetClick}
+          >
+            {t("modules.components.filterButton.reset")}
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

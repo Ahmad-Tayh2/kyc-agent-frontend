@@ -169,7 +169,7 @@ const AddMoneyPage: React.FC = () => {
           <PageTitle title={t("modules.pages.addMoney.title")} />
         </div>
         <div className="bg-white rounded-lg border p-5 ">
-          <div className="flex gap-3">
+          <div className="flex flex-col md:flex-row gap-3">
             {/* <div className="flex flex-col gap-1 w-1/3">
               <Label className="text-[14px]">
                 Payment Gateway<span>*</span>
@@ -180,7 +180,7 @@ const AddMoneyPage: React.FC = () => {
                 onValueChange={() => {}}
               />
             </div> */}
-            <div className="flex flex-col gap-1 w-1/2">
+            <div className="flex flex-col gap-1 w-full md:w-1/2">
               <Label className="text-[14px]">
                 Currency & Amount<span>*</span>
               </Label>
@@ -195,7 +195,7 @@ const AddMoneyPage: React.FC = () => {
                 amountPlaceholder="Enter amount"
               />
             </div>
-            <div className="w-1/2">
+            <div className="w-full md:w-1/2">
               <SummaryCard title="Summary" data={dataList} />
             </div>
           </div>
@@ -209,7 +209,7 @@ const AddMoneyPage: React.FC = () => {
         </div>
       </div>
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center flex-wrap sm:flex-nowrap gap-3">
           <PageTitle title={t("modules.pages.addMoney.historyTitle")} />
           <AddMoneyFilters
             filters={filters}

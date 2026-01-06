@@ -42,17 +42,17 @@ const UserMenu = () => {
   const menu = [
     {
       label: t("modules.topbar.profile"),
-      icon: <ProfileIcon className="w-5 h-5" />,
+      icon: <ProfileIcon style={{ width: "25px", height: "25px" }} />,
       link: ROUTES.PROFILE,
     },
     {
       label: t("modules.topbar.settings"),
-      icon: <SettingIcon className="w-5 h-5" />,
+      icon: <SettingIcon style={{ width: "25px", height: "25px" }} />,
       link: ROUTES.SETTINGS.DEFAULT,
     },
     {
       label: t("modules.topbar.logout"),
-      icon: <LogoutIcon className="w-5 h-5" />,
+      icon: <LogoutIcon style={{ width: "25px", height: "25px" }} />,
       onClick: handleLogout,
       isLoading: status === "pending",
     },
@@ -82,7 +82,7 @@ const UserMenu = () => {
         </div>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="mx-3">
+      <DropdownMenuContent className="mx-3 z-52">
         {menu.map((item) => (
           <DropdownMenuItem
             key={item.label}
@@ -92,12 +92,12 @@ const UserMenu = () => {
             className="h-[35px] hover:bg-primary/5 cursor-pointer"
           >
             {item.link ? (
-              <NavLink to={item.link} className="flex items-center gap-3">
+              <NavLink to={item.link} className="flex items-center gap-2">
                 {item.icon}
                 <span className="text-sm">{item.label}</span>
               </NavLink>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {item.icon}
                 <span className="text-sm">{item.label}</span>
               </div>
@@ -113,7 +113,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { t } = useTranslation("global");
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between h-16 sm:h-20 px-3 sm:px-6 bg-secondary border-b shadow-sm">
+    <header className="sticky top-0 z-51 flex items-center justify-between h-16 sm:h-20 px-3 sm:px-6 bg-secondary border-b shadow-sm">
       {/* Left */}
       <div className="flex items-center gap-2">
         {/* Mobile menu */}

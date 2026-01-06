@@ -33,7 +33,7 @@ const RemittanceCartPage: React.FC = () => {
                 {customer?.first_name} {customer?.last_name} / {currency}
               </div>
               <div
-                className="bg-white rounded-md overflow-auto"
+                className="bg-white rounded-md overflow-hidden"
                 key={cartData?.id}
                 style={{
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 1px 2px",

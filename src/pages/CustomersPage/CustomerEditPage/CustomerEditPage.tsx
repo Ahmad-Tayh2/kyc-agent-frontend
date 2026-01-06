@@ -395,7 +395,7 @@ const CustomerEditPage = () => {
         )}
       </div>
 
-      <EditMultiSectionCard customerSections={customerSections} />
+      <EditMultiSectionCard sections={customerSections} />
       <EditSectionCard sectionTitle="Recent transactions">
         <div className="p-5 flex flex-col gap-5">
           <DataTable

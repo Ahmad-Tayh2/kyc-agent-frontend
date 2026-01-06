@@ -126,7 +126,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         <div
           className={cn(
             dropdownClassName,
-            "absolute z-50 w-[320px] right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg"
+            "absolute z-50 w-[320px] left-0 right-auto sm:left-auto sm:right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg"
           )}
         >
           <div className="p-2">

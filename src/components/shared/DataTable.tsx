@@ -252,9 +252,7 @@ export function DataTable({
   }
   return (
     <div>
-      <div
-        className={cn("w-full rounded-md bg-white overflow-hidden", className)}
-      >
+      <div className={cn("w-full !rounded-md bg-white", className)}>
         {(tableTitle || tableHeaderComponent) && <TableHeadComponent />}
 
         <div className=" bg-white border-b border-b-1 border-[#E4E7EC]">
@@ -316,7 +314,7 @@ export function DataTable({
         {/* pagination */}
         {enableFrontEndPagination ? (
           <Pagination className="py-2 px-5">
-            <PaginationContent className="w-full flex justify-between items-center">
+            <PaginationContent className="w-full flex justify-between items-center  gap-5 flex-wrap">
               <PaginationItem>
                 <Button
                   variant="outline"
@@ -359,7 +357,7 @@ export function DataTable({
                 )}
               </div>
 
-              <PaginationItem className="flex items-center gap-2">
+              <PaginationItem className="flex items-center gap-2 flex-wrap">
                 {handleChangeRowsPerPage && (
                   <SingleSelectDropdown
                     options={frontEndPaginationsPagesOptions}
@@ -414,9 +412,9 @@ export function DataTable({
           //   </button>
           // </div>
           pagination?.enable &&
-          (data?.length >= 10 || pagination?.page > 1) && ( //if the page is > 1 you should allow the user the navigate may be the previous page (because in that page the data.length may be less than 10)
+          (data?.length >= 10 || pagination?.page > 1) && ( //if the page is > 1 you should allow the user to navigate to the previous page (because in that page the data.length may be less than 10)
             <Pagination className="py-2 px-5">
-              <PaginationContent className="w-full flex justify-between items-center">
+              <PaginationContent className="w-full flex justify-between items-center gap-5 flex-wrap">
                 {/* Previous Button */}
                 <PaginationItem>
                   <Button
@@ -430,7 +428,7 @@ export function DataTable({
                 </PaginationItem>
 
                 {/* Page Numbers */}
-                <div className="flex justify-between items-center gap-1">
+                <div className="flex justify-between items-center gap-1 max-w-full">
                   {pagesNumberToShow?.map((page: string | number, index) => {
                     if (page === "...") {
                       return (
@@ -459,7 +457,7 @@ export function DataTable({
                 </div>
 
                 {/* Next Button */}
-                <PaginationItem className="flex items-center gap-2">
+                <PaginationItem className="flex items-center gap-2 flex-wrap">
                   {pagination.onChangeRowsPerPage && (
                     <SingleSelectDropdown
                       options={paginationsPagesOptions}

@@ -60,13 +60,13 @@ const CommissionFilters: React.FC<CommissionFiltersProps> = ({
     { label: "Export to PDF", onClick: () => {} },
   ];
   return (
-    <div className="flex items-center justify-between flex-wrap">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <SearchInput
         placeholder="Search either for Sender/Customer or Receiver/Recipient names"
         value={filters.search ?? ""}
         onChange={onUpdateSearchTerm}
       />
-      <div className="flex items-center justify-start w-fit gap-1 flex-wrap">
+      <div className="flex items-center justify-start w-fit gap-1">
         <ExportButton options={exportCommissionOptions} />
         {/* <SearchInput
           placeholder="Search by reference number"

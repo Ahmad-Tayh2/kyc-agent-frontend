@@ -109,7 +109,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
           onResetClick={onResetFilters}
           onApplyFilters={onApplyFilters}
         >
-          <div className="flex gap-2 w-fit">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <MultiSelectDropdown
               label={t(
                 "modules.pages.wallet.transactions.filters.transactionType"

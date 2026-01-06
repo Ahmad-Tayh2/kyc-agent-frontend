@@ -203,9 +203,9 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         </div>
       </Button>
       {isOpen && (
-        <div className="absolute z-50 right-0 w-max mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+        <div className="absolute z-50 right-auto left-0 sm:right-0 sm:left-auto w-auto mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
           {!showCustomRange ? (
-            <div className="p-2">
+            <div className="p-2 w-max">
               {predefinedOptions.map((option) => {
                 const isSelected =
                   option.value === "custom"
@@ -232,7 +232,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
               })}
             </div>
           ) : (
-            <div className="p-4 flex items-center gap-2 w-fit">
+            <div className="p-4 flex items-center gap-2 sm:flex-row flex-col w-[200px] sm:w-[350px]">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
                   Start Date

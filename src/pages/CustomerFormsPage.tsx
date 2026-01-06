@@ -270,7 +270,7 @@ const CustomerFormsPage: React.FC = () => {
   ];
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-5">
         <h1 className="text-2xl font-bold">
           {t("modules.pages.customerForm.title")}
         </h1>

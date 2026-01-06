@@ -251,7 +251,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           disabled={disabled || !selectedOption}
           readOnly={readOnly}
           className={cn(
-            "border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1",
+            "border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 rounded-l-none",
             readOnly && "bg-transparent"
           )}
         />
