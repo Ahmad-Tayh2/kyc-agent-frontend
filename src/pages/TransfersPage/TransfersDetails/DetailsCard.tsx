@@ -47,8 +47,8 @@ const CardContent = (props: CardContentProps) => {
     { label: "Reference Notes", value: "" },
   ];
   return (
-    <div className="flex flex-row gap-5 p-5">
-      <div className="flex flex-col gap-5 w-1/3">
+    <div className="flex flex-col sm:flex-row gap-5 p-5">
+      <div className="flex flex-col gap-5 w-full sm:w-1/3">
         <MiniCardLayout title={"Sender Details"}>
           <div className="p-5">
             <div className="font-bold">
@@ -70,7 +70,7 @@ const CardContent = (props: CardContentProps) => {
           </div>
         </MiniCardLayout>
       </div>
-      <div className="w-2/3 print-area" ref={printAreaRef}>
+      <div className="w-full sm:w-2/3 print-area" ref={printAreaRef}>
         <MiniCardLayout title={"Transfers Details"}>
           {transfersDetails?.map((transferItem, key) => (
             <div

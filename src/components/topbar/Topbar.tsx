@@ -113,7 +113,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { t } = useTranslation("global");
 
   return (
-    <header className="sticky top-0 z-51 flex items-center justify-between h-16 sm:h-20 px-3 sm:px-6 bg-secondary border-b shadow-sm">
+    <header className="sticky top-0 z-5 flex items-center justify-between h-16 sm:h-20 px-3 sm:px-6 bg-secondary border-b shadow-sm">
       {/* Left */}
       <div className="flex items-center gap-2">
         {/* Mobile menu */}

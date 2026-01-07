@@ -54,8 +54,8 @@ const RecipientBasicDetails = (props: any) => {
       countryCode: country.iso2,
     })) || [];
   return (
-    <div className="space-y-6 p-5">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="space-y-6 p-5 overflow-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="first_name">
             First Name
@@ -198,23 +198,6 @@ const RecipientBasicDetails = (props: any) => {
           )}
         </div>
         <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">
-            Gender
-            <span className="text-red-500">*</span>
-          </Label>
-          <RadioInput
-            options={genderOptions}
-            selectedValue={data?.gender}
-            onSelectValue={(value: string) =>
-              handleInputChange("gender", value)
-            }
-            disabled={!editMode}
-          />
-          {validationErrors?.gender && (
-            <ErrorField errors={validationErrors.gender} />
-          )}
-        </div>
-        <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="phone_number">
             Phone Number<span className="text-red-500">*</span>
           </Label>
@@ -233,6 +216,23 @@ const RecipientBasicDetails = (props: any) => {
           />
           {validationErrors?.phone_number && (
             <ErrorField errors={validationErrors.phone_number} />
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label className="text-[14px]">
+            Gender
+            <span className="text-red-500">*</span>
+          </Label>
+          <RadioInput
+            options={genderOptions}
+            selectedValue={data?.gender}
+            onSelectValue={(value: string) =>
+              handleInputChange("gender", value)
+            }
+            disabled={!editMode}
+          />
+          {validationErrors?.gender && (
+            <ErrorField errors={validationErrors.gender} />
           )}
         </div>
       </div>

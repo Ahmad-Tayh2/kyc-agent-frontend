@@ -113,7 +113,7 @@ export const Sidebar: React.FC<{
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 h-full bg-white border-r shadow-sm z-20">
+      <aside className="hidden md:flex flex-col w-60 h-full bg-white border-r shadow-sm z-20">
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 p-5 flex flex-col gap-1">
             {navLinks.map((link) => (
@@ -137,7 +137,7 @@ export const Sidebar: React.FC<{
       </aside>
       {/* Mobile Sidebar Drawer */}
       <Sheet onOpenChange={onClose} open={mobileOpen}>
-        <SheetContent side="left" className="w-[280px] z-52">
+        <SheetContent side="left" className="w-60 z-52">
           <nav className="flex-1 overflow-y-auto py-5">
             <ul className="space-y-1 p-5 flex flex-col gap-1">
               {navLinks.map((link) => (

@@ -135,7 +135,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 w-max min-w-full z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg ">
+        <div className="absolute w-max min-w-full z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg ">
           <div className="p-2">
             {showSelectAll && (
               <div

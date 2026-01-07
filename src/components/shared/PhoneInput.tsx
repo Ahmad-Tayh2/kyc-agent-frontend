@@ -166,8 +166,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   return (
     <div className="flex flex-col gap-1">
       <div
-        className="relative flex items-center h-11 border border-input rounded-md bg-background
-            focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-colors duration-300"
+        className={cn(
+          "relative flex items-center h-11 border-input rounded-md bg-background focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-colors duration-300",
+          disabled ? "border-none" : "border"
+        )}
         ref={containerRef}
       >
         {/* Country Flag Select */}
@@ -258,7 +260,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           // onClick={handlePhoneInputClick}
           placeholder={defaultPlaceholder}
           disabled={disabled || !selectedOption?.code}
-          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 rounded-none"
+          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 rounded-l-none"
         />
       </div>
       {error && <span className="text-destructive text-xs">{error}</span>}

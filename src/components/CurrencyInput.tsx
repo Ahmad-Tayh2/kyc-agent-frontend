@@ -125,7 +125,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     <div className={cn("flex flex-col gap-1", className)}>
       <div
         className={cn(
-          "relative flex items-center border border-input rounded-md bg-background transition-colors duration-300",
+          "bg-red-200 relative flex items-center border border-input rounded-md bg-background transition-colors duration-300",
           "focus-within:ring-2 focus-within:ring-primary focus-within:border-primary",
           disabled && "opacity-50 cursor-not-allowed",
           readOnly && "bg-gray-50"

@@ -235,15 +235,15 @@ const RecipientEditPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="">
-        <div className="flex justify-start items-center gap-3">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-start items-start gap-2 flex-wrap">
           <button
             onClick={handleBack}
             className="text-primary top-1 cursor-pointer"
           >
             <BackArrowIcon width={30} height={30} />
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium">Recipient: </span>
             <PageTitle
               title={`${recipientData?.first_name || ""} ${
@@ -253,7 +253,7 @@ const RecipientEditPage: React.FC = () => {
           </div>
         </div>
         {recipientData?.created_at && (
-          <div className="ml-10">
+          <div className="sm:ml-10">
             Registered on:{" "}
             {new Date(recipientData?.created_at).toLocaleDateString()}
           </div>

@@ -78,7 +78,7 @@ const MyWalletPage: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-5">
         <PageTitle title={t("modules.pages.wallet.title")} />
-        <div className="flex space-x-3 flex-wrap gap-2">
+        <div className="flex space-x-3 flex-wrap gap-2 justify-end">
           <button
             onClick={() => setIsExchangeDialogOpen(true)}
             className="px-4 py-2 border border-cyan-500 text-cyan-500 rounded-lg hover:bg-cyan-50 transition-colors"

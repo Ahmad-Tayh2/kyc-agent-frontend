@@ -792,13 +792,13 @@ const RecipientCreateForm: React.FC = () => {
     },
   ];
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-start p-5">
-      <div className="flex items-center space-x-4">
+    <div className="flex items-center justify-start p-5 overflow-auto">
+      <div className="flex items-center space-x-4 w-max">
         {steps?.map((step) => (
           <React.Fragment key={step.name}>
             <div
               key={step.name}
-              className={`flex items-center p-2 rounded-full ${
+              className={`flex items-center p-1 sm:p-2 rounded-full whitespace-nowrap text-xs sm:text-sm md:text-base ${
                 currentStep === step.name
                   ? "text-white bg-primary"
                   : "text-gray-400"
@@ -806,7 +806,7 @@ const RecipientCreateForm: React.FC = () => {
               onClick={() => handleStepClick(step.name)}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                className={`w-5 sm:w-8 h-5 sm:h-8 rounded-full flex items-center justify-center  ${
                   currentStep === step.name
                     ? "text-primary bg-white"
                     : "border-gray-300"
@@ -899,7 +899,8 @@ const RecipientCreateForm: React.FC = () => {
           />
         )}
         {/* Action Buttons */}
-        <div className="flex justify-between items-end gap-4 m-5 pt-5 border-t-1">
+        <div className="flex items-center justify-start p-5 overflow-auto">
+          {/* <div className="flex justify-between items-end gap-4 m-5 pt-5 border-t-1"> */}
           <ActionButton
             title="back"
             onClick={handleBack}

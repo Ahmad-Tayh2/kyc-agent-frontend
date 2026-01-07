@@ -66,7 +66,7 @@ const PaymentLinksPage: React.FC = () => {
   };
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between sm:items-center flex-col sm:flex-row gap-3">
         <PageTitle title={t("modules.pages.paymentLinks.title")} />
         <PaymentLinksFilters
           filters={filters}

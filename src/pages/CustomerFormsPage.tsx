@@ -133,7 +133,7 @@ const CustomerFormsPage: React.FC = () => {
             {status !== "expired_link" && (
               <button
                 onClick={() => copyToClipboard(url)}
-                className="p-1 hover:bg-gray-100 rounded ml-[10px] cursor-pointer group"
+                className="p-1 hover:bg-gray-100 w-6 h-6 rounded ml-[10px] cursor-pointer group"
                 title="Copy URL"
               >
                 <img

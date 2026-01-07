@@ -78,7 +78,7 @@ const CommissionFilters: React.FC<CommissionFiltersProps> = ({
           onResetClick={onResetFilters}
           onApplyFilters={onApplyFilters}
         >
-          <div className="flex gap-2 w-fit">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <MultiSelectDropdown
               label="Status"
               placeholder="All"
