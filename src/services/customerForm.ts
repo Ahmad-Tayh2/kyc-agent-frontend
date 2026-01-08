@@ -23,19 +23,17 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 export const customerFormService = {
-  async getCustomerForms(filters: string = ""): Promise<CustomerForm[]> {
-    const url = filters
-      ? `${API_URLS.customerForms.get()}?${filters}`
-      : API_URLS.customerForms.get();
-
+  async getCustomerForms(
+    filters: string = ""
+  ): Promise<{ data: CustomerForm[]; meta: any }> {
     // Log the URL for debugging
-    console.log("Fetching customer forms with URL:", url);
-
-    const res = await fetch(url, {
+    const res = await fetch(API_URLS.customerForms.get(filters ?? ""), {
       method: "GET",
       headers: getHeaders(),
     });
-    return handleResponse<CustomerForm[]>(res);
+    const json = await res.json();
+    // return handleResponse<CustomerForm[]>(res);
+    return json;
   },
 
   async getCustomerFormById(id: string | number): Promise<CustomerForm> {

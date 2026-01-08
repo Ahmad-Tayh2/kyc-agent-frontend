@@ -64,7 +64,10 @@ const CustomerFormFilters: React.FC<CustomerFormFiltersProps> = ({
               placeholder={t(
                 "modules.pages.customerForm.filters.selectDateRange"
               )}
-              value={filters.dateRange}
+              value={{
+                startDate: filters?.created_from ?? "",
+                endDate: filters?.created_to ?? "",
+              }}
               onChange={updateDateRange}
             />
           </div>

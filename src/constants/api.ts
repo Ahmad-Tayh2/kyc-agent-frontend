@@ -149,7 +149,7 @@ export const API_URLS = {
     delete: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
   },
   customerForms: {
-    get: () => `${baseUrl}/customer-forms`,
+    get: (filters?: string) => `${baseUrl}/customer-forms${filters}`,
     getById: (id: string | number) => `${baseUrl}/customer-forms/${id}`,
     create: () => `${baseUrl}/customer-forms`,
     validateToken: (token: string) =>

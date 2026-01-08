@@ -200,9 +200,9 @@ const RecipientEditPage: React.FC = () => {
           state_id: formData?.state_id,
           country_id: formData?.country_id,
         },
-        phone_number: recipientData?.phone_number,
-        country_phone_code: recipientData?.country_phone_code,
-        bank_details: recipientData?.bank_details,
+        phone_number: formData?.phone_number,
+        country_phone_code: formData?.country_phone_code,
+        bank_details: formData?.bank_details,
       };
 
       // Flatten fields for validation

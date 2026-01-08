@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable } from "../components/shared/DataTable";
 import {
@@ -38,18 +38,25 @@ const CustomerFormsPage: React.FC = () => {
     filtersString,
     updateStatus,
     updateDateRange,
+    updatePagination,
     resetFilters,
     applyFilters,
   } = useCustomerFormFilters();
 
-  const { data: customerForms } = useCustomerForm(filtersString);
+  const {
+    data: customerForms,
+    error,
+    isLoading,
+  } = useCustomerForm(filtersString);
   const { mutateAsync: regenerateCustomerFormToken } =
     useRegenerateCustomerFormToken();
   const [previewToken, setPreviewToken] = useState<string | null>(null);
 
   // Prepare the data for the table
-  const customerFormData: CustomerFormTableData[] = Array.isArray(customerForms)
-    ? customerForms.map((item: CustomerForm) => ({
+  const customerFormData: CustomerFormTableData[] = Array.isArray(
+    customerForms?.data
+  )
+    ? customerForms?.data?.map((item: CustomerForm) => ({
         id: item.id,
         fullName: `${item.first_name} ${item.last_name}`,
         status: item.status,
@@ -58,7 +65,28 @@ const CustomerFormsPage: React.FC = () => {
         token: item.token,
         createdAt: item.created_at,
       }))
-    : []; // Define columns for the DataTable
+    : [];
+  //meta data for pagination
+  const customerFormsMeta = useMemo(() => {
+    return customerForms?.meta || [];
+  }, [customerForms?.meta]);
+
+  const pagination = {
+    enable: true,
+    page: customerFormsMeta?.current_page,
+    per_page: customerFormsMeta?.per_page,
+    total: customerFormsMeta?.total,
+    from: customerFormsMeta?.from,
+    to: customerFormsMeta?.to,
+    last_page: customerFormsMeta?.last_page,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
+  // Define columns for the DataTable
   const columns = [
     {
       header: t("modules.pages.customerForm.columns.fullName"),
@@ -292,7 +320,13 @@ const CustomerFormsPage: React.FC = () => {
         </div>
       </div>
 
-      <DataTable data={customerFormData} columns={columns} />
+      <DataTable
+        data={customerFormData}
+        columns={columns}
+        pagination={pagination}
+        error={error}
+        isLoading={isLoading}
+      />
 
       {/* Preview Dialog - Only opens for valid links */}
       {previewToken && (

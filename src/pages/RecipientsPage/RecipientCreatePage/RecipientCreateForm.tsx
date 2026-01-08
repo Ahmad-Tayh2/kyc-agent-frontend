@@ -899,7 +899,7 @@ const RecipientCreateForm: React.FC = () => {
           />
         )}
         {/* Action Buttons */}
-        <div className="flex items-center justify-start p-5 overflow-auto">
+        <div className="flex items-center sm:justify-end p-5 overflow-auto">
           {/* <div className="flex justify-between items-end gap-4 m-5 pt-5 border-t-1"> */}
           <ActionButton
             title="back"
