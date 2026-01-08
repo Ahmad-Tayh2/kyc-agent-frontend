@@ -617,7 +617,16 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 {t("common.fields.dob.label")}
                 <span className="text-red-500">*</span>
               </Label>
-              <FormField
+              <DatePicker
+                // value={form.watch("dateOfBirth")?.toString()}
+                value=""
+                onChange={(value: string) =>
+                  // form.setValue("dateOfBirth", value.toString())
+                  console.log("vvvvvvvv=====", value)
+                }
+                disabledAfter={new Date()}
+              />
+              {/* <FormField
                 control={form.control}
                 name="dateOfBirth"
                 render={({ field }) => (
@@ -625,14 +634,16 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                     <FormControl>
                       <DatePicker
                         value={field.value}
-                        onChange={field.onChange}
+                        onChange={(value: string) =>
+                          form.setValue("dateOfBirth", value.toString())
+                        }
                         disabledAfter={new Date()}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
             <div className="md:col-span-2 flex flex-col gap-2">

@@ -7,6 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CustomerForm from "./CustomerForm";
+import DatePicker from "../shared/DatePicker";
 
 interface CustomerFormDialogProps {
   trigger?: React.ReactNode;
@@ -33,9 +34,9 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   if (token && mode === "preview") {
     // If token is provided and mode is preview, show the customer form in preview mode
     return (
-      <Dialog open={open} onOpenChange={handleOpenChange}>
+      <Dialog open={open} onOpenChange={handleOpenChange} modal={false}>
         {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[90vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Customer Form Preview</DialogTitle>
           </DialogHeader>
