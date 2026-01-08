@@ -180,7 +180,7 @@ const CustomerEditPage = () => {
   }, [data]);
 
   const handleBack = () => {
-    navigate(ROUTES.CUSTOMERS.LIST);
+    navigate(-1);
   };
 
   const handleInputChange = (field: string, value: any) => {

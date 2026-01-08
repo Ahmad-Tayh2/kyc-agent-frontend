@@ -7,7 +7,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CustomerForm from "./CustomerForm";
-import DatePicker from "../shared/DatePicker";
 
 interface CustomerFormDialogProps {
   trigger?: React.ReactNode;

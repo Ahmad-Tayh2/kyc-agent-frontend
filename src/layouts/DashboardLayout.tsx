@@ -8,7 +8,7 @@ export const DashboardLayout = () => {
   return (
     <div className="flex h-screen w-full flex-col">
       <Topbar onMenuClick={() => setSidebarOpen((prev: boolean) => !prev)} />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] overflow-y-auto">
         <Sidebar
           mobileOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}

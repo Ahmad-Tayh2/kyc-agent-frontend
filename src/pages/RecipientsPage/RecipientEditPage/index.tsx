@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import EditSectionCard from "@/components/shared/EditSectionCard";
@@ -155,7 +154,7 @@ const RecipientEditPage: React.FC = () => {
     }
   };
   const handleBack = () => {
-    navigate(ROUTES.RECIPIENTS.LIST);
+    navigate(-1);
   };
 
   // const handleInputChange = (field: string, value: any) => {
