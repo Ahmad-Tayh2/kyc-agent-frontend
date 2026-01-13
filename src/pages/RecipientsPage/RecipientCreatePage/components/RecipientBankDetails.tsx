@@ -36,8 +36,8 @@ const RecipientBankDetails: React.FC<RecipientBankDetailsProps> = ({
   validationErrors,
 }) => {
   return (
-    <div className="space-y-6 p-5">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="space-y-6 p-5 overflow-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
         {/* IBAN and Account Number in a row */}
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="iban">

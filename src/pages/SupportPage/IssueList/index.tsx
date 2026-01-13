@@ -17,7 +17,7 @@ const SupportPage: React.FC = () => {
   const handleReportIssue = () => {};
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap sm:flex-nowrap gap-3">
         <PageTitle title={t("modules.pages.support.title")} />
         <div className="flex items-center gap-1">
           <SupportFilters

@@ -21,7 +21,7 @@ export default function ActionButton(props: ActionButtonProps) {
     disabled,
     ...buttonProps
   } = props;
-  let baseClass = "text-[13px] uppercase cursor-pointer w-fit p-5 ";
+  let baseClass = "text-[13px] uppercase cursor-pointer w-fit p-5";
   if (type === "link") {
     baseClass += "text-primary bg-transparent ";
   } else if (type === "cancel") {
@@ -39,7 +39,7 @@ export default function ActionButton(props: ActionButtonProps) {
       {...buttonProps}
     >
       {icon && <span>{icon}</span>}
-      <span>{title}</span>
+      <span className={icon ? "hidden sm:block" : ""}>{title}</span>
     </Button>
   );
 }

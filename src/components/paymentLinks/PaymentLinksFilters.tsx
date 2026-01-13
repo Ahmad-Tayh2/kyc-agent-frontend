@@ -61,7 +61,7 @@ const PaymentLinksFilters: React.FC<PaymentLinksFiltersProps> = ({
           onResetClick={onResetFilters}
           onApplyFilters={onApplyFilters}
         >
-          <div className="flex gap-2 w-fit">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <DateRangeSelector
               label="Reg. date"
               placeholder="Select date range"

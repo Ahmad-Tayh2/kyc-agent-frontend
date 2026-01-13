@@ -18,10 +18,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   className,
 }) => {
   const { t } = useTranslation("global");
-  const defaultPlaceholder = placeholder || t("modules.components.searchInput.defaultPlaceholder");
-  
+  const defaultPlaceholder =
+    placeholder || t("modules.components.searchInput.defaultPlaceholder");
+
   return (
-    <div className={cn("relative min-w-4 w-[316px]", className)}>
+    <div
+      className={cn("relative min-w-max w-[316px] max-w-full h-fit", className)}
+    >
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4  text-gray-400" />
       <Input
         type="text"

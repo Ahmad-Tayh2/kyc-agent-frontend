@@ -61,7 +61,7 @@ const TransferFilters: React.FC<TransferFiltersProps> = ({
     })),
   ];
   return (
-    <div className="flex items-center justify-between flex-wrap">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <SearchInput
         placeholder="Search transfers..."
         value={filters.search ?? ""}
@@ -73,7 +73,7 @@ const TransferFilters: React.FC<TransferFiltersProps> = ({
           onResetClick={onResetFilters}
           onApplyFilters={onApplyFilters}
         >
-          <div className="flex gap-2 w-fit">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <MultiSelectDropdown
               label="Customers"
               placeholder="All"

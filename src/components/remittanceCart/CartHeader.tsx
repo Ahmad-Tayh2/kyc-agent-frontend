@@ -67,12 +67,35 @@ const CartHeader = (props: CartHeaderProps) => {
     );
   };
   return (
-    <div className="flex justify-between items-center">
-      <div className="flex items-center">
+    // <div className="flex justify-between items-center">
+    <div
+      className="
+        flex
+        gap-3
+       flex-row
+        justify-between
+        md:items-center
+      "
+    >
+      {/* <div className="flex items-center"> */}
+      <div
+        className="
+        flex
+        flex-col
+        gap-5
+        border-r-1
+
+        md:flex-row
+        md:items-center
+        md:justify-between
+        md:border-none
+        pr-5
+      "
+      >
         <CartItem
           title="Customer"
           value={`${customer?.first_name} ${customer?.last_name}`}
-          className="border-none"
+          className="md:!border-l-0"
         />
         <CartItem
           title="Date"
@@ -83,10 +106,11 @@ const CartHeader = (props: CartHeaderProps) => {
           title="Total Payable Amount"
           value={`${totalPayableAmount}USD`}
           valueClassName="text-primary"
+          className="!border-b-0 !pb-0"
         />
       </div>
 
-      <div className="flex items-center gap-0">
+      <div className="flex flex-col md:flex-row items-center gap-2">
         {paymentLink?.status && paymentLink?.token && (
           <StatusLabel
             value={paymentLink?.status}
@@ -128,7 +152,10 @@ const CartItem = (props: CartItemProps) => {
   const { title, value, valueClassName, className } = props;
   return (
     <div
-      className={cn(className, "flex flex-col px-5 border-l-1 border-gray-200")}
+      className={cn(
+        className,
+        "flex flex-col px-5 border-b-1 md:border-b-0 md:border-l-1 border-gray-200 pb-5"
+      )}
     >
       <div>{title}</div>
       <div className={cn("font-semibold", valueClassName)}>{value}</div>

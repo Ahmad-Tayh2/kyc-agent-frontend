@@ -122,7 +122,7 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md overflow-auto min-w-xs">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Add Currency to Wallet
@@ -133,7 +133,7 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
           <div className="flex justify-center py-8">
             <Loader />
           </div>
-        ) : availableCurrencies.length === 0 ? (
+        ) : availableCurrencies.length === 100 ? (
           <div className="text-center py-8 text-gray-500">
             <p>All available currencies are already in your wallet.</p>
           </div>

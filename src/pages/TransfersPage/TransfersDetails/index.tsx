@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ const TransfersDetails: React.FC = () => {
   const { data: response, isLoading, error } = useGetTransfer(id!);
 
   const handleBack = () => {
-    navigate(ROUTES.TRANSFERS.LIST);
+    navigate(-1);
   };
   const printAreaRef = useRef(null);
   const handlePrint = () => {

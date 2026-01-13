@@ -12,37 +12,68 @@ interface EditSection {
   content?: ReactElement | string;
 }
 interface EditMultiSectionCardProps {
-  customerSections: EditSection[];
+  sections: EditSection[];
   checkOtherSectionEditMode?: boolean;
   className?: string;
 }
 
 const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
-  customerSections,
+  sections,
   checkOtherSectionEditMode,
   className,
 }) => {
   const [selectedSection, setSelectedSection] = useState(0);
   const handleEdit = () =>
     !checkOtherSectionEditMode &&
-    customerSections?.[selectedSection]?.setEditMode?.(true);
+    sections?.[selectedSection]?.setEditMode?.(true);
   return (
     <div
-      className={cn(className, "bg-white rounded-lg border border-[#E7EFEF]")}
+      className={cn(
+        className,
+        "bg-white rounded-lg border border-[#E7EFEF]  min-w-[350px]"
+      )}
     >
-      <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] px-5">
+      {/* <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] px-5"> */}
+      <div
+        className="
+      flex
+      flex-col
+      gap-3
+
+      border-b
+      border-b-[#E7EFEF]
+      px-3
+      py-2
+
+      sm:flex-row
+      sm:items-end
+      sm:justify-between
+      sm:px-5
+      sm:py-0
+    "
+      >
         <div className="flex items-center gap-5 mt-auto">
-          {customerSections?.map((section: EditSection, index: number) => (
+          {/* <div
+          className="
+        flex
+        gap-3
+        overflow-x-auto
+        scrollbar-hide
+
+        sm:overflow-visible
+      "
+        > */}
+          {sections?.map((section: EditSection, index: number) => (
             <button
               key={index}
               className={cn(
-                "text-lg font-semibold border-b-2  px-3 py-1 rounded-t-sm border-transparent hover:border-primary/50 hover:bg-primary/1 hover:text-primary/50",
+                "text-sm md:text-lg font-semibold border-b-2  px-3 py-1 rounded-t-sm border-transparent hover:border-primary/50 hover:bg-primary/1 hover:text-primary/50",
                 selectedSection === index &&
                   "border-primary bg-primary/5 text-primary hover:border-primary hover:bg-primary/5 hover:text-primary"
               )}
               onClick={() => {
                 setSelectedSection(index);
-                customerSections?.[selectedSection]?.setEditMode?.(false);
+                sections?.[selectedSection]?.setEditMode?.(false);
               }}
             >
               {section.sectionTitle}
@@ -50,13 +81,14 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
           ))}
         </div>
 
-        {customerSections?.[selectedSection]?.setEditMode && (
+        {sections?.[selectedSection]?.setEditMode && (
           <div className="p-3">
-            {customerSections?.[selectedSection]?.editMode ? (
+            {/* <div className="p-3 flex justify-end sm:justify-start"> */}
+            {sections?.[selectedSection]?.editMode ? (
               <button
-                onClick={customerSections?.[selectedSection]?.onSave}
+                onClick={sections?.[selectedSection]?.onSave}
                 className="cursor-pointer text-white text-[12px] flex items-center gap-1 px-2 py-1 rounded-full border border-primary bg-primary"
-                disabled={customerSections?.[selectedSection]?.loading}
+                disabled={sections?.[selectedSection]?.loading}
               >
                 <SaveIcon />
                 <span className="font-medium">Save</span>
@@ -73,7 +105,7 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
           </div>
         )}
       </div>
-      {customerSections?.[selectedSection]?.content}
+      {sections?.[selectedSection]?.content}
     </div>
   );
 };

@@ -54,7 +54,14 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between flex-wrap">
+    <div
+      className="flex flex-col
+        gap-2
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+      "
+    >
       <SearchInput
         placeholder="Search by customer's name or phone"
         value={filters.search ?? ""}
@@ -71,7 +78,7 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
           onResetClick={onResetFilters}
           onApplyFilters={onApplyFilters}
         >
-          <div className="flex gap-2 w-fit">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <MultiSelectDropdown
               label="Status"
               placeholder="All"

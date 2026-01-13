@@ -18,14 +18,14 @@ export default function (props: any) {
           type="button"
           className={cn(
             className,
-            "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
+            "w-full flex items-center border gap-1 rounded-lg md:px-4 px-2 sm:py-3 py-2 text-[14px] text-left transition",
             "border-gray-200 bg-white disabled:cursor-not-allowed disabled:bg-[#E5E5E5] disabled:text-[#101828] disabled:opacity-50"
           )}
           onClick={() => onSelectValue(optionItem.value)}
           disabled={disabled}
         >
           {selectedValue === optionItem.value ? (
-            <CheckedIcon />
+            <CheckedIcon className="sm:w-auto sm:h-auto w-5 h-5" />
           ) : (
             <UncheckedIcon />
           )}

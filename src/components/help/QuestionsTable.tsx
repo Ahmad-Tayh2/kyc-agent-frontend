@@ -25,8 +25,8 @@ interface QuestionsTableProps {
 export const QuestionsTable = (props: QuestionsTableProps) => {
   const { data } = props;
   return (
-    <div className="bg-white rounded-md ">
-      <div className="border-b-1 border-gray-200 p-5 flex justify-between">
+    <div className="bg-white rounded-md">
+      <div className="border-b-1 border-gray-200 p-5 flex justify-between flex-wrap gap-3">
         <div className="text-2xl font-bold">Frequently Asked Questions</div>
         <SearchInput value="" onChange={() => {}} />
       </div>

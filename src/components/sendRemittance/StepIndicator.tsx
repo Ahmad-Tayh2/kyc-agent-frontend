@@ -50,12 +50,12 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
     }
   };
   return (
-    <div className="flex items-center justify-start p-5">
-      <div className="flex items-center space-x-4">
+    <div className="flex items-center justify-start p-5 overflow-auto">
+      <div className="flex items-center space-x-4 w-max">
         {steps?.map((step) => (
           <React.Fragment key={step.name}>
             <div
-              className={`flex items-center p-2 rounded-full ${
+              className={`flex items-center p-1 sm:p-2 rounded-full  text-xs sm:text-sm md:text-base ${
                 currentStep === step.name
                   ? "text-white bg-primary"
                   : "text-gray-400"
@@ -69,7 +69,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
               onClick={() => handleStepClick(step.name)}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                className={`w-5 sm:w-8 h-5 sm:h-8  rounded-full flex items-center justify-center ${
                   currentStep === step.name
                     ? "text-primary bg-white"
                     : "border-gray-300"

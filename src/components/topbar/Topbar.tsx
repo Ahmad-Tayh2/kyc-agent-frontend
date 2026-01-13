@@ -25,7 +25,6 @@ interface TopbarProps {
 }
 const UserMenu = () => {
   const { t } = useTranslation("global");
-  // const { handleLogout, user } = useAuth();
   const { user, logout: logoutFromStore } = useAuthStore();
   const { mutateAsync: logoutAsync, status } = useLogout();
   const navigate = useNavigate();
@@ -40,69 +39,67 @@ const UserMenu = () => {
     }
   };
 
-  const menu: any[] = [
+  const menu = [
     {
       label: t("modules.topbar.profile"),
       icon: <ProfileIcon style={{ width: "25px", height: "25px" }} />,
-      onClick: () => {},
       link: ROUTES.PROFILE,
     },
     {
       label: t("modules.topbar.settings"),
       icon: <SettingIcon style={{ width: "25px", height: "25px" }} />,
-      onClick: () => {},
       link: ROUTES.SETTINGS.DEFAULT,
     },
     {
       label: t("modules.topbar.logout"),
       icon: <LogoutIcon style={{ width: "25px", height: "25px" }} />,
       onClick: handleLogout,
-      link: "",
       isLoading: status === "pending",
     },
   ];
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none cursor-pointer">
-        <div className="flex items-center gap-3">
+      <DropdownMenuTrigger className="outline-none">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="flex flex-col items-center">
             <div className="rounded-full border-1 border-[#E88D7D] bg-[#E88D7D] p-1 flex items-center justify-center">
-              <Avatar className="bg-[#232728] w-9 h-9">
-                <AvatarImage
-                  src={userImage}
-                  className="object-cover w-full h-full"
-                />
+              <Avatar className="w-8 h-8 sm:w-9 sm:h-9 bg-[#232728]">
+                <AvatarImage src={userImage} className="object-cover" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </div>
-            <div className="mt-[-10px] px-2 py-0 rounded-full bg-[#E88D7D] text-white text-xs font-semibold border-1 border-[#E88D7D] shadow-md z-1">
+            {/* Username hidden on mobile */}
+
+            <div className="hidden sm:block mt-[-10px] px-2 py-0 rounded-full bg-[#E88D7D] text-white text-xs font-semibold border-1 border-[#E88D7D] shadow-md z-1">
               {/* {t("modules.topbar.agent")} */}
               {user?.first_name} {user?.last_name}
             </div>
           </div>
-          <ArrowDownIcon width={18} height={20} />
+
+          {/* Arrow hidden on very small screens */}
+          <ArrowDownIcon className="hidden sm:block w-4 h-4" />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mx-3">
-        {menu?.map((menuItem: any) => (
+
+      <DropdownMenuContent className="mx-3 z-52">
+        {menu.map((item) => (
           <DropdownMenuItem
+            key={item.label}
+            disabled={item.isLoading}
+            onClick={item.onClick}
+            asChild={!!item.link}
             className="h-[35px] hover:bg-primary/5 cursor-pointer"
-            onClick={menuItem.onClick}
-            disabled={menuItem.isLoading}
-            key={menuItem.label}
-            asChild
           >
-            {menuItem?.link ? (
-              <NavLink to={menuItem.link}>
-                <div className="flex items-center gap-2">
-                  {menuItem.icon}
-                  <span className="text-[14px]">{menuItem.label}</span>
-                </div>
+            {item.link ? (
+              <NavLink to={item.link} className="flex items-center gap-2">
+                {item.icon}
+                <span className="text-sm">{item.label}</span>
               </NavLink>
             ) : (
               <div className="flex items-center gap-2">
-                <div>{menuItem.icon}</div>
-                <span className="text-[14px]">{menuItem.label}</span>
+                {item.icon}
+                <span className="text-sm">{item.label}</span>
               </div>
             )}
           </DropdownMenuItem>
@@ -111,14 +108,17 @@ const UserMenu = () => {
     </DropdownMenu>
   );
 };
+
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { t } = useTranslation("global");
 
   return (
-    <header className="flex items-center justify-between h-20 px-4 bg-secondary border-b shadow-sm">
+    <header className="sticky top-0 z-5 flex items-center justify-between h-16 sm:h-20 px-3 sm:px-6 bg-secondary border-b shadow-sm">
+      {/* Left */}
       <div className="flex items-center gap-2">
+        {/* Mobile menu */}
         <button
-          className="md:hidden p-2 rounded hover:bg-gray-100 focus:outline-none"
+          className="md:hidden p-2 rounded hover:bg-gray-900 text-white"
           onClick={onMenuClick}
           aria-label="Open sidebar"
         >
@@ -136,17 +136,26 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
             />
           </svg>
         </button>
-        <span className="font-bold text-xl">
-          <Logo width={200} height={25} />
-        </span>
-      </div>
-      <div className="flex items-center gap-5">
-        <div className="flex items-center gap-1 border-1 rounded-3xl py-2 px-3 text-background text-sm">
-          <CalcIcon width={20} height={20} />
 
+        {/* Logo */}
+        <Logo className="w-32 sm:w-44 lg:w-52 h-auto" />
+      </div>
+
+      {/* Right */}
+      <div className="flex items-center gap-3 sm:gap-5">
+        {/* Simulate transfer */}
+        <div className="hidden sm:flex items-center gap-2 rounded-full border px-4 py-2 text-background text-sm">
+          <CalcIcon className="w-5 h-5" />
           <span>{t("modules.topbar.simulateTransfer")}</span>
         </div>
-        <NotificationIcon width={30} height={30} />
+
+        {/* Icon-only version for mobile */}
+        <button className="sm:hidden p-2 rounded-full hover:bg-gray-100">
+          <CalcIcon className="w-5 h-5" />
+        </button>
+
+        <NotificationIcon className="w-6 h-6 sm:w-7 sm:h-7" />
+
         <UserMenu />
       </div>
     </header>

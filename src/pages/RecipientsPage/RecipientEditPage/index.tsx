@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ROUTES } from "@/constants/routes";
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import EditSectionCard from "@/components/shared/EditSectionCard";
@@ -155,7 +154,7 @@ const RecipientEditPage: React.FC = () => {
     }
   };
   const handleBack = () => {
-    navigate(ROUTES.RECIPIENTS.LIST);
+    navigate(-1);
   };
 
   // const handleInputChange = (field: string, value: any) => {
@@ -200,9 +199,9 @@ const RecipientEditPage: React.FC = () => {
           state_id: formData?.state_id,
           country_id: formData?.country_id,
         },
-        phone_number: recipientData?.phone_number,
-        country_phone_code: recipientData?.country_phone_code,
-        bank_details: recipientData?.bank_details,
+        phone_number: formData?.phone_number,
+        country_phone_code: formData?.country_phone_code,
+        bank_details: formData?.bank_details,
       };
 
       // Flatten fields for validation
@@ -235,15 +234,15 @@ const RecipientEditPage: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="">
-        <div className="flex justify-start items-center gap-3">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-start items-start gap-2 flex-wrap">
           <button
             onClick={handleBack}
             className="text-primary top-1 cursor-pointer"
           >
             <BackArrowIcon width={30} height={30} />
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium">Recipient: </span>
             <PageTitle
               title={`${recipientData?.first_name || ""} ${
@@ -253,7 +252,7 @@ const RecipientEditPage: React.FC = () => {
           </div>
         </div>
         {recipientData?.created_at && (
-          <div className="ml-10">
+          <div className="sm:ml-10">
             Registered on:{" "}
             {new Date(recipientData?.created_at).toLocaleDateString()}
           </div>

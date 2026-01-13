@@ -339,10 +339,10 @@ const UserProfilePage = () => {
   }
 
   return (
-    <div className="px-6 py-2 h-fit">
+    <div className="space-y-4 h-fit">
       <ProfileHeader name={formData.firstName + " " + formData.lastName} />
-      <div className="mt-6 space-y-6">
-        <EditMultiSectionCard customerSections={agentProfileSections} />
+      <div className="mt-6">
+        <EditMultiSectionCard sections={agentProfileSections} />
       </div>
     </div>
   );

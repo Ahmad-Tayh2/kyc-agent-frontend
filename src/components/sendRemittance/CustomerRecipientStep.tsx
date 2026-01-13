@@ -517,7 +517,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 overflow-auto">
       {/* Customer/Sender and Recipient Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Customer/Sender */}
@@ -589,7 +589,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
               {isExpandedText && (
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   <div className="mb-3">
-                    <div className="flex gap-2">
+                    <div className="flex flex-row gap-2 flex-wrap">
                       <input
                         type="text"
                         value={recipientSearchTerm}
@@ -607,6 +607,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
                         disabled={!recipientSearchTerm.trim() || isSearching}
                       >
                         <Search className="h-4 w-4" />
+
                         {isSearching ? "Searching..." : "Search"}
                       </Button>
                     </div>

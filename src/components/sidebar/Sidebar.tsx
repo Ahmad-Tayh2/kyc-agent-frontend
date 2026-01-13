@@ -19,6 +19,8 @@ import PaymentLinksIcon from "../../assets/icons/payment-links.svg?react";
 import HelpIcon from "../../assets/icons/help.svg?react";
 import SupportIcon from "../../assets/icons/support.svg?react";
 
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+
 export const Sidebar: React.FC<{
   mobileOpen?: boolean;
   onClose?: () => void;
@@ -111,7 +113,7 @@ export const Sidebar: React.FC<{
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 h-full bg-white border-r shadow-sm z-20">
+      <aside className="hidden md:flex flex-col w-60 h-full bg-white border-r shadow-sm z-20">
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 p-5 flex flex-col gap-1">
             {navLinks.map((link) => (
@@ -134,42 +136,30 @@ export const Sidebar: React.FC<{
         </nav>
       </aside>
       {/* Mobile Sidebar Drawer */}
-      <div
-        className={`fixed inset-0 z-40 md:hidden transition-transform duration-300 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-        style={{ background: mobileOpen ? "rgba(0,0,0,0.3)" : "transparent" }}
-        onClick={onClose}
-      >
-        <aside
-          className="absolute left-0 top-0 h-full w-64 bg-white border-r shadow-lg flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center h-16 px-6 font-bold text-lg border-b">
-            {t("modules.app.brand")}
-          </div>
-          <nav className="flex-1 overflow-y-auto py-4">
-            <ul className="space-y-1">
+      <Sheet onOpenChange={onClose} open={mobileOpen}>
+        <SheetContent side="left" className="w-60 z-52">
+          <nav className="flex-1 overflow-y-auto py-5">
+            <ul className="space-y-1 p-5 flex flex-col gap-1">
               {navLinks.map((link) => (
                 <li key={link.to}>
                   <NavLink
                     to={link.to}
                     className={({ isActive }) =>
-                      `block px-6 py-2 rounded-l-full transition-colors duration-150 ${
+                      `flex items-center justify-start gap-2 px-3 py-2 rounded-md transition-colors duration-150 font-medium ${
                         isActive ? "bg-primary text-white" : "hover:bg-muted"
                       }`
                     }
                     end
-                    onClick={onClose}
                   >
+                    {link?.icon}
                     {link.label}
                   </NavLink>
                 </li>
               ))}
             </ul>
           </nav>
-        </aside>
-      </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 };

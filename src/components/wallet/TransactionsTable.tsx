@@ -119,7 +119,7 @@ export const ExtraTransactionsTable: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header with Filter and Export */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap sm:flex-nowrap gap-3">
         <h2 className="text-lg font-semibold text-gray-900">
           Extra Transaction History
         </h2>

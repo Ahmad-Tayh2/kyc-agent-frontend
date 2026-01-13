@@ -58,7 +58,8 @@ const AccountStatementsPage: React.FC = () => {
   };
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      {/* <div className="flex justify-between items-center"> */}
+      <div className="flex justify-between items-center flex-wrap sm:flex-nowrap gap-3">
         <PageTitle title={t("modules.pages.accountStatements.title")} />
         <AccountStatementsFilters
           filters={filters}

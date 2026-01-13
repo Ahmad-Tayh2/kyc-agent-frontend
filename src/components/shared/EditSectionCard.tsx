@@ -29,7 +29,7 @@ const EditSectionCard: React.FC<EditSectionCardProps> = ({
   const handleEdit = () => !checkOtherSectionEditMode && setEditMode?.(true);
   return (
     <div
-      className={cn(className, "bg-white rounded-lg border border-[#E7EFEF]")}
+      className={cn(className, "bg-white  rounded-lg border border-[#E7EFEF]")}
     >
       <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] p-5">
         <div className="flex flex-col gap-3">

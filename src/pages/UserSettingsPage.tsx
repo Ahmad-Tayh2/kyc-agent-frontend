@@ -17,14 +17,17 @@ const UserSettingsPage = () => {
       key: "security",
       title: "Account Security",
       content: (
-        <div className="flex gap-10">
-          <EditSectionCard sectionTitle="Change Password" className="w-1/2">
+        <div className="flex gap-10 flex-col md:flex-row">
+          <EditSectionCard
+            sectionTitle="Change Password"
+            className="w-full md:w-1/2"
+          >
             <ChangePasswordForm />
           </EditSectionCard>
           <EditSectionCard
             sectionTitle="Multi-Factor Authentication"
             description="Enhance your account security by enabling multi-factor authentication"
-            className="w-1/2"
+            className="w-full md:w-1/2"
           >
             <div className="p-5">coming soon</div>
           </EditSectionCard>
@@ -82,24 +85,49 @@ const TabNavigator = (props: TabNavigatorProps) => {
   }, [selectedTab]);
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex items-center gap-5 border-b-1 border-gray-300">
-        {tabs?.map((tab: Tab, index: number) => {
-          return (
-            <button
-              key={tab.key}
-              onClick={() => {
-                setSelectedTab(index);
-                // navigate(ROUTES.SETTINGS.TAB(tab.key));
-              }}
-              className={cn(
-                "text-[20px] text-[#101828] font-400 border-b-3 border-transparent p-2 mt-auto",
-                selectedTab === index && "border-primary"
-              )}
-            >
-              {tab?.title}
-            </button>
-          );
-        })}
+      {/* <div className="flex items-center gap-5 border-b-1 border-gray-300"> */}
+      {/* Tabs header */}
+      <div
+        className="
+      flex
+      flex-col
+      gap-3
+
+      sm:flex-row
+      sm:items-end
+      sm:justify-between
+      border-b
+      border-gray-300
+    "
+      >
+        {/* Tabs */}
+        <div
+          className="
+        flex
+        gap-3
+        overflow-x-auto
+        scrollbar-hide
+        sm:overflow-visible
+      "
+        >
+          {tabs?.map((tab: Tab, index: number) => {
+            return (
+              <button
+                key={tab.key}
+                onClick={() => {
+                  setSelectedTab(index);
+                  // navigate(ROUTES.SETTINGS.TAB(tab.key));
+                }}
+                className={cn(
+                  "text-[14px] sm:text-[16px] md:text-[20px] text-[#101828] font-400 border-b-3 border-transparent p-2 mt-auto",
+                  selectedTab === index && "border-primary"
+                )}
+              >
+                {tab?.title}
+              </button>
+            );
+          })}
+        </div>
         {tabs?.[selectedTab]?.key === "bank" && (
           <CreateAgentBankAccountDialog
             trigger={

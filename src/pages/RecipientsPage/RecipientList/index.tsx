@@ -60,7 +60,7 @@ const RecipientsPage: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-5 flex-wrap">
         <div>
           <PageTitle title={t("modules.pages.recipients.title")} />
           {pagination?.total ? (
@@ -93,6 +93,7 @@ const RecipientsPage: React.FC = () => {
           isLoading={isLoading}
           error={error}
           pagination={pagination}
+          className="min-h-[500px] rounded-t-none"
         />
       </div>
     </div>

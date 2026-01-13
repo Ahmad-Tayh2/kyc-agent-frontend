@@ -236,7 +236,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
       <DialogTrigger asChild>
         {trigger || <Button variant="outline">Generate New Link</Button>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent className="max-w-sm sm:max-w-3xl w-[90%] overflow-x-auto max-h-[90%]  sm:p-8 p-5">
         <DialogHeader>
           <DialogTitle>Generate Customer Form Link</DialogTitle>
           <DialogDescription>
@@ -261,7 +261,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
 
             {/* Success message display */}
             {generatedToken && !errorMessage && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="p-4 bg-green-50 border border-green-200 w-full rounded-lg">
                 <h4 className="font-medium text-green-800 mb-2">
                   Token Generated Successfully!
                 </h4>
@@ -271,7 +271,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="firstName"
@@ -372,11 +372,11 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
             />
 
             <DialogFooter className="sm:justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-start sm:items-center gap-2 flex-col sm:flex-row">
                 {customerFormLink && generatedToken && (
                   <>
                     <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-md max-w-sm">
-                      <span className="text-sm text-gray-600 truncate">
+                      <span className="text-sm text-gray-600">
                         {customerFormLink}
                       </span>
                     </div>{" "}

@@ -1,4 +1,4 @@
-import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
+import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
 import {
   AlertCircle,
   // Wallet,
@@ -7,27 +7,27 @@ import {
   Link,
   Plus,
   ShoppingCart,
-} from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
-import { Button } from '@/components/ui/button';
-import { PAYMENT_LINKS_STATUSES_COLORS } from '@/constants/appConstants';
-import { ROUTES } from '@/constants/routes';
-import { copyToClipboard } from '@/helpers/text';
+import { Button } from "@/components/ui/button";
+import { PAYMENT_LINKS_STATUSES_COLORS } from "@/constants/appConstants";
+import { ROUTES } from "@/constants/routes";
+import { copyToClipboard } from "@/helpers/text";
 import {
   useCreatePaymentLink,
   useGetPaymentLinkByCart,
   useGetPaymentLinkByTransaction,
-} from '@/hooks/data/usePaymentLinks';
+} from "@/hooks/data/usePaymentLinks";
 import {
   useAddTransactionToCart,
   useCreateRemittanceCart,
   useGetRemittanceCarts,
-} from '@/hooks/data/useRemittanceCarts';
-import { useSummaryData } from '@/hooks/useSummaryData';
-import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
-import StatusLabel from '../shared/StatusLabel';
-import SummaryCard from './SummaryCard';
+} from "@/hooks/data/useRemittanceCarts";
+import { useSummaryData } from "@/hooks/useSummaryData";
+import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
+import StatusLabel from "../shared/StatusLabel";
+import SummaryCard from "./SummaryCard";
 interface PayStepProps {
   transferId?: string;
   transferRef?: string;
@@ -54,9 +54,9 @@ const PayStep = (props: PayStepProps) => {
   // Get total payable amount with currency code from store
   const totalAmount = summaryData.totalPayableAmount
     ? `${summaryData.totalPayableAmount.toFixed(2)} ${
-        stepTwo.sendCurrency?.code || ''
+        stepTwo.sendCurrency?.code || ""
       }`
-    : '0.00';
+    : "0.00";
   const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
   const { mutateAsync: createRemittanceCart } = useCreateRemittanceCart();
   const { data: remittanceCartsResponse } = useGetRemittanceCarts(
@@ -79,7 +79,7 @@ const PayStep = (props: PayStepProps) => {
         );
       return link;
     }
-    return '';
+    return "";
     // return paymentLinkByTrResponse?.data?.[0]?.token || "";
   }, [paymentLinkByTrResponse]);
 
@@ -98,7 +98,7 @@ const PayStep = (props: PayStepProps) => {
       //create a cart
       const createResponse = await createRemittanceCart({
         customer_id: stepOne?.customer?.id,
-        currency: 'USD',
+        currency: "USD",
       });
       cartId = createResponse?.data?.id ?? null;
     }
@@ -114,8 +114,8 @@ const PayStep = (props: PayStepProps) => {
   const handleSendPaymentLink = async () => {
     const response = await createPaymentLink({
       payable_type: stepFour?.remittance_cart_id
-        ? 'RemittanceCart'
-        : 'Transaction',
+        ? "RemittanceCart"
+        : "Transaction",
       payable_id: stepFour?.remittance_cart_id
         ? stepFour?.remittance_cart_id
         : Number(transferId),
@@ -128,22 +128,22 @@ const PayStep = (props: PayStepProps) => {
     if (paymentLinkByTransactionString) {
       copyToClipboard(
         paymentLinkByTransactionString,
-        'Payment link copied to clipboard!'
+        "Payment link copied to clipboard!"
       );
     }
   };
 
   // Main payment section selection - radio buttons
   const [selectedPaymentSection, setSelectedPaymentSection] = useState<
-    'remittance_cart' | 'payment_link' | 'pay_on_behalf'
-  >('payment_link');
+    "remittance_cart" | "payment_link" | "pay_on_behalf"
+  >("payment_link");
 
   // Sub-selection for pay on behalf (wallet vs credit card)
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>('wallet');
+    useState<string>("wallet");
 
   const handlePayOnBehalfClick = () => {
-    if (selectedPaymentMethod === 'credit-card') {
+    if (selectedPaymentMethod === "credit-card") {
       if (transferRef) {
         const url =
           window.location.origin + ROUTES.PAYMENT_LINKS.VALIDATION(transferRef);
@@ -154,29 +154,29 @@ const PayStep = (props: PayStepProps) => {
     // ... handle other cases or proceed normally
   };
   return (
-    <div className='p-6 space-y-6'>
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content - Left Side */}
-        <div className='lg:col-span-2 space-y-6'>
+        <div className="lg:col-span-2 space-y-6">
           {/* Total Amount Banner */}
-          <div className='bg-[#E8F5F5] rounded-lg p-6 flex justify-between items-center'>
-            <h4 className='text-lg font-bold text-gray-900'>
-              Total amount to pay:{' '}
-              <span className='text-teal-600'>{totalAmount}</span>
+          <div className="bg-[#E8F5F5] rounded-lg p-4 sm:p-6 flex justify-between items-center">
+            <h4 className="text-lg font-bold text-gray-900">
+              Total amount to pay:{" "}
+              <span className="text-teal-600">{totalAmount}</span>
             </h4>
           </div>
 
           {/* Payment Method Section */}
-          <div className='bg-white rounded-lg border p-6 space-y-6'>
-            <div className='flex flex-col space-y-3'>
-              <div className='flex items-center space-x-2'>
-                <h4 className='text-lg font-semibold text-gray-900'>
+          <div className="bg-white rounded-lg border p-2 sm:p-6 space-y-6">
+            <div className="flex flex-col space-y-3">
+              <div className="flex items-center space-x-2">
+                <h4 className="text-lg font-semibold text-gray-900">
                   Payment Method
                 </h4>
               </div>
-              <div className='bg-orange-50 border-2 border-orange-300 rounded-lg p-3 flex items-start space-x-2'>
-                <AlertCircle className='w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5' />
-                <p className='text-sm font-semibold text-orange-800'>
+              <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-3 flex items-start space-x-2">
+                <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm font-semibold text-orange-800">
                   Important: Payment method is final once started and cannot be
                   changed later
                 </p>
@@ -186,58 +186,58 @@ const PayStep = (props: PayStepProps) => {
             {/* Multiple Transfers Option - Remittance Cart */}
             <div
               className={`relative space-y-4 p-4 rounded-lg border transition-all cursor-pointer ${
-                selectedPaymentSection === 'remittance_cart'
-                  ? 'border-teal-500 bg-teal-50/30 shadow-sm'
-                  : 'border-gray-200 bg-gray-50/50 hover:border-gray-300'
+                selectedPaymentSection === "remittance_cart"
+                  ? "border-teal-500 bg-teal-50/30 shadow-sm"
+                  : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
               }`}
-              onClick={() => setSelectedPaymentSection('remittance_cart')}
+              onClick={() => setSelectedPaymentSection("remittance_cart")}
             >
-              <div className='flex items-start space-x-3'>
-                <div className='relative flex items-center mt-1'>
+              <div className="flex items-start space-x-3 overflow-auto">
+                <div className="relative flex items-center mt-1">
                   <input
-                    type='radio'
-                    id='remittance-cart-section'
-                    name='payment-section'
-                    value='remittance_cart'
-                    checked={selectedPaymentSection === 'remittance_cart'}
+                    type="radio"
+                    id="remittance-cart-section"
+                    name="payment-section"
+                    value="remittance_cart"
+                    checked={selectedPaymentSection === "remittance_cart"}
                     onChange={() =>
-                      setSelectedPaymentSection('remittance_cart')
+                      setSelectedPaymentSection("remittance_cart")
                     }
-                    className='peer sr-only'
+                    className="peer sr-only"
                   />
                   <div
                     className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center ${
-                      selectedPaymentSection === 'remittance_cart'
-                        ? 'border-teal-500 bg-teal-500'
-                        : 'border-gray-300 bg-white'
+                      selectedPaymentSection === "remittance_cart"
+                        ? "border-teal-500 bg-teal-500"
+                        : "border-gray-300 bg-white"
                     }`}
                   >
-                    {selectedPaymentSection === 'remittance_cart' && (
-                      <div className='w-2 h-2 rounded-full bg-white' />
+                    {selectedPaymentSection === "remittance_cart" && (
+                      <div className="w-2 h-2 rounded-full bg-white" />
                     )}
                   </div>
                 </div>
-                <div className='flex-1 space-y-4'>
+                <div className="flex-1 space-y-4">
                   <label
-                    htmlFor='remittance-cart-section'
-                    className='cursor-pointer block'
+                    htmlFor="remittance-cart-section"
+                    className="cursor-pointer block"
                   >
-                    <h4 className='font-medium text-gray-900'>
+                    <h4 className="font-medium text-gray-900">
                       Do you need to create multiple transfers for the same
                       customer today?
                     </h4>
-                    <p className='text-sm text-gray-600 mt-1'>
+                    <p className="text-sm text-gray-600 mt-1">
                       Then, add it to the "remittance cart" and ask the customer
                       to pay once
                     </p>
                   </label>
 
-                  {selectedPaymentSection === 'remittance_cart' && (
+                  {selectedPaymentSection === "remittance_cart" && (
                     <>
-                      <div className='bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit '>
-                        <p className='text-sm text-orange-700 inline-flex '>
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit ">
+                        <p className="text-sm text-orange-700 inline-flex ">
                           <span>
-                            <AlertCircle className='w-4 h-4 text-orange-500 mr-1' />
+                            <AlertCircle className="w-4 h-4 text-orange-500 mr-1" />
                           </span>
                           this option will deactivate any payment link that was
                           created for this transfer.
@@ -246,19 +246,19 @@ const PayStep = (props: PayStepProps) => {
 
                       {stepFour?.remittance_cart_id ? (
                         <Button
-                          variant='outline'
-                          className='border-green-500 text-green-600 hover:text-green-600 cursor-default hover:bg-white'
+                          variant="outline"
+                          className="border-green-500 text-green-600 hover:text-green-600 cursor-default hover:bg-white"
                         >
                           <CheckedIcon />
                           ADDED TO REMITTANCE CART
                         </Button>
                       ) : (
                         <Button
-                          variant='outline'
-                          className='border-teal-500 text-teal-600 hover:bg-teal-50'
+                          variant="outline"
+                          className="border-teal-500 text-teal-600 hover:bg-teal-50"
                           onClick={handleAddToRemittanceCart}
                         >
-                          <ShoppingCart className='w-4 h-4 mr-2' />
+                          <ShoppingCart className="w-4 h-4 mr-2" />
                           ADD TO REMITTANCE CART
                         </Button>
                       )}
@@ -268,60 +268,60 @@ const PayStep = (props: PayStepProps) => {
               </div>
             </div>
 
-            <hr className='my-3' />
+            <hr className="my-3" />
 
             {/* Customer Payment Section - Payment Link */}
             <div
-              className={`relative space-y-4 p-4 rounded-lg border transition-all cursor-pointer ${
-                selectedPaymentSection === 'payment_link'
-                  ? 'border-teal-500 bg-teal-50/30 shadow-sm'
-                  : 'border-gray-200 bg-gray-50/50 hover:border-gray-300'
+              className={`relative space-y-4 p-4 rounded-lg border transition-all cursor-pointer overflow-auto ${
+                selectedPaymentSection === "payment_link"
+                  ? "border-teal-500 bg-teal-50/30 shadow-sm"
+                  : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
               }`}
-              onClick={() => setSelectedPaymentSection('payment_link')}
+              onClick={() => setSelectedPaymentSection("payment_link")}
             >
-              <div className='flex items-start space-x-3'>
-                <div className='relative flex items-center mt-1'>
+              <div className="flex items-start space-x-3">
+                <div className="relative flex items-center mt-1">
                   <input
-                    type='radio'
-                    id='payment-link-section'
-                    name='payment-section'
-                    value='payment_link'
-                    checked={selectedPaymentSection === 'payment_link'}
-                    onChange={() => setSelectedPaymentSection('payment_link')}
-                    className='peer sr-only'
+                    type="radio"
+                    id="payment-link-section"
+                    name="payment-section"
+                    value="payment_link"
+                    checked={selectedPaymentSection === "payment_link"}
+                    onChange={() => setSelectedPaymentSection("payment_link")}
+                    className="peer sr-only"
                   />
                   <div
                     className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center ${
-                      selectedPaymentSection === 'payment_link'
-                        ? 'border-teal-500 bg-teal-500'
-                        : 'border-gray-300 bg-white'
+                      selectedPaymentSection === "payment_link"
+                        ? "border-teal-500 bg-teal-500"
+                        : "border-gray-300 bg-white"
                     }`}
                   >
-                    {selectedPaymentSection === 'payment_link' && (
-                      <div className='w-2 h-2 rounded-full bg-white' />
+                    {selectedPaymentSection === "payment_link" && (
+                      <div className="w-2 h-2 rounded-full bg-white" />
                     )}
                   </div>
                 </div>
-                <div className='flex-1 space-y-4'>
+                <div className="flex-1 space-y-4">
                   <label
-                    htmlFor='payment-link-section'
-                    className='cursor-pointer block'
+                    htmlFor="payment-link-section"
+                    className="cursor-pointer block"
                   >
-                    <h4 className='font-medium text-gray-900'>
+                    <h4 className="font-medium text-gray-900">
                       Customer will pay for this transfer
                     </h4>
-                    <p className='text-sm text-gray-600 mt-1'>
+                    <p className="text-sm text-gray-600 mt-1">
                       We will send the payment link to selected customer email
                       and WhatsApp
                     </p>
                   </label>
 
-                  {selectedPaymentSection === 'payment_link' && (
+                  {selectedPaymentSection === "payment_link" && (
                     <>
-                      <div className='bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit '>
-                        <p className='text-sm text-orange-700 inline-flex '>
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit ">
+                        <p className="text-sm text-orange-700 inline-flex ">
                           <span>
-                            <AlertCircle className='w-4 h-4 text-orange-500 mr-1' />
+                            <AlertCircle className="w-4 h-4 text-orange-500 mr-1" />
                           </span>
                           If this transfer was added to the remittance cart,
                           sending a payment link will remove this transfer from
@@ -329,39 +329,39 @@ const PayStep = (props: PayStepProps) => {
                         </p>
                       </div>
 
-                      <div className='flex items-center space-x-4'>
+                      <div className="flex items-center space-x-4">
                         {stepFour?.paymentLinkByTransaction &&
                         typeof stepFour?.paymentLinkByTransaction ===
-                          'object' &&
+                          "object" &&
                         stepFour?.paymentLinkByTransaction?.token &&
                         stepFour?.paymentLinkByTransaction?.status !==
-                          'expired_link' ? (
-                          <div className='flex items-center space-x-4'>
+                          "expired_link" ? (
+                          <div className="flex items-center space-x-4">
                             <Button
-                              variant='link'
-                              className='p-0 h-auto text-sm cursor-pointer'
+                              variant="link"
+                              className="p-0 h-auto text-sm cursor-pointer"
                               onClick={handleCopyPaymentLink}
                             >
                               {paymentLinkByTransactionString?.slice(0, 80)}
                               {paymentLinkByTransactionString?.length > 80 &&
-                                '...'}
+                                "..."}
                               {paymentLinkByTransactionString && (
-                                <Copy className='w-4 h-4' />
+                                <Copy className="w-4 h-4" />
                               )}
                             </Button>
                           </div>
                         ) : (
                           <Button
-                            variant='outline'
-                            className='border-teal-500 text-teal-600 hover:bg-teal-50'
+                            variant="outline"
+                            className="border-teal-500 text-teal-600 hover:bg-teal-50"
                             onClick={handleSendPaymentLink}
                           >
-                            <Link className='w-4 h-4 mr-2' />
+                            <Link className="w-4 h-4 mr-2" />
                             SEND PAYMENT LINK
                           </Button>
                         )}
                         {typeof stepFour?.paymentLinkByTransaction ===
-                          'object' &&
+                          "object" &&
                           stepFour?.paymentLinkByTransaction?.status && (
                             <StatusLabel
                               value={stepFour?.paymentLinkByTransaction?.status}
@@ -369,7 +369,7 @@ const PayStep = (props: PayStepProps) => {
                                 PAYMENT_LINKS_STATUSES_COLORS[
                                   stepFour?.paymentLinkByTransaction
                                     ?.status as keyof typeof PAYMENT_LINKS_STATUSES_COLORS
-                                ] || '#000000'
+                                ] || "#000000"
                               }
                             />
                           )}
@@ -379,62 +379,62 @@ const PayStep = (props: PayStepProps) => {
                 </div>
               </div>
             </div>
-            <hr className='my-3' />
+            <hr className="my-3" />
 
             {/* Agent Payment Section - Pay on Behalf */}
             <div
-              className={`relative space-y-4 p-4 rounded-lg border transition-all cursor-pointer ${
-                selectedPaymentSection === 'pay_on_behalf'
-                  ? 'border-teal-500 bg-teal-50/30 shadow-sm'
-                  : 'border-gray-200 bg-gray-50/50 hover:border-gray-300'
+              className={`relative space-y-4 p-4 rounded-lg border transition-all cursor-pointer overflow-auto ${
+                selectedPaymentSection === "pay_on_behalf"
+                  ? "border-teal-500 bg-teal-50/30 shadow-sm"
+                  : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
               }`}
-              onClick={() => setSelectedPaymentSection('pay_on_behalf')}
+              onClick={() => setSelectedPaymentSection("pay_on_behalf")}
             >
-              <div className='flex items-start space-x-3'>
-                <div className='relative flex items-center mt-1'>
+              <div className="flex items-start space-x-3">
+                <div className="relative flex items-center mt-1">
                   <input
-                    type='radio'
-                    id='pay-on-behalf-section'
-                    name='payment-section'
-                    value='pay_on_behalf'
-                    checked={selectedPaymentSection === 'pay_on_behalf'}
-                    onChange={() => setSelectedPaymentSection('pay_on_behalf')}
-                    className='peer sr-only'
+                    type="radio"
+                    id="pay-on-behalf-section"
+                    name="payment-section"
+                    value="pay_on_behalf"
+                    checked={selectedPaymentSection === "pay_on_behalf"}
+                    onChange={() => setSelectedPaymentSection("pay_on_behalf")}
+                    className="peer sr-only"
                   />
                   <div
                     className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center ${
-                      selectedPaymentSection === 'pay_on_behalf'
-                        ? 'border-teal-500 bg-teal-500'
-                        : 'border-gray-300 bg-white'
+                      selectedPaymentSection === "pay_on_behalf"
+                        ? "border-teal-500 bg-teal-500"
+                        : "border-gray-300 bg-white"
                     }`}
                   >
-                    {selectedPaymentSection === 'pay_on_behalf' && (
-                      <div className='w-2 h-2 rounded-full bg-white' />
+                    {selectedPaymentSection === "pay_on_behalf" && (
+                      <div className="w-2 h-2 rounded-full bg-white" />
                     )}
                   </div>
                 </div>
-                <div className='flex-1 space-y-4'>
+                <div className="flex-1 space-y-4">
                   <label
-                    htmlFor='pay-on-behalf-section'
-                    className='cursor-pointer'
+                    htmlFor="pay-on-behalf-section"
+                    className="cursor-pointer"
                   >
-                    <h4 className='font-medium text-gray-900'>
+                    <h4 className="font-medium text-gray-900">
                       You will pay for the transfer and then ask the customer
                       for payment
                     </h4>
-                    <p className='text-sm text-gray-600 mt-1'>
+                    <p className="text-sm text-gray-600 mt-1">
                       You can send a payment link to the customer later, or you
                       can take the amount in cash but then you need to manually
                       update the transfer payment status.
                     </p>
                   </label>
 
-                  {selectedPaymentSection === 'pay_on_behalf' && (
+                  {selectedPaymentSection === "pay_on_behalf" && (
                     <>
-                      <div className='bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit '>
-                        <p className='text-sm text-orange-700 inline-flex '>
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit ">
+                        <p className="text-sm text-orange-700 inline-flex ">
                           <span>
-                            <AlertCircle className='w-4 h-4 text-orange-500 mr-1' />
+                            <AlertCircle className="w-4 h-4 text-orange-500 mr-1" />
                           </span>
                           By choosing this payment method, the transfer will be
                           removed from the Remittance Cart if it was added in a
@@ -443,62 +443,62 @@ const PayStep = (props: PayStepProps) => {
                       </div>
 
                       {/* Payment Method Selection */}
-                      <div className='space-y-3'>
-                        <div className='flex items-center justify-between'>
-                          <div className='flex items-center space-x-3'>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
                             <input
-                              type='radio'
-                              id='wallet-balance'
-                              name='agent-payment-method'
-                              value='wallet'
-                              className='w-4 h-4 text-teal-600'
+                              type="radio"
+                              id="wallet-balance"
+                              name="agent-payment-method"
+                              value="wallet"
+                              className="w-4 h-4 text-teal-600"
                               onChange={() =>
-                                setSelectedPaymentMethod('wallet')
+                                setSelectedPaymentMethod("wallet")
                               }
                             />
                             <label
-                              htmlFor='wallet-balance'
-                              className='text-gray-900'
+                              htmlFor="wallet-balance"
+                              className="text-gray-900"
                             >
                               From Wallet Balance (1200.00 USD)
                             </label>
                           </div>
                           <Button
-                            variant='link'
-                            className='text-teal-600 hover:text-teal-700 p-0 h-auto text-sm cursor-pointer'
+                            variant="link"
+                            className="text-teal-600 hover:text-teal-700 p-0 h-auto text-sm cursor-pointer"
                           >
-                            <Plus className='w-4 h-4 border border-teal-500 rounded-full' />
+                            <Plus className="w-4 h-4 border border-teal-500 rounded-full" />
                             ADD BALANCE
                           </Button>
                         </div>
 
-                        <div className='flex items-center space-x-3'>
+                        <div className="flex items-center space-x-3">
                           <input
-                            type='radio'
-                            id='credit-card'
-                            name='agent-payment-method'
-                            value='credit-card'
-                            className='w-4 h-4 text-teal-600'
+                            type="radio"
+                            id="credit-card"
+                            name="agent-payment-method"
+                            value="credit-card"
+                            className="w-4 h-4 text-teal-600"
                             onChange={() =>
-                              setSelectedPaymentMethod('credit-card')
+                              setSelectedPaymentMethod("credit-card")
                             }
                           />
                           <label
-                            htmlFor='credit-card'
-                            className='text-gray-900'
+                            htmlFor="credit-card"
+                            className="text-gray-900"
                           >
                             Credit Card
                           </label>
                         </div>
                       </div>
 
-                      <hr className='my-3' />
+                      <hr className="my-3" />
 
                       <Button
-                        variant='outline'
-                        className='border-teal-500 text-teal-600 hover:bg-teal-50'
+                        variant="outline"
+                        className="border-teal-500 text-teal-600 hover:bg-teal-50"
                         onClick={handlePayOnBehalfClick}
-                        disabled={selectedPaymentMethod !== 'credit-card'}
+                        disabled={selectedPaymentMethod !== "credit-card"}
                       >
                         PAY ON BEHALF OF CUSTOMER
                       </Button>
@@ -510,7 +510,7 @@ const PayStep = (props: PayStepProps) => {
           </div>
         </div>
         {/* Summary Card - Right Side */}
-        <div className='lg:col-span-1'>
+        <div className="lg:col-span-1">
           <SummaryCard data={summaryData} />
         </div>
       </div>

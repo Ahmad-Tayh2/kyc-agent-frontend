@@ -51,7 +51,7 @@ const CustomerFormFilters: React.FC<CustomerFormFiltersProps> = ({
           onResetClick={onResetFilters}
           onApplyFilters={onApplyFilters}
         >
-          <div className="flex gap-2 w-fit">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <MultiSelectDropdown
               label={t("modules.pages.customerForm.filters.status")}
               placeholder={t("modules.pages.customerForm.filters.all")}
@@ -64,7 +64,10 @@ const CustomerFormFilters: React.FC<CustomerFormFiltersProps> = ({
               placeholder={t(
                 "modules.pages.customerForm.filters.selectDateRange"
               )}
-              value={filters.dateRange}
+              value={{
+                startDate: filters?.created_from ?? "",
+                endDate: filters?.created_to ?? "",
+              }}
               onChange={updateDateRange}
             />
           </div>

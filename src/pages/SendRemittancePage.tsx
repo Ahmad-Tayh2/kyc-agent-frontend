@@ -1012,7 +1012,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   };
 
   const handleBackToTransfers = () => {
-    navigate(ROUTES.TRANSFERS.LIST);
+    navigate(-1);
   };
 
   // Check if there are unsaved changes (only for draft mode)
