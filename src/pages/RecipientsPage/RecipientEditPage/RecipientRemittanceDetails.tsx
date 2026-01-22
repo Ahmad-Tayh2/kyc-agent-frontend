@@ -29,6 +29,7 @@ import {
   useUpdateRecipientRemittanceMethod,
 } from '@/hooks/data/useRecipientRemittanceMethods';
 import { useRemittanceMethods } from '@/hooks/data/useRemittanceMethod';
+import { remittanceMethodService } from '@/services/remittanceMethod';
 import type { RecipientRemittanceMethod } from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
 import type { RecipientDataType } from '@/types/recipients';
 import type { Country } from '@/types/shared/location';
@@ -64,6 +65,9 @@ export default function RecipientRemittanceDetails({
     account_number: '',
     phone_number: '',
     country_phone_code: data?.country_phone_code || '+1',
+    account_name_prefix: '',
+    account_id_prefix: '',
+    verification_status: 'pending' as 'pending' | 'verified' | 'failed',
   });
 
   // Edit modal states
@@ -75,6 +79,10 @@ export default function RecipientRemittanceDetails({
     phone_number: '',
     country_phone_code: '+1',
   });
+
+  // Verification states
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isAddingMethod, setIsAddingMethod] = useState(false);
 
   // Hooks
   const { data: countriesData } = useCountries();
@@ -101,30 +109,30 @@ export default function RecipientRemittanceDetails({
 
   const countries = React.useMemo(
     () => (countriesData as Country[]) || [],
-    [countriesData]
+    [countriesData],
   );
   const remittanceMethods = React.useMemo(
     () => remittanceMethodsData?.data || [],
-    [remittanceMethodsData?.data]
+    [remittanceMethodsData?.data],
   );
   const existingMethods = React.useMemo(
     () => recipientRemittanceMethods || [],
-    [recipientRemittanceMethods]
+    [recipientRemittanceMethods],
   );
   const existingPayouts = React.useMemo(
     () => recipientPayouts?.data || [],
-    [recipientPayouts?.data]
+    [recipientPayouts?.data],
   );
   const payoutAgents = React.useMemo(
     () => payoutLocationsResponse?.data || [],
-    [payoutLocationsResponse?.data]
+    [payoutLocationsResponse?.data],
   );
 
   // Set default country filter to recipient's country
   React.useEffect(() => {
     if (data?.address?.country?.id && countries.length > 0) {
       const recipientCountry = countries.find(
-        (country) => country.id === data.address.country.id
+        (country) => country.id === data.address.country.id,
       );
       if (recipientCountry?.iso2) {
         updateCountryFilter([recipientCountry.iso2]);
@@ -139,7 +147,7 @@ export default function RecipientRemittanceDetails({
         label: country.name,
         iso2: country.iso2,
       })),
-    [countries]
+    [countries],
   );
 
   const countryPhoneOptions = React.useMemo(
@@ -150,7 +158,7 @@ export default function RecipientRemittanceDetails({
         code: country.phone_code,
         countryCode: country.iso2,
       })),
-    [countries]
+    [countries],
   );
 
   const methodOptions = React.useMemo(
@@ -159,7 +167,7 @@ export default function RecipientRemittanceDetails({
         value: method.id.toString(),
         label: method.name,
       })),
-    [remittanceMethods]
+    [remittanceMethods],
   );
 
   const payoutAgentOptions = payoutAgents.map((agent: PayoutAgent) => ({
@@ -167,9 +175,96 @@ export default function RecipientRemittanceDetails({
     label: `${agent.business_name} - ${agent.address.location}, ${agent.address.country}`,
   }));
 
+  const handleVerifyAccount = async () => {
+    if (!selectedMethodId) return;
+
+    const selectedMethod = remittanceMethods.find(
+      (method: {
+        id: number;
+        validator_id?: number | null;
+        validator?: { name: string };
+        validation_type?: string;
+      }) => method.id === selectedMethodId,
+    );
+
+    if (!selectedMethod || !selectedMethod.validator_id) {
+      console.log('Missing required data for verification');
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      const validationType =
+        selectedMethod.validator?.name || selectedMethod.validation_type || '';
+
+      if (!validationType) {
+        console.error('No validation type found for method:', selectedMethod);
+        toast.error('Validation type not configured for this method');
+        setIsVerifying(false);
+        return;
+      }
+
+      const verificationRequest = {
+        validation_type: validationType,
+        service_data: {
+          serviceCode: '00003',
+          phoneNumber: `+${newMethodData.country_phone_code?.replace(
+            /^\+/,
+            '',
+          )}${newMethodData.phone_number}`,
+        },
+        verification_data: {
+          expected_account_name_prefix: newMethodData.account_name_prefix,
+          expected_account_id_prefix: newMethodData.account_id_prefix,
+        },
+      };
+
+      const response =
+        await remittanceMethodService.verifyAccountInfo(verificationRequest);
+
+      if (response.data?.status === 'success') {
+        setNewMethodData((prev) => ({
+          ...prev,
+          verification_status: 'verified',
+        }));
+        toast.success('Account verified successfully!');
+      } else {
+        setNewMethodData((prev) => ({
+          ...prev,
+          verification_status: 'failed',
+        }));
+        toast.error('Verification failed. Please check your details.');
+      }
+    } catch (error) {
+      console.error('Verification failed:', error);
+      setNewMethodData((prev) => ({
+        ...prev,
+        verification_status: 'failed',
+      }));
+      toast.error('Verification failed. Please try again.');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   const handleAddMethod = async () => {
     if (!selectedMethodId || !data?.id) return;
 
+    const selectedMethod = remittanceMethods.find(
+      (method: { id: number; validator_id?: number | null }) =>
+        method.id === selectedMethodId,
+    );
+
+    // If method has validator, check if it's verified
+    if (
+      selectedMethod?.validator_id &&
+      newMethodData.verification_status !== 'verified'
+    ) {
+      toast.error('Please verify the account before adding');
+      return;
+    }
+
+    setIsAddingMethod(true);
     try {
       await createMutation.mutateAsync({
         recipient_id: data.id,
@@ -185,10 +280,15 @@ export default function RecipientRemittanceDetails({
         account_number: '',
         phone_number: '',
         country_phone_code: data?.country_phone_code || '+1',
+        account_name_prefix: '',
+        account_id_prefix: '',
+        verification_status: 'pending',
       });
       refetchRecipientMethods();
     } catch {
       toast.error('Failed to add remittance method');
+    } finally {
+      setIsAddingMethod(false);
     }
   };
 
@@ -465,53 +565,159 @@ export default function RecipientRemittanceDetails({
                 />
               </div>
 
-              {selectedMethodId && (
-                <>
-                  <div className='space-y-2'>
-                    <Label>Phone Number</Label>
-                    <PhoneInput
-                      countryOptions={countryPhoneOptions}
-                      selectedCountry={newMethodData.country_phone_code}
-                      phoneNumber={newMethodData.phone_number}
-                      onCountryChange={(countryCode) =>
-                        setNewMethodData((prev) => ({
-                          ...prev,
-                          country_phone_code: `+${countryCode}`,
-                        }))
-                      }
-                      onPhoneChange={(phoneNumber) =>
-                        setNewMethodData((prev) => ({
-                          ...prev,
-                          phone_number: phoneNumber,
-                        }))
-                      }
-                      placeholder='Enter phone number'
-                    />
-                  </div>
+              {selectedMethodId &&
+                (() => {
+                  const selectedMethod = remittanceMethods.find(
+                    (method: { id: number; validator_id?: number | null }) =>
+                      method.id === selectedMethodId,
+                  );
+                  const hasValidator = !!selectedMethod?.validator_id;
+                  const isVerified =
+                    newMethodData.verification_status === 'verified';
+                  const isFailed =
+                    newMethodData.verification_status === 'failed';
 
-                  <div className='space-y-2'>
-                    <Label>Account Number</Label>
-                    <Input
-                      value={newMethodData.account_number}
-                      onChange={(e) =>
-                        setNewMethodData((prev) => ({
-                          ...prev,
-                          account_number: e.target.value,
-                        }))
-                      }
-                      placeholder='Enter account number'
-                    />
-                  </div>
-                </>
-              )}
+                  return (
+                    <>
+                      {hasValidator && !isVerified && (
+                        <>
+                          <div className='space-y-2'>
+                            <Label>Phone Number *</Label>
+                            <PhoneInput
+                              countryOptions={countryPhoneOptions}
+                              selectedCountry={newMethodData.country_phone_code}
+                              phoneNumber={newMethodData.phone_number}
+                              onCountryChange={(countryCode) =>
+                                setNewMethodData((prev) => ({
+                                  ...prev,
+                                  country_phone_code: `+${countryCode}`,
+                                }))
+                              }
+                              onPhoneChange={(phoneNumber) =>
+                                setNewMethodData((prev) => ({
+                                  ...prev,
+                                  phone_number: phoneNumber,
+                                }))
+                              }
+                              placeholder='Enter phone number'
+                            />
+                          </div>
 
-              <ActionButton
-                title={createMutation.isPending ? 'Adding...' : 'Add Method'}
-                onClick={handleAddMethod}
-                buttonProps={{
-                  disabled: !selectedMethodId || createMutation.isPending,
-                }}
-              />
+                          <div className='flex gap-2'>
+                            <div className='flex-1 space-y-2'>
+                              <Label>Account Name Prefix *</Label>
+                              <Input
+                                value={newMethodData.account_name_prefix}
+                                onChange={(e) =>
+                                  setNewMethodData((prev) => ({
+                                    ...prev,
+                                    account_name_prefix: e.target.value,
+                                  }))
+                                }
+                                placeholder='e.g., Joh'
+                              />
+                            </div>
+
+                            <div className='flex-1 space-y-2'>
+                              <Label>Account ID Prefix *</Label>
+                              <Input
+                                value={newMethodData.account_id_prefix}
+                                onChange={(e) =>
+                                  setNewMethodData((prev) => ({
+                                    ...prev,
+                                    account_id_prefix: e.target.value,
+                                  }))
+                                }
+                                placeholder='e.g., 1-1'
+                              />
+                            </div>
+                          </div>
+
+                          <ActionButton
+                            title={
+                              isVerifying ? 'Verifying...' : 'Verify Account'
+                            }
+                            onClick={handleVerifyAccount}
+                            buttonProps={{
+                              disabled:
+                                !newMethodData.phone_number ||
+                                !newMethodData.account_name_prefix ||
+                                !newMethodData.account_id_prefix ||
+                                isVerifying,
+                            }}
+                          />
+
+                          {isFailed && (
+                            <div className='p-3 bg-red-50 border border-red-200 rounded'>
+                              <p className='text-red-800 text-sm'>
+                                ❌ <strong>Verification Failed:</strong> Please
+                                check your details and try again.
+                              </p>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {hasValidator && isVerified && (
+                        <div className='p-3 bg-green-50 border border-green-200 rounded'>
+                          <p className='text-green-800 text-sm'>
+                            ✅ <strong>Account Verified Successfully!</strong>
+                          </p>
+                        </div>
+                      )}
+
+                      {!hasValidator && (
+                        <>
+                          <div className='space-y-2'>
+                            <Label>Phone Number</Label>
+                            <PhoneInput
+                              countryOptions={countryPhoneOptions}
+                              selectedCountry={newMethodData.country_phone_code}
+                              phoneNumber={newMethodData.phone_number}
+                              onCountryChange={(countryCode) =>
+                                setNewMethodData((prev) => ({
+                                  ...prev,
+                                  country_phone_code: `+${countryCode}`,
+                                }))
+                              }
+                              onPhoneChange={(phoneNumber) =>
+                                setNewMethodData((prev) => ({
+                                  ...prev,
+                                  phone_number: phoneNumber,
+                                }))
+                              }
+                              placeholder='Enter phone number'
+                            />
+                          </div>
+
+                          <div className='space-y-2'>
+                            <Label>Account Number</Label>
+                            <Input
+                              value={newMethodData.account_number}
+                              onChange={(e) =>
+                                setNewMethodData((prev) => ({
+                                  ...prev,
+                                  account_number: e.target.value,
+                                }))
+                              }
+                              placeholder='Enter account number'
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      {(isVerified || !hasValidator) && (
+                        <ActionButton
+                          title={isAddingMethod ? 'Adding...' : 'Add Method'}
+                          onClick={handleAddMethod}
+                          buttonProps={{
+                            disabled: isAddingMethod,
+                          }}
+                        />
+                      )}
+                    </>
+                  );
+                })()}
             </div>
           </div>
         )}

@@ -60,8 +60,9 @@ export const customerSchema = z.object({
     .max(50, "Last name is too long"),
   email: z
     .string()
-    .nonempty("Email is required")
-    .email("Invalid email address format"),
+    .email("Invalid email address format")
+    .optional()
+    .or(z.literal("")),
   date_of_birth: z.string().nonempty("Date of birth is required"),
   // .refine(
   //   (date) => !isNaN(Date.parse(date)),

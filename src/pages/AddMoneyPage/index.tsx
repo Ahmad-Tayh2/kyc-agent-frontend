@@ -1,23 +1,24 @@
 // import { useMemo } from "react";
-import { DataTable } from "@/components/shared/DataTable";
-import { useTranslation } from "react-i18next";
+import { DataTable } from '@/components/shared/DataTable';
+import { useTranslation } from 'react-i18next';
 // import { useGetAddMoneyHistory } from "@/hooks/data/useAddMoney";
-import PageTitle from "@/components/shared/PageTitle";
-import AddMoneyFilters from "@/components/addMoney/AddMoneyFilters";
-import { AddMoneyTableColumns } from "@/components/addMoney/AddMoneyTableColumns";
-import SummaryCard from "@/components/shared/SummaryCard";
-import type { ReactElement } from "react";
+import AddMoneyFilters from '@/components/addMoney/AddMoneyFilters';
+import { AddMoneyTableColumns } from '@/components/addMoney/AddMoneyTableColumns';
+import PageTitle from '@/components/shared/PageTitle';
+import SummaryCard from '@/components/shared/SummaryCard';
+import type { ReactElement } from 'react';
 // import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
-import CurrencyInput from "@/components/CurrencyInput";
-import { Label } from "@/components/ui/label";
-import ActionButton from "@/components/shared/ActionButton";
-import { useAddMoneyTransactions, useWallet } from "@/hooks/data/useWallet";
-import { geAgentIdFromStorage } from "@/utils/authHelpers";
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
-import { toast } from "sonner";
-import { useAddMoneyFilters } from "@/hooks/data/useAddMoneyFilters";
+import CurrencyInput from '@/components/CurrencyInput';
+import ActionButton from '@/components/shared/ActionButton';
+import { Label } from '@/components/ui/label';
+import { useAddMoneyFilters } from '@/hooks/data/useAddMoneyFilters';
+import { useAddMoneyTransactions, useWallet } from '@/hooks/data/useWallet';
+import { geAgentIdFromStorage } from '@/utils/authHelpers';
+import { AlertCircle } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { z } from 'zod';
 // import { ROUTES } from "@/constants/routes";
 
 interface addMoneySummaryData {
@@ -32,17 +33,17 @@ interface addMoneySummaryData {
 // Validation schema for add money form
 const addMoneySchema = z.object({
   walletCurrencyId: z.number({
-    required_error: "Please select a currency",
+    required_error: 'Please select a currency',
   }),
   amount: z
     .number({
-      required_error: "Please enter an amount",
+      required_error: 'Please enter an amount',
     })
-    .min(0.01, "Amount must be at least 0.01"),
+    .min(0.01, 'Amount must be at least 0.01'),
 });
 
 const AddMoneyPage: React.FC = () => {
-  const [t] = useTranslation("global");
+  const [t] = useTranslation('global');
   const navigate = useNavigate();
   const columns = AddMoneyTableColumns();
 
@@ -57,7 +58,7 @@ const AddMoneyPage: React.FC = () => {
 
   // Get agent ID and fetch wallet
   const agentId = geAgentIdFromStorage();
-  const { data: wallet, isLoading: isLoadingWallet } = useWallet(agentId || "");
+  const { data: wallet, isLoading: isLoadingWallet } = useWallet(agentId || '');
   const {
     data: addMoneyTransactions,
     isLoading: isLoadingAddMoneyTransactions,
@@ -92,7 +93,7 @@ const AddMoneyPage: React.FC = () => {
   const selectedWalletCurrency = useMemo(() => {
     if (!selectedCurrencyId || !wallet?.wallet_currencies) return null;
     return wallet.wallet_currencies.find(
-      (wc) => wc?.currency?.id === selectedCurrencyId
+      (wc) => wc?.currency?.id === selectedCurrencyId,
     );
   }, [selectedCurrencyId, wallet]);
 
@@ -115,19 +116,19 @@ const AddMoneyPage: React.FC = () => {
 
       // Store the data in sessionStorage to use in the payment page
       sessionStorage.setItem(
-        "addMoneyData",
+        'addMoneyData',
         JSON.stringify({
           walletCurrencyId: selectedWalletCurrency?.id,
           amount,
           currencyCode: selectedWalletCurrency?.currency?.code,
-        })
+        }),
       );
 
       // Navigate to payment page with walletCurrencyId
       navigate(`/payment/add-${selectedWalletCurrency?.id}`);
     } catch (error) {
-      console.error("Error handling add money:", error);
-      toast.error("An error occurred. Please try again.");
+      console.error('Error handling add money:', error);
+      toast.error('An error occurred. Please try again.');
     }
   };
 
@@ -147,14 +148,14 @@ const AddMoneyPage: React.FC = () => {
   //   },
   // };
   const dataList: addMoneySummaryData[] = [
-    { label: "Entered Amount", value: "100 USD", info: "test" },
-    { label: "Exchange Rate", value: "1 USD = 0.95 EUR" },
-    { label: "Fees and Charges", value: "2.0 USD" },
-    { label: "Will Get", value: "100 USD" },
+    { label: 'Entered Amount', value: '100 USD', info: 'test' },
+    { label: 'Exchange Rate', value: '1 USD = 0.95 EUR' },
+    { label: 'Fees and Charges', value: '2.0 USD' },
+    { label: 'Will Get', value: '100 USD' },
     {
-      label: "Total Payable Amount",
-      value: "103.00 USD",
-      labelClassName: "text-base font-semibold text-primary",
+      label: 'Total Payable Amount',
+      value: '103.00 USD',
+      labelClassName: 'text-base font-semibold text-primary',
     },
   ];
 
@@ -163,13 +164,13 @@ const AddMoneyPage: React.FC = () => {
   //   { label: "Card", value: "card" },
   // ];
   return (
-    <div className="space-y-4">
-      <div className="space-y-4 border-b-1 pb-5 border-b-gray-200">
-        <div className="flex justify-between items-center">
-          <PageTitle title={t("modules.pages.addMoney.title")} />
+    <div className='space-y-4'>
+      <div className='space-y-4 border-b-1 pb-5 border-b-gray-200'>
+        <div className='flex justify-between items-center'>
+          <PageTitle title={t('modules.pages.addMoney.title')} />
         </div>
-        <div className="bg-white rounded-lg border p-5 ">
-          <div className="flex flex-col md:flex-row gap-3">
+        <div className='bg-white rounded-lg border p-5 '>
+          <div className='flex flex-col md:flex-row gap-3'>
             {/* <div className="flex flex-col gap-1 w-1/3">
               <Label className="text-[14px]">
                 Payment Gateway<span>*</span>
@@ -180,8 +181,8 @@ const AddMoneyPage: React.FC = () => {
                 onValueChange={() => {}}
               />
             </div> */}
-            <div className="flex flex-col gap-1 w-full md:w-1/2">
-              <Label className="text-[14px]">
+            <div className='flex flex-col gap-1 w-1/2'>
+              <Label className='text-[14px]'>
                 Currency & Amount<span>*</span>
               </Label>
               <CurrencyInput
@@ -191,26 +192,35 @@ const AddMoneyPage: React.FC = () => {
                 onCurrencyChange={setSelectedCurrencyId}
                 onAmountChange={setAmount}
                 loading={isLoadingWallet}
-                placeholder="Select currency"
-                amountPlaceholder="Enter amount"
+                placeholder='Select currency'
+                amountPlaceholder='Enter amount'
               />
             </div>
-            <div className="w-full md:w-1/2">
-              <SummaryCard title="Summary" data={dataList} />
+            <div className='w-full md:w-1/2'>
+              <SummaryCard title='Summary' data={dataList} />
             </div>
           </div>
-          <div className="border-t-1 border-gray-200 mt-5 pt-5 flex justify-end">
+          <div className='border-t-1 border-gray-200 mt-5 pt-5 flex justify-end'>
             <ActionButton
-              title="add money"
-              type="action"
+              title='add money'
+              type='action'
               onClick={handleAddMoney}
             />
           </div>
         </div>
       </div>
-      <div className="space-y-4">
-        <div className="flex justify-between items-center flex-wrap sm:flex-nowrap gap-3">
-          <PageTitle title={t("modules.pages.addMoney.historyTitle")} />
+      <div className='space-y-4'>
+        <div className='bg-orange-50 border-2 border-orange-300 rounded-lg p-3 flex items-start space-x-2'>
+          <AlertCircle className='w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5' />
+          <p className='text-sm text-orange-700 font-medium'>
+            Processing Time Notice:{' '}
+            <span className='text-sm text-orange-700 mt-1'>
+              Add money operations could take some time to process.
+            </span>
+          </p>
+        </div>
+        <div className='flex justify-between items-center'>
+          <PageTitle title={t('modules.pages.addMoney.historyTitle')} />
           <AddMoneyFilters
             filters={filters}
             onUpdateStatus={updateAddMoneyTransactionsStatus}
@@ -218,6 +228,7 @@ const AddMoneyPage: React.FC = () => {
             onApplyFilters={applyAddMoneyTransactionsFilters}
           />
         </div>
+
         <div>
           <DataTable
             data={addMoneyTransactionsData}

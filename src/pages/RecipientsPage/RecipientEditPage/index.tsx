@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
-import PageTitle from "@/components/shared/PageTitle";
-import EditSectionCard from "@/components/shared/EditSectionCard";
+import BackArrowIcon from '@/assets/icons/back-arrow.svg?react';
+import EditSectionCard from '@/components/shared/EditSectionCard';
+import PageTitle from '@/components/shared/PageTitle';
 import {
   useGetRecipient,
   useUpdateRecipient,
-} from "@/hooks/data/useRecipients";
+} from '@/hooks/data/useRecipients';
 import type {
   RecipientDataType,
   RecipientUpdatedDataType,
-} from "@/types/recipients";
-import RecipientBasicDetails from "./RecipientBasicDetails";
-import RecipientRemittanceDetails from "./RecipientRemittanceDetails";
-import { format } from "date-fns";
+} from '@/types/recipients';
+import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import RecipientBasicDetails from './RecipientBasicDetails';
+import RecipientRemittanceDetails from './RecipientRemittanceDetails';
 // import RecipientBankDetails from "./RecipientBankDetails";
-import { z } from "zod";
+import { z } from 'zod';
 
 export const editRecipientSchema = z.object({
   // customer_id: z.union([z.string(), z.number()]).refine((val) => {
@@ -25,44 +25,41 @@ export const editRecipientSchema = z.object({
   // }, "Customer is required"),
   first_name: z
     .string()
-    .min(2, "First name must contain at least 2 characters")
-    .max(50, "First name is too long"),
+    .min(2, 'First name must contain at least 2 characters')
+    .max(50, 'First name is too long'),
   last_name: z
     .string()
-    .min(2, "Last name must contain at least 2 characters")
-    .max(50, "Last name is too long"),
-  email: z
-    .string()
-    .nonempty("Email is required")
-    .email("Invalid email address format"),
-  date_of_birth: z.string().nonempty("Date of birth is required"),
+    .min(2, 'Last name must contain at least 2 characters')
+    .max(50, 'Last name is too long'),
+  email: z.string(),
+  date_of_birth: z.string().nonempty('Date of birth is required'),
   // .refine(
   //   (date) => !isNaN(Date.parse(date)),
   //   "Invalid date format (must be YYYY-MM-DD)"
   // ),
-  gender: z.enum(["male", "female"], {
-    errorMap: () => ({ message: "Gender is required" }),
+  gender: z.enum(['male', 'female'], {
+    errorMap: () => ({ message: 'Gender is required' }),
   }),
   country_id: z.union([z.string(), z.number()]).refine((val) => {
-    if (typeof val === "string") return val.trim() !== "";
-    if (typeof val === "number") return !isNaN(val);
+    if (typeof val === 'string') return val.trim() !== '';
+    if (typeof val === 'number') return !isNaN(val);
     return false;
-  }, "Country is required"),
+  }, 'Country is required'),
 
   city_id: z.union([z.string(), z.number()]).refine((val) => {
-    if (typeof val === "string") return val.trim() !== "";
-    if (typeof val === "number") return !isNaN(val);
+    if (typeof val === 'string') return val.trim() !== '';
+    if (typeof val === 'number') return !isNaN(val);
     return false;
-  }, "City is required"),
+  }, 'City is required'),
 
-  street_name: z.string().nonempty("Street name is required"),
-  house_number: z.string().nonempty("House number is required"),
+  street_name: z.string().nonempty('Street name is required'),
+  house_number: z.string().nonempty('House number is required'),
   // postal_code: z.string().optional(),
   phone_number: z
     .string()
-    .nonempty("Phone number is required")
-    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
-  country_phone_code: z.string().nonempty("Country phone code required"),
+    .nonempty('Phone number is required')
+    .regex(/^[0-9]+$/, 'Phone number must contain only digits'),
+  country_phone_code: z.string().nonempty('Country phone code required'),
 });
 
 const RecipientEditPage: React.FC = () => {
@@ -75,7 +72,7 @@ const RecipientEditPage: React.FC = () => {
   >({});
 
   const [recipientData, setRecipientData] = useState<RecipientDataType | null>(
-    null
+    null,
   );
   const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
   const [remittanceMethodsEditMode, setRemittanceMethodsEditMode] =
@@ -84,13 +81,13 @@ const RecipientEditPage: React.FC = () => {
 
   // check in one of the other sections in already in the edit mode
   const checkOtherSectionEditMode = (
-    current: "bank" | "basic" | "remittance"
+    current: 'bank' | 'basic' | 'remittance',
   ) => {
-    if (current === "bank")
+    if (current === 'bank')
       return basicInfoEditMode || remittanceMethodsEditMode;
-    else if (current === "basic")
+    else if (current === 'basic')
       return bankDetailsEditMode || remittanceMethodsEditMode;
-    else if (current === "remittance")
+    else if (current === 'remittance')
       return basicInfoEditMode || bankDetailsEditMode;
     else return true;
   };
@@ -100,7 +97,7 @@ const RecipientEditPage: React.FC = () => {
       setBasicInfoEditMode(false);
       setValidationErrors({});
     },
-    (errorsData: any) => setValidationErrors(errorsData)
+    (errorsData: any) => setValidationErrors(errorsData),
   );
 
   useEffect(() => {
@@ -129,12 +126,12 @@ const RecipientEditPage: React.FC = () => {
     }
   }, [data]);
   const handleInputChange = (field: string, value: any) => {
-    if (field === "country_id") {
+    if (field === 'country_id') {
       setFormData((prev: any) => ({
         ...prev,
         [field]: value,
-        city_id: "",
-        state_id: "",
+        city_id: '',
+        state_id: '',
       }));
     } else {
       setFormData((prev: any) => ({
@@ -187,13 +184,13 @@ const RecipientEditPage: React.FC = () => {
         last_name: formData?.last_name,
         email: formData?.email,
         date_of_birth: formData?.date_of_birth
-          ? format(formData?.date_of_birth, "yyyy-MM-dd")
-          : "",
+          ? format(formData?.date_of_birth, 'yyyy-MM-dd')
+          : '',
         gender: formData?.gender,
         address: {
           street_name: formData?.street_name,
           house_number: formData.house_number,
-          postal_code: formData?.postal_code ?? "",
+          postal_code: formData?.postal_code ?? '',
           extra_address_details: formData?.extra_address_details,
           city_id: formData?.city_id,
           state_id: formData?.state_id,
@@ -215,7 +212,7 @@ const RecipientEditPage: React.FC = () => {
       if (!validationResult.success) {
         const errors = validationResult.error.flatten().fieldErrors;
         setValidationErrors(errors);
-        console.log("Validation errors:", errors);
+        console.log('Validation errors:', errors);
         return;
       }
       await updateRecipient(payloadToUpdate);
@@ -223,48 +220,51 @@ const RecipientEditPage: React.FC = () => {
       setRemittanceMethodsEditMode(false);
       setBankDetailsEditMode(false);
     } catch (e) {
-      console.log(" error = ", error?.message);
+      console.log(' error = ', error?.message);
     }
   };
 
-  if (isLoading) return <div className="p-8">Loading...</div>;
+  if (isLoading) return <div className='p-8'>Loading...</div>;
   if (error)
-    return <div className="p-8 text-red-500">Error loading recipient.</div>;
+    return <div className='p-8 text-red-500'>Error loading recipient.</div>;
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {/* Header */}
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-start items-start gap-2 flex-wrap">
-          <button
-            onClick={handleBack}
-            className="text-primary top-1 cursor-pointer"
-          >
-            <BackArrowIcon width={30} height={30} />
-          </button>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium">Recipient: </span>
-            <PageTitle
-              title={`${recipientData?.first_name || ""} ${
-                recipientData?.last_name || ""
-              }`}
-            />
+      <div className='flex justify-start items-center gap-3'>
+        <div className='flex flex-col gap-2'>
+          <div className='flex justify-start items-start gap-2 flex-wrap'>
+            <button
+              onClick={handleBack}
+              className='text-primary top-1 cursor-pointer'
+            >
+              <BackArrowIcon width={30} height={30} />
+            </button>
+            <div className='flex items-center gap-2'>
+              <span className='font-medium'>Recipient: </span>
+              <PageTitle
+                title={`${recipientData?.first_name || ''} ${
+                  recipientData?.last_name || ''
+                }`}
+              />
+            </div>
           </div>
+          {recipientData?.created_at && (
+            <div className='ml-10'>
+              Registered on:{' '}
+              {new Date(recipientData?.created_at).toLocaleDateString()}
+            </div>
+          )}
         </div>
-        {recipientData?.created_at && (
-          <div className="sm:ml-10">
-            Registered on:{" "}
-            {new Date(recipientData?.created_at).toLocaleDateString()}
-          </div>
-        )}
       </div>
+
       <EditSectionCard
-        sectionTitle="Recipient Bio"
+        sectionTitle='Recipient Bio'
         onSave={handleSave}
         loading={false}
         editMode={basicInfoEditMode}
         setEditMode={setBasicInfoEditMode}
-        checkOtherSectionEditMode={checkOtherSectionEditMode("basic")}
+        checkOtherSectionEditMode={checkOtherSectionEditMode('basic')}
       >
         <RecipientBasicDetails
           data={formData}
@@ -274,8 +274,9 @@ const RecipientEditPage: React.FC = () => {
           validationErrors={validationErrors}
         />
       </EditSectionCard>
+
       <EditSectionCard
-        sectionTitle="Remittance methods"
+        sectionTitle='Remittance methods'
         onSave={() => {
           // For remittance methods, we don't need to save basic recipient data
           // The component handles its own save operations
@@ -284,13 +285,14 @@ const RecipientEditPage: React.FC = () => {
         loading={false}
         editMode={remittanceMethodsEditMode}
         setEditMode={setRemittanceMethodsEditMode}
-        checkOtherSectionEditMode={checkOtherSectionEditMode("remittance")}
+        checkOtherSectionEditMode={checkOtherSectionEditMode('remittance')}
       >
         <RecipientRemittanceDetails
           data={recipientData}
           editMode={remittanceMethodsEditMode}
         />
       </EditSectionCard>
+
       {/* <EditSectionCard
         sectionTitle="Bank Details"
         onSave={handleSave}

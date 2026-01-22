@@ -9,3 +9,12 @@ export function useExtraTransactions(filterString?: string) {
     refetchInterval: 60 * 1000,
   });
 }
+
+export function useWalletTransactions(filterString?: string) {
+  return useQuery({
+    queryKey: ["walletTransactions", filterString],
+    queryFn: () => transactionsService.getWalletTransactions(filterString),
+    enabled: true,
+    refetchInterval: 60 * 1000,
+  });
+}
