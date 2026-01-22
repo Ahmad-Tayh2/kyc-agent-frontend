@@ -54,7 +54,12 @@ export default function PaymentSuccessPage() {
 
       // Mark payment as processing (for Worldpay)
       const paymentId = localStorage.getItem("payment_id");
-      if (provider === "worldpay" && paymentId) {
+      const orderCodeFromStorage = localStorage.getItem("worldpay_order_code");
+
+      // Call markPaymentProcessing if we have payment_id OR if the orderCode matches what we stored
+      // This handles both iframe/lightbox flows (with provider param) and direct redirect flows (without provider param)
+      if (paymentId && (provider === "worldpay" || orderCodeFromStorage === orderCode)) {
+        console.log('Marking payment as processing for Worldpay payment:', { paymentId, orderCode, provider });
         markPaymentProcessing({
           payment_id: paymentId,
         })

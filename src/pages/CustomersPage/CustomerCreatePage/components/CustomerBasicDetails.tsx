@@ -93,7 +93,7 @@ const CustomerBasicDetails = (props: any) => {
 
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="email">
-            Email<span className="text-red-500">*</span>
+            Email
           </Label>
           <Input
             id="email"
