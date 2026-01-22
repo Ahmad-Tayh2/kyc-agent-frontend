@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
 import BackArrowIcon from '@/assets/icons/back-arrow.svg?react';
-import PageTitle from '@/components/shared/PageTitle';
 import EditSectionCard from '@/components/shared/EditSectionCard';
+import PageTitle from '@/components/shared/PageTitle';
 import {
   useGetRecipient,
   useUpdateRecipient,
@@ -12,9 +9,11 @@ import type {
   RecipientDataType,
   RecipientUpdatedDataType,
 } from '@/types/recipients';
+import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import RecipientBasicDetails from './RecipientBasicDetails';
 import RecipientRemittanceDetails from './RecipientRemittanceDetails';
-import { format } from 'date-fns';
 // import RecipientBankDetails from "./RecipientBankDetails";
 import { z } from 'zod';
 
@@ -232,32 +231,33 @@ const RecipientEditPage: React.FC = () => {
   return (
     <div className='space-y-4'>
       {/* Header */}
-      <div className=''>
-        <div className='flex justify-start items-center gap-3'>
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-start items-start gap-2 flex-wrap">
-          <button
-            onClick={handleBack}
-            className='text-primary top-1 cursor-pointer'
-          >
-            <BackArrowIcon width={30} height={30} />
-          </button>
-          <div className='flex items-center gap-2'>
-            <span className='font-medium'>Recipient: </span>
-            <PageTitle
-              title={`${recipientData?.first_name || ''} ${
-                recipientData?.last_name || ''
-              }`}
-            />
+      <div className='flex justify-start items-center gap-3'>
+        <div className='flex flex-col gap-2'>
+          <div className='flex justify-start items-start gap-2 flex-wrap'>
+            <button
+              onClick={handleBack}
+              className='text-primary top-1 cursor-pointer'
+            >
+              <BackArrowIcon width={30} height={30} />
+            </button>
+            <div className='flex items-center gap-2'>
+              <span className='font-medium'>Recipient: </span>
+              <PageTitle
+                title={`${recipientData?.first_name || ''} ${
+                  recipientData?.last_name || ''
+                }`}
+              />
+            </div>
           </div>
+          {recipientData?.created_at && (
+            <div className='ml-10'>
+              Registered on:{' '}
+              {new Date(recipientData?.created_at).toLocaleDateString()}
+            </div>
+          )}
         </div>
-        {recipientData?.created_at && (
-          <div className='ml-10'>
-            Registered on:{' '}
-            {new Date(recipientData?.created_at).toLocaleDateString()}
-          </div>
-        )}
       </div>
+
       <EditSectionCard
         sectionTitle='Recipient Bio'
         onSave={handleSave}
@@ -274,6 +274,7 @@ const RecipientEditPage: React.FC = () => {
           validationErrors={validationErrors}
         />
       </EditSectionCard>
+
       <EditSectionCard
         sectionTitle='Remittance methods'
         onSave={() => {
@@ -291,6 +292,7 @@ const RecipientEditPage: React.FC = () => {
           editMode={remittanceMethodsEditMode}
         />
       </EditSectionCard>
+
       {/* <EditSectionCard
         sectionTitle="Bank Details"
         onSave={handleSave}

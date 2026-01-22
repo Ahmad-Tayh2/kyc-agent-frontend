@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { useAddMoneyFilters } from '@/hooks/data/useAddMoneyFilters';
 import { useAddMoneyTransactions, useWallet } from '@/hooks/data/useWallet';
 import { geAgentIdFromStorage } from '@/utils/authHelpers';
+import { AlertCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -209,28 +210,14 @@ const AddMoneyPage: React.FC = () => {
         </div>
       </div>
       <div className='space-y-4'>
-        <div className='bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3'>
-          <svg
-            className='w-5 h-5 text-green-600 mt-0.5 flex-shrink-0'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-            />
-          </svg>
-          <div className='flex-1'>
-            <p className='text-sm text-green-700 font-medium'>
-              Processing Time Notice:{' '}
-              <span className='text-sm text-green-700 mt-1'>
-                Add money operations could take some time to process.
-              </span>
-            </p>
-          </div>
+        <div className='bg-orange-50 border-2 border-orange-300 rounded-lg p-3 flex items-start space-x-2'>
+          <AlertCircle className='w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5' />
+          <p className='text-sm text-orange-700 font-medium'>
+            Processing Time Notice:{' '}
+            <span className='text-sm text-orange-700 mt-1'>
+              Add money operations could take some time to process.
+            </span>
+          </p>
         </div>
         <div className='flex justify-between items-center'>
           <PageTitle title={t('modules.pages.addMoney.historyTitle')} />
@@ -241,6 +228,7 @@ const AddMoneyPage: React.FC = () => {
             onApplyFilters={applyAddMoneyTransactionsFilters}
           />
         </div>
+
         <div>
           <DataTable
             data={addMoneyTransactionsData}

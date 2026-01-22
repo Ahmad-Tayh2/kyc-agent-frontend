@@ -179,7 +179,12 @@ export default function RecipientRemittanceDetails({
     if (!selectedMethodId) return;
 
     const selectedMethod = remittanceMethods.find(
-      (method) => method.id === selectedMethodId,
+      (method: {
+        id: number;
+        validator_id?: number | null;
+        validator?: { name: string };
+        validation_type?: string;
+      }) => method.id === selectedMethodId,
     );
 
     if (!selectedMethod || !selectedMethod.validator_id) {
@@ -246,7 +251,8 @@ export default function RecipientRemittanceDetails({
     if (!selectedMethodId || !data?.id) return;
 
     const selectedMethod = remittanceMethods.find(
-      (method) => method.id === selectedMethodId,
+      (method: { id: number; validator_id?: number | null }) =>
+        method.id === selectedMethodId,
     );
 
     // If method has validator, check if it's verified
@@ -562,7 +568,8 @@ export default function RecipientRemittanceDetails({
               {selectedMethodId &&
                 (() => {
                   const selectedMethod = remittanceMethods.find(
-                    (method) => method.id === selectedMethodId,
+                    (method: { id: number; validator_id?: number | null }) =>
+                      method.id === selectedMethodId,
                   );
                   const hasValidator = !!selectedMethod?.validator_id;
                   const isVerified =

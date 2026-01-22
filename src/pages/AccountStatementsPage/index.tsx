@@ -1,18 +1,18 @@
 // import { useMemo } from "react";
-import { DataTable } from "@/components/shared/DataTable";
-import { useTranslation } from "react-i18next";
+import { DataTable } from '@/components/shared/DataTable';
+import { useTranslation } from 'react-i18next';
 // import { useGetAccountStatements } from "@/hooks/data/useAccountStatements";
-import PageTitle from "@/components/shared/PageTitle";
-import AccountStatementsFilters from "@/components/accountStatements/AccountStatementsFilters";
-import { AccountStatementsTableColumns } from "@/components/accountStatements/AccountStatementsTableColumns";
+import PageTitle from '@/components/shared/PageTitle';
+import AccountStatementsFilters from '@/components/accountStatements/AccountStatementsFilters';
+import { AccountStatementsTableColumns } from '@/components/accountStatements/AccountStatementsTableColumns';
 // import TransactionDetailsDialog from "@/components/accountStatements/TransactionDetailsDialog";
-import { useGetAccountStatements } from "@/hooks/data/useFinancialReport";
-import { useMemo } from "react";
-import { useAccountStatementsFilters } from "@/hooks/data/useAccountStatementsFilters";
+import { useGetAccountStatements } from '@/hooks/data/useFinancialReport';
+import { useMemo } from 'react';
+import { useAccountStatementsFilters } from '@/hooks/data/useAccountStatementsFilters';
 // import { ROUTES } from "@/constants/routes";
 
 const AccountStatementsPage: React.FC = () => {
-  const [t] = useTranslation("global");
+  const [t] = useTranslation('global');
   const columns = AccountStatementsTableColumns();
 
   const {
@@ -57,10 +57,10 @@ const AccountStatementsPage: React.FC = () => {
     },
   };
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {/* <div className="flex justify-between items-center"> */}
-      <div className="flex justify-between items-center flex-wrap sm:flex-nowrap gap-3">
-        <PageTitle title={t("modules.pages.accountStatements.title")} />
+      <div className='flex justify-between items-center flex-wrap sm:flex-nowrap gap-3'>
+        <PageTitle title={t('modules.pages.accountStatements.title')} />
         <AccountStatementsFilters
           filters={filters}
           onUpdateTypes={updateTypes}

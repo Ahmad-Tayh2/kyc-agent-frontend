@@ -35,7 +35,7 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
         header: 'Tr. #',
         cell: ({ row }) => {
           const transaction_reference: string = row.getValue(
-            'transaction_reference'
+            'transaction_reference',
           );
 
           return (
@@ -92,6 +92,15 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
       {
         accessorKey: 'comm', //TODO: to verify what to display here
         header: 'Comm.',
+        cell: ({ row }) => {
+          const currency = row.original.default_currency;
+          const comm = row.original.send_agent_commission;
+          return (
+            <div>
+              {comm} {currency}
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'extra_fees',
@@ -150,6 +159,6 @@ export const CommissionTableColumns = (): ColumnDef<any>[] => {
         },
       },
     ],
-    []
+    [],
   );
 };
