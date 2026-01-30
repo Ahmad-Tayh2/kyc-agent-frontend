@@ -165,6 +165,9 @@ export const API_URLS = {
       `${baseUrl}/wallets/${walletId}/currencies`,
     getAddMoneyTransactions: (filters: string) =>
       `${baseUrl}/add-money-transactions${filters}`,
+    payTransaction: `${baseUrl}/wallet/pay-transaction`,
+    canPayTransaction: (transactionReference: string) =>
+      `${baseUrl}/wallet/can-pay/${transactionReference}`,
   },
 
   transactions: {

@@ -31,6 +31,7 @@ import { z } from 'zod';
 import RecipientBankDetails from './components/RecipientBankDetails';
 import RecipientBasicDetails from './components/RecipientBasicDetails';
 import RemittanceMethodStep from './components/RemittanceMethodStep';
+import type { RemittanceMethod } from '@/types/remittanceMethod';
 export const createRecipientSchema = z.object({
   customer_id: z.union([z.string(), z.number()]).refine((val) => {
     if (typeof val === 'string') return val.trim() !== '';
@@ -868,7 +869,12 @@ const RecipientCreateForm: React.FC = () => {
         )}
         {currentStep === 'remittance' && (
           <RemittanceMethodStep
-            remittanceMethods={remittanceMethods?.data || []}
+            remittanceMethods={
+              remittanceMethods?.data.filter(
+                (rm: RemittanceMethod) =>
+                  !rm.name.toLowerCase().includes('cash'),
+              ) || []
+            }
             payoutAgents={payoutLocations?.data || []}
             formData={formData}
             countryPhoneOptions={countryPhoneOptions}

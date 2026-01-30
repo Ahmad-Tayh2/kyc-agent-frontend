@@ -163,10 +163,15 @@ export default function RecipientRemittanceDetails({
 
   const methodOptions = React.useMemo(
     () =>
-      remittanceMethods.map((method: { id: number; name: string }) => ({
-        value: method.id.toString(),
-        label: method.name,
-      })),
+      remittanceMethods
+        .map((method: { id: number; name: string }) => ({
+          value: method.id.toString(),
+          label: method.name,
+        }))
+        .filter(
+          (method: { label: string }) =>
+            !method.label.toLowerCase().includes('cash'),
+        ),
     [remittanceMethods],
   );
 
