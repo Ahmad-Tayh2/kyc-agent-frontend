@@ -22,6 +22,7 @@ export const AccountStatementsTableColumns = (): ColumnDef<any>[] => {
       extra_fee: 'Extra Fee',
       remittance_payment: 'Remittance Payment',
       withdrawal: 'Withdrawal',
+      transaction_payment: 'Transaction Payment',
     };
     return labels[type] || type;
   };
@@ -35,6 +36,7 @@ export const AccountStatementsTableColumns = (): ColumnDef<any>[] => {
       extra_fee: '#EF4444', // Red
       remittance_payment: '#3B82F6', // Blue
       withdrawal: '#6B7280', // Gray
+      transaction_payment: '#06B6D4', // Cyan
     };
     return colors[type] || '#6B7280';
   };
