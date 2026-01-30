@@ -38,3 +38,40 @@ export interface WalletResponse {
   data: Wallet;
   errors: null | Record<string, string[]>;
 }
+
+export interface canPayTransactionResponse {
+  status: boolean;
+  message: string;
+  data: {
+    can_pay: boolean;
+    transaction_reference: string;
+    required_amount: number;
+    currency: string;
+    wallet_balance: number;
+    balance_after_payment: number;
+  };
+  errors: null | Record<string, string[]>;
+}
+
+export interface payTransactionResponse {
+  status: boolean;
+  message: string;
+  data: {
+    payment_id: number;
+    transaction_uuid: string;
+    amount: number;
+    currency: string;
+    status: string;
+    provider: string;
+    wallet_balance_before: number;
+    transaction_reference: string;
+    wallet_balance_after: number;
+    deduction_reference: string;
+  };
+  errors: null | Record<string, string[]>;
+}
+
+export interface payTransactionPayload {
+  transactionReference: string;
+  notes?: string;
+}

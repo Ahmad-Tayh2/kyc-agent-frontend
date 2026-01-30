@@ -60,7 +60,8 @@ export type WalletTransactionType =
   | 'commission'
   | 'extra_fee'
   | 'remittance_payment'
-  | 'withdrawal';
+  | 'withdrawal'
+  | 'transaction_payment';
 
 export type WalletTransactionDirection = 'credit' | 'debit';
 
