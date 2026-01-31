@@ -53,7 +53,10 @@ const CardContent = (props: CardContentProps) => {
       label: "Agent Total Commission/Profit",
       value: transfer?.total_commission_amount + " " + transfer?.send_currency,
     },
-    { label: "Total Amount Paid", value: transfer?.total_payable_amount },
+    {
+      label: "Total Amount Paid",
+      value: transfer?.total_payable_amount + " " + transfer?.send_currency,
+    },
     {
       label: "Recipient Gets",
       value: transfer.receive_amount + " " + transfer.receive_currency,
