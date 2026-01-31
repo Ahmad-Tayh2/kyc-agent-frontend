@@ -117,6 +117,9 @@ type IdName = {
 // Main type
 export type GetTransfersDataProps = {
   id: number;
+  reference_number?: string;
+  total_payable_amount?: string;
+  receive_amount?: string;
   created_by: UserName;
   customer: UserName;
   recipient: UserName;
@@ -145,6 +148,7 @@ export type GetTransfersDataProps = {
   nomadrem_commission_amount: number;
   extra_fees_amount: number;
   total_commission_amount: number;
+  sent_amount: string;
   payout_amount: number;
   created_at: string;
   updated_at: string;

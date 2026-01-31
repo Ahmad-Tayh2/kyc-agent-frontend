@@ -9,6 +9,7 @@ import { useGetTransfer } from "@/hooks/data/useTransfers";
 // import Loader from "@/components/shared/Loader";
 import DetailsCard from "./DetailsCard";
 import Loader from "@/components/shared/Loader";
+import { useReactToPrint } from "react-to-print";
 
 const TransfersDetails: React.FC = () => {
   const { t } = useTranslation("global");
@@ -20,12 +21,12 @@ const TransfersDetails: React.FC = () => {
   const handleBack = () => {
     navigate(-1);
   };
-  const printAreaRef = useRef(null);
-  const handlePrint = () => {
-    if (printAreaRef.current) {
-      window.print();
-    }
-  };
+  const printRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    // content: () => printRef.current,
+    documentTitle: "Printed Section",
+  });
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -74,7 +75,7 @@ const TransfersDetails: React.FC = () => {
       </div>
 
       {/* Transfer Details */}
-      <DetailsCard transfer={transfer} printAreaRef={printAreaRef} />
+      <DetailsCard transfer={transfer} printAreaRef={printRef} />
     </div>
   );
 };
