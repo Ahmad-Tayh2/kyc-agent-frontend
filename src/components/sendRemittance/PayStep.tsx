@@ -180,7 +180,8 @@ const PayStep = (props: PayStepProps) => {
 
   const canPay = canPayData?.data?.can_pay ?? false;
   const walletBalance = canPayData?.data?.wallet_balance ?? 0;
-  const walletCurrency = canPayData?.data?.currency ?? stepTwo.sendCurrency?.code;
+  const walletCurrency =
+    canPayData?.data?.currency ?? stepTwo.sendCurrency?.code;
 
   const handlePayOnBehalfClick = async () => {
     if (selectedPaymentMethod === 'credit-card') {
@@ -563,7 +564,9 @@ const PayStep = (props: PayStepProps) => {
                                         Required Amount:
                                       </span>
                                       <span className='font-medium text-gray-900'>
-                                        {canPayData.data.required_amount.toFixed(2)}{' '}
+                                        {canPayData.data.required_amount.toFixed(
+                                          2,
+                                        )}{' '}
                                         {walletCurrency}
                                       </span>
                                     </div>
