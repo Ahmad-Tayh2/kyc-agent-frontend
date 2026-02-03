@@ -661,8 +661,6 @@ const RecipientCreateForm: React.FC = () => {
         ...recipientPayload.address,
         customer_id: formData.customer_id,
       };
-      console.log('formData = ', formData);
-      console.log('recipientPayload = ', recipientPayload);
 
       const validationResult = createRecipientSchema.safeParse(flattenedData);
 
