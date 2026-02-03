@@ -54,7 +54,7 @@ const RecipientBasicDetails = (props: any) => {
       countryCode: country.iso2,
     })) || [];
   return (
-    <div className="space-y-6 p-5 overflow-auto">
+    <div className="space-y-6 p-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="first_name">

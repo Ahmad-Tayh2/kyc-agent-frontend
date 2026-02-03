@@ -112,7 +112,7 @@ const CustomerEditPage = () => {
         setBasicInfoEditMode(false);
         setValidationErrors({});
       },
-      (errorsData: any) => setValidationErrors(errorsData)
+      (errorsData: any) => setValidationErrors(errorsData),
     );
 
   const { data: identityDataResponse } = useGetIdentityDocuments(id!);
@@ -225,7 +225,7 @@ const CustomerEditPage = () => {
     Record<string, string[]>
   >({});
   const [identityErrors, setIdentityErrors] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const validateIdentityData = () => {
     const result = identitySchema.safeParse(identityData);
@@ -428,7 +428,7 @@ const CustomerEditPage = () => {
             onClick={() =>
               navigate(
                 ROUTES.RECIPIENTS.LIST +
-                  `?customer_ids=${id}&search=${formData?.first_name}`
+                  `?customer_ids=${id}&search=${formData?.first_name}`,
               )
             }
           />

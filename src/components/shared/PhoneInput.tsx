@@ -41,7 +41,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState<CountryOption | null>(
-    null
+    null,
   );
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,16 +53,26 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         ? selectedCountry?.slice(1)
         : selectedCountry;
       const option = countryOptions?.find(
-        (opt) => opt.value === countryPhoneCode
+        (opt) => opt.value === countryPhoneCode,
       );
       setSelectedOption(option || null);
     }
   }, [selectedCountry, countryOptions]);
 
   // Filter options based on search term
-  const filteredOptions = countryOptions?.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredOptions = countryOptions?.filter((option) =>
+  //   option.label.toLowerCase().includes(searchTerm.toLowerCase()),
+  // );
+  const filteredOptions = countryOptions?.filter((option) => {
+    const q = searchTerm.toLowerCase();
+
+    return (
+      option.value.toLowerCase().includes(q) || // "TN"
+      option.label?.toLowerCase().includes(q) || // "Tunisia"
+      option.code.includes(q) || // "216"
+      option.countryCode.toLowerCase().includes(q) //
+    );
+  });
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -163,12 +173,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   //     : `${selectedOption.code} ${phoneNumber.replace(/^\+\d+\s*/, "")}`
   //   : phoneNumber;
 
+  console.log("fiilterrrrsss = = ", filteredOptions);
+
   return (
     <div className="flex flex-col gap-1">
       <div
         className={cn(
           "relative flex items-center h-11 border-input rounded-md bg-background focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-colors duration-300",
-          disabled ? "border-none" : "border"
+          disabled ? "border-none" : "border",
         )}
         ref={containerRef}
       >
@@ -178,9 +190,19 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
             type="button"
             onClick={handleCountryInputClick}
             disabled={disabled}
-            className="flex items-center gap-2 px-2 py-1 rounded-tl-md rounded-bl-md border-r border-input bg-transparent h-full transition-colors cursor-pointer disabled:cursor-not-allowed disabled:bg-[#E5E5E5] disabled:text-[#101828] disabled:opacity-50"
+            className={cn(
+              !isOpen && "px-2 py-1",
+              "flex items-center gap-2 max-w-50 rounded-tl-md rounded-bl-md border-r border-input bg-transparent h-full transition-colors cursor-pointer disabled:cursor-not-allowed disabled:bg-[#E5E5E5] disabled:text-[#101828] disabled:opacity-50",
+            )}
           >
-            {selectedOption ? (
+            {isOpen ? (
+              <Input
+                autoFocus
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border-0 !outline-[none] h-full !rounded-tr-none !rounded-br-none w-20"
+              />
+            ) : selectedOption ? (
               <>
                 <span className="text-lg">
                   <ReactCountryFlag
@@ -198,7 +220,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
               </>
             ) : (
               <>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
                   Select country code
                 </span>
                 <ChevronDownIcon className="h-4 w-4 text-muted-foreground" />
@@ -222,7 +244,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                     key={option.countryCode}
                     className={cn(
                       "px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2",
-                      selectedOption?.value === option.value && "bg-blue-50"
+                      selectedOption?.value === option.value && "bg-blue-50",
                     )}
                     onClick={() => handleCountrySelect(option)}
                   >
