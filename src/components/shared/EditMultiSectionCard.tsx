@@ -30,7 +30,7 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
     <div
       className={cn(
         className,
-        "bg-white rounded-lg border border-[#E7EFEF]  min-w-[350px]"
+        "bg-white rounded-lg border border-[#E7EFEF]  min-w-[350px]",
       )}
     >
       {/* <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] px-5"> */}
@@ -69,7 +69,7 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
               className={cn(
                 "text-sm md:text-lg font-semibold border-b-2  px-3 py-1 rounded-t-sm border-transparent hover:border-primary/50 hover:bg-primary/1 hover:text-primary/50",
                 selectedSection === index &&
-                  "border-primary bg-primary/5 text-primary hover:border-primary hover:bg-primary/5 hover:text-primary"
+                  "border-primary bg-primary/5 text-primary hover:border-primary hover:bg-primary/5 hover:text-primary",
               )}
               onClick={() => {
                 setSelectedSection(index);
