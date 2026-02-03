@@ -556,7 +556,7 @@ const PayStep = (props: PayStepProps) => {
                                     {walletBalance.toFixed(2)} {walletCurrency}
                                   </span>
                                 </div>
-                                {canPayData && (
+                                {canPayData?.data && (
                                   <>
                                     <div className='flex justify-between items-center'>
                                       <span className='text-sm text-gray-600'>
@@ -677,7 +677,7 @@ const PayStep = (props: PayStepProps) => {
                   Are you sure you want to proceed with this payment from your
                   wallet?
                 </p>
-                {canPayData && (
+                {canPayData?.data && (
                   <div className='bg-gray-50 rounded-lg p-4 space-y-2 text-sm'>
                     <div className='flex justify-between'>
                       <span className='text-gray-600'>
