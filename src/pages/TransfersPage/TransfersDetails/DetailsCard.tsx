@@ -1,5 +1,8 @@
 import ActionButton from "@/components/shared/ActionButton";
 import PageTitle from "@/components/shared/PageTitle";
+import StatusLabel from "@/components/shared/StatusLabel";
+import { TRASACTIONS_STATUSES_COLORS } from "@/constants/appConstants";
+import { formatDateToYMDhhmm } from "@/helpers/dates";
 import { cn } from "@/lib/utils";
 import type { GetTransfersDataProps } from "@/types/transfers";
 import type { ReactNode } from "react";
@@ -35,11 +38,33 @@ const CardContent = (props: CardContentProps) => {
 
   const transfersDetails = [
     { label: "Transfer Number", value: transfer?.reference_number },
-    { label: "Send On", value: "" },
-    { label: "Delivery", value: "" },
-    { label: "Pickup location", value: "" },
-    { label: "Transfer Reason", value: "" },
-    { label: "Transfer Time", value: "" },
+    { label: "Send On", value: formatDateToYMDhhmm(transfer?.created_at) },
+    {
+      label: "Delivery",
+
+      value: (
+        <StatusLabel
+          value={transfer?.status}
+          color={
+            TRASACTIONS_STATUSES_COLORS[
+              transfer?.status as keyof typeof TRASACTIONS_STATUSES_COLORS
+            ] || "#000000"
+          }
+        />
+      ),
+    },
+    {
+      label: "Pickup location",
+      value: transfer?.payout_agent
+        ? transfer?.payout_agent?.business_name
+        : "",
+    },
+    {
+      label: "Transfer Reason",
+      value: transfer?.remittance_purpose
+        ? transfer?.remittance_purpose?.formal_name
+        : "",
+    },
     { label: "Payment Method", value: transfer.payment_method },
     {
       label: "Amount Sent",
@@ -51,7 +76,14 @@ const CardContent = (props: CardContentProps) => {
     },
     {
       label: "Agent Total Commission/Profit",
-      value: transfer?.total_commission_amount + " " + transfer?.send_currency,
+      value: `${Number(transfer?.sending_agent_commission_amount ?? 0)?.toFixed(
+        2,
+      )} ${transfer?.send_currency} + ${Number(
+        transfer?.extra_fees_amount ?? 0,
+      )?.toFixed(2)} ${transfer?.send_currency} = ${(
+        Number(transfer?.sending_agent_commission_amount ?? 0) +
+        Number(transfer?.extra_fees_amount ?? 0)
+      )?.toFixed(2)} ${transfer?.send_currency} `,
     },
     {
       label: "Total Amount Paid",
@@ -61,7 +93,10 @@ const CardContent = (props: CardContentProps) => {
       label: "Recipient Gets",
       value: transfer.receive_amount + " " + transfer.receive_currency,
     },
-    { label: "Equivalent", value: "" },
+    {
+      label: "Equivalent",
+      value: `${transfer?.sent_amount + " " + transfer?.send_currency} = ${transfer?.sent_amount_default_currency_platform_rate + " " + transfer?.default_currency}`,
+    },
     { label: "Reference Notes", value: transfer?.comment },
   ];
 
@@ -106,7 +141,9 @@ const CardContent = (props: CardContentProps) => {
                 key={key}
               >
                 <div>{transferItem?.label}</div>
-                <div className="font-bold">{transferItem?.value}</div>
+                <div className="font-bold text-right">
+                  {transferItem?.value}
+                </div>
               </div>
             ))}
           </MiniCardLayout>

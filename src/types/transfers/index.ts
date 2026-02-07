@@ -126,6 +126,8 @@ export type GetTransfersDataProps = {
   remittance_method_id: IdName;
   send_country_id: IdName;
   receive_country_id: IdName;
+  remittance_purpose?: { formal_name: string; id: number };
+  payout_agent?: { id: number; business_name: string };
   status: string;
   isPaid: boolean;
   payment_method: string;
@@ -146,6 +148,7 @@ export type GetTransfersDataProps = {
   payout_agent_commission_amount: number;
   payout_agent_commission_currency: string;
   nomadrem_commission_amount: number;
+  sent_amount_default_currency_platform_rate: string;
   extra_fees_amount: number;
   total_commission_amount: number;
   sent_amount: string;

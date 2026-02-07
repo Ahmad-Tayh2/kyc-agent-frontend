@@ -76,7 +76,7 @@ const CountryCodesSelector: React.FC<CountryCodesSelectorProps> = ({
   const filteredCountries = useMemo(() => {
     return (
       countries?.filter((country) =>
-        country?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+        country?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase()),
       ) ?? []
     );
   }, [countries, searchTerm]);
@@ -109,7 +109,7 @@ const CountryCodesSelector: React.FC<CountryCodesSelectorProps> = ({
         disabled={disabled}
         className={cn(
           "w-[150px] justify-between h-[40px] bg-white border border-gray-300 rounded-md px-3 py-2 text-left",
-          isOpen && "border-primary/50 ring-1 ring-primary"
+          isOpen && "border-primary/50 ring-1 ring-primary",
         )}
       >
         <span className={cn("truncate", value.length === 0 && "text-gray-500")}>
@@ -126,7 +126,7 @@ const CountryCodesSelector: React.FC<CountryCodesSelectorProps> = ({
         <div
           className={cn(
             dropdownClassName,
-            "absolute z-50 w-[200px] sm:w-[320px] left-0 right-auto sm:left-auto sm:right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg"
+            "absolute z-50 w-[200px] sm:w-[320px] left-0 right-auto mt-1 bg-white border border-gray-200 rounded-md shadow-lg",
           )}
         >
           <div className="p-2">

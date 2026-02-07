@@ -26,21 +26,23 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ isReadOnly = false }) => {
   const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
 
   const remittancePurpose = useSendRemittanceStore(
-    (state) => state.data.stepThree?.remittancePurpose
+    (state) => state.data.stepThree?.remittancePurpose,
   );
   const sourceOfIncome = useSendRemittanceStore(
-    (state) => state.data.stepThree?.sourceOfIncome
+    (state) => state.data.stepThree?.sourceOfIncome,
   );
   const setRemittancePurpose = useSendRemittanceStore(
-    (state) => state.setRemittancePurpose
+    (state) => state.setRemittancePurpose,
   );
   const setSourceOfIncome = useSendRemittanceStore(
-    (state) => state.setSourceOfIncome
+    (state) => state.setSourceOfIncome,
   );
 
   const deliveryData = {
-    method: stepOne?.remittanceMethod?.name,
-    pickupLocation: "323, Metro line 3, New Delhi (fake data)",
+    method: stepOne?.payoutAgent?.business_name
+      ? "Cash Pickup"
+      : stepOne?.remittanceMethod?.name,
+    pickupLocation: stepOne?.payoutAgent?.business_name ?? "",
   };
   const recipient = { ...stepOne?.recipient };
   const customer = { ...stepOne?.customer };
@@ -73,7 +75,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ isReadOnly = false }) => {
   const handleChangeRemittancePurpose = (id: string | number) => {
     const selectedPurpose =
       reasonForTransferOptions?.find(
-        (item: { label: string; value: string | number }) => item?.value === id
+        (item: { label: string; value: string | number }) => item?.value === id,
       ) ?? null;
     setRemittancePurpose({
       formal_name: selectedPurpose?.label,
@@ -84,7 +86,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ isReadOnly = false }) => {
   const handleChangeSourceIncomes = (id: string | number) => {
     const selectedPurpose =
       sourceIncomesOptions?.find(
-        (item: { label: string; value: string | number }) => item?.value === id
+        (item: { label: string; value: string | number }) => item?.value === id,
       ) ?? null;
     setSourceOfIncome({
       formal_name: selectedPurpose?.label,
@@ -179,16 +181,20 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ isReadOnly = false }) => {
                     </span>
                   </div>
 
-                  <hr className="my-3" />
+                  {deliveryData.pickupLocation && (
+                    <>
+                      <hr className="my-3" />
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 text-sm">
+                          Pickup Location
+                        </span>
 
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 text-sm">
-                      Pickup Location
-                    </span>
-                    <span className="font-medium text-sm">
-                      {deliveryData.pickupLocation}
-                    </span>
-                  </div>
+                        <span className="font-medium text-sm">
+                          {deliveryData.pickupLocation}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </EditSectionCard>
