@@ -17,7 +17,7 @@ import type { ErrorResponseData } from "@/lib/axiosInstance";
 import { ROUTES } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 
-export function useRecipients(filters: string) {
+export function useRecipients(filters?: string) {
   return useQuery({
     queryKey: ["get-recipients", filters],
     queryFn: () => recipientsService.getRecipients(filters),
@@ -31,7 +31,7 @@ export function useRecipients(filters: string) {
  */
 export function useInfiniteRecipients(
   searchTerm: string = "",
-  enabled: boolean = true
+  enabled: boolean = true,
 ) {
   return useInfiniteQuery({
     queryKey: ["infinite-recipients", searchTerm],
@@ -64,7 +64,7 @@ export function useGetRecipient(id: string | number) {
 export function useUpdateRecipient(
   id: string | number,
   onSuccess: () => void,
-  onError: (data: any) => void
+  onError: (data: any) => void,
 ) {
   const queryClient = useQueryClient();
   return useMutation({
