@@ -1,7 +1,7 @@
 export function appendQueryParam(
   filterString: string,
   key: string,
-  value?: string | number | boolean | object | any[]
+  value?: string | number | boolean | object | any[],
 ): string {
   if (
     value === undefined ||
@@ -34,7 +34,7 @@ export function appendQueryParam(
 export function appendArrayQueryParam(
   filterString: string,
   key: string,
-  values?: string[] | number[]
+  values?: string[] | number[],
 ): string {
   if (!values || values.length === 0) {
     return filterString;
@@ -76,6 +76,9 @@ export function buildFilterString(filters: Record<string, any>): string {
         if (
           key === "status" ||
           key === "remittance_methods_ids" ||
+          key === "payment_methods" ||
+          key === "receive_currencies" ||
+          key === "currencies" ||
           key === "ids" ||
           key === "countries" ||
           key === "country_ids" ||
@@ -85,14 +88,15 @@ export function buildFilterString(filters: Record<string, any>): string {
           key === "receive_countries" ||
           key === "country_codes" ||
           key === "countries_codes" ||
-          key === "customer_ids"
+          key === "customer_ids" ||
+          key === "recipient_ids"
         ) {
           //unify the keys
           if (key === "countries_codes") {
             filterString = appendArrayQueryParam(
               filterString,
               "country_codes",
-              value
+              value,
             );
           } else {
             filterString = appendArrayQueryParam(filterString, key, value);

@@ -23,6 +23,13 @@ export const PAYMENT_LINKS_STATUSES_COLORS = {
   valid_link: "#DF6B1D", // Blue
 } as const;
 
+export const PAYMENT_METHODS = [
+  "stripe",
+  "paypal",
+  "bank_transfer",
+  "wallet",
+  "worldpay",
+];
 export const TRASACTIONS_STATUSES = [
   "initiated",
   "in-progress",

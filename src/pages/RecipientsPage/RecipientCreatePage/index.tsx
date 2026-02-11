@@ -11,7 +11,6 @@ import AddCustomerIcon from "@/assets/icons/add-customer.svg?react";
 import PageTitle from "@/components/shared/PageTitle";
 import ActionButton from "@/components/shared/ActionButton";
 import SearchNotFound from "@/components/shared/SearchNotFound";
-import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
 import {
   useAttachRecipientToCustomer,
   useGetCustomers,
@@ -20,6 +19,7 @@ import { toast } from "sonner";
 import PhoneInput from "@/components/shared/PhoneInput";
 import { useCountries } from "@/hooks/data/useAddress";
 import { useAuthStore } from "@/store/authStore";
+import { SingleSearchableSelect } from "@/components/shared/SingleSearchableSelect";
 
 interface SearchFormData {
   name: string;
@@ -88,7 +88,7 @@ const RecipientCreatePage: React.FC = () => {
         toast.error(result?.message);
       }
     },
-    [searchForm.customer_id]
+    [searchForm.customer_id],
   );
 
   const columns = recipientsSearchColumns({
@@ -144,7 +144,7 @@ const RecipientCreatePage: React.FC = () => {
       navigate(ROUTES.RECIPIENTS.CREATE_FORM + `?customer=myself`);
     } else if (searchForm?.customer_id) {
       navigate(
-        ROUTES.RECIPIENTS.CREATE_FORM + `?customer=${searchForm.customer_id}`
+        ROUTES.RECIPIENTS.CREATE_FORM + `?customer=${searchForm.customer_id}`,
       );
     }
   };
@@ -198,7 +198,7 @@ const RecipientCreatePage: React.FC = () => {
         </div>
         <div className="p-5">
           <div className="">
-            <SingleSelectDropdown
+            {/* <SingleSelectDropdown
               label="Adding Recipient to the following Customer"
               placeholder="Select a customer"
               options={customersOptions}
@@ -208,6 +208,17 @@ const RecipientCreatePage: React.FC = () => {
                 handleInputChange("customer_id", value);
               }}
               required
+            /> */}
+            <SingleSearchableSelect
+              label="Adding Recipient to the following Customer"
+              placeholder="Select a customer"
+              required
+              options={customersOptions}
+              extraOption={extraOption}
+              value={searchForm.customer_id}
+              onChange={(value: string) => {
+                handleInputChange("customer_id", value);
+              }}
             />
           </div>
           {searchForm.customer_id && (

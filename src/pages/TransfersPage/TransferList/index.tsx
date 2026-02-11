@@ -12,6 +12,7 @@ import { useTransferFilters } from "@/hooks/data/useTransferFilters";
 import { useGetCustomers } from "@/hooks/data/useCustomers";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { useRecipients } from "@/hooks/data/useRecipients";
 
 const TransferList: React.FC = () => {
   const [t] = useTranslation("global");
@@ -23,8 +24,10 @@ const TransferList: React.FC = () => {
     updateSearchTerm,
     updateStatus,
     updateCustomersIds,
+    updateRecipientsIds,
     updateSendingDate,
     updateReceiveCurrency,
+    updatePaymentMethods,
     resetFilters,
     applyFilters,
     updatePagination,
@@ -42,10 +45,14 @@ const TransferList: React.FC = () => {
   }, [response?.meta]);
 
   const { data: CustomersResponse } = useGetCustomers();
+  const { data: recipientsResponse } = useRecipients();
 
   const customersData = useMemo(() => {
     return CustomersResponse?.data || [];
   }, [CustomersResponse?.data]);
+  const recipientsData = useMemo(() => {
+    return recipientsResponse?.data || [];
+  }, [recipientsResponse?.data]);
   const navigate = useNavigate();
   const handleCreateTransfer = () => {
     // TODO: Implement transfer creation
@@ -80,11 +87,14 @@ const TransferList: React.FC = () => {
       <TransferFilters
         filters={filters}
         customers={customersData}
+        recipients={recipientsData}
         onUpdateSearchTerm={updateSearchTerm}
         onUpdateStatus={updateStatus}
         onUpdateCustomersIds={updateCustomersIds}
+        onUpdateRecipientsIds={updateRecipientsIds}
         onUpdateSendingDate={updateSendingDate}
         onUpdateReceiveCurrency={updateReceiveCurrency}
+        onUpdatePaymentMethods={updatePaymentMethods}
         onResetFilters={resetFilters}
         onApplyFilters={applyFilters}
       />
