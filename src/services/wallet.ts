@@ -4,7 +4,9 @@ import { handleApiResponse } from '@/lib/handleApiResponse';
 import type {
   Wallet,
   WalletResponse,
+  canPayTransactionData,
   canPayTransactionResponse,
+  payTransactionData,
   payTransactionPayload,
   payTransactionResponse,
 } from '@/types/wallet';
@@ -91,7 +93,7 @@ export async function getAddMoneyTransactions(filters: string = '') {
 
 export async function canPayTransaction(
   transactionReference: string,
-): Promise<canPayTransactionResponse> {
+): Promise<canPayTransactionData> {
   const response = await apiClient.get(
     API_URLS.wallet.canPayTransaction(transactionReference),
   );
@@ -100,7 +102,7 @@ export async function canPayTransaction(
 
 export async function payTransaction(
   payload: payTransactionPayload,
-): Promise<payTransactionResponse> {
+): Promise<payTransactionData> {
   const response = await apiClient.post(
     API_URLS.wallet.payTransaction,
     payload,

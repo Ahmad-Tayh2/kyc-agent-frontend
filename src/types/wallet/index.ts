@@ -39,35 +39,39 @@ export interface WalletResponse {
   errors: null | Record<string, string[]>;
 }
 
+export interface canPayTransactionData {
+  can_pay: boolean;
+  transaction_reference: string;
+  required_amount: number;
+  currency: string;
+  wallet_balance: number;
+  balance_after_payment: number;
+}
+
 export interface canPayTransactionResponse {
   status: boolean;
   message: string;
-  data: {
-    can_pay: boolean;
-    transaction_reference: string;
-    required_amount: number;
-    currency: string;
-    wallet_balance: number;
-    balance_after_payment: number;
-  };
+  data: canPayTransactionData;
   errors: null | Record<string, string[]>;
+}
+
+export interface payTransactionData {
+  payment_id: number;
+  transaction_uuid: string;
+  amount: number;
+  currency: string;
+  status: string;
+  provider: string;
+  wallet_balance_before: number;
+  transaction_reference: string;
+  wallet_balance_after: number;
+  deduction_reference: string;
 }
 
 export interface payTransactionResponse {
   status: boolean;
   message: string;
-  data: {
-    payment_id: number;
-    transaction_uuid: string;
-    amount: number;
-    currency: string;
-    status: string;
-    provider: string;
-    wallet_balance_before: number;
-    transaction_reference: string;
-    wallet_balance_after: number;
-    deduction_reference: string;
-  };
+  data: payTransactionData;
   errors: null | Record<string, string[]>;
 }
 

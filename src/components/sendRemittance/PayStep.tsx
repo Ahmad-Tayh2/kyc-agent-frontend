@@ -166,22 +166,21 @@ const PayStep = (props: PayStepProps) => {
   // Payment confirmation modal state
   const [showPaymentConfirmModal, setShowPaymentConfirmModal] = useState(false);
 
-  // Wallet payment hooks - only check when wallet is selected
+  // Wallet payment hooks - check when pay_on_behalf section is selected
+  // This ensures we fetch wallet balance as soon as user selects this payment section
   const shouldCheckCanPay =
-    transferRef &&
-    selectedPaymentSection === 'pay_on_behalf' &&
-    selectedPaymentMethod === 'wallet';
+    !!transferRef && selectedPaymentSection === 'pay_on_behalf';
 
   const { data: canPayData, isLoading: isCheckingCanPay } =
-    useCanPayTransaction(shouldCheckCanPay ? transferRef : '');
+    useCanPayTransaction(shouldCheckCanPay ? transferRef! : '');
 
   const { mutateAsync: payTransaction, isPending: isPayingTransaction } =
     usePayTransaction();
 
-  const canPay = canPayData?.data?.can_pay ?? false;
-  const walletBalance = canPayData?.data?.wallet_balance ?? 0;
+  const canPay = canPayData?.can_pay ?? false;
+  const walletBalance = canPayData?.wallet_balance ?? 0;
   const walletCurrency =
-    canPayData?.data?.currency ?? stepTwo.sendCurrency?.code;
+    canPayData?.currency ?? stepTwo.sendCurrency?.code;
 
   const handlePayOnBehalfClick = async () => {
     if (selectedPaymentMethod === 'credit-card') {
@@ -557,14 +556,14 @@ const PayStep = (props: PayStepProps) => {
                                     {walletBalance.toFixed(2)} {walletCurrency}
                                   </span>
                                 </div>
-                                {canPayData?.data && (
+                                {canPayData && (
                                   <>
                                     <div className='flex justify-between items-center'>
                                       <span className='text-sm text-gray-600'>
                                         Required Amount:
                                       </span>
                                       <span className='font-medium text-gray-900'>
-                                        {canPayData.data.required_amount.toFixed(
+                                        {canPayData.required_amount.toFixed(
                                           2,
                                         )}{' '}
                                         {walletCurrency}
@@ -575,7 +574,7 @@ const PayStep = (props: PayStepProps) => {
                                         Balance After Payment:
                                       </span>
                                       <span className='font-medium text-teal-600'>
-                                        {canPayData.data.balance_after_payment.toFixed(
+                                        {canPayData.balance_after_payment.toFixed(
                                           2,
                                         )}{' '}
                                         {walletCurrency}
@@ -680,21 +679,21 @@ const PayStep = (props: PayStepProps) => {
                   Are you sure you want to proceed with this payment from your
                   wallet?
                 </p>
-                {canPayData?.data && (
+                {canPayData && (
                   <div className='bg-gray-50 rounded-lg p-4 space-y-2 text-sm'>
                     <div className='flex justify-between'>
                       <span className='text-gray-600'>
                         Transaction Reference:
                       </span>
                       <span className='font-medium'>
-                        {canPayData.data.transaction_reference}
+                        {canPayData.transaction_reference}
                       </span>
                     </div>
                     <div className='flex justify-between'>
                       <span className='text-gray-600'>Amount to Pay:</span>
                       <span className='font-medium text-red-600'>
-                        {canPayData.data.required_amount.toFixed(2)}{' '}
-                        {canPayData.data.currency}
+                        {canPayData.required_amount.toFixed(2)}{' '}
+                        {canPayData.currency}
                       </span>
                     </div>
                     <div className='flex justify-between'>
@@ -702,8 +701,8 @@ const PayStep = (props: PayStepProps) => {
                         Current Wallet Balance:
                       </span>
                       <span className='font-medium'>
-                        {canPayData.data.wallet_balance.toFixed(2)}{' '}
-                        {canPayData.data.currency}
+                        {canPayData.wallet_balance.toFixed(2)}{' '}
+                        {canPayData.currency}
                       </span>
                     </div>
                     <div className='flex justify-between border-t pt-2 mt-2'>
@@ -711,8 +710,8 @@ const PayStep = (props: PayStepProps) => {
                         Balance After Payment:
                       </span>
                       <span className='font-semibold text-teal-600'>
-                        {canPayData.data.balance_after_payment.toFixed(2)}{' '}
-                        {canPayData.data.currency}
+                        {canPayData.balance_after_payment.toFixed(2)}{' '}
+                        {canPayData.currency}
                       </span>
                     </div>
                   </div>

@@ -1,4 +1,5 @@
 import * as walletService from '@/services/wallet';
+import type { canPayTransactionData, payTransactionData } from '@/types/wallet';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export function useWallet(agentId: string | number) {
@@ -54,7 +55,7 @@ export function useAddMoneyTransactions(filters?: string) {
 }
 
 export function useCanPayTransaction(transactionReference: string) {
-  return useQuery({
+  return useQuery<canPayTransactionData>({
     queryKey: ['can-pay-transaction', transactionReference],
     queryFn: () => walletService.canPayTransaction(transactionReference),
     enabled: !!transactionReference,
@@ -64,7 +65,11 @@ export function useCanPayTransaction(transactionReference: string) {
 export function usePayTransaction() {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<
+    payTransactionData,
+    Error,
+    { transactionReference: string; notes?: string }
+  >({
     mutationFn: (payload: { transactionReference: string; notes?: string }) =>
       walletService.payTransaction(payload),
     onSuccess: () => {
