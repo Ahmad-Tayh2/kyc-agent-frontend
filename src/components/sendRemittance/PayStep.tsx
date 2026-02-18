@@ -28,14 +28,9 @@ import { ROUTES } from '@/constants/routes';
 import { copyToClipboard } from '@/helpers/text';
 import {
   useCreatePaymentLink,
-  useGetPaymentLinkByCart,
   useGetPaymentLinkByTransaction,
 } from '@/hooks/data/usePaymentLinks';
-import {
-  useAddTransactionToCart,
-  useCreateRemittanceCart,
-  useGetRemittanceCarts,
-} from '@/hooks/data/useRemittanceCarts';
+import { useAddTransactionToCart } from '@/hooks/data/useRemittanceCarts';
 import {
   useCanPayTransaction,
   usePayTransaction,
@@ -52,7 +47,6 @@ const PayStep = (props: PayStepProps) => {
   const { transferId, transferRef } = props;
   const navigate = useNavigate();
   // const [paymentMethod, setPaymentMethod] = useState<string>('customer');
-  const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
   const stepFour = useSendRemittanceStore((state) => state.data.stepFour);
   const setPaymentLink = useSendRemittanceStore(
     (state) => state.setPaymentLink,
@@ -75,14 +69,7 @@ const PayStep = (props: PayStepProps) => {
       }`
     : '0.00';
   const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
-  const { mutateAsync: createRemittanceCart } = useCreateRemittanceCart();
-  const { data: remittanceCartsResponse } = useGetRemittanceCarts(
-    `?customer_id=${stepOne?.customer?.id}&currency=USD`,
-  );
 
-  const { data: paymentLinkByCartResponse } = useGetPaymentLinkByCart(
-    stepFour?.remittance_cart_id!,
-  );
   const { data: paymentLinkByTrResponse } = useGetPaymentLinkByTransaction(
     transferId!,
   );
@@ -100,41 +87,30 @@ const PayStep = (props: PayStepProps) => {
     // return paymentLinkByTrResponse?.data?.[0]?.token || "";
   }, [paymentLinkByTrResponse]);
 
+  // Auto-select remittance cart section if transaction is already in a cart
   useEffect(() => {
-    if (paymentLinkByCartResponse?.data?.length) {
-      setPaymentLink(paymentLinkByCartResponse?.data?.[0]);
+    if (stepFour?.remittance_cart?.id) {
+      setSelectedPaymentSection('remittance_cart');
     }
-  }, [paymentLinkByCartResponse]);
-  const existedRemittanceCart = useMemo(() => {
-    return remittanceCartsResponse?.data?.data?.[0] ?? null;
-  }, [remittanceCartsResponse]);
+  }, [stepFour?.remittance_cart]);
+
   const { mutateAsync: addTransationToCart } = useAddTransactionToCart();
   const handleAddToRemittanceCart = async () => {
-    let cartId = existedRemittanceCart?.id ?? null;
-    if (!cartId) {
-      //create a cart
-      const createResponse = await createRemittanceCart({
-        customer_id: stepOne?.customer?.id,
-        currency: 'USD',
-      });
-      cartId = createResponse?.data?.id ?? null;
-    }
-    if (cartId) {
-      const addingTransactionToCartResponse: any = await addTransationToCart({
-        cartId,
-        transaction_id: Number(transferId),
-      });
-      setCartAddedTo(addingTransactionToCartResponse?.data?.id);
+    const addingTransactionToCartResponse: any = await addTransationToCart({
+      transaction_id: Number(transferId),
+    });
+    // The response should contain the remittance_cart object
+    if (addingTransactionToCartResponse?.data) {
+      setCartAddedTo(addingTransactionToCartResponse.data);
     }
   };
-  // remittance_cart_id
   const handleSendPaymentLink = async () => {
     const response = await createPaymentLink({
-      payable_type: stepFour?.remittance_cart_id
+      payable_type: stepFour?.remittance_cart?.id
         ? 'RemittanceCart'
         : 'Transaction',
-      payable_id: stepFour?.remittance_cart_id
-        ? stepFour?.remittance_cart_id
+      payable_id: stepFour?.remittance_cart?.id
+        ? stepFour?.remittance_cart?.id
         : Number(transferId),
     });
 
@@ -166,22 +142,20 @@ const PayStep = (props: PayStepProps) => {
   // Payment confirmation modal state
   const [showPaymentConfirmModal, setShowPaymentConfirmModal] = useState(false);
 
-  // Wallet payment hooks - only check when wallet is selected
+  // Wallet payment hooks - check when pay_on_behalf section is selected
+  // This ensures we fetch wallet balance as soon as user selects this payment section
   const shouldCheckCanPay =
-    transferRef &&
-    selectedPaymentSection === 'pay_on_behalf' &&
-    selectedPaymentMethod === 'wallet';
+    !!transferRef && selectedPaymentSection === 'pay_on_behalf';
 
   const { data: canPayData, isLoading: isCheckingCanPay } =
-    useCanPayTransaction(shouldCheckCanPay ? transferRef : '');
+    useCanPayTransaction(shouldCheckCanPay ? transferRef! : '');
 
   const { mutateAsync: payTransaction, isPending: isPayingTransaction } =
     usePayTransaction();
 
-  const canPay = canPayData?.data?.can_pay ?? false;
-  const walletBalance = canPayData?.data?.wallet_balance ?? 0;
-  const walletCurrency =
-    canPayData?.data?.currency ?? stepTwo.sendCurrency?.code;
+  const canPay = canPayData?.can_pay ?? false;
+  const walletBalance = canPayData?.wallet_balance ?? 0;
+  const walletCurrency = canPayData?.currency ?? stepTwo.sendCurrency?.code;
 
   const handlePayOnBehalfClick = async () => {
     if (selectedPaymentMethod === 'credit-card') {
@@ -311,24 +285,89 @@ const PayStep = (props: PayStepProps) => {
 
                   {selectedPaymentSection === 'remittance_cart' && (
                     <>
-                      <div className='bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit '>
-                        <p className='text-sm text-orange-700 inline-flex '>
-                          <span>
-                            <AlertCircle className='w-4 h-4 text-orange-500 mr-1' />
-                          </span>
-                          this option will deactivate any payment link that was
-                          created for this transfer.
-                        </p>
-                      </div>
+                      {!stepFour?.remittance_cart?.id && (
+                        <div className='bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit '>
+                          <p className='text-sm text-orange-700 inline-flex '>
+                            <span>
+                              <AlertCircle className='w-4 h-4 text-orange-500 mr-1' />
+                            </span>
+                            this option will deactivate any payment link that
+                            was created for this transfer.
+                          </p>
+                        </div>
+                      )}
 
-                      {stepFour?.remittance_cart_id ? (
-                        <Button
-                          variant='outline'
-                          className='border-green-500 text-green-600 hover:text-green-600 cursor-default hover:bg-white'
-                        >
-                          <CheckedIcon />
-                          ADDED TO REMITTANCE CART
-                        </Button>
+                      {stepFour?.remittance_cart?.id ? (
+                        <div className='space-y-3'>
+                          <div className='flex items-center space-x-2'>
+                            <CheckedIcon className='w-5 h-5 text-green-600' />
+                            <span className='font-medium text-green-600'>
+                              This transaction is in the remittance cart
+                            </span>
+                          </div>
+
+                          {stepFour?.remittance_cart?.payment_link?.token ? (
+                            <div className='space-y-2'>
+                              <p className='text-sm text-gray-600'>
+                                Payment link for this cart:
+                              </p>
+                              <div className='flex items-center space-x-4'>
+                                <Button
+                                  variant='link'
+                                  className='p-0 h-auto text-sm cursor-pointer'
+                                  onClick={() => {
+                                    const link =
+                                      window.location.origin +
+                                      ROUTES.PAYMENT_LINKS.VALIDATION(
+                                        stepFour.remittance_cart!.payment_link!
+                                          .token,
+                                      );
+                                    copyToClipboard(
+                                      link,
+                                      'Cart payment link copied to clipboard!',
+                                    );
+                                  }}
+                                >
+                                  {window.location.origin +
+                                    ROUTES.PAYMENT_LINKS.VALIDATION(
+                                      stepFour.remittance_cart.payment_link
+                                        .token,
+                                    )}
+                                  <Copy className='w-4 h-4 ml-2' />
+                                </Button>
+                                {stepFour.remittance_cart.payment_link
+                                  .status && (
+                                  <StatusLabel
+                                    value={
+                                      stepFour.remittance_cart.payment_link
+                                        .status
+                                    }
+                                    color={
+                                      PAYMENT_LINKS_STATUSES_COLORS[
+                                        stepFour.remittance_cart.payment_link
+                                          .status as keyof typeof PAYMENT_LINKS_STATUSES_COLORS
+                                      ] || '#000000'
+                                    }
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className='space-y-2'>
+                              <p className='text-sm text-gray-600'>
+                                Manage all cart transactions:
+                              </p>
+                              <Button
+                                variant='outline'
+                                className='border-teal-500 text-teal-600 hover:bg-teal-50'
+                                onClick={() => navigate(ROUTES.REMITTANCE_CART)}
+                              >
+                                <ShoppingCart className='w-4 h-4 mr-2' />
+                                GO TO REMITTANCE CART
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <Button
                           variant='outline'
@@ -557,16 +596,14 @@ const PayStep = (props: PayStepProps) => {
                                     {walletBalance.toFixed(2)} {walletCurrency}
                                   </span>
                                 </div>
-                                {canPayData?.data && (
+                                {canPayData && (
                                   <>
                                     <div className='flex justify-between items-center'>
                                       <span className='text-sm text-gray-600'>
                                         Required Amount:
                                       </span>
                                       <span className='font-medium text-gray-900'>
-                                        {canPayData.data.required_amount.toFixed(
-                                          2,
-                                        )}{' '}
+                                        {canPayData.required_amount.toFixed(2)}{' '}
                                         {walletCurrency}
                                       </span>
                                     </div>
@@ -575,7 +612,7 @@ const PayStep = (props: PayStepProps) => {
                                         Balance After Payment:
                                       </span>
                                       <span className='font-medium text-teal-600'>
-                                        {canPayData.data.balance_after_payment.toFixed(
+                                        {canPayData.balance_after_payment.toFixed(
                                           2,
                                         )}{' '}
                                         {walletCurrency}
@@ -680,21 +717,21 @@ const PayStep = (props: PayStepProps) => {
                   Are you sure you want to proceed with this payment from your
                   wallet?
                 </p>
-                {canPayData?.data && (
+                {canPayData && (
                   <div className='bg-gray-50 rounded-lg p-4 space-y-2 text-sm'>
                     <div className='flex justify-between'>
                       <span className='text-gray-600'>
                         Transaction Reference:
                       </span>
                       <span className='font-medium'>
-                        {canPayData.data.transaction_reference}
+                        {canPayData.transaction_reference}
                       </span>
                     </div>
                     <div className='flex justify-between'>
                       <span className='text-gray-600'>Amount to Pay:</span>
                       <span className='font-medium text-red-600'>
-                        {canPayData.data.required_amount.toFixed(2)}{' '}
-                        {canPayData.data.currency}
+                        {canPayData.required_amount.toFixed(2)}{' '}
+                        {canPayData.currency}
                       </span>
                     </div>
                     <div className='flex justify-between'>
@@ -702,8 +739,8 @@ const PayStep = (props: PayStepProps) => {
                         Current Wallet Balance:
                       </span>
                       <span className='font-medium'>
-                        {canPayData.data.wallet_balance.toFixed(2)}{' '}
-                        {canPayData.data.currency}
+                        {canPayData.wallet_balance.toFixed(2)}{' '}
+                        {canPayData.currency}
                       </span>
                     </div>
                     <div className='flex justify-between border-t pt-2 mt-2'>
@@ -711,8 +748,8 @@ const PayStep = (props: PayStepProps) => {
                         Balance After Payment:
                       </span>
                       <span className='font-semibold text-teal-600'>
-                        {canPayData.data.balance_after_payment.toFixed(2)}{' '}
-                        {canPayData.data.currency}
+                        {canPayData.balance_after_payment.toFixed(2)}{' '}
+                        {canPayData.currency}
                       </span>
                     </div>
                   </div>

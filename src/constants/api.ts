@@ -107,8 +107,7 @@ export const API_URLS = {
       `${baseUrl}/remittance-carts/${cartId}`,
     delete: (cartId: string | number) =>
       `${baseUrl}/remittance-carts/${cartId}`,
-    addTransaction: (cartId: string | number) =>
-      `${baseUrl}/remittance-carts/${cartId}/add-transaction`,
+    addTransaction: `${baseUrl}/remittance-carts/add-transaction`,
     removeTransaction: (transactionId: string | number) =>
       `${baseUrl}/remittance-carts/transactions/${transactionId}/remove`,
   },

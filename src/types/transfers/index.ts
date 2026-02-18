@@ -35,21 +35,31 @@ export interface Transfer {
   total_payable_amount: number;
   created_at: string;
   updated_at: string;
+  remittance_cart?: {
+    id: number;
+    currency: string;
+    status: string | null;
+    payment_link: {
+      token: string;
+      status: string;
+      expired_at: string;
+    } | null;
+  } | null;
 }
 
 export type TransferStatus =
-  | "draft"
-  | "in-progress"
-  | "completed"
-  | "cancelled"
-  | "blocked"
-  | "refunded";
+  | 'draft'
+  | 'in-progress'
+  | 'completed'
+  | 'cancelled'
+  | 'blocked'
+  | 'refunded';
 
 export type PaymentMethod =
-  | "bank_transfer"
-  | "cash_pickup"
-  | "mobile_money"
-  | "digital_wallet";
+  | 'bank_transfer'
+  | 'cash_pickup'
+  | 'mobile_money'
+  | 'digital_wallet';
 
 export interface TransferResponse {
   status: boolean;

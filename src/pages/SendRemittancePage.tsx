@@ -1,4 +1,4 @@
-import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
+import BackArrowIcon from '@/assets/icons/back-arrow.svg?react';
 
 import {
   CurrenciesAmountStep,
@@ -7,55 +7,55 @@ import {
   ReviewStep,
   StepIndicator,
   type Step,
-} from "@/components/sendRemittance";
+} from '@/components/sendRemittance';
 
-import ActionButton from "@/components/shared/ActionButton";
+import ActionButton from '@/components/shared/ActionButton';
 
-import PageTitle from "@/components/shared/PageTitle";
+import PageTitle from '@/components/shared/PageTitle';
 
 import {
   useCreateTransfer,
   useGetTransfer,
   useGetTransfers,
   useUpdateTransfer,
-} from "@/hooks/data/useTransfers";
+} from '@/hooks/data/useTransfers';
 
-import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
+import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
 
-import { DataTable } from "@/components/shared/DataTable";
+import { DataTable } from '@/components/shared/DataTable';
 
-import { draftTransfersTableColum } from "@/components/transfers/DraftTransfersTableColum";
+import { draftTransfersTableColum } from '@/components/transfers/DraftTransfersTableColum';
 
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from '@/constants/routes';
 
-import { toast } from "sonner";
+import { toast } from 'sonner';
 
-import { useGetCustomer } from "@/hooks/data/useCustomers";
+import { useGetCustomer } from '@/hooks/data/useCustomers';
 
-import { useGetRecipient } from "@/hooks/data/useRecipients";
+import { useGetRecipient } from '@/hooks/data/useRecipients';
 
-import { useTransferFilters } from "@/hooks/data/useTransferFilters";
+import { useTransferFilters } from '@/hooks/data/useTransferFilters';
 
-import { useSendRemittanceNavigation } from "@/hooks/useSendRemittanceNavigation";
+import { useSendRemittanceNavigation } from '@/hooks/useSendRemittanceNavigation';
 
-import { useSendRemittanceValidation } from "@/hooks/useSendRemittanceValidation";
+import { useSendRemittanceValidation } from '@/hooks/useSendRemittanceValidation';
 
 import {
   buildDraftTransferPayload,
   buildUpdateTransferPayload,
-} from "@/utils/sendRemittancePayload";
+} from '@/utils/sendRemittancePayload';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
-import Loader from "@/components/shared/Loader";
+import Loader from '@/components/shared/Loader';
 import {
   useLocation,
   useNavigate,
   useParams,
   useSearchParams,
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import {
   Dialog,
@@ -64,18 +64,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 interface SendRemittancePageProps {
-  mode?: "create" | "edit";
+  mode?: 'create' | 'edit';
 }
 
 const SendRemittancePage = (props: SendRemittancePageProps) => {
-  const { mode = "create" } = props;
+  const { mode = 'create' } = props;
 
-  const { t } = useTranslation("global");
+  const { t } = useTranslation('global');
 
   const navigate = useNavigate();
 
@@ -90,12 +90,12 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   const [searchParams] = useSearchParams();
 
-  const customerIdQuery = searchParams.get("customer");
+  const customerIdQuery = searchParams.get('customer');
 
-  const recipientIdQuery = searchParams.get("recipient");
+  const recipientIdQuery = searchParams.get('recipient');
 
   const { filtersString, updateStatus, updatePagination } = useTransferFilters({
-    status: ["draft"],
+    status: ['draft'],
   });
 
   const {
@@ -152,10 +152,10 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   const location = useLocation();
 
-  const pathSegments = location.pathname.split("/");
+  const pathSegments = location.pathname.split('/');
 
   const sendRemittanceIndex = pathSegments.findIndex(
-    (segment) => segment === "send-remittance"
+    (segment) => segment === 'send-remittance',
   );
 
   const transactionRef =
@@ -167,7 +167,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   // Check if transaction status is draft - if not, make it readonly
   const transferStatus = transferData?.status?.toLowerCase();
-  const isReadOnly = isEditMode && transferStatus !== "draft";
+  const isReadOnly = isEditMode && transferStatus !== 'draft';
 
   // Use custom hooks for navigation and validation
 
@@ -200,33 +200,33 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   // Get markStepCompleted from store for initialization
 
   const markStepCompleted = useSendRemittanceStore(
-    (state) => state.markStepCompleted
+    (state) => state.markStepCompleted,
   );
 
   const setCurrentStep = useSendRemittanceStore(
-    (state) => state.setCurrentStep
+    (state) => state.setCurrentStep,
   );
 
   useEffect(() => {
-    const shouldReset = mode === "create" && !reference_number;
+    const shouldReset = mode === 'create' && !reference_number;
 
     if (shouldReset) {
       resetStore();
     }
 
-    if (mode === "edit") {
-      markStepCompleted("customer");
-      markStepCompleted("currencies");
-      setCurrentStep("review");
-    } else if (mode === "create") {
-      updateStatus(["draft"]);
+    if (mode === 'edit') {
+      markStepCompleted('customer');
+      markStepCompleted('currencies');
+      setCurrentStep('review');
+    } else if (mode === 'create') {
+      updateStatus(['draft']);
     }
 
     setMode(mode);
   }, [mode, reference_number]);
 
   useEffect(() => {
-    if (transferData?.id && mode === "edit") {
+    if (transferData?.id && mode === 'edit') {
       // Transform API data to match store structure
 
       // Set step 1 data
@@ -245,9 +245,9 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           countryId: transferData.customer.country?.id || 0,
 
-          countryIso3: transferData.customer.country?.iso3 || "",
+          countryIso3: transferData.customer.country?.iso3 || '',
 
-          countryName: transferData.customer.country?.name || "",
+          countryName: transferData.customer.country?.name || '',
         });
       }
 
@@ -257,7 +257,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           name: transferData.send_country.name,
 
-          iso3: transferData.send_country.iso3 || "",
+          iso3: transferData.send_country.iso3 || '',
         });
       }
 
@@ -273,46 +273,46 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           countryId: transferData.recipient.country?.id || 0,
 
-          countryIso3: transferData.recipient.country?.iso3 || "",
+          countryIso3: transferData.recipient.country?.iso3 || '',
 
           // API returns country as string directly, not an object
 
           countryName:
-            typeof transferData.recipient.country === "string"
+            typeof transferData.recipient.country === 'string'
               ? transferData.recipient.country
-              : transferData.recipient.country?.name || "",
+              : transferData.recipient.country?.name || '',
 
-          countryPhoneCode: transferData.recipient.country_phone_code || "",
+          countryPhoneCode: transferData.recipient.country_phone_code || '',
 
           // API returns 'phone' not 'phone_number'
 
           phoneNumber:
             transferData.recipient.phone ||
             transferData.recipient.phone_number ||
-            "",
+            '',
 
-          email: transferData.recipient.email || "",
+          email: transferData.recipient.email || '',
 
           address: {
-            streetName: transferData.recipient.address?.street || "",
+            streetName: transferData.recipient.address?.street || '',
 
-            houseNumber: "",
+            houseNumber: '',
 
-            postalCode: transferData.recipient.address?.postal_code || "",
+            postalCode: transferData.recipient.address?.postal_code || '',
 
-            extraDetails: "",
+            extraDetails: '',
 
-            city: transferData.recipient.address?.city?.name || "",
+            city: transferData.recipient.address?.city?.name || '',
 
-            state: transferData.recipient.address?.state?.name || "",
+            state: transferData.recipient.address?.state?.name || '',
 
             // Use country string from recipient if address.country is not available
 
             country:
               transferData.recipient.address?.country?.name ||
-              (typeof transferData.recipient.country === "string"
+              (typeof transferData.recipient.country === 'string'
                 ? transferData.recipient.country
-                : ""),
+                : ''),
           },
 
           customers: transferData.recipient.customers || [],
@@ -325,7 +325,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           name: transferData.receive_country.name,
 
-          iso3: transferData.receive_country.iso3 || "",
+          iso3: transferData.receive_country.iso3 || '',
         });
       }
 
@@ -335,14 +335,14 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           name: transferData.remittance_method.name,
 
-          type: "remittance_method",
+          type: 'remittance_method',
         });
       }
       if (transferData.payout_agent) {
         setPayoutAgent({
           id: transferData?.payout_agent?.id,
-          name: transferData?.payout_agent?.name ?? "",
-          business_name: transferData.payout_agent.business_name ?? "",
+          name: transferData?.payout_agent?.name ?? '',
+          business_name: transferData.payout_agent.business_name ?? '',
         });
       }
 
@@ -384,7 +384,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           send_amount: Number(sentAmount),
 
-          send_currency_code: transferData.send_currency || "",
+          send_currency_code: transferData.send_currency || '',
 
           total_commission: Number(transferData.total_commission_amount) || 0,
 
@@ -400,7 +400,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           receive_amount: Number(receiveAmount),
 
-          receive_currency_code: transferData.receive_currency || "",
+          receive_currency_code: transferData.receive_currency || '',
 
           recipient_net_amount: Number(transferData.payout_amount) || 0,
 
@@ -410,7 +410,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
           to_amount: receiveAmount,
 
-          margin_amount: transferData.extra_fees_amount || "0",
+          margin_amount: transferData.extra_fees_amount || '0',
 
           from_amount: sentAmount,
         });
@@ -435,7 +435,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
       if (transferData.is_all_included_in_send_amount !== undefined) {
         setIsAllFeesIncludedInSendAmount(
-          Boolean(transferData.is_all_included_in_send_amount)
+          Boolean(transferData.is_all_included_in_send_amount),
         );
       } else {
         // If is_all_included_in_send_amount is not provided, check if send_amount equals total_payable_amount
@@ -443,7 +443,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
         const sendAmount = Number(transferData.sent_amount || 0);
 
         const totalPayableAmount = Number(
-          transferData.total_payable_amount || 0
+          transferData.total_payable_amount || 0,
         );
 
         // Use a small tolerance for floating point comparison
@@ -456,7 +456,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
       if (transferData.do_calculate_from_receive_amount !== undefined) {
         setIsCalculateFromReceiveAmount(
-          Boolean(transferData.do_calculate_from_receive_amount)
+          Boolean(transferData.do_calculate_from_receive_amount),
         );
       }
 
@@ -480,8 +480,8 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
       // Set step 4 data
 
-      if (transferData.remittance_cart_id) {
-        setCartAddedTo(transferData.remittance_cart_id);
+      if (transferData.remittance_cart) {
+        setCartAddedTo(transferData.remittance_cart);
       }
     }
   }, [
@@ -531,7 +531,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
         countryId: 0, // Will be updated when we set send country
 
-        countryIso3: "",
+        countryIso3: '',
 
         countryName: customer.country.name,
       };
@@ -555,30 +555,30 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
         countryId: recipient.address?.country?.id || 0,
 
-        countryIso3: recipient.address?.country?.iso3 || "",
+        countryIso3: recipient.address?.country?.iso3 || '',
 
-        countryName: recipient.address?.country?.name || "",
+        countryName: recipient.address?.country?.name || '',
 
-        countryPhoneCode: recipient.country_phone_code || "",
+        countryPhoneCode: recipient.country_phone_code || '',
 
-        phoneNumber: recipient.phone_number || "",
+        phoneNumber: recipient.phone_number || '',
 
-        email: recipient.email || "",
+        email: recipient.email || '',
 
         address: {
-          streetName: recipient.address?.street || "",
+          streetName: recipient.address?.street || '',
 
-          houseNumber: "",
+          houseNumber: '',
 
-          postalCode: recipient.address?.postal_code || "",
+          postalCode: recipient.address?.postal_code || '',
 
-          extraDetails: "",
+          extraDetails: '',
 
-          city: recipient.address?.city?.name || "",
+          city: recipient.address?.city?.name || '',
 
-          state: recipient.address?.state?.name || "",
+          state: recipient.address?.state?.name || '',
 
-          country: recipient.address?.country?.name || "",
+          country: recipient.address?.country?.name || '',
         },
 
         customers: recipient?.customers || [],
@@ -592,33 +592,33 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     {
       number: 1,
 
-      title: "Customer/Recipient",
+      title: 'Customer/Recipient',
 
-      name: "customer",
+      name: 'customer',
     },
 
     {
       number: 2,
 
-      title: "Currencies/Amount",
+      title: 'Currencies/Amount',
 
-      name: "currencies",
+      name: 'currencies',
     },
 
     {
       number: 3,
 
-      title: "Review",
+      title: 'Review',
 
-      name: "review",
+      name: 'review',
     },
 
     {
       number: 4,
 
-      title: "Pay",
+      title: 'Pay',
 
-      name: "pay",
+      name: 'pay',
     },
   ];
 
@@ -626,11 +626,11 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     mutateAsync: createDraftTransfer,
     isPending: isDraftCreationPending,
   } = useCreateTransfer(() => {
-    if (!navigation.isStepCompleted("currencies")) {
-      markStepCompleted("currencies");
+    if (!navigation.isStepCompleted('currencies')) {
+      markStepCompleted('currencies');
     }
 
-    setCurrentStep("review");
+    setCurrentStep('review');
   });
 
   const { mutateAsync: editTransfer } = useUpdateTransfer(reference_number!);
@@ -704,7 +704,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
       if (
         Math.abs(
-          original.stepTwo.receiveAmount - current.stepTwo.receiveAmount
+          original.stepTwo.receiveAmount - current.stepTwo.receiveAmount,
         ) > 0.01
       )
         return true;
@@ -758,14 +758,13 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
       return;
     }
 
-    const createTransferResponse = await createDraftTransfer(
-      transferDraftPayload
-    );
+    const createTransferResponse =
+      await createDraftTransfer(transferDraftPayload);
 
     navigate(
       ROUTES.SEND_REMITTANCE.EDIT(
-        createTransferResponse?.data?.reference_number
-      )
+        createTransferResponse?.data?.reference_number,
+      ),
     );
   }, [storeData, createDraftTransfer, navigate]);
 
@@ -773,7 +772,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   const handleNext = useCallback(async () => {
     // Currencies step needs special handling for create mode
-    if (navigation.currentStep === "currencies" && mode === "create") {
+    if (navigation.currentStep === 'currencies' && mode === 'create') {
       handleCurrenciesValidation();
       return;
     }
@@ -792,7 +791,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           const errorMessage =
             error instanceof Error
               ? error.message
-              : "Failed to update transfer";
+              : 'Failed to update transfer';
           toast.error(errorMessage);
           return;
         }
@@ -858,7 +857,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           const errorMessage =
             error instanceof Error
               ? error.message
-              : "Failed to update transfer";
+              : 'Failed to update transfer';
           toast.error(errorMessage);
           // Keep modal open if save fails
         }
@@ -868,7 +867,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   const renderCurrentStep = () => {
     switch (navigation.currentStep) {
-      case "customer":
+      case 'customer':
         return (
           <CustomerRecipientStep
             customerId={customerIdQuery}
@@ -877,13 +876,13 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           />
         );
 
-      case "currencies":
+      case 'currencies':
         return <CurrenciesAmountStep isReadOnly={isReadOnly} />;
 
-      case "review":
+      case 'review':
         return <ReviewStep isReadOnly={isReadOnly} />;
 
-      case "pay":
+      case 'pay':
         return (
           <PayStep
             transferId={transferData?.id}
@@ -897,30 +896,30 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
   };
 
   const renderActionButtons = () => {
-    if (mode === "edit") {
+    if (mode === 'edit') {
       // Determine button labels based on readonly mode
-      const nextButtonLabel = isReadOnly ? "Next" : "Save & Continue";
-      const backButtonLabel = "Back";
+      const nextButtonLabel = isReadOnly ? 'Next' : 'Save & Continue';
+      const backButtonLabel = 'Back';
 
       return (
-        <div className="flex flex-col gap-2 m-5 pt-5">
+        <div className='flex flex-col gap-2 m-5 pt-5'>
           {validationMessage && !isReadOnly && (
-            <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+            <div className='text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200'>
               <strong>Required:</strong> {validationMessage}
             </div>
           )}
 
-          <div className="flex justify-end items-end gap-4">
+          <div className='flex justify-end items-end gap-4'>
             {navigation.canGoBack && (
               <ActionButton
-                type="cancel"
+                type='cancel'
                 title={backButtonLabel}
                 onClick={handleBack}
                 disabled={false}
               />
             )}
 
-            {navigation.currentStep !== "pay" && (
+            {navigation.currentStep !== 'pay' && (
               <ActionButton
                 title={nextButtonLabel}
                 onClick={handleNext}
@@ -933,18 +932,18 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
     }
 
     switch (navigation.currentStep) {
-      case "customer":
+      case 'customer':
         return (
-          <div className="flex flex-col gap-2 m-5 pt-5">
+          <div className='flex flex-col gap-2 m-5 pt-5'>
             {validationMessage && (
-              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+              <div className='text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200'>
                 <strong>Required:</strong> {validationMessage}
               </div>
             )}
 
-            <div className="flex justify-end items-end gap-4">
+            <div className='flex justify-end items-end gap-4'>
               <ActionButton
-                title="Continue"
+                title='Continue'
                 onClick={handleNext}
                 disabled={!navigation.canGoForward}
               />
@@ -952,24 +951,24 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           </div>
         );
 
-      case "currencies":
+      case 'currencies':
         return (
-          <div className="flex flex-col gap-2 m-5 pt-5">
+          <div className='flex flex-col gap-2 m-5 pt-5'>
             {validationMessage &&
               !navigation.completedSteps.includes(navigation.currentStep) && (
-                <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+                <div className='text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200'>
                   <strong>Required:</strong> {validationMessage}
                 </div>
               )}
 
-            <div className="flex justify-end items-end gap-4">
-              <ActionButton title="Back" onClick={handleBack} type="cancel" />
+            <div className='flex justify-end items-end gap-4'>
+              <ActionButton title='Back' onClick={handleBack} type='cancel' />
 
               {navigation.isStepCompleted(navigation.currentStep) ? (
-                <ActionButton title="Continue" onClick={handleNext} />
+                <ActionButton title='Continue' onClick={handleNext} />
               ) : (
                 <ActionButton
-                  title="Save & Continue"
+                  title='Save & Continue'
                   onClick={handleNext}
                   disabled={!navigation.canGoForward}
                 />
@@ -978,20 +977,20 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           </div>
         );
 
-      case "review":
+      case 'review':
         return (
-          <div className="flex flex-col gap-2 m-5 pt-5">
+          <div className='flex flex-col gap-2 m-5 pt-5'>
             {validationMessage && (
-              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+              <div className='text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200'>
                 <strong>Required:</strong> {validationMessage}
               </div>
             )}
 
-            <div className="flex justify-end items-end gap-4">
-              <ActionButton title="Back" onClick={handleBack} type="cancel" />
+            <div className='flex justify-end items-end gap-4'>
+              <ActionButton title='Back' onClick={handleBack} type='cancel' />
 
               <ActionButton
-                title="Save & Continue"
+                title='Save & Continue'
                 onClick={handleNext}
                 disabled={!navigation.canGoForward}
               />
@@ -999,10 +998,10 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           </div>
         );
 
-      case "pay":
+      case 'pay':
         return (
-          <div className="flex justify-end items-end gap-4 m-5 pt-5">
-            <ActionButton title="Back" onClick={handleBack} type="cancel" />
+          <div className='flex justify-end items-end gap-4 m-5 pt-5'>
+            <ActionButton title='Back' onClick={handleBack} type='cancel' />
           </div>
         );
 
@@ -1019,42 +1018,42 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
 
   const hasUnsavedChanges = !isReadOnly && isEditMode && hasDataChanged();
   return (
-    <div className="space-y-4 h-full">
-      <div className="flex justify-start items-center gap-3">
-        {mode === "edit" && (
+    <div className='space-y-4 h-full'>
+      <div className='flex justify-start items-center gap-3'>
+        {mode === 'edit' && (
           <button
             onClick={handleBackToTransfers}
-            className="text-primary top-1 cursor-pointer hover:text-primary/80 transition-colors"
-            aria-label={t("common.back")}
+            className='text-primary top-1 cursor-pointer hover:text-primary/80 transition-colors'
+            aria-label={t('common.back')}
           >
             <BackArrowIcon width={30} height={30} />
           </button>
         )}
 
-        <PageTitle title={t("modules.pages.sendRemittance.title")} />
+        <PageTitle title={t('modules.pages.sendRemittance.title')} />
 
         {/* Show unsaved changes badge only in draft mode */}
         {hasUnsavedChanges && (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300">
+          <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300'>
             Unsaved changes
           </span>
         )}
 
         {/* Show readonly badge when transaction is not draft */}
         {isReadOnly && (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-300">
+          <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-300'>
             Cannot modify transaction (not draft)
           </span>
         )}
       </div>
       {isDraftCreationPending ? (
-        <div className="w-full h-full flex items-center justify-center rounded-md bg-white overflow-hidden">
-          <div className="flex items-center justify-center h-45">
-            <Loader size="100px" className="h-8 w-8 animate-spin" />
+        <div className='w-full h-full flex items-center justify-center rounded-md bg-white overflow-hidden'>
+          <div className='flex items-center justify-center h-45'>
+            <Loader size='100px' className='h-8 w-8 animate-spin' />
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border">
+        <div className='bg-white rounded-lg border'>
           <StepIndicator
             steps={steps}
             currentStep={navigation.currentStep}
@@ -1062,19 +1061,19 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
             completedSteps={navigation.completedSteps}
           />
 
-          <hr className="border-gray-200" />
+          <hr className='border-gray-200' />
 
           {renderCurrentStep()}
 
-          <hr className="border-gray-200" />
+          <hr className='border-gray-200' />
 
           {renderActionButtons()}
         </div>
       )}
-      {mode === "create" && (
-        <div className="bg-white rounded-lg border">
+      {mode === 'create' && (
+        <div className='bg-white rounded-lg border'>
           <DataTable
-            tableTitle="Draft Transfers"
+            tableTitle='Draft Transfers'
             data={draftTransfersData}
             columns={columns}
             isLoading={draftTransfersLoading}
@@ -1089,7 +1088,7 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
           open={showUnsavedChangesModal}
           onOpenChange={setShowUnsavedChangesModal}
         >
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className='sm:max-w-md'>
             <DialogHeader>
               <DialogTitle>Unsaved Changes</DialogTitle>
               <DialogDescription>
@@ -1097,19 +1096,19 @@ const SendRemittancePage = (props: SendRemittancePageProps) => {
               </DialogDescription>
             </DialogHeader>
 
-            <DialogFooter className="flex gap-2 sm:gap-2">
+            <DialogFooter className='flex gap-2 sm:gap-2'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={handleIgnoreAndGoBack}
-                className="flex-1"
+                className='flex-1'
               >
                 Ignore and Go Back
               </Button>
               <Button
-                type="button"
+                type='button'
                 onClick={handleSaveAndGoBack}
-                className="flex-1 bg-primary hover:bg-primary/90"
+                className='flex-1 bg-primary hover:bg-primary/90'
               >
                 Save and Go Back
               </Button>
