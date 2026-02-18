@@ -5,10 +5,8 @@ import type {
   Wallet,
   WalletResponse,
   canPayTransactionData,
-  canPayTransactionResponse,
   payTransactionData,
   payTransactionPayload,
-  payTransactionResponse,
 } from '@/types/wallet';
 
 export async function getWallet(agentId: string | number): Promise<Wallet> {

@@ -47,7 +47,6 @@ const PayStep = (props: PayStepProps) => {
   const { transferId, transferRef } = props;
   const navigate = useNavigate();
   // const [paymentMethod, setPaymentMethod] = useState<string>('customer');
-  const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
   const stepFour = useSendRemittanceStore((state) => state.data.stepFour);
   const setPaymentLink = useSendRemittanceStore(
     (state) => state.setPaymentLink,

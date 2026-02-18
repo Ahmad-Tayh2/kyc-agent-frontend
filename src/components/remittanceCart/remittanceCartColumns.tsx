@@ -8,9 +8,8 @@ import { useMemo } from 'react';
 
 import { ROUTES } from '@/constants/routes';
 import { useRemoveTransactionFromCart } from '@/hooks/data/useRemittanceCarts';
-import type { CustomerType } from '@/types/customers';
 
-export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
+export const remittanceCartColumns = (): ColumnDef<any>[] => {
   const { mutateAsync: removeTransactionFromCart } =
     useRemoveTransactionFromCart();
   const menu = (transferId: number) => {
