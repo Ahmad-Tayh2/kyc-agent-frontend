@@ -28,14 +28,9 @@ import { ROUTES } from '@/constants/routes';
 import { copyToClipboard } from '@/helpers/text';
 import {
   useCreatePaymentLink,
-  useGetPaymentLinkByCart,
   useGetPaymentLinkByTransaction,
 } from '@/hooks/data/usePaymentLinks';
-import {
-  useAddTransactionToCart,
-  useCreateRemittanceCart,
-  useGetRemittanceCarts,
-} from '@/hooks/data/useRemittanceCarts';
+import { useAddTransactionToCart } from '@/hooks/data/useRemittanceCarts';
 import {
   useCanPayTransaction,
   usePayTransaction,
@@ -75,14 +70,7 @@ const PayStep = (props: PayStepProps) => {
       }`
     : '0.00';
   const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
-  const { mutateAsync: createRemittanceCart } = useCreateRemittanceCart();
-  const { data: remittanceCartsResponse } = useGetRemittanceCarts(
-    `?customer_id=${stepOne?.customer?.id}&currency=USD`,
-  );
 
-  const { data: paymentLinkByCartResponse } = useGetPaymentLinkByCart(
-    stepFour?.remittance_cart_id!,
-  );
   const { data: paymentLinkByTrResponse } = useGetPaymentLinkByTransaction(
     transferId!,
   );
@@ -100,41 +88,30 @@ const PayStep = (props: PayStepProps) => {
     // return paymentLinkByTrResponse?.data?.[0]?.token || "";
   }, [paymentLinkByTrResponse]);
 
+  // Auto-select remittance cart section if transaction is already in a cart
   useEffect(() => {
-    if (paymentLinkByCartResponse?.data?.length) {
-      setPaymentLink(paymentLinkByCartResponse?.data?.[0]);
+    if (stepFour?.remittance_cart?.id) {
+      setSelectedPaymentSection('remittance_cart');
     }
-  }, [paymentLinkByCartResponse]);
-  const existedRemittanceCart = useMemo(() => {
-    return remittanceCartsResponse?.data?.data?.[0] ?? null;
-  }, [remittanceCartsResponse]);
+  }, [stepFour?.remittance_cart]);
+
   const { mutateAsync: addTransationToCart } = useAddTransactionToCart();
   const handleAddToRemittanceCart = async () => {
-    let cartId = existedRemittanceCart?.id ?? null;
-    if (!cartId) {
-      //create a cart
-      const createResponse = await createRemittanceCart({
-        customer_id: stepOne?.customer?.id,
-        currency: 'USD',
-      });
-      cartId = createResponse?.data?.id ?? null;
-    }
-    if (cartId) {
-      const addingTransactionToCartResponse: any = await addTransationToCart({
-        cartId,
-        transaction_id: Number(transferId),
-      });
-      setCartAddedTo(addingTransactionToCartResponse?.data?.id);
+    const addingTransactionToCartResponse: any = await addTransationToCart({
+      transaction_id: Number(transferId),
+    });
+    // The response should contain the remittance_cart object
+    if (addingTransactionToCartResponse?.data) {
+      setCartAddedTo(addingTransactionToCartResponse.data);
     }
   };
-  // remittance_cart_id
   const handleSendPaymentLink = async () => {
     const response = await createPaymentLink({
-      payable_type: stepFour?.remittance_cart_id
+      payable_type: stepFour?.remittance_cart?.id
         ? 'RemittanceCart'
         : 'Transaction',
-      payable_id: stepFour?.remittance_cart_id
-        ? stepFour?.remittance_cart_id
+      payable_id: stepFour?.remittance_cart?.id
+        ? stepFour?.remittance_cart?.id
         : Number(transferId),
     });
 
@@ -179,8 +156,7 @@ const PayStep = (props: PayStepProps) => {
 
   const canPay = canPayData?.can_pay ?? false;
   const walletBalance = canPayData?.wallet_balance ?? 0;
-  const walletCurrency =
-    canPayData?.currency ?? stepTwo.sendCurrency?.code;
+  const walletCurrency = canPayData?.currency ?? stepTwo.sendCurrency?.code;
 
   const handlePayOnBehalfClick = async () => {
     if (selectedPaymentMethod === 'credit-card') {
@@ -310,24 +286,89 @@ const PayStep = (props: PayStepProps) => {
 
                   {selectedPaymentSection === 'remittance_cart' && (
                     <>
-                      <div className='bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit '>
-                        <p className='text-sm text-orange-700 inline-flex '>
-                          <span>
-                            <AlertCircle className='w-4 h-4 text-orange-500 mr-1' />
-                          </span>
-                          this option will deactivate any payment link that was
-                          created for this transfer.
-                        </p>
-                      </div>
+                      {!stepFour?.remittance_cart?.id && (
+                        <div className='bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-start space-x-2 w-fit '>
+                          <p className='text-sm text-orange-700 inline-flex '>
+                            <span>
+                              <AlertCircle className='w-4 h-4 text-orange-500 mr-1' />
+                            </span>
+                            this option will deactivate any payment link that
+                            was created for this transfer.
+                          </p>
+                        </div>
+                      )}
 
-                      {stepFour?.remittance_cart_id ? (
-                        <Button
-                          variant='outline'
-                          className='border-green-500 text-green-600 hover:text-green-600 cursor-default hover:bg-white'
-                        >
-                          <CheckedIcon />
-                          ADDED TO REMITTANCE CART
-                        </Button>
+                      {stepFour?.remittance_cart?.id ? (
+                        <div className='space-y-3'>
+                          <div className='flex items-center space-x-2'>
+                            <CheckedIcon className='w-5 h-5 text-green-600' />
+                            <span className='font-medium text-green-600'>
+                              This transaction is in the remittance cart
+                            </span>
+                          </div>
+
+                          {stepFour?.remittance_cart?.payment_link?.token ? (
+                            <div className='space-y-2'>
+                              <p className='text-sm text-gray-600'>
+                                Payment link for this cart:
+                              </p>
+                              <div className='flex items-center space-x-4'>
+                                <Button
+                                  variant='link'
+                                  className='p-0 h-auto text-sm cursor-pointer'
+                                  onClick={() => {
+                                    const link =
+                                      window.location.origin +
+                                      ROUTES.PAYMENT_LINKS.VALIDATION(
+                                        stepFour.remittance_cart!.payment_link!
+                                          .token,
+                                      );
+                                    copyToClipboard(
+                                      link,
+                                      'Cart payment link copied to clipboard!',
+                                    );
+                                  }}
+                                >
+                                  {window.location.origin +
+                                    ROUTES.PAYMENT_LINKS.VALIDATION(
+                                      stepFour.remittance_cart.payment_link
+                                        .token,
+                                    )}
+                                  <Copy className='w-4 h-4 ml-2' />
+                                </Button>
+                                {stepFour.remittance_cart.payment_link
+                                  .status && (
+                                  <StatusLabel
+                                    value={
+                                      stepFour.remittance_cart.payment_link
+                                        .status
+                                    }
+                                    color={
+                                      PAYMENT_LINKS_STATUSES_COLORS[
+                                        stepFour.remittance_cart.payment_link
+                                          .status as keyof typeof PAYMENT_LINKS_STATUSES_COLORS
+                                      ] || '#000000'
+                                    }
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className='space-y-2'>
+                              <p className='text-sm text-gray-600'>
+                                Manage all cart transactions:
+                              </p>
+                              <Button
+                                variant='outline'
+                                className='border-teal-500 text-teal-600 hover:bg-teal-50'
+                                onClick={() => navigate(ROUTES.REMITTANCE_CART)}
+                              >
+                                <ShoppingCart className='w-4 h-4 mr-2' />
+                                GO TO REMITTANCE CART
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <Button
                           variant='outline'
@@ -563,9 +604,7 @@ const PayStep = (props: PayStepProps) => {
                                         Required Amount:
                                       </span>
                                       <span className='font-medium text-gray-900'>
-                                        {canPayData.required_amount.toFixed(
-                                          2,
-                                        )}{' '}
+                                        {canPayData.required_amount.toFixed(2)}{' '}
                                         {walletCurrency}
                                       </span>
                                     </div>

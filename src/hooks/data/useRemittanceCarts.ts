@@ -1,13 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { remittanceCartsService } from "@/services/remittanceCart";
-import { toast } from "sonner";
+import { remittanceCartsService } from '@/services/remittanceCart';
+import { toast } from 'sonner';
 
 export function useGetRemittanceCarts(filters?: string) {
   return useQuery({
-    queryKey: ["get-remittance-carts"],
+    queryKey: ['get-remittance-carts', filters],
     queryFn: () => remittanceCartsService.getRemittanceCarts(filters),
     refetchInterval: 60 * 1000,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 }
 
@@ -23,10 +26,10 @@ export function useAddTransactionToCart() {
     mutationFn: (data: any) =>
       remittanceCartsService.addTransactionToCart(data),
     onSuccess: () => {
-      toast.success("Transaction added to cart successfully!");
+      toast.success('Transaction added to cart successfully!');
     },
     onError: () => {
-      toast.error("Transaction adding failed!");
+      toast.error('Transaction adding failed!');
     },
   });
 }
@@ -38,7 +41,7 @@ export function useRemoveTransactionFromCart() {
     mutationFn: (transactionId: number) =>
       remittanceCartsService.removeTransactionFromCart(transactionId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["get-remittance-carts"] });
+      queryClient.invalidateQueries({ queryKey: ['get-remittance-carts'] });
     },
   });
 }

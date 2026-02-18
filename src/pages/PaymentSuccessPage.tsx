@@ -1,10 +1,13 @@
-import BrandingSection from "@/components/shared/BrandingSection";
-import { Button } from "@/components/ui/button";
-import { markPaymentProcessing, verifyPaymentStatus } from "@/services/worldpay";
-import type { PaymentValidationData } from "@/types/payment";
-import { CheckCircle } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import BrandingSection from '@/components/shared/BrandingSection';
+import { Button } from '@/components/ui/button';
+import {
+  markPaymentProcessing,
+  verifyPaymentStatus,
+} from '@/services/worldpay';
+import type { PaymentValidationData } from '@/types/payment';
+import { CheckCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
@@ -22,17 +25,18 @@ export default function PaymentSuccessPage() {
     provider: null,
     transactionId: null,
   });
-  const [validationData, setValidationData] = useState<PaymentValidationData | null>(null);
+  const [validationData, setValidationData] =
+    useState<PaymentValidationData | null>(null);
 
   useEffect(() => {
-    const status = searchParams.get("status");
-    const orderCode = searchParams.get("orderCode");
-    const amount = searchParams.get("amount");
-    const currency = searchParams.get("currency");
-    const provider = searchParams.get("provider");
-    const transactionId = searchParams.get("transactionId");
+    const status = searchParams.get('status');
+    const orderCode = searchParams.get('orderCode');
+    const amount = searchParams.get('amount');
+    const currency = searchParams.get('currency');
+    const provider = searchParams.get('provider');
+    const transactionId = searchParams.get('transactionId');
 
-    if (status === "success" && orderCode) {
+    if (status === 'success' && orderCode) {
       setPaymentData({
         orderCode,
         amount,
@@ -42,7 +46,9 @@ export default function PaymentSuccessPage() {
       });
 
       // Retrieve validation data from sessionStorage
-      const storedValidationData = sessionStorage.getItem('paymentValidationData');
+      const storedValidationData = sessionStorage.getItem(
+        'paymentValidationData',
+      );
       if (storedValidationData) {
         try {
           const parsedData = JSON.parse(storedValidationData);
@@ -53,13 +59,20 @@ export default function PaymentSuccessPage() {
       }
 
       // Mark payment as processing (for Worldpay)
-      const paymentId = localStorage.getItem("payment_id");
-      const orderCodeFromStorage = localStorage.getItem("worldpay_order_code");
+      const paymentId = localStorage.getItem('payment_id');
+      const orderCodeFromStorage = localStorage.getItem('worldpay_order_code');
 
       // Call markPaymentProcessing if we have payment_id OR if the orderCode matches what we stored
       // This handles both iframe/lightbox flows (with provider param) and direct redirect flows (without provider param)
-      if (paymentId && (provider === "worldpay" || orderCodeFromStorage === orderCode)) {
-        console.log('Marking payment as processing for Worldpay payment:', { paymentId, orderCode, provider });
+      if (
+        paymentId &&
+        (provider === 'worldpay' || orderCodeFromStorage === orderCode)
+      ) {
+        console.log('Marking payment as processing for Worldpay payment:', {
+          paymentId,
+          orderCode,
+          provider,
+        });
         markPaymentProcessing({
           payment_id: paymentId,
         })
@@ -76,7 +89,7 @@ export default function PaymentSuccessPage() {
       if (orderCode) {
         verifyPaymentStatus(orderCode)
           .then((result) => {
-            if (result && result.status === "completed") {
+            if (result && result.status === 'completed') {
               // Payment verified successfully
             }
           })
@@ -86,52 +99,52 @@ export default function PaymentSuccessPage() {
       }
 
       // Clean up stored data
-      localStorage.removeItem("worldpay_order_code");
-      localStorage.removeItem("payment_id");
-      sessionStorage.removeItem("paymentValidationData");
+      localStorage.removeItem('worldpay_order_code');
+      localStorage.removeItem('payment_id');
+      sessionStorage.removeItem('paymentValidationData');
 
       // Auto-redirect after 10 seconds
       const timer = setTimeout(() => {
-        navigate("/dashboard");
+        navigate('/dashboard');
       }, 10000);
 
       return () => clearTimeout(timer);
     } else {
       // If no valid success parameters, redirect to error
-      navigate("/payment/failed?error=invalid_success_params");
+      navigate('/payment/failed?error=invalid_success_params');
     }
   }, [searchParams, navigate]);
 
   const handleContinue = () => {
-    navigate("/dashboard");
+    navigate('/dashboard');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
-      <div className="max-w-2xl w-full mx-4">
-        <div className="bg-white rounded-lg shadow-sm border p-8">
-          <div className="text-center mb-6">
+    <div className='min-h-screen bg-gray-50 flex items-center justify-center py-8'>
+      <div className='max-w-2xl w-full mx-4'>
+        <div className='bg-white rounded-lg shadow-sm border p-8'>
+          <div className='text-center mb-6'>
             <BrandingSection />
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 mt-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+            <div className='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 mt-4'>
+              <CheckCircle className='w-8 h-8 text-green-600' />
             </div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className='text-2xl font-semibold text-gray-900 mb-2'>
               Payment Successful!
             </h1>
-            <p className="text-gray-600">
+            <p className='text-gray-600'>
               Your payment has been processed successfully.
             </p>
           </div>
 
           {/* Payment Summary */}
-          <div className="border border-gray-200 rounded-lg overflow-hidden mb-6">
-            <div className="bg-gradient-to-r from-green-50 to-green-100 px-6 py-4 border-b border-gray-200">
-              <div className="flex justify-between items-center">
+          <div className='border border-gray-200 rounded-lg overflow-hidden mb-6'>
+            <div className='bg-gradient-to-r from-green-50 to-green-100 px-6 py-4 border-b border-gray-200'>
+              <div className='flex justify-between items-center'>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Amount Paid</p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className='text-sm text-gray-600 mb-1'>Amount Paid</p>
+                  <p className='text-3xl font-bold text-gray-900'>
                     {paymentData.amount}{' '}
-                    <span className="text-2xl">
+                    <span className='text-2xl'>
                       {paymentData.currency?.toUpperCase()}
                     </span>
                   </p>
@@ -140,25 +153,11 @@ export default function PaymentSuccessPage() {
             </div>
 
             {/* Payment Details */}
-            <div className="px-6 py-4 space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Order Code</span>
-                <span className="font-mono font-medium text-gray-900">
-                  {paymentData.orderCode}
-                </span>
-              </div>
-              {paymentData.transactionId && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Transaction ID</span>
-                  <span className="font-mono text-gray-900">
-                    {paymentData.transactionId}
-                  </span>
-                </div>
-              )}
+            <div className='px-6 py-4 space-y-3'>
               {paymentData.provider && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Payment Provider</span>
-                  <span className="font-medium text-gray-900 capitalize">
+                <div className='flex justify-between text-sm'>
+                  <span className='text-gray-600'>Payment Provider</span>
+                  <span className='font-medium text-gray-900 capitalize'>
                     {paymentData.provider}
                   </span>
                 </div>
@@ -168,24 +167,26 @@ export default function PaymentSuccessPage() {
 
           {/* Validation Data Details */}
           {validationData && (
-            <div className="border border-gray-200 rounded-lg overflow-hidden mb-6">
-              <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-900">
+            <div className='border border-gray-200 rounded-lg overflow-hidden mb-6'>
+              <div className='bg-gray-50 px-6 py-3 border-b border-gray-200'>
+                <h3 className='text-sm font-semibold text-gray-900'>
                   Payment Details
                 </h3>
               </div>
 
-              <div className="px-6 py-4 space-y-4">
+              <div className='px-6 py-4 space-y-4'>
                 {/* Transaction Reference */}
                 {validationData.transaction_reference && (
                   <>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Transaction Reference</span>
-                      <span className="font-mono font-medium text-gray-900">
+                    <div className='flex justify-between text-sm'>
+                      <span className='text-gray-600'>
+                        Transaction Reference
+                      </span>
+                      <span className='font-mono font-medium text-gray-900'>
                         {validationData.transaction_reference}
                       </span>
                     </div>
-                    <div className="border-t border-gray-100" />
+                    <div className='border-t border-gray-100' />
                   </>
                 )}
 
@@ -194,35 +195,35 @@ export default function PaymentSuccessPage() {
                   'customer' in validationData && (
                     <>
                       <div>
-                        <p className="text-xs font-medium text-gray-500 mb-2">
+                        <p className='text-xs font-medium text-gray-500 mb-2'>
                           Customer
                         </p>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Name</span>
-                            <span className="font-medium text-gray-900">
+                        <div className='space-y-2'>
+                          <div className='flex justify-between text-sm'>
+                            <span className='text-gray-600'>Name</span>
+                            <span className='font-medium text-gray-900'>
                               {validationData.customer.name}
                             </span>
                           </div>
                           {validationData.customer.email && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Email</span>
-                              <span className="text-gray-900">
+                            <div className='flex justify-between text-sm'>
+                              <span className='text-gray-600'>Email</span>
+                              <span className='text-gray-900'>
                                 {validationData.customer.email}
                               </span>
                             </div>
                           )}
                           {validationData.customer.phone && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Phone</span>
-                              <span className="text-gray-900">
+                            <div className='flex justify-between text-sm'>
+                              <span className='text-gray-600'>Phone</span>
+                              <span className='text-gray-900'>
                                 {validationData.customer.phone}
                               </span>
                             </div>
                           )}
                         </div>
                       </div>
-                      <div className="border-t border-gray-100" />
+                      <div className='border-t border-gray-100' />
                     </>
                   )}
 
@@ -232,27 +233,27 @@ export default function PaymentSuccessPage() {
                   validationData.recipient && (
                     <>
                       <div>
-                        <p className="text-xs font-medium text-gray-500 mb-2">
+                        <p className='text-xs font-medium text-gray-500 mb-2'>
                           Recipient
                         </p>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Name</span>
-                            <span className="font-medium text-gray-900">
+                        <div className='space-y-2'>
+                          <div className='flex justify-between text-sm'>
+                            <span className='text-gray-600'>Name</span>
+                            <span className='font-medium text-gray-900'>
                               {validationData.recipient.name}
                             </span>
                           </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Phone</span>
-                            <span className="text-gray-900">
+                          <div className='flex justify-between text-sm'>
+                            <span className='text-gray-600'>Phone</span>
+                            <span className='text-gray-900'>
                               {validationData.recipient.phone}
                             </span>
                           </div>
                           {(validationData.recipient.country ||
                             validationData.recipient.country_name) && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Country</span>
-                              <span className="text-gray-900">
+                            <div className='flex justify-between text-sm'>
+                              <span className='text-gray-600'>Country</span>
+                              <span className='text-gray-900'>
                                 {validationData.recipient.country?.name ||
                                   validationData.recipient.country_name}
                               </span>
@@ -260,7 +261,7 @@ export default function PaymentSuccessPage() {
                           )}
                         </div>
                       </div>
-                      <div className="border-t border-gray-100" />
+                      <div className='border-t border-gray-100' />
                     </>
                   )}
 
@@ -270,50 +271,50 @@ export default function PaymentSuccessPage() {
                   'recipients' in validationData && (
                     <>
                       <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <p className="text-xs font-medium text-gray-500">
+                        <div className='flex justify-between items-center mb-2'>
+                          <p className='text-xs font-medium text-gray-500'>
                             Recipients
                           </p>
-                          <span className="text-sm font-bold text-gray-900">
+                          <span className='text-sm font-bold text-gray-900'>
                             {validationData.recipients.length} Total
                           </span>
                         </div>
-                        <div className="space-y-2">
+                        <div className='space-y-2'>
                           {validationData.recipients
                             .slice(0, 5)
                             .map((recipient) => (
                               <div
                                 key={recipient.id}
-                                className="flex justify-between text-sm"
+                                className='flex justify-between text-sm'
                               >
-                                <span className="text-gray-900">
+                                <span className='text-gray-900'>
                                   {recipient.name}
                                 </span>
-                                <span className="text-gray-600">
+                                <span className='text-gray-600'>
                                   {recipient.country_name ||
                                     recipient.country?.name}
                                 </span>
                               </div>
                             ))}
                           {validationData.recipients.length > 5 && (
-                            <p className="text-xs text-gray-500 italic">
+                            <p className='text-xs text-gray-500 italic'>
                               +{validationData.recipients.length - 5} more
                               recipients
                             </p>
                           )}
                         </div>
                         {validationData.transactions_count && (
-                          <div className="flex justify-between mt-3 pt-3 border-t border-gray-100">
-                            <span className="text-sm text-gray-600">
+                          <div className='flex justify-between mt-3 pt-3 border-t border-gray-100'>
+                            <span className='text-sm text-gray-600'>
                               Total Transactions
                             </span>
-                            <span className="text-sm font-medium text-gray-900">
+                            <span className='text-sm font-medium text-gray-900'>
                               {validationData.transactions_count}
                             </span>
                           </div>
                         )}
                       </div>
-                      <div className="border-t border-gray-100" />
+                      <div className='border-t border-gray-100' />
                     </>
                   )}
 
@@ -321,38 +322,38 @@ export default function PaymentSuccessPage() {
                 {validationData.type !== 'add_money' &&
                   'send_country' in validationData && (
                     <>
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="text-xs text-gray-500 mb-1">From</p>
-                          <p className="text-sm font-medium text-gray-900">
+                      <div className='flex items-center justify-between'>
+                        <div className='flex-1'>
+                          <p className='text-xs text-gray-500 mb-1'>From</p>
+                          <p className='text-sm font-medium text-gray-900'>
                             {validationData.send_country.name}
                           </p>
                         </div>
-                        <div className="px-4">
+                        <div className='px-4'>
                           <svg
-                            className="w-5 h-5 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                            className='w-5 h-5 text-gray-400'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
                           >
                             <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
                               strokeWidth={2}
-                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                              d='M14 5l7 7m0 0l-7 7m7-7H3'
                             />
                           </svg>
                         </div>
-                        <div className="flex-1 text-right">
-                          <p className="text-xs text-gray-500 mb-1">To</p>
+                        <div className='flex-1 text-right'>
+                          <p className='text-xs text-gray-500 mb-1'>To</p>
                           {'receive_country' in validationData &&
                           validationData.receive_country ? (
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className='text-sm font-medium text-gray-900'>
                               {validationData.receive_country.name}
                             </p>
                           ) : 'receive_countries' in validationData &&
                             validationData.receive_countries ? (
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className='text-sm font-medium text-gray-900'>
                               {validationData.receive_countries.length}{' '}
                               {validationData.receive_countries.length === 1
                                 ? 'Country'
@@ -361,7 +362,7 @@ export default function PaymentSuccessPage() {
                           ) : null}
                         </div>
                       </div>
-                      <div className="border-t border-gray-100" />
+                      <div className='border-t border-gray-100' />
                     </>
                   )}
 
@@ -369,29 +370,31 @@ export default function PaymentSuccessPage() {
                 {validationData.type === 'add_money' && (
                   <>
                     <div>
-                      <p className="text-xs font-medium text-gray-500 mb-2">
+                      <p className='text-xs font-medium text-gray-500 mb-2'>
                         Wallet Top-up
                       </p>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Previous Balance</span>
-                          <span className="text-gray-900">
+                      <div className='space-y-2'>
+                        <div className='flex justify-between text-sm'>
+                          <span className='text-gray-600'>
+                            Previous Balance
+                          </span>
+                          <span className='text-gray-900'>
                             {validationData.wallet_current_balance}{' '}
                             {validationData.currency}
                           </span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Amount Added</span>
-                          <span className="font-medium text-green-600">
+                        <div className='flex justify-between text-sm'>
+                          <span className='text-gray-600'>Amount Added</span>
+                          <span className='font-medium text-green-600'>
                             +{validationData.total_amount}{' '}
                             {validationData.currency}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                          <span className="text-sm font-medium text-gray-900">
+                        <div className='flex justify-between items-center pt-2 border-t border-gray-100'>
+                          <span className='text-sm font-medium text-gray-900'>
                             New Balance
                           </span>
-                          <span className="text-base font-bold text-gray-900">
+                          <span className='text-base font-bold text-gray-900'>
                             {(
                               validationData.wallet_current_balance +
                               validationData.total_amount
@@ -401,15 +404,15 @@ export default function PaymentSuccessPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="border-t border-gray-100" />
+                    <div className='border-t border-gray-100' />
                   </>
                 )}
 
                 {/* Agent */}
                 {validationData.agent?.name && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Processing Agent</span>
-                    <span className="font-medium text-gray-900">
+                  <div className='flex justify-between text-sm'>
+                    <span className='text-gray-600'>Processing Agent</span>
+                    <span className='font-medium text-gray-900'>
                       {validationData.agent.name}
                     </span>
                   </div>
@@ -420,11 +423,11 @@ export default function PaymentSuccessPage() {
 
           <Button
             onClick={handleContinue}
-            className="w-full bg-green-600 hover:bg-green-700 mb-4"
+            className='w-full bg-green-600 hover:bg-green-700 mb-4'
           >
             Continue to Dashboard
           </Button>
-          <p className="text-xs text-gray-500 text-center">
+          <p className='text-xs text-gray-500 text-center'>
             You will be redirected to dashboard automatically in a few
             seconds...
           </p>

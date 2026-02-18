@@ -1,6 +1,6 @@
-export const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
+//export const baseUrl = 'https://nomadrem.amazing-agileteam.com/api';
 export const serverUrl = 'https://nomadrem.amazing-agileteam.com';
-//export const baseUrl = 'http://localhost:8000/api';
+export const baseUrl = 'http://localhost:8000/api';
 
 export const API_URLS = {
   auth: {
@@ -107,8 +107,7 @@ export const API_URLS = {
       `${baseUrl}/remittance-carts/${cartId}`,
     delete: (cartId: string | number) =>
       `${baseUrl}/remittance-carts/${cartId}`,
-    addTransaction: (cartId: string | number) =>
-      `${baseUrl}/remittance-carts/${cartId}/add-transaction`,
+    addTransaction: `${baseUrl}/remittance-carts/add-transaction`,
     removeTransaction: (transactionId: string | number) =>
       `${baseUrl}/remittance-carts/transactions/${transactionId}/remove`,
   },

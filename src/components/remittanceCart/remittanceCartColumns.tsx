@@ -1,14 +1,14 @@
-import { useMemo } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import DropdownMenuOptions from "@/components/shared/DropdownMenu";
-import EditIcon from "@/assets/icons/edit.svg?react";
-import DeleteIcon from "@/assets/icons/delete.svg?react";
+import DeleteIcon from '@/assets/icons/delete.svg?react';
+import EditIcon from '@/assets/icons/edit.svg?react';
+import DropdownMenuOptions from '@/components/shared/DropdownMenu';
+import { Button } from '@/components/ui/button';
+import type { ColumnDef } from '@tanstack/react-table';
+import { MoreHorizontal } from 'lucide-react';
+import { useMemo } from 'react';
 
-import type { CustomerType } from "@/types/customers";
-import { useRemoveTransactionFromCart } from "@/hooks/data/useRemittanceCarts";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from '@/constants/routes';
+import { useRemoveTransactionFromCart } from '@/hooks/data/useRemittanceCarts';
+import type { CustomerType } from '@/types/customers';
 
 export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
   const { mutateAsync: removeTransactionFromCart } =
@@ -16,7 +16,7 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
   const menu = (transferId: number) => {
     return [
       {
-        label: "Edit",
+        label: 'Edit',
         icon: <EditIcon />,
         onClick: () => {},
         link: ROUTES.SEND_REMITTANCE.EDIT(transferId),
@@ -27,10 +27,10 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
       //   onClick: () => {},
       // },
       {
-        label: "Remove From Cart",
+        label: 'Remove From Cart',
         icon: <DeleteIcon />,
         onClick: () => {
-          console.log(" start removing");
+          console.log(' start removing');
           removeTransactionFromCart(transferId);
         },
       },
@@ -39,63 +39,76 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
   return useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: "Tr. #",
+        accessorKey: 'id',
+        header: 'Tr. #',
       },
       {
-        accessorKey: "recipient",
-        header: "Recipient",
+        accessorKey: 'recipient',
+        header: 'Recipient',
         cell: ({ row }) => {
-          const recipient: any = row.getValue("recipient");
+          const recipient: any = row.getValue('recipient');
 
           return (
-            <div className="capitalize">
-              {recipient?.first_name + " " + recipient?.last_name}
+            <div className='capitalize'>
+              {recipient?.first_name + ' ' + recipient?.last_name}
             </div>
           );
         },
       },
       {
-        accessorKey: "country",
-        header: "Destination country",
+        accessorKey: 'send_country',
+        header: 'Send Country',
       },
       {
-        accessorKey: "country22",
-        header: "Remittance Method",
+        accessorKey: 'receive_country',
+        header: 'Destination Country',
+      },
+      {
+        accessorKey: 'remittance_method',
+        header: 'Remittance Method',
         cell: ({ row }) => {
-          const country: {
-            name: string;
-          } = row.getValue("country");
-
-          return <div className="capitalize">{country?.name}</div>;
+          const method: string = row.getValue('remittance_method');
+          return <div className='capitalize'>{method}</div>;
         },
       },
       {
-        accessorKey: "send_amount",
-        header: "Sent Amount",
+        accessorKey: 'send_amount',
+        header: 'Sent Amount',
+        cell: ({ row }) => {
+          const amount: string = row.getValue('send_amount');
+          const currency: string = row.original?.send_currency;
+          return (
+            <div>
+              {amount} {currency}
+            </div>
+          );
+        },
       },
       {
-        accessorKey: "receive_amount",
-        header: "Received Amount",
-        // cell: ({ row }) => {
-        //   const value: string = row.getValue("created_at");
-        //   const date = parseISO(value);
-        //   const formattedDate = format(date, "dd-MM-yyyy");
-        //   return formattedDate;
-        // },
+        accessorKey: 'receive_amount',
+        header: 'Received Amount',
+        cell: ({ row }) => {
+          const amount: string = row.getValue('receive_amount');
+          const currency: string = row.original?.receive_currency;
+          return (
+            <div>
+              {amount} {currency}
+            </div>
+          );
+        },
       },
       {
-        accessorKey: "commission",
-        header: "Comm.",
+        accessorKey: 'commission',
+        header: 'Comm.',
       },
       {
-        accessorKey: "total_to_pay",
-        header: "Total To Pay",
+        accessorKey: 'total_to_pay',
+        header: 'Total To Pay',
       },
 
       {
-        id: "actions",
-        header: "Actions",
+        id: 'actions',
+        header: 'Actions',
         enableHiding: false,
         cell: ({ row }) => {
           const transfer = row.original;
@@ -103,7 +116,7 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
             <DropdownMenuOptions
               menu={menu(Number(transfer.id))}
               trigger={
-                <Button variant="ghost" className="h-8 w-8 p-0">
+                <Button variant='ghost' className='h-8 w-8 p-0'>
                   <MoreHorizontal />
                 </Button>
               }
@@ -112,6 +125,6 @@ export const remittanceCartColumns = (): ColumnDef<CustomerType>[] => {
         },
       },
     ],
-    []
+    [],
   );
 };
