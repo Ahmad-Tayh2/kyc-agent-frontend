@@ -76,7 +76,9 @@ export default function StripePaymentForm({
 
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
-      setCardError(t('modules.pages.paymentPage.providers.stripe.errors.elementNotFound'));
+      setCardError(
+        t('modules.pages.paymentPage.providers.stripe.errors.elementNotFound'),
+      );
       setIsProcessing(false);
       return;
     }
@@ -90,13 +92,18 @@ export default function StripePaymentForm({
         });
 
       if (stripeError) {
-        setCardError(stripeError.message || t('modules.pages.paymentPage.providers.stripe.errors.cardError'));
+        setCardError(
+          stripeError.message ||
+            t('modules.pages.paymentPage.providers.stripe.errors.cardError'),
+        );
         setIsProcessing(false);
         return;
       }
 
       if (!paymentMethod) {
-        setCardError(t('modules.pages.paymentPage.providers.stripe.errors.methodFailed'));
+        setCardError(
+          t('modules.pages.paymentPage.providers.stripe.errors.methodFailed'),
+        );
         setIsProcessing(false);
         return;
       }
@@ -124,13 +131,16 @@ export default function StripePaymentForm({
       } else {
         const errorMsg = response.errors
           ? Object.values(response.errors).flat().join(', ')
-          : response.message || t('modules.pages.paymentPage.providers.stripe.errors.failed');
+          : response.message ||
+            t('modules.pages.paymentPage.providers.stripe.errors.failed');
         setCardError(errorMsg);
         onError?.(errorMsg);
       }
     } catch (error) {
       const errorMsg =
-        error instanceof Error ? error.message : t('modules.pages.paymentPage.providers.stripe.errors.failed');
+        error instanceof Error
+          ? error.message
+          : t('modules.pages.paymentPage.providers.stripe.errors.failed');
       setCardError(errorMsg);
       onError?.(errorMsg);
     } finally {

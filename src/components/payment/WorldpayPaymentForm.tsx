@@ -68,7 +68,9 @@ const WorldpayPaymentForm = ({
     const processWorldpayPayment = async () => {
       try {
         setStatus('loading');
-        showPaymentLoading(t('modules.pages.paymentPage.providers.worldpay.initializing'));
+        showPaymentLoading(
+          t('modules.pages.paymentPage.providers.worldpay.initializing'),
+        );
 
         // Create session request data
         const requestData = walletCurrencyId
@@ -141,7 +143,9 @@ const WorldpayPaymentForm = ({
                 onError(error);
               },
               () => {
-                onError(t('modules.pages.paymentPage.providers.worldpay.cancelled'));
+                onError(
+                  t('modules.pages.paymentPage.providers.worldpay.cancelled'),
+                );
               },
             );
           }, 200);
@@ -157,7 +161,9 @@ const WorldpayPaymentForm = ({
               onError(error);
             },
             () => {
-              onError(t('modules.pages.paymentPage.providers.worldpay.cancelled'));
+              onError(
+                t('modules.pages.paymentPage.providers.worldpay.cancelled'),
+              );
             },
           );
         }
@@ -241,7 +247,9 @@ const WorldpayPaymentForm = ({
               {t('modules.pages.paymentPage.providers.worldpay.completeTitle')}
             </CardTitle>
             <CardDescription>
-              {t('modules.pages.paymentPage.providers.worldpay.completeSubtitle')}
+              {t(
+                'modules.pages.paymentPage.providers.worldpay.completeSubtitle',
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -261,7 +269,9 @@ const WorldpayPaymentForm = ({
               <div className='absolute inset-0 flex flex-col items-center justify-center bg-white'>
                 <Loader2 className='h-8 w-8 animate-spin text-blue-600 mb-4' />
                 <p className='text-gray-600 text-center'>
-                  {t('modules.pages.paymentPage.providers.worldpay.loadingForm')}
+                  {t(
+                    'modules.pages.paymentPage.providers.worldpay.loadingForm',
+                  )}
                 </p>
               </div>
             </div>
@@ -276,13 +286,17 @@ const WorldpayPaymentForm = ({
           <CardHeader>
             <CardTitle>
               {mode === 'lightbox'
-                ? t('modules.pages.paymentPage.providers.worldpay.openingWindow')
+                ? t(
+                    'modules.pages.paymentPage.providers.worldpay.openingWindow',
+                  )
                 : t('modules.pages.paymentPage.providers.worldpay.redirecting')}
             </CardTitle>
             <CardDescription>
               {mode === 'lightbox'
                 ? t('modules.pages.paymentPage.providers.worldpay.popupWindow')
-                : t('modules.pages.paymentPage.providers.worldpay.redirectMessage')}
+                : t(
+                    'modules.pages.paymentPage.providers.worldpay.redirectMessage',
+                  )}
             </CardDescription>
           </CardHeader>
           <CardContent className='flex items-center justify-center py-10'>

@@ -16,8 +16,8 @@ import type {
 import { Elements } from '@stripe/react-stripe-js';
 import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // Function to get Stripe promise only when needed to avoid conflicts with Worldpay
 const getStripePromise = () => {
