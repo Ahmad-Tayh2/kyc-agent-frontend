@@ -5,6 +5,7 @@ import type { PaymentData, PaymentRequest } from '@/types/payment';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { StripeCardElementChangeEvent } from '@stripe/stripe-js';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface StripePaymentFormProps {
   transactionId?: number | string; // Allow string transaction references
@@ -45,6 +46,7 @@ export default function StripePaymentForm({
   onSuccess,
   onError,
 }: StripePaymentFormProps) {
+  const { t } = useTranslation('global');
   const stripe = useStripe();
   const elements = useElements();
   const createPaymentMutation = useCreatePayment();
@@ -74,7 +76,7 @@ export default function StripePaymentForm({
 
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
-      setCardError('Card element not found');
+      setCardError(t('modules.pages.paymentPage.providers.stripe.errors.elementNotFound'));
       setIsProcessing(false);
       return;
     }
@@ -88,13 +90,13 @@ export default function StripePaymentForm({
         });
 
       if (stripeError) {
-        setCardError(stripeError.message || 'An error occurred with your card');
+        setCardError(stripeError.message || t('modules.pages.paymentPage.providers.stripe.errors.cardError'));
         setIsProcessing(false);
         return;
       }
 
       if (!paymentMethod) {
-        setCardError('Failed to create payment method');
+        setCardError(t('modules.pages.paymentPage.providers.stripe.errors.methodFailed'));
         setIsProcessing(false);
         return;
       }
@@ -122,13 +124,13 @@ export default function StripePaymentForm({
       } else {
         const errorMsg = response.errors
           ? Object.values(response.errors).flat().join(', ')
-          : response.message || 'Payment failed';
+          : response.message || t('modules.pages.paymentPage.providers.stripe.errors.failed');
         setCardError(errorMsg);
         onError?.(errorMsg);
       }
     } catch (error) {
       const errorMsg =
-        error instanceof Error ? error.message : 'Payment failed';
+        error instanceof Error ? error.message : t('modules.pages.paymentPage.providers.stripe.errors.failed');
       setCardError(errorMsg);
       onError?.(errorMsg);
     } finally {
@@ -141,7 +143,7 @@ export default function StripePaymentForm({
       <div className='space-y-4'>
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-2'>
-            Card Information
+            {t('modules.pages.paymentPage.providers.stripe.cardInfo')}
           </label>
           <div className='border border-gray-300 rounded-md p-3 bg-white'>
             <CardElement
@@ -164,14 +166,18 @@ export default function StripePaymentForm({
         {amount && currency && (
           <div className='bg-gray-50 p-4 rounded-md'>
             <div className='flex justify-between items-center'>
-              <span className='text-sm text-gray-600'>Amount:</span>
+              <span className='text-sm text-gray-600'>
+                {t('modules.pages.paymentPage.providers.stripe.amount')}
+              </span>
               <span className='font-medium'>
                 {amount} {currency.toUpperCase()}
               </span>
             </div>
             {description && (
               <div className='flex justify-between items-center mt-2'>
-                <span className='text-sm text-gray-600'>Description:</span>
+                <span className='text-sm text-gray-600'>
+                  {t('modules.pages.paymentPage.providers.stripe.description')}
+                </span>
                 <span className='text-sm'>{description}</span>
               </div>
             )}
@@ -190,8 +196,10 @@ export default function StripePaymentForm({
         className='w-full bg-primary/90 hover:bg-primary text-white py-3'
       >
         {isProcessing || createPaymentMutation.isPending
-          ? 'Processing...'
-          : `Pay ${amount ? `${amount} ${currency?.toUpperCase()}` : ''}`}
+          ? t('modules.pages.paymentPage.providers.stripe.processing')
+          : t('modules.pages.paymentPage.providers.stripe.pay', {
+              amount: `${amount} ${currency?.toUpperCase()}`,
+            })}
       </Button>
     </form>
   );

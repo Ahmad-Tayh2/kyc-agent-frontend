@@ -783,6 +783,106 @@
             "errorLoading": "Error loading extra transactions:"
           }
         }
+      },
+      "paymentPage": {
+        "title": "Complete Payment",
+        "back": "Back",
+        "branding": {
+          "poweredBy": "Secure payment powered by",
+          "stripe": "Stripe",
+          "worldpay": "WorldPay",
+          "paypal": "PayPal",
+          "default": "our payment partners"
+        },
+        "success": {
+          "title": "Payment Successful!",
+          "message": "Your payment has been processed successfully.",
+          "transactionId": "Transaction ID:",
+          "amount": "Amount:",
+          "status": "Status:",
+          "description": "Description:",
+          "continue": "Continue"
+        },
+        "error": {
+          "title": "Payment Failed",
+          "message": "There was an issue processing your payment.",
+          "tryAgain": "Try Again",
+          "goBack": "Go Back"
+        },
+        "loading": {
+          "loadingMethods": "Loading payment methods...",
+          "noProviders": "No payment providers are currently enabled. Please contact support."
+        },
+        "summary": {
+          "totalAmount": "Total Amount",
+          "equivalentTo": "equivalent to =",
+          "showDetails": "Show Details",
+          "hideDetails": "Hide Details"
+        },
+        "details": {
+          "transactionRef": "Transaction Ref",
+          "customer": "Customer",
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "recipient": "Recipient",
+          "recipients": "Recipients",
+          "total": "Total",
+          "totalTransactions": "Total Transactions",
+          "moreRecipients": "+{{count}} more recipients",
+          "country": "Country",
+          "from": "From",
+          "to": "To",
+          "countries": "Countries",
+          "countryLabel": "Country",
+          "wallet": "Wallet",
+          "currentBalance": "Current Balance",
+          "newBalance": "New Balance",
+          "agent": "Agent"
+        },
+        "providers": {
+          "stripe": {
+            "cardInfo": "Card Information",
+            "amount": "Amount:",
+            "description": "Description:",
+            "processing": "Processing...",
+            "pay": "Pay {{amount}}",
+            "errors": {
+              "elementNotFound": "Card element not found",
+              "cardError": "An error occurred with your card",
+              "methodFailed": "Failed to create payment method",
+              "failed": "Payment failed"
+            }
+          },
+          "worldpay": {
+            "initializing": "Initializing Payment",
+            "settingUp": "Setting up your secure payment session...",
+            "pleaseWait": "Please wait while we prepare your payment...",
+            "retry": "Retry Payment",
+            "completeTitle": "Complete Your Payment",
+            "completeSubtitle": "Complete your payment securely in the frame below.",
+            "loadingForm": "Loading payment form...",
+            "openingWindow": "Opening Payment Window",
+            "redirecting": "Redirecting to Payment",
+            "popupWindow": "Your payment will open in a secure popup window...",
+            "redirectMessage": "You are being redirected to Worldpay to complete your payment securely.",
+            "doNotClose": "Please do not close this window during the payment process.",
+            "cancelled": "Payment was cancelled",
+            "ready": "Payment Ready"
+          },
+          "paypal": {
+            "comingSoon": "PayPal integration coming soon",
+            "payButton": "Pay with PayPal"
+          }
+        },
+        "messages": {
+          "addMoney": "Add money to wallet - {{currency}}",
+          "multipleTransactions": "Payment for {{count}} transactions",
+          "singleTransaction": "Payment for transaction #{{id}}"
+        },
+        "security": {
+          "message": "🔒 Your payment information is secure and encrypted"
+        }
       }
     },
     "navigation": {

@@ -16,6 +16,10 @@ export interface WorldpaySessionResponse {
   transaction_uuid: string;
   redirect_url: string;
   order_code: string;
+  total_amount?: string;
+  currency?: string;
+  payable_amount?: number;
+  payable_currency?: string;
 }
 
 /**
@@ -27,7 +31,7 @@ export const createWorldpaySession = async (data: WorldpaySessionRequest) => {
   return axiosInstance
     .post(`${baseUrl}/worldpay/initialize`, data)
     .then((response: AxiosResponse) =>
-      handleApiResponse<WorldpaySessionResponse>(response.data)
+      handleApiResponse<WorldpaySessionResponse>(response.data),
     );
 };
 
@@ -47,7 +51,7 @@ export const markPaymentProcessing = async (data: {
         payment_id: number;
         transaction_uuid: string;
         status: string;
-      }>(response.data)
+      }>(response.data),
     );
 };
 
@@ -65,7 +69,7 @@ export const verifyPaymentStatus = async (orderCode: string) => {
         order_code: string;
         amount?: number;
         currency?: string;
-      }>(response.data)
+      }>(response.data),
     );
 };
 
