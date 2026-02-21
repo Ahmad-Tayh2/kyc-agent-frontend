@@ -1,15 +1,15 @@
 // Utility to handle payment provider conflicts
 export const clearPaymentProviderConflicts = (
-  targetProvider: 'stripe' | 'worldpay'
+  targetProvider: 'stripe' | 'worldpay',
 ) => {
   if (targetProvider === 'worldpay') {
     console.log(
-      '🧹 Clearing potential payment provider conflicts for Worldpay...'
+      '🧹 Clearing potential payment provider conflicts for Worldpay...',
     );
 
     // Remove any Stripe-related event listeners that might interfere
     const stripeElements = document.querySelectorAll(
-      '[id*="stripe"], [class*="stripe"], iframe[src*="stripe"]'
+      '[id*="stripe"], [class*="stripe"], iframe[src*="stripe"]',
     );
     stripeElements.forEach((element) => {
       console.log('Found Stripe element:', element);
@@ -23,9 +23,9 @@ export const clearPaymentProviderConflicts = (
     // Suppress Stripe postMessage interference
     const suppressStripeMessages = (event: MessageEvent) => {
       if (event.origin.includes('stripe.com') || event.data?.__stripeJsV3) {
-        console.log(
-          '🚫 Suppressing Stripe postMessage to avoid Worldpay conflict'
-        );
+        // console.log(
+        //   '🚫 Suppressing Stripe postMessage to avoid Worldpay conflict'
+        // );
         event.stopImmediatePropagation();
         return false;
       }
@@ -37,7 +37,7 @@ export const clearPaymentProviderConflicts = (
     // Remove after 10 seconds (should be enough for Worldpay to initialize)
     setTimeout(() => {
       window.removeEventListener('message', suppressStripeMessages, true);
-      console.log('✅ Removed Stripe message suppression');
+      // console.log('✅ Removed Stripe message suppression');
     }, 10000);
   }
 };
