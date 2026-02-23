@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 // import type { PaymentLinkType } from "@/types/paymentLinks";
 import StatusLabel from "../shared/StatusLabel";
 import { Link } from "react-router-dom";
+import CopyLinkIcon from "@/assets/icons/copy-link.svg?react";
 import { ROUTES } from "@/constants/routes";
 import { PAYMENT_LINKS_STATUSES_COLORS } from "@/constants/appConstants";
 import ActionButton from "../shared/ActionButton";
@@ -77,6 +78,54 @@ export const paymentLinksColumns = (): ColumnDef<any>[] => {
       {
         accessorKey: "type",
         header: "Type",
+      },
+      {
+        accessorKey: "token",
+        header: "Link",
+        cell: ({ row }) => {
+          const token: string = row.original.token;
+          const fullUrl = token ? `${window.location.origin}/payment/${token}` : "";
+          const displayUrl =
+            fullUrl.length > 25 ? fullUrl.slice(0, 25) + "..." : fullUrl;
+
+          const [copied, setCopied] = useState(false);
+
+          const handleCopy = () => {
+            if (!fullUrl) return;
+            navigator.clipboard.writeText(fullUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          };
+
+          if (!fullUrl) {
+            return (
+              <span className="text-xs text-muted-foreground">—</span>
+            );
+          }
+
+          return (
+            <div className="flex items-center gap-2">
+              <span
+                className="text-xs text-muted-foreground"
+                title={fullUrl}
+              >
+                {displayUrl}
+              </span>
+              <button
+                onClick={handleCopy}
+                className="cursor-pointer flex-shrink-0 relative"
+                title={copied ? "Copied!" : "Copy link"}
+              >
+                <CopyLinkIcon className="w-4 h-4" />
+                {copied && (
+                  <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] rounded px-1 py-0.5 whitespace-nowrap">
+                    Copied!
+                  </span>
+                )}
+              </button>
+            </div>
+          );
+        },
       },
       {
         accessorKey: "amount_to_pay",
