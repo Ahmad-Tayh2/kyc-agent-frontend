@@ -603,7 +603,7 @@ const PayStep = (props: PayStepProps) => {
                                         Required Amount:
                                       </span>
                                       <span className='font-medium text-gray-900'>
-                                        {canPayData.required_amount.toFixed(2)}{' '}
+                                        {canPayData.required_amount?.toFixed(2)}{' '}
                                         {walletCurrency}
                                       </span>
                                     </div>
@@ -612,7 +612,7 @@ const PayStep = (props: PayStepProps) => {
                                         Balance After Payment:
                                       </span>
                                       <span className='font-medium text-teal-600'>
-                                        {canPayData.balance_after_payment.toFixed(
+                                        {canPayData.balance_after_payment?.toFixed(
                                           2,
                                         )}{' '}
                                         {walletCurrency}
@@ -730,7 +730,7 @@ const PayStep = (props: PayStepProps) => {
                     <div className='flex justify-between'>
                       <span className='text-gray-600'>Amount to Pay:</span>
                       <span className='font-medium text-red-600'>
-                        {canPayData.required_amount.toFixed(2)}{' '}
+                        {canPayData.required_amount?.toFixed(2)}{' '}
                         {canPayData.currency}
                       </span>
                     </div>
@@ -739,7 +739,7 @@ const PayStep = (props: PayStepProps) => {
                         Current Wallet Balance:
                       </span>
                       <span className='font-medium'>
-                        {canPayData.wallet_balance.toFixed(2)}{' '}
+                        {canPayData.wallet_balance?.toFixed(2)}{' '}
                         {canPayData.currency}
                       </span>
                     </div>
@@ -748,7 +748,7 @@ const PayStep = (props: PayStepProps) => {
                         Balance After Payment:
                       </span>
                       <span className='font-semibold text-teal-600'>
-                        {canPayData.balance_after_payment.toFixed(2)}{' '}
+                        {canPayData.balance_after_payment?.toFixed(2)}{' '}
                         {canPayData.currency}
                       </span>
                     </div>
