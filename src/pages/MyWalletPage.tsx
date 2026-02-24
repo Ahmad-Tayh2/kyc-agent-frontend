@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useWallet, useDeleteCurrency } from "@/hooks/data/useWallet";
+import { useAuthStore } from "@/store/authStore";
 import { CurrencyCard } from "@/components/CurrencyCard";
 import { ExtraTransactionsTable } from "@/components/wallet/TransactionsTable";
 import ExchangeCurrenciesDialog from "@/components/wallet/ExchangeCurrenciesDialog";
@@ -10,9 +11,9 @@ import PageTitle from "@/components/shared/PageTitle";
 
 const MyWalletPage: React.FC = () => {
   const [t] = useTranslation("global");
+  const { user } = useAuthStore();
 
-  // For now, we'll use a placeholder agent ID. In a real app, this would come from auth context
-  const agentId = 2; // This should come from your auth context/state
+  const agentId = user?.agent?.id;
 
   const [isExchangeDialogOpen, setIsExchangeDialogOpen] = useState(false);
   const [isAddCurrencyDialogOpen, setIsAddCurrencyDialogOpen] = useState(false);
