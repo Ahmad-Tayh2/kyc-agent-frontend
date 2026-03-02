@@ -1,30 +1,31 @@
-import CheckedIcon from "@/assets/icons/checked-icon.svg?react";
-import CurrencyInput from "@/components/CurrencyInput";
-import { useWallet } from "@/hooks/data/useWallet";
-import type { TransactionPreviewPayload } from "@/types/transfers";
-import { Info } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import CheckedIcon from '@/assets/icons/checked-icon.svg?react';
+import CurrencyInput from '@/components/CurrencyInput';
+import { useWallet } from '@/hooks/data/useWallet';
+import type { TransactionPreviewPayload } from '@/types/transfers';
+import { Info } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 // import type { WalletCurrency } from "@/types/wallet";
-import Loader from "@/components/shared/Loader";
-import { Label } from "@/components/ui/label";
+import Loader from '@/components/shared/Loader';
+import { Label } from '@/components/ui/label';
 // import SummaryCard from "./SummaryCard";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useAgentExtraFees } from "@/hooks/data/useAgent";
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { useAgentExtraFees } from '@/hooks/data/useAgent';
 import {
-  useSendCountryCurrencies,
   useReceiveCountryCurrencies,
-} from "@/hooks/data/useRemittanceAvailability";
+  useSendCountryCurrencies,
+} from '@/hooks/data/useRemittanceAvailability';
 import {
   useTransactionPreview,
   useTransactionPreviewByRef,
-} from "@/hooks/data/useTransfers";
-import { useSummaryData } from "@/hooks/useSummaryData";
-import { useSendRemittanceStore } from "@/store/sendRemittanceStore";
-import type { SendRemittanceExchangeDetails } from "@/types/sendRemittance";
-import type { RemittanceCurrency } from "@/types/remittanceAvailability";
-import { useLocation } from "react-router-dom";
-import SummaryCard from "./SummaryCard";
+} from '@/hooks/data/useTransfers';
+import { useSummaryData } from '@/hooks/useSummaryData';
+import { useAuthStore } from '@/store/authStore';
+import { useSendRemittanceStore } from '@/store/sendRemittanceStore';
+import type { RemittanceCurrency } from '@/types/remittanceAvailability';
+import type { SendRemittanceExchangeDetails } from '@/types/sendRemittance';
+import { useLocation } from 'react-router-dom';
+import SummaryCard from './SummaryCard';
 
 interface CurrenciesAmountStepProps {
   isReadOnly?: boolean;
@@ -35,9 +36,9 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
 }) => {
   // Check if there's a transaction reference in the URL path
   const location = useLocation();
-  const pathSegments = location.pathname.split("/");
+  const pathSegments = location.pathname.split('/');
   const sendRemittanceIndex = pathSegments.findIndex(
-    (segment) => segment === "send-remittance"
+    (segment) => segment === 'send-remittance',
   );
   const transactionRef =
     sendRemittanceIndex !== -1 && pathSegments[sendRemittanceIndex + 1]
@@ -46,52 +47,52 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
   const isEditMode = !!transactionRef;
 
   // For now, we'll use a placeholder agent ID. In a real app, this would come from auth context
-  const agentId = 2; // This should come from your auth context/state
+  const agentId = useAuthStore((state) => state.user?.agent?.id ?? null); // This should come from your auth context/state
   // Store state and actions
   const stepOne = useSendRemittanceStore((state) => state.data.stepOne);
   const sendCurrency = useSendRemittanceStore(
-    (state) => state.data.stepTwo.sendCurrency
+    (state) => state.data.stepTwo.sendCurrency,
   );
   const receiveCurrency = useSendRemittanceStore(
-    (state) => state.data.stepTwo.receiveCurrency
+    (state) => state.data.stepTwo.receiveCurrency,
   );
   const sendAmount = useSendRemittanceStore(
-    (state) => state.data.stepTwo.sendAmount
+    (state) => state.data.stepTwo.sendAmount,
   );
   const receiveAmount = useSendRemittanceStore(
-    (state) => state.data.stepTwo.receiveAmount
+    (state) => state.data.stepTwo.receiveAmount,
   );
   const setSendCurrency = useSendRemittanceStore(
-    (state) => state.setSendCurrency
+    (state) => state.setSendCurrency,
   );
   const setReceiveCurrency = useSendRemittanceStore(
-    (state) => state.setReceiveCurrency
+    (state) => state.setReceiveCurrency,
   );
   const setSendAmount = useSendRemittanceStore((state) => state.setSendAmount);
   const setReceiveAmount = useSendRemittanceStore(
-    (state) => state.setReceiveAmount
+    (state) => state.setReceiveAmount,
   );
 
   const setExchangeDetails = useSendRemittanceStore(
-    (state) => state.setExchangeDetails
+    (state) => state.setExchangeDetails,
   );
   const extraFeesPercent = useSendRemittanceStore(
-    (state) => state.data.stepTwo.extraFeesPercent
+    (state) => state.data.stepTwo.extraFeesPercent,
   );
   const setExtraFeesPercent = useSendRemittanceStore(
-    (state) => state.setExtraFeesPercent
+    (state) => state.setExtraFeesPercent,
   );
   const isAllFeesIncludedInSendAmount = useSendRemittanceStore(
-    (state) => state.data.stepTwo.isAllFeesIncludedInSendAmount
+    (state) => state.data.stepTwo.isAllFeesIncludedInSendAmount,
   );
   const setIsAllFeesIncludedInSendAmount = useSendRemittanceStore(
-    (state) => state.setIsAllFeesIncludedInSendAmount
+    (state) => state.setIsAllFeesIncludedInSendAmount,
   );
   const isCalculateFromReceiveAmount = useSendRemittanceStore(
-    (state) => state.data.stepTwo.isCalculateFromReceiveAmount
+    (state) => state.data.stepTwo.isCalculateFromReceiveAmount,
   );
   const setIsCalculateFromReceiveAmount = useSendRemittanceStore(
-    (state) => state.setIsCalculateFromReceiveAmount
+    (state) => state.setIsCalculateFromReceiveAmount,
   );
 
   // Data hooks
@@ -99,11 +100,11 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
   const { data: extraFeesData } = useAgentExtraFees(agentId);
 
   const { data: sendingCurrencies } = useSendCountryCurrencies(
-    stepOne?.sendCountry?.id ?? null
+    stepOne?.sendCountry?.id ?? null,
   );
 
   const { data: receivingCurrencies } = useReceiveCountryCurrencies(
-    stepOne?.receiveCountry?.id ?? null
+    stepOne?.receiveCountry?.id ?? null,
   );
 
   // Get wallet currencies - memoized to prevent dependency issues
@@ -115,11 +116,11 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
   useEffect(() => {
     if (isEditMode && transactionRef) {
       console.log(
-        "Edit mode detected - Using preview by reference:",
-        transactionRef
+        'Edit mode detected - Using preview by reference:',
+        transactionRef,
       );
     } else {
-      console.log("Create mode - Using normal preview");
+      console.log('Create mode - Using normal preview');
     }
   }, [isEditMode, transactionRef]);
 
@@ -195,8 +196,8 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
   // Set up preview by ref payload for edit mode
   const [previewByRefPayload, setPreviewByRefPayload] = useState<
     | Omit<
-        import("@/types/transfers").TransactionPreviewByRefPayload,
-        "transaction_reference"
+        import('@/types/transfers').TransactionPreviewByRefPayload,
+        'transaction_reference'
       >
     | undefined
   >();
@@ -210,8 +211,8 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
 
       if (sendCurrency?.code && receiveCurrency?.code && hasValidAmount) {
         const payload: Omit<
-          import("@/types/transfers").TransactionPreviewByRefPayload,
-          "transaction_reference"
+          import('@/types/transfers').TransactionPreviewByRefPayload,
+          'transaction_reference'
         > = {
           send_currency: sendCurrency.code,
           receive_currency: receiveCurrency.code,
@@ -290,7 +291,7 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
     isLoading: previewLoading,
     error: previewError,
   } = useTransactionPreview(
-    isEditMode || isReadOnly ? undefined : previewPayload
+    isEditMode || isReadOnly ? undefined : previewPayload,
   );
 
   const {
@@ -299,7 +300,7 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
     error: previewByRefError,
   } = useTransactionPreviewByRef(
     isEditMode && !isReadOnly ? transactionRef || undefined : undefined,
-    isReadOnly ? undefined : previewByRefPayload
+    isReadOnly ? undefined : previewByRefPayload,
   );
 
   // Select the appropriate preview data based on mode
@@ -362,11 +363,11 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
 
   const availableBalance = useMemo(() => {
     if (!sendCurrency) return undefined;
-    if (!walletCurrencies?.length) return parseFloat("0");
+    if (!walletCurrencies?.length) return parseFloat('0');
     const currency = walletCurrencies?.find((c) => {
       return c.currency_id === sendCurrency?.id;
     });
-    if (!currency) return parseFloat("0");
+    if (!currency) return parseFloat('0');
     return parseFloat(currency?.amount);
   }, [walletCurrencies, sendCurrency]);
 
@@ -385,22 +386,22 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className='p-6 space-y-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
         {/* Currency Selection Section */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="border-[#E7EFEF] border-b-1 pb-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className='lg:col-span-2 space-y-6'>
+          <div className='border-[#E7EFEF] border-b-1 pb-5'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
               {/* From Currency Section - Wallet Currencies */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
+              <div className='space-y-4'>
+                <div className='flex items-center space-x-2'>
                   <Label>Select the currency and sending amount</Label>
-                  <Info className="w-4 h-4 text-gray-400" />
+                  <Info className='w-4 h-4 text-gray-400' />
                 </div>
 
                 <CurrencyInput
-                  placeholder="Select from wallet"
-                  amountPlaceholder="Enter amount"
+                  placeholder='Select from wallet'
+                  amountPlaceholder='Enter amount'
                   currencyOptions={
                     sendingCurrencies?.map((item: RemittanceCurrency) => {
                       return {
@@ -414,7 +415,7 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
                   amount={sendAmount}
                   onCurrencyChange={(currencyId) => {
                     const currency = sendingCurrencies?.find(
-                      (item: RemittanceCurrency) => item.id === currencyId
+                      (item: RemittanceCurrency) => item.id === currencyId,
                     );
                     if (currency) {
                       setSendCurrency({
@@ -433,15 +434,15 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
               </div>
 
               {/* To Currency Section - All Currencies */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
+              <div className='space-y-4'>
+                <div className='flex items-center space-x-2'>
                   <Label>Receiver get</Label>
-                  <Info className="w-4 h-4 text-gray-400" />
+                  <Info className='w-4 h-4 text-gray-400' />
                 </div>
 
                 <CurrencyInput
-                  placeholder="Select target currency"
-                  amountPlaceholder="Amount to receive"
+                  placeholder='Select target currency'
+                  amountPlaceholder='Amount to receive'
                   currencyOptions={
                     receivingCurrencies?.map((item: RemittanceCurrency) => {
                       return {
@@ -455,7 +456,7 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
                   amount={receiveAmount}
                   onCurrencyChange={(currencyId) => {
                     const currency = receivingCurrencies?.find(
-                      (item: RemittanceCurrency) => item.id === currencyId
+                      (item: RemittanceCurrency) => item.id === currencyId,
                     );
                     if (currency) {
                       setReceiveCurrency({
@@ -473,10 +474,10 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
             </div>
 
             {/* Fee Calculation Options */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="flex items-center space-x-2">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
+              <div className='flex items-center space-x-2'>
                 <Checkbox
-                  id="allFeesIncluded"
+                  id='allFeesIncluded'
                   checked={isAllFeesIncludedInSendAmount}
                   onCheckedChange={(checked) => {
                     setIsAllFeesIncludedInSendAmount(checked === true);
@@ -488,16 +489,16 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
                   disabled={isReadOnly}
                 />
                 <label
-                  htmlFor="allFeesIncluded"
-                  className="text-sm text-gray-700 cursor-pointer"
+                  htmlFor='allFeesIncluded'
+                  className='text-sm text-gray-700 cursor-pointer'
                 >
                   All fees and commissions included in send amount
                 </label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className='flex items-center space-x-2'>
                 <Checkbox
-                  id="calculateFromReceive"
+                  id='calculateFromReceive'
                   checked={isCalculateFromReceiveAmount}
                   onCheckedChange={(checked) => {
                     const isChecked = checked === true;
@@ -515,8 +516,8 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
                   disabled={isReadOnly}
                 />
                 <label
-                  htmlFor="calculateFromReceive"
-                  className="text-sm text-gray-700 cursor-pointer"
+                  htmlFor='calculateFromReceive'
+                  className='text-sm text-gray-700 cursor-pointer'
                 >
                   Enter final receive amount
                 </label>
@@ -524,8 +525,8 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
             </div>
 
             {isCalculateFromReceiveAmount && (
-              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-sm text-blue-800">
+              <div className='mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md'>
+                <p className='text-sm text-blue-800'>
                   Enter the receive amount above. The send amount will be
                   calculated automatically based on the exchange rate.
                 </p>
@@ -534,49 +535,49 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
 
             {/* Loading and Error States */}
             {activePreviewLoading && (sendAmount > 0 || receiveAmount > 0) && (
-              <div className="bg-blue-50 rounded-lg p-4">
-                <div className="flex items-center justify-center">
+              <div className='bg-blue-50 rounded-lg p-4'>
+                <div className='flex items-center justify-center'>
                   <Loader size={16} />
-                  <span className="ml-2 text-sm text-blue-600">
+                  <span className='ml-2 text-sm text-blue-600'>
                     {isCalculateFromReceiveAmount
-                      ? "Calculating send amount..."
-                      : "Calculating exchange rate..."}
+                      ? 'Calculating send amount...'
+                      : 'Calculating exchange rate...'}
                   </span>
                 </div>
               </div>
             )}
 
             {activePreviewError && (sendAmount > 0 || receiveAmount > 0) && (
-              <div className="bg-red-50 rounded-lg p-4">
-                <div className="text-sm text-red-600">
+              <div className='bg-red-50 rounded-lg p-4'>
+                <div className='text-sm text-red-600'>
                   Unable to calculate exchange rate. Please try again.
                 </div>
               </div>
             )}
           </div>
-          <div className="border-[#E7EFEF] border-b-1 pb-5">
+          <div className='border-[#E7EFEF] border-b-1 pb-5'>
             <span>Your commission: </span>
-            <span className="font-semibold">
+            <span className='font-semibold'>
               {conversionInfo?.agentCommission
                 ? `${conversionInfo.agentCommission.toFixed(2)} ${
-                    sendCurrency?.code || ""
+                    sendCurrency?.code || ''
                   }`
-                : "0.00"}
+                : '0.00'}
             </span>
           </div>
-          <div className="pb-5">
-            <div className="flex items-center gap-2 mb-2">
+          <div className='pb-5'>
+            <div className='flex items-center gap-2 mb-2'>
               <Label>
                 Add your extra fees percentage (Max {maxExtraFeesPercent}%)
               </Label>
-              <Info className="w-4 h-4 text-gray-400" />
+              <Info className='w-4 h-4 text-gray-400' />
             </div>
-            <div className="flex items-center gap-4">
+            <div className='flex items-center gap-4'>
               <Input
-                type="number"
-                min="0"
+                type='number'
+                min='0'
                 max={maxExtraFeesPercent}
-                step="0.1"
+                step='0.1'
                 value={extraFeesPercent}
                 onChange={(e) => {
                   const value = parseFloat(e.target.value);
@@ -586,19 +587,19 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
                     setExtraFeesPercent(maxExtraFeesPercent);
                   }
                 }}
-                placeholder="0"
-                className="w-32"
+                placeholder='0'
+                className='w-32'
                 disabled={isReadOnly}
               />
-              <span className="text-sm text-gray-600">%</span>
+              <span className='text-sm text-gray-600'>%</span>
               {extraFeesAmount > 0 && sendCurrency && (
-                <span className="text-sm font-medium text-green-600">
+                <span className='text-sm font-medium text-green-600'>
                   = {extraFeesAmount.toFixed(2)} {sendCurrency.code}
                 </span>
               )}
             </div>
             {extraFeesPercent > 0 && (
-              <div className="mt-2 p-3 bg-green-50 border border-green-200 text-sm text-green-800 rounded-md">
+              <div className='mt-2 p-3 bg-green-50 border border-green-200 text-sm text-green-800 rounded-md'>
                 Extra fees of {extraFeesPercent}% will be added (
                 {extraFeesAmount.toFixed(2)} {sendCurrency?.code})
               </div>
@@ -607,14 +608,14 @@ const CurrenciesAmountStep: React.FC<CurrenciesAmountStepProps> = ({
         </div>
 
         {/* Summary Card - Right Side */}
-        <div className="lg:col-span-1">
+        <div className='lg:col-span-1'>
           <SummaryCard data={summaryData} />
         </div>
       </div>
       {/* Step Validation Info */}
       {isStepValid(currentStep) && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 text-sm text-green-800 font-medium flex items-center gap-1 rounded-md">
-          <CheckedIcon />{" "}
+        <div className='mt-4 p-3 bg-green-50 border border-green-200 text-sm text-green-800 font-medium flex items-center gap-1 rounded-md'>
+          <CheckedIcon />{' '}
           <span> Step completed! You can now proceed to the next step.</span>
         </div>
       )}

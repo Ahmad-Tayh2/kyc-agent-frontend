@@ -356,8 +356,15 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       });
     }
   };
+  // Auto-select customer when there's only one option and no customer is selected yet
+  const hasAutoSelectedCustomer = useRef(false);
   useEffect(() => {
-    if (customerOptions?.length === 1) {
+    if (
+      customerOptions?.length === 1 &&
+      !stepOne.customer?.id &&
+      !hasAutoSelectedCustomer.current
+    ) {
+      hasAutoSelectedCustomer.current = true;
       handleCustomerSelect(customerOptions[0]?.value);
     }
   }, [customerOptions]);

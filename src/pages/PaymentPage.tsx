@@ -1,5 +1,4 @@
 // import PaymentMethodSelector from "@/components/payment/PaymentMethodSelector";
-import StripePaymentForm from '@/components/payment/StripePaymentForm';
 import WorldpayPaymentForm from '@/components/payment/WorldpayPaymentForm';
 import BrandingSection from '@/components/shared/BrandingSection';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -7,22 +6,20 @@ import { Button } from '@/components/ui/button';
 import { useGetApisAndGateways } from '@/hooks/data/useApisAndGateways';
 import { usePaymentValidation } from '@/hooks/data/usePaymentValidation';
 import { useGetTransferById } from '@/hooks/data/useTransfers';
-import getStripe from '@/lib/stripe';
 import type {
   PaymentData,
   PaymentMethod,
   PaymentProvider,
 } from '@/types/payment';
-import { Elements } from '@stripe/react-stripe-js';
 import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
-// Function to get Stripe promise only when needed to avoid conflicts with Worldpay
-const getStripePromise = () => {
-  return getStripe();
-};
+const StripePaymentForm = lazy(
+  () => import('@/components/payment/StripePaymentForm'),
+);
+
 type ApiType = {
   name: string;
   is_active: boolean;
@@ -390,20 +387,67 @@ export default function PaymentPage() {
     setPaymentData(null);
   }, []);
 
-  // Only initialize Stripe when it's both selected AND enabled
-  const stripePromise =
-    selectedProvider === 'stripe' && enabledProviders.includes('stripe')
-      ? getStripePromise()
-      : null;
+  // Dynamically load Stripe SDK only when ALL conditions are met
+  const [StripeElementsComponent, setStripeElementsComponent] = useState<
+    React.ComponentType<{
+      stripe: import('@stripe/stripe-js').Stripe | null;
+      children: React.ReactNode;
+    }> | null
+  >(null);
+
+  const [stripeInstance, setStripeInstance] = useState<
+    import('@stripe/stripe-js').Stripe | null
+  >(null);
+
+  useEffect(() => {
+    if (
+      isLoadingGateways ||
+      !enabledProviders.includes('stripe') ||
+      selectedProvider !== 'stripe' ||
+      selectedMethod !== 'card'
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    Promise.all([
+      import('@stripe/react-stripe-js'),
+      import('@/lib/stripe').then((m) => m.default()),
+    ]).then(([stripeReact, stripe]) => {
+      if (!cancelled) {
+        setStripeElementsComponent(
+          () =>
+            stripeReact.Elements as React.ComponentType<{
+              stripe: import('@stripe/stripe-js').Stripe | null;
+              children: React.ReactNode;
+            }>,
+        );
+        setStripeInstance(stripe);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoadingGateways, enabledProviders, selectedProvider, selectedMethod]);
 
   // Memoize payment forms to prevent re-renders when details toggle
-  const stripePaymentForm = useMemo(
-    () =>
-      selectedProvider === 'stripe' &&
-      enabledProviders.includes('stripe') &&
-      selectedMethod === 'card' &&
-      stripePromise ? (
-        <Elements stripe={stripePromise} key='stripe-elements'>
+  const stripePaymentForm = useMemo(() => {
+    if (
+      isLoadingGateways ||
+      selectedProvider !== 'stripe' ||
+      !enabledProviders.includes('stripe') ||
+      selectedMethod !== 'card' ||
+      !StripeElementsComponent ||
+      !stripeInstance
+    ) {
+      return null;
+    }
+
+    return (
+      <StripeElementsComponent stripe={stripeInstance} key='stripe-elements'>
+        <Suspense fallback={null}>
           <StripePaymentForm
             transactionId={detectedTransactionId}
             paymentLinkToken={detectedPaymentLinkToken}
@@ -414,23 +458,25 @@ export default function PaymentPage() {
             onSuccess={handlePaymentSuccess}
             onError={handlePaymentError}
           />
-        </Elements>
-      ) : null,
-    [
-      selectedProvider,
-      enabledProviders,
-      selectedMethod,
-      stripePromise,
-      detectedTransactionId,
-      detectedPaymentLinkToken,
-      walletCurrencyId,
-      paymentInfo.amount,
-      paymentInfo.currency,
-      paymentInfo.description,
-      handlePaymentSuccess,
-      handlePaymentError,
-    ],
-  );
+        </Suspense>
+      </StripeElementsComponent>
+    );
+  }, [
+    isLoadingGateways,
+    selectedProvider,
+    enabledProviders,
+    selectedMethod,
+    StripeElementsComponent,
+    stripeInstance,
+    detectedTransactionId,
+    detectedPaymentLinkToken,
+    walletCurrencyId,
+    paymentInfo.amount,
+    paymentInfo.currency,
+    paymentInfo.description,
+    handlePaymentSuccess,
+    handlePaymentError,
+  ]);
 
   const worldpayPaymentForm = useMemo(
     () =>
