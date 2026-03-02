@@ -1,15 +1,15 @@
-import { transfersService } from "@/services/transfers";
+import { transfersService } from '@/services/transfers';
 import type {
   TransactionCreateDataType,
   TransactionPreviewByRefPayload,
   TransactionPreviewPayload,
-} from "@/types/transfers";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@/types/transfers';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export function useGetTransfers(filters?: string) {
   return useQuery({
-    queryKey: ["get-transfers", filters],
+    queryKey: ['get-transfers', filters],
     queryFn: () => transfersService.getTransfers(filters),
     staleTime: 0,
   });
@@ -17,14 +17,15 @@ export function useGetTransfers(filters?: string) {
 
 export function useGetTransfer(ref: string) {
   return useQuery({
-    queryKey: ["get-transfer", ref],
+    queryKey: ['get-transfer', ref],
     queryFn: () => transfersService.getTransferByRef(ref),
     enabled: !!ref,
+    staleTime: 0,
   });
 }
 export function useGetTransferById(id: string | number) {
   return useQuery({
-    queryKey: ["get-transfer-byId", id],
+    queryKey: ['get-transfer-byId', id],
     queryFn: () => transfersService.getTransferById(id),
     enabled: !!id,
   });
@@ -35,13 +36,13 @@ export function useCreateTransfer(onSuccess?: () => void) {
     mutationFn: (data: TransactionCreateDataType) =>
       transfersService.createTransfer(data),
     onSuccess: () => {
-      toast.success("Transfer created successfully!");
+      toast.success('Transfer created successfully!');
       onSuccess?.();
       //queryClient.invalidateQueries({ queryKey: ["get-transfers"] });
       //navigate(ROUTES.TRANSFERS.LIST);
     },
     onError: () => {
-      toast.error("Transfer creation failed!");
+      toast.error('Transfer creation failed!');
     },
   });
 }
@@ -74,7 +75,7 @@ export function useUpdateTransfer(ref: string) {
 
 export function useTransactionPreview(payload?: TransactionPreviewPayload) {
   return useQuery({
-    queryKey: ["transactionPreview", payload],
+    queryKey: ['transactionPreview', payload],
     queryFn: () => transfersService.previewTransaction(payload!),
     enabled:
       !!payload &&
@@ -91,10 +92,10 @@ export function useTransactionPreview(payload?: TransactionPreviewPayload) {
 
 export function useTransactionPreviewByRef(
   ref: string | undefined,
-  payload?: Omit<TransactionPreviewByRefPayload, "transaction_reference">
+  payload?: Omit<TransactionPreviewByRefPayload, 'transaction_reference'>,
 ) {
   return useQuery({
-    queryKey: ["transactionPreviewByRef", ref, payload],
+    queryKey: ['transactionPreviewByRef', ref, payload],
     queryFn: () => transfersService.previewTransactionByRef(ref!, payload!),
     enabled:
       !!ref &&
