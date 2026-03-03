@@ -86,7 +86,10 @@ const LoginForm: React.FC<{
     });
 
     // Validate on submit
-    const { errors: loginErrors } = validate(loginSchema, data);
+    const { errors: loginErrors } = validate(loginSchema, {
+      ...data,
+      email: data?.email?.trim(),
+    });
     setErrors(loginErrors);
     if (loginErrors) {
       return;
@@ -106,13 +109,13 @@ const LoginForm: React.FC<{
             response.data.user,
             response.data.access_token,
             // response.data.expires_in
-            "900"
+            "900",
           ); //save the auth data in zustand store
         }
         if (response?.data?.expires_in) {
           localStorage.setItem(
             "expires_in",
-            JSON.stringify(900)
+            JSON.stringify(900),
             // JSON.stringify(response.data.expires_in)
           );
         }
