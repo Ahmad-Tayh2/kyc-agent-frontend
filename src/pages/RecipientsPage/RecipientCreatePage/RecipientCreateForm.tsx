@@ -690,6 +690,16 @@ const RecipientCreateForm: React.FC = () => {
       }
       setCurrentStep("remittance");
     } else if (currentStep === "remittance") {
+      if (!recipientId) {
+        throw new Error("No recipient ID available for final submission");
+      }
+      // Step 2: Create recipient payout relationships
+      for (const payoutAgent of formData.payout_agents) {
+        await createRecipientPayout({
+          recipient_id: Number(recipientId),
+          payout_agent_id: payoutAgent.payout_agent_id,
+        });
+      }
       setCurrentStep("bank");
     }
   };
@@ -743,13 +753,13 @@ const RecipientCreateForm: React.FC = () => {
         await createBankAccount(bankAccountData);
       }
 
-      // Step 2: Create recipient payout relationships
-      for (const payoutAgent of formData.payout_agents) {
-        await createRecipientPayout({
-          recipient_id: recipientId,
-          payout_agent_id: payoutAgent.payout_agent_id,
-        });
-      }
+      // // Step 2: Create recipient payout relationships
+      // for (const payoutAgent of formData.payout_agents) {
+      //   await createRecipientPayout({
+      //     recipient_id: recipientId,
+      //     payout_agent_id: payoutAgent.payout_agent_id,
+      //   });
+      // }
 
       // Final success and navigation
       toast.success("Recipient bank account created successfully!");
@@ -828,11 +838,15 @@ const RecipientCreateForm: React.FC = () => {
   );
   const handleSkip = () => {
     if (createRecipientStatus === "success" && recipientId) {
-      toast.info("You can add bank details later");
-      if (formData.customer_id === "agent_id") {
-        navigate(ROUTES.SETTINGS.TAB("recipients"));
+      if (currentStep === "remittance") {
+        setCurrentStep("bank");
       } else {
-        navigate(ROUTES.RECIPIENTS.LIST);
+        toast.info("You can add bank details later");
+        if (formData.customer_id === "agent_id") {
+          navigate(ROUTES.SETTINGS.TAB("recipients"));
+        } else {
+          navigate(ROUTES.RECIPIENTS.LIST);
+        }
       }
     }
   };
@@ -912,7 +926,7 @@ const RecipientCreateForm: React.FC = () => {
             disabled={currentStep === "basic"}
           />
           <div className="flex justify-end items-end gap-4">
-            {currentStep === "bank" && (
+            {currentStep !== "basic" && (
               <ActionButton
                 title="skip step"
                 onClick={handleSkip}
