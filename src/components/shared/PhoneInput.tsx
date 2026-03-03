@@ -175,8 +175,6 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   //     : `${selectedOption.code} ${phoneNumber.replace(/^\+\d+\s*/, "")}`
   //   : phoneNumber;
 
-  console.log("fiilterrrrsss = = ", filteredOptions);
-
   return (
     <div className="flex flex-col gap-1">
       <div

@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useRegisterAndUpload } from "@/hooks/data/useAuth";
-import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
+import {
+  useCountries,
+  useCitiesByCountry,
+  useStatesByCountry,
+} from "@/hooks/data/useAddress";
 import { useTranslation } from "react-i18next";
 import RegistrationSuccessDialog from "./RegistrationSuccessDialog";
 
@@ -112,7 +116,10 @@ const RegisterForm: React.FC<{
 
   const { data: countries = [], isLoading: countriesLoading } = useCountries();
   const { data: cities = [], isLoading: citiesLoading } = useCitiesByCountry(
-    formData.country || null
+    formData.country || null,
+  );
+  const { data: states = [], isLoading: statesLoading } = useStatesByCountry(
+    formData.country || null,
   );
   const { data: businessCities = [], isLoading: businessCitiesLoading } =
     useCitiesByCountry(formData.businessCountry || null);
@@ -128,7 +135,11 @@ const RegisterForm: React.FC<{
       value: city.id.toString(),
       label: city.name,
     })) || [];
-
+  const stateOptions =
+    states?.map((state) => ({
+      value: state.id.toString(),
+      label: state.name,
+    })) || [];
   const businessCityOptions =
     businessCities?.map((city) => ({
       value: city.id.toString(),
@@ -266,11 +277,11 @@ const RegisterForm: React.FC<{
       newErrors.password = t("modules.register.fields.password.minLength");
     if (!formData.confirmPassword)
       newErrors.confirmPassword = t(
-        "modules.register.fields.confirmPassword.required"
+        "modules.register.fields.confirmPassword.required",
       );
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = t(
-        "modules.register.fields.confirmPassword.error"
+        "modules.register.fields.confirmPassword.error",
       );
     if (!formData.streetName)
       newErrors.streetName = t("modules.register.fields.streetName.error");
@@ -288,23 +299,23 @@ const RegisterForm: React.FC<{
     if (step === "partner") {
       if (!formData.businessName)
         newErrors.businessName = t(
-          "modules.register.fields.businessName.error"
+          "modules.register.fields.businessName.error",
         );
       if (!formData.businessStreetName)
         newErrors.businessStreetName = t(
-          "modules.register.fields.businessStreetName.error"
+          "modules.register.fields.businessStreetName.error",
         );
       if (!formData.businessHouseNumber)
         newErrors.businessHouseNumber = t(
-          "modules.register.fields.businessHouseNumber.error"
+          "modules.register.fields.businessHouseNumber.error",
         );
       if (!formData.businessCity)
         newErrors.businessCity = t(
-          "modules.register.fields.businessCity.error"
+          "modules.register.fields.businessCity.error",
         );
       if (!formData.businessCountry)
         newErrors.businessCountry = t(
-          "modules.register.fields.businessCountry.error"
+          "modules.register.fields.businessCountry.error",
         );
     }
     if (!identityFiles?.length) {
@@ -388,7 +399,7 @@ const RegisterForm: React.FC<{
       if (result?.registration?.status === false) {
         result?.registration?.errors?.values?.map(
           (value: string[]) =>
-            (registrationMessages = [...registrationMessages, ...value])
+            (registrationMessages = [...registrationMessages, ...value]),
         );
         const flattened = flattenErrors(result?.registration);
 
@@ -453,7 +464,7 @@ const RegisterForm: React.FC<{
       className={cn(
         "mx-auto relative pb-5",
         step === "sales" && "my-15",
-        "mb-10"
+        "mb-10",
       )}
     >
       <button
@@ -569,7 +580,7 @@ const RegisterForm: React.FC<{
               handleInputChange("confirmPassword", e.target.value)
             }
             placeholder={t(
-              "modules.register.fields.confirmPassword.placeholder"
+              "modules.register.fields.confirmPassword.placeholder",
             )}
             disabled={areFieldsDisabled}
           />
@@ -637,18 +648,16 @@ const RegisterForm: React.FC<{
           disabled={!formData.country || areFieldsDisabled}
           required
         />
-
-        <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">
-            {t("modules.register.fields.state.label")}
-          </Label>
-          <Input
-            value={formData.state}
-            onChange={(e) => handleInputChange("state", e.target.value)}
-            placeholder={t("modules.register.fields.state.placeholder")}
-            disabled={areFieldsDisabled}
-          />
-        </div>
+        <SearchableSelect
+          label={t("modules.register.fields.state.label")}
+          placeholder={t("modules.register.fields.state.placeholder")}
+          options={stateOptions}
+          value={formData.state}
+          onChange={(value) => handleInputChange("state", value.toString())}
+          error={errors.state}
+          loading={statesLoading}
+          disabled={!formData.country || areFieldsDisabled}
+        />
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.register.fields.postalCode.label")}
@@ -670,7 +679,7 @@ const RegisterForm: React.FC<{
               handleInputChange("extraAddressDetails", e.target.value)
             }
             placeholder={t(
-              "modules.register.fields.extraAddressDetails.placeholder"
+              "modules.register.fields.extraAddressDetails.placeholder",
             )}
             disabled={areFieldsDisabled}
           />
@@ -736,7 +745,7 @@ const RegisterForm: React.FC<{
                 className={cn(
                   "border-gray-300 px-2 rounded-lg w-full h-full flex items-center gap-2",
                   areFieldsDisabled &&
-                    "cursor-not-allowed bg-[#E5E5E5] text-[#101828] opacity-50"
+                    "cursor-not-allowed bg-[#E5E5E5] text-[#101828] opacity-50",
                 )}
               >
                 <UploadIcon width={90} />
@@ -788,7 +797,7 @@ const RegisterForm: React.FC<{
                   className="mb-auto ml-auto text-red-500 cursor-pointer"
                   onClick={() => {
                     setIdentityFiles((files) =>
-                      files.filter((_, i) => i !== idx)
+                      files.filter((_, i) => i !== idx),
                     );
                     if (fileRef.current) {
                       fileRef.current.value = "";
@@ -821,7 +830,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessName", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessName.placeholder"
+                  "modules.register.fields.businessName.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -842,7 +851,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessStreetName", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessStreetName.placeholder"
+                  "modules.register.fields.businessStreetName.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -863,7 +872,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessHouseNumber", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessHouseNumber.placeholder"
+                  "modules.register.fields.businessHouseNumber.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -883,7 +892,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessPostalCode", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessPostalCode.placeholder"
+                  "modules.register.fields.businessPostalCode.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -897,11 +906,11 @@ const RegisterForm: React.FC<{
                 onChange={(e) =>
                   handleInputChange(
                     "businessExtraAddressDetails",
-                    e.target.value
+                    e.target.value,
                   )
                 }
                 placeholder={t(
-                  "modules.register.fields.businessExtraAddressDetails.placeholder"
+                  "modules.register.fields.businessExtraAddressDetails.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -909,7 +918,7 @@ const RegisterForm: React.FC<{
             <SearchableSelect
               label={t("modules.register.fields.businessCountry.label")}
               placeholder={t(
-                "modules.register.fields.businessCountry.placeholder"
+                "modules.register.fields.businessCountry.placeholder",
               )}
               options={countryOptions}
               value={formData.businessCountry}
@@ -924,7 +933,7 @@ const RegisterForm: React.FC<{
             <SearchableSelect
               label={t("modules.register.fields.businessCity.label")}
               placeholder={t(
-                "modules.register.fields.businessCity.placeholder"
+                "modules.register.fields.businessCity.placeholder",
               )}
               options={businessCityOptions}
               value={formData.businessCity}
