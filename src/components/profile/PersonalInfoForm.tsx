@@ -18,7 +18,6 @@ interface PersonalInfoFormProps {
   agentStatus?: string;
   errors: Record<string, string>;
   handleInputChange: (field: string, value: any) => void;
-  handleDateChange: (field: string, value: any) => void;
   editMode: boolean;
 }
 
@@ -27,7 +26,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   agentStatus,
   errors,
   handleInputChange,
-  handleDateChange,
   editMode,
 }) => {
   const [t] = useTranslation("global");
@@ -109,7 +107,10 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <DatePicker
             disabled={!editMode}
             value={formData.date_of_birth || ""}
-            onChange={(date: string) => handleDateChange("date_of_birth", date)}
+            onChange={(date: string) =>
+              handleInputChange("date_of_birth", date)
+            }
+            disabledAfter={new Date()}
           />
           {errors?.date_of_birth && (
             <ErrorField errors={[errors?.date_of_birth]} />

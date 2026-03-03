@@ -147,14 +147,6 @@ const UserProfilePage = () => {
       }));
     }
   };
-
-  // Handle date changes
-  const handleDateChange = (field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
   //validate fields
 
   const validateFields = () => {
@@ -300,7 +292,6 @@ const UserProfilePage = () => {
             agentStatus={profileData?.data?.user?.status}
             errors={errors}
             handleInputChange={handleInputChange}
-            handleDateChange={handleDateChange}
             editMode={editMode}
           />
           {formData.agentType === "business_partner" && (
