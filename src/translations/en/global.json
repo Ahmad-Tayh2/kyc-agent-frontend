@@ -319,7 +319,8 @@
         "email": {
           "label": "$t(common.fields.email.label)",
           "placeholder": "$t(common.fields.email.placeholder)",
-          "error": "$t(common.validation.required)"
+          "required": "$t(common.validation.required)",
+          "error": "$t(common.validation.email)"
         },
         "password": {
           "label": "$t(common.fields.password.label)",
