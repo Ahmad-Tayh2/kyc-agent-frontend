@@ -41,7 +41,7 @@ export function useDetachAgentRecipients(agentId: string | number | null) {
     },
     onError: (err: any) => {
       toast.error(
-        err?.response?.data?.message ?? "Cannot Detach The Recipient!"
+        err?.response?.data?.message ?? "Cannot Detach The Recipient!",
       );
     },
   });
@@ -97,6 +97,9 @@ export function useAttachCustomerToAgent() {
       toast.success("Customer Attached successfully!");
       queryClient.invalidateQueries({
         queryKey: ["get-customers"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["get-recipients"],
       });
     },
   });
