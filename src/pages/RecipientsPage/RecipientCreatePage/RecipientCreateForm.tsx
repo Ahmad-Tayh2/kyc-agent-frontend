@@ -217,7 +217,7 @@ const RecipientCreateForm: React.FC = () => {
     first_name: "",
     last_name: "",
     email: "",
-    date_of_birth: "",
+    date_of_birth: "1950-01-01",
     street_name: "",
     house_number: "",
     postal_code: "",
