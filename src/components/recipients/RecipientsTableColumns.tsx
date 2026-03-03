@@ -25,6 +25,7 @@ export type Recipient = {
   };
 
   phone_number: string;
+  country_phone_code: string;
   created_at: string;
   status: string;
 };
@@ -60,10 +61,16 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         accessorKey: "last_name",
         header: "Last Name",
       },
-
       {
         accessorKey: "phone_number",
         header: "Mobile Number",
+        cell: ({ row }) => {
+          return (
+            <div className="capitalize">
+              +{row.original?.country_phone_code} {row.original.phone_number}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "country",
@@ -98,7 +105,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
               {customers?.map(
                 (
                   customer: { full_name: string; id: number },
-                  index: number
+                  index: number,
                 ) => (
                   <div key={customer.id}>
                     {index !== 0 && ", "}
@@ -109,7 +116,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
                       {customer.full_name}
                     </Link>
                   </div>
-                )
+                ),
               )}
             </div>
           );
@@ -156,7 +163,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         },
       },
     ],
-    []
+    [],
   );
 };
 export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
@@ -234,7 +241,7 @@ export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
         },
       },
     ],
-    []
+    [],
   );
 };
 export const recipientsSearchColumns = ({
@@ -322,6 +329,6 @@ export const recipientsSearchColumns = ({
         },
       },
     ],
-    [attachRecipient]
+    [attachRecipient],
   );
 };
