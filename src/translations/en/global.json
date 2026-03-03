@@ -500,11 +500,14 @@
           "label": "$t(common.fields.identity.label)"
         },
         "houseNumber": {
-          "label": "$t(common.fields.houseNumber.label)"
+          "label": "$t(common.fields.houseNumber.label)",
+          "placeholder": "$t(common.fields.houseNumber.placeholder)",
+          "error": "$t(common.validation.required)"
         },
 
         "postalCode": {
-          "label": "$t(common.fields.postalCode.label)"
+          "label": "$t(common.fields.postalCode.label)",
+          "placeholder": "$t(common.fields.postalCode.placeholder)"
         },
         "extraAddressDetails": {
           "label": "$t(common.fields.extraAddressDetails.label)",
