@@ -118,8 +118,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   };
 
   const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onPhoneChange(value);
+    const raw = e.target.value;
+    // Keep only digits 0-9
+    const digitsOnly = raw.replace(/\D/g, "");
+    onPhoneChange(digitsOnly);
   };
 
   // const handlePhoneInputKeyDown = (
@@ -275,7 +277,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         {/* Phone Number Input */}
         <Input
           ref={inputRef}
-          type="tel"
+          type="text"
           value={phoneNumber}
           onChange={handlePhoneInputChange}
           // onKeyDown={handlePhoneInputKeyDown}
