@@ -56,6 +56,13 @@ const WorldpayPaymentForm = ({
   const [status, setStatus] = useState<WorldpayFormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const iframeContainerRef = useRef<HTMLDivElement>(null);
+  const sessionCreatedRef = useRef(false);
+
+  // Stable callback refs to avoid re-triggering the effect
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
 
   // Hook to ensure iframe visibility
   useWorldpayIframeVisibility(
@@ -65,6 +72,9 @@ const WorldpayPaymentForm = ({
 
   // Create payment session and handle payment flow
   useEffect(() => {
+    if (sessionCreatedRef.current) return;
+    sessionCreatedRef.current = true;
+
     const processWorldpayPayment = async () => {
       try {
         setStatus('loading');
@@ -137,13 +147,13 @@ const WorldpayPaymentForm = ({
               session.redirect_url,
               'worldpay-iframe-container',
               (data) => {
-                onSuccess?.(data as Record<string, unknown>);
+                onSuccessRef.current?.(data as Record<string, unknown>);
               },
               (error) => {
-                onError(error);
+                onErrorRef.current(error);
               },
               () => {
-                onError(
+                onErrorRef.current(
                   t('modules.pages.paymentPage.providers.worldpay.cancelled'),
                 );
               },
@@ -155,13 +165,13 @@ const WorldpayPaymentForm = ({
           openWorldpayLightbox(
             session.redirect_url,
             (data) => {
-              onSuccess?.(data as Record<string, unknown>);
+              onSuccessRef.current?.(data as Record<string, unknown>);
             },
             (error) => {
-              onError(error);
+              onErrorRef.current(error);
             },
             () => {
-              onError(
+              onErrorRef.current(
                 t('modules.pages.paymentPage.providers.worldpay.cancelled'),
               );
             },
@@ -171,12 +181,13 @@ const WorldpayPaymentForm = ({
         const message =
           err instanceof Error ? err.message : handleNetworkError(err);
         setErrorMessage(message);
-        onError(message);
+        onErrorRef.current(message);
         setStatus('error');
       }
     };
 
     processWorldpayPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     transactionId,
     paymentLinkToken,
@@ -184,8 +195,6 @@ const WorldpayPaymentForm = ({
     amount,
     description,
     mode,
-    onError,
-    onSuccess,
     t,
   ]);
 

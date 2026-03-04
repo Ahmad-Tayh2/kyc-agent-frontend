@@ -61,7 +61,7 @@ export default function PaymentCancelledPage() {
   };
 
   return (
-    <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+    <div className='h-screen overflow-y-auto bg-gray-50 flex items-center justify-center'>
       <div className='max-w-md w-full mx-4'>
         <div className='bg-white rounded-lg shadow-sm border p-8 text-center'>
           <div className='w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6'>
