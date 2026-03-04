@@ -18,7 +18,7 @@ import {
   validatePaymentData,
 } from '@/utils/worldpay';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface WorldpayPaymentFormProps {
@@ -187,7 +187,7 @@ const WorldpayPaymentForm = ({
     };
 
     processWorldpayPayment();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     transactionId,
     paymentLinkToken,
