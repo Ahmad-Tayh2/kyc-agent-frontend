@@ -64,8 +64,7 @@ export const customerSchema = z.object({
     .email("Invalid email address format")
     .optional()
     .or(z.literal("")),
-  date_of_birth: z.string().optional(),
-  // .nonempty("Date of birth is required"),
+  date_of_birth: z.string().nonempty("Date of birth is required"),
   // .refine(
   //   (date) => !isNaN(Date.parse(date)),
   //   "Invalid date format (must be YYYY-MM-DD)"
@@ -169,10 +168,9 @@ const CustomerEditPage = () => {
         first_name: data.data.first_name,
         last_name: data.data.last_name,
         email: data?.data?.email,
-        date_of_birth:
-          format(data?.data?.date_of_birth, "yyyy-MM-dd") === "1950-01-01"
-            ? ""
-            : data?.data?.date_of_birth,
+        date_of_birth: data?.data?.date_of_birth
+          ? format(data?.data?.date_of_birth, "yyyy-MM-dd")
+          : "",
         gender: data.data.gender,
         street_name: data.data.street_name,
         house_number: data.data.house_number,
@@ -250,7 +248,7 @@ const CustomerEditPage = () => {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email ?? "",
-        date_of_birth: formData.date_of_birth || "1950-01-01",
+        date_of_birth: formData.date_of_birth,
         gender: formData.gender,
         country_id: formData.country_id,
         city_id: formData.city_id,
