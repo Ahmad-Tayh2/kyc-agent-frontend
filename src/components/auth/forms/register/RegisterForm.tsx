@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useRegisterAndUpload } from "@/hooks/data/useAuth";
-import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
+import {
+  useCountries,
+  useCitiesByCountry,
+  useStatesByCountry,
+} from "@/hooks/data/useAddress";
 import { useTranslation } from "react-i18next";
 import RegistrationSuccessDialog from "./RegistrationSuccessDialog";
 
@@ -23,43 +27,106 @@ import { PasswordInput } from "@/components/ui/password-input";
 import RadioInput from "@/components/shared/RadioInput";
 import { ROUTES } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
+export const createRegisterSchema = (
+  t: (key: string) => string,
+  step: "partner" | "sales",
+) => {
+  return z.object({
+    firstName: z.string().min(1, t("modules.register.fields.firstName.error")),
 
-const schema = z
-  .object({
-    firstName: z.string().min(1, "Required"),
-    lastName: z.string().min(1, "Required"),
-    dob: z.string().min(1, "Required"),
-    email: z.string().email("Invalid email"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-    streetName: z.string().min(1, "Required"),
-    houseNumber: z.string().min(1, "Required"),
-    city: z.string().min(1, "Required"),
-    country: z.string().min(1, "Required"),
+    lastName: z.string().min(1, t("modules.register.fields.lastName.error")),
+
+    dob: z.string().min(1, t("modules.register.fields.dob.error")),
+    gender: z.enum(["male", "female"], {
+      errorMap: () => ({
+        message: t("modules.register.fields.email.error"),
+      }),
+    }),
+    email: z
+      .string()
+      .min(1, t("modules.register.fields.email.required"))
+      .email(t("modules.register.fields.email.error")),
+    phone: z.string().min(1, t("modules.register.fields.phone.error")),
+
+    password: z
+      .string()
+      .min(1, t("modules.register.fields.password.error"))
+      .min(6, t("modules.register.fields.password.minLength")),
+
+    confirmPassword: z
+      .string()
+      .min(1, t("modules.register.fields.confirmPassword.required")),
+    streetName: z
+      .string()
+      .min(1, t("modules.register.fields.streetName.error")),
+
+    houseNumber: z
+      .string()
+      .min(1, t("modules.register.fields.houseNumber.error")),
+
+    city: z.string().min(1, t("modules.register.fields.city.error")),
+
+    country: z.string().min(1, t("modules.register.fields.country.error")),
+    /* ---------- Optional fields ---------- */
+
     state: z.string().optional(),
     postalCode: z.string().optional(),
     extraAddressDetails: z.string().optional(),
-    phone: z.string().min(1, "Required"),
-    gender: z.enum(["male", "female"]),
+
     identity: z.any(),
-    businessName: z.string().min(1, "Required"),
-    businessStreetName: z.string().min(1, "Required"),
-    businessHouseNumber: z.string().min(1, "Required"),
+    /* ---------- Partner fields ---------- */
+
+    // Partner conditional fields
+    businessName:
+      step === "partner"
+        ? z.string().nonempty(t("modules.register.fields.businessName.error"))
+        : z.string().optional(),
+    businessStreetName:
+      step === "partner"
+        ? z
+            .string()
+            .nonempty(t("modules.register.fields.businessStreetName.error"))
+        : z.string().optional(),
+    businessHouseNumber:
+      step === "partner"
+        ? z
+            .string()
+            .nonempty(t("modules.register.fields.businessHouseNumber.error"))
+        : z.string().optional(),
+    businessCity:
+      step === "partner"
+        ? z.string().min(1, t("modules.register.fields.city.error"))
+        : z.string().optional(),
+    businessCountry:
+      step === "partner"
+        ? z
+            .string()
+            .nonempty(t("modules.register.fields.businessCountry.error"))
+        : z.string().optional(),
     businessPostalCode: z.string().optional(),
     businessExtraAddressDetails: z.string().optional(),
-    businessCity: z.string().min(1, "Required"),
-    businessCountry: z.string().min(1, "Required"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
   });
+  // .refine((data) => data.password === data.confirmPassword, {
+  //   message: "Passwords don't match",
+  //   path: ["confirmPassword"],
+  // }); /* ---------- Partner conditional rules ---------- */
+  // .superRefine((data, ctx) => {
+  //   // Password match validation
+  //   if (data.password !== data.confirmPassword) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       path: ["confirmPassword"],
+  //       message: t("modules.register.fields.confirmPassword.error"),
+  //     });
+  //   }
+  // })
+};
 
-type FormInputs = z.infer<typeof schema>;
+// type FormInputs = z.infer<typeof schema>;
 
 const RegisterForm: React.FC<{
   onBack: () => void;
-  onSubmit?: (data: FormInputs) => void;
+  onSubmit?: (data: any) => void;
   step: "partner" | "sales";
   isSendingPartner?: boolean;
   isPayoutPartner?: boolean;
@@ -77,6 +144,11 @@ const RegisterForm: React.FC<{
   //   // resolver: zodResolver(schema),
   //   defaultValues: { gender: "male" },
   // });
+  const [t] = useTranslation("global");
+  const registerSchema = React.useMemo(
+    () => createRegisterSchema(t, step),
+    [t, step],
+  );
   const {
     mutateAsync: registerAndUpload,
     isPending: isRegistratioPending,
@@ -112,7 +184,10 @@ const RegisterForm: React.FC<{
 
   const { data: countries = [], isLoading: countriesLoading } = useCountries();
   const { data: cities = [], isLoading: citiesLoading } = useCitiesByCountry(
-    formData.country || null
+    formData.country || null,
+  );
+  const { data: states = [], isLoading: statesLoading } = useStatesByCountry(
+    formData.country || null,
   );
   const { data: businessCities = [], isLoading: businessCitiesLoading } =
     useCitiesByCountry(formData.businessCountry || null);
@@ -128,7 +203,11 @@ const RegisterForm: React.FC<{
       value: city.id.toString(),
       label: city.name,
     })) || [];
-
+  const stateOptions =
+    states?.map((state) => ({
+      value: state.id.toString(),
+      label: state.name,
+    })) || [];
   const businessCityOptions =
     businessCities?.map((city) => ({
       value: city.id.toString(),
@@ -243,109 +322,264 @@ const RegisterForm: React.FC<{
     }
   };
 
-  const [t] = useTranslation("global");
+  // const onFormSubmitOld = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   // Basic validation
+  //   const newErrors: Record<string, string> = {};
+
+  //   if (!formData.firstName)
+  //     newErrors.firstName = t("modules.register.fields.firstName.error");
+  //   if (!formData.lastName)
+  //     newErrors.lastName = t("modules.register.fields.lastName.error");
+  //   if (!formData.dob) newErrors.dob = t("modules.register.fields.dob.error");
+  //   if (!formData.email)
+  //     newErrors.email = t("modules.register.fields.email.error");
+  //   if (!formData.gender)
+  //     newErrors.gender = t("modules.register.fields.email.error");
+  //   if (!formData.password)
+  //     newErrors.password = t("modules.register.fields.password.error");
+  //   if (formData.password.length < 6)
+  //     newErrors.password = t("modules.register.fields.password.minLength");
+  //   if (!formData.confirmPassword)
+  //     newErrors.confirmPassword = t(
+  //       "modules.register.fields.confirmPassword.required",
+  //     );
+  //   if (formData.password !== formData.confirmPassword)
+  //     newErrors.confirmPassword = t(
+  //       "modules.register.fields.confirmPassword.error",
+  //     );
+  //   if (!formData.streetName)
+  //     newErrors.streetName = t("modules.register.fields.streetName.error");
+  //   if (!formData.houseNumber)
+  //     newErrors.houseNumber = t("modules.register.fields.houseNumber.error");
+  //   if (!formData.city)
+  //     newErrors.city = t("modules.register.fields.city.error");
+  //   if (!formData.country)
+  //     newErrors.country = t("modules.register.fields.country.error");
+  //   if (!formData.countryCode)
+  //     newErrors.countryCode = t("common.validation.required");
+  //   if (!formData.phone)
+  //     newErrors.phone = t("modules.register.fields.phone.error");
+
+  //   if (step === "partner") {
+  //     if (!formData.businessName)
+  //       newErrors.businessName = t(
+  //         "modules.register.fields.businessName.error",
+  //       );
+  //     if (!formData.businessStreetName)
+  //       newErrors.businessStreetName = t(
+  //         "modules.register.fields.businessStreetName.error",
+  //       );
+  //     if (!formData.businessHouseNumber)
+  //       newErrors.businessHouseNumber = t(
+  //         "modules.register.fields.businessHouseNumber.error",
+  //       );
+  //     if (!formData.businessCity)
+  //       newErrors.businessCity = t(
+  //         "modules.register.fields.businessCity.error",
+  //       );
+  //     if (!formData.businessCountry)
+  //       newErrors.businessCountry = t(
+  //         "modules.register.fields.businessCountry.error",
+  //       );
+  //   }
+  //   if (!identityFiles?.length) {
+  //     newErrors.identityFiles = "This field is required";
+  //   }
+
+  //   if (Object.keys(newErrors).length > 0) {
+  //     setErrors(newErrors);
+  //     return;
+  //   }
+
+  //   let payload: any = {
+  //     user: {
+  //       first_name: formData.firstName,
+  //       last_name: formData.lastName,
+  //       email: formData.email,
+  //       password: formData.password,
+  //       country_phone_code: formData.countryCode,
+  //       phone_number: formData.phone,
+  //       address: {
+  //         street_name: formData.streetName,
+  //         house_number: formData.houseNumber,
+  //         country_id: formData.country,
+  //         city_id: formData.city,
+  //         state_id: formData.state || "",
+  //         extra_address_details: formData.extraAddressDetails || "",
+  //         postal_code: formData.postalCode || "",
+  //       },
+  //     },
+
+  //     agent_type: step === "partner" ? "business_partner" : "sales_person",
+  //     is_sending_partner: isSendingPartner,
+  //     is_payout_partner: isPayoutPartner,
+  //     date_of_birth: formData.dob,
+  //     gender: formData.gender,
+  //   };
+  //   if (step === "partner") {
+  //     payload = {
+  //       ...payload,
+
+  //       business_details: {
+  //         business_name: formData.businessName,
+  //         address: {
+  //           street_name: formData.businessStreetName,
+  //           house_number: formData.businessHouseNumber,
+  //           postal_code: formData.businessPostalCode,
+  //           extra_address_details: formData.businessExtraAddressDetails,
+  //           country_id: formData.businessCountry,
+  //           city_id: formData.businessCity,
+  //         },
+  //       },
+  //     };
+  //   }
+  //   try {
+  //     const result = await registerAndUpload({ payload, files: identityFiles });
+  //     // Determine registration and upload status
+  //     type ErrorsMap = Record<string, any[]>; // example: { "user.email": ["Invalid email"], "user.name": ["Required"] }
+
+  //     function flattenErrors(registration: {
+  //       errors: ErrorsMap;
+  //     }): Array<string> {
+  //       const result: Array<string> = [];
+
+  //       for (const field in registration.errors) {
+  //         if (
+  //           Object.prototype.hasOwnProperty.call(registration.errors, field)
+  //         ) {
+  //           const messages = registration.errors[field];
+  //           for (const msg of messages) {
+  //             result.push(msg);
+  //           }
+  //         }
+  //       }
+
+  //       return result;
+  //     }
+  //     const registrationStatus: "success" | "partial" | "error" = "success";
+  //     let uploadStatus: "success" | "partial" | "error" = "success";
+  //     let uploadMessage: string | undefined;
+  //     let registrationMessages: string[] = [];
+  //     if (result?.registration?.status === false) {
+  //       result?.registration?.errors?.values?.map(
+  //         (value: string[]) =>
+  //           (registrationMessages = [...registrationMessages, ...value]),
+  //       );
+  //       const flattened = flattenErrors(result?.registration);
+
+  //       setRegistrationResult({
+  //         registrationStatus: "error",
+  //         registrationMessages: flattened,
+  //       });
+  //     } else {
+  //       // Check if files were provided and if upload was successful
+  //       if (identityFiles.length === 0) {
+  //         uploadStatus = "partial";
+  //         uploadMessage =
+  //           "No identity files were provided during registration.";
+  //       } else if (result.upload && result.upload.status) {
+  //         uploadStatus = "success";
+  //       } else if (result.upload && !result.upload.status) {
+  //         uploadStatus = "error";
+  //         uploadMessage =
+  //           result.upload.message ||
+  //           "File upload failed. You can add identity files later in your profile.";
+  //       } else {
+  //         uploadStatus = "partial";
+  //         uploadMessage =
+  //           "File upload status unclear. You can add identity files later in your profile.";
+  //       }
+
+  //       setRegistrationResult({
+  //         registrationStatus,
+  //         uploadStatus,
+  //         uploadMessage,
+  //       });
+  //     }
+
+  //     setShowSuccessDialog(true);
+  //   } catch (error) {
+  //     console.error("Registration error in form:", error);
+  //     setRegistrationResult({
+  //       registrationStatus: "error",
+  //       uploadStatus: "error",
+  //       uploadMessage: "Registration failed. Please try again.",
+  //     });
+  //     setShowSuccessDialog(true);
+  //   }
+  // };
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
 
-    // Basic validation
-    const newErrors: Record<string, string> = {};
+    const result = registerSchema.safeParse({
+      ...formData,
+      identityFiles,
+    });
 
-    if (!formData.firstName)
-      newErrors.firstName = t("modules.register.fields.firstName.error");
-    if (!formData.lastName)
-      newErrors.lastName = t("modules.register.fields.lastName.error");
-    if (!formData.dob) newErrors.dob = t("modules.register.fields.dob.error");
-    if (!formData.email)
-      newErrors.email = t("modules.register.fields.email.error");
-    if (!formData.gender)
-      newErrors.gender = t("modules.register.fields.email.error");
-    if (!formData.password)
-      newErrors.password = t("modules.register.fields.password.error");
-    if (formData.password.length < 6)
-      newErrors.password = t("modules.register.fields.password.minLength");
-    if (!formData.confirmPassword)
-      newErrors.confirmPassword = t(
-        "modules.register.fields.confirmPassword.required"
-      );
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = t(
-        "modules.register.fields.confirmPassword.error"
-      );
-    if (!formData.streetName)
-      newErrors.streetName = t("modules.register.fields.streetName.error");
-    if (!formData.houseNumber)
-      newErrors.houseNumber = t("modules.register.fields.houseNumber.error");
-    if (!formData.city)
-      newErrors.city = t("modules.register.fields.city.error");
-    if (!formData.country)
-      newErrors.country = t("modules.register.fields.country.error");
-    if (!formData.countryCode)
-      newErrors.countryCode = t("common.validation.required");
-    if (!formData.phone)
-      newErrors.phone = t("modules.register.fields.phone.error");
+    const mapped: Record<string, string> = {};
 
-    if (step === "partner") {
-      if (!formData.businessName)
-        newErrors.businessName = t(
-          "modules.register.fields.businessName.error"
-        );
-      if (!formData.businessStreetName)
-        newErrors.businessStreetName = t(
-          "modules.register.fields.businessStreetName.error"
-        );
-      if (!formData.businessHouseNumber)
-        newErrors.businessHouseNumber = t(
-          "modules.register.fields.businessHouseNumber.error"
-        );
-      if (!formData.businessCity)
-        newErrors.businessCity = t(
-          "modules.register.fields.businessCity.error"
-        );
-      if (!formData.businessCountry)
-        newErrors.businessCountry = t(
-          "modules.register.fields.businessCountry.error"
-        );
+    if (!result.success) {
+      const fieldErrors: any = result.error.flatten().fieldErrors;
+
+      Object.keys(fieldErrors).forEach((key) => {
+        if (fieldErrors[key]?.length) {
+          mapped[key] = fieldErrors[key]![0];
+        }
+      });
+
+      if (!identityFiles.length) {
+        mapped.identityFiles = "Identity files are required";
+      }
+
+      // if (step === "partner") {
+      //   if (!formData.businessName) mapped.businessName = "Required";
+      //   if (!formData.businessCity) mapped.businessCity = "Required";
+      //   if (!formData.businessCountry) mapped.businessCountry = "Required";
+      // }
+
+      setErrors(mapped);
+      return;
     }
-    if (!identityFiles?.length) {
-      newErrors.identityFiles = "This field is required";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (formData.password !== formData.confirmPassword) {
+      mapped.confirmPassword = t(
+        "modules.register.fields.confirmPassword.error",
+      );
+      setErrors(mapped);
       return;
     }
 
-    let payload: any = {
-      user: {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        country_phone_code: formData.countryCode,
-        phone_number: formData.phone,
-        address: {
-          street_name: formData.streetName,
-          house_number: formData.houseNumber,
-          country_id: formData.country,
-          city_id: formData.city,
-          state_id: formData.state || "",
-          extra_address_details: formData.extraAddressDetails || "",
-          postal_code: formData.postalCode || "",
+    try {
+      const payload: any = {
+        user: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          country_phone_code: formData.countryCode,
+          phone_number: formData.phone,
+          address: {
+            street_name: formData.streetName,
+            house_number: formData.houseNumber,
+            country_id: formData.country,
+            city_id: formData.city,
+            state_id: formData.state || "",
+            extra_address_details: formData.extraAddressDetails || "",
+            postal_code: formData.postalCode || "",
+          },
         },
-      },
+        agent_type: step === "partner" ? "business_partner" : "sales_person",
+        date_of_birth: formData.dob,
+        gender: formData.gender,
+        is_sending_partner: isSendingPartner,
+        is_payout_partner: isPayoutPartner,
+      };
 
-      agent_type: step === "partner" ? "business_partner" : "sales_person",
-      is_sending_partner: isSendingPartner,
-      is_payout_partner: isPayoutPartner,
-      date_of_birth: formData.dob,
-      gender: formData.gender,
-    };
-    if (step === "partner") {
-      payload = {
-        ...payload,
-
-        business_details: {
+      if (step === "partner") {
+        payload.business_details = {
           business_name: formData.businessName,
           address: {
             street_name: formData.businessStreetName,
@@ -355,11 +589,14 @@ const RegisterForm: React.FC<{
             country_id: formData.businessCountry,
             city_id: formData.businessCity,
           },
-        },
-      };
-    }
-    try {
-      const result = await registerAndUpload({ payload, files: identityFiles });
+        };
+      }
+
+      const result: any = await registerAndUpload({
+        payload,
+        files: identityFiles,
+      });
+
       // Determine registration and upload status
       type ErrorsMap = Record<string, any[]>; // example: { "user.email": ["Invalid email"], "user.name": ["Required"] }
 
@@ -388,7 +625,7 @@ const RegisterForm: React.FC<{
       if (result?.registration?.status === false) {
         result?.registration?.errors?.values?.map(
           (value: string[]) =>
-            (registrationMessages = [...registrationMessages, ...value])
+            (registrationMessages = [...registrationMessages, ...value]),
         );
         const flattened = flattenErrors(result?.registration);
 
@@ -453,7 +690,7 @@ const RegisterForm: React.FC<{
       className={cn(
         "mx-auto relative pb-5",
         step === "sales" && "my-15",
-        "mb-10"
+        "mb-10",
       )}
     >
       <button
@@ -569,7 +806,7 @@ const RegisterForm: React.FC<{
               handleInputChange("confirmPassword", e.target.value)
             }
             placeholder={t(
-              "modules.register.fields.confirmPassword.placeholder"
+              "modules.register.fields.confirmPassword.placeholder",
             )}
             disabled={areFieldsDisabled}
           />
@@ -637,18 +874,16 @@ const RegisterForm: React.FC<{
           disabled={!formData.country || areFieldsDisabled}
           required
         />
-
-        <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">
-            {t("modules.register.fields.state.label")}
-          </Label>
-          <Input
-            value={formData.state}
-            onChange={(e) => handleInputChange("state", e.target.value)}
-            placeholder={t("modules.register.fields.state.placeholder")}
-            disabled={areFieldsDisabled}
-          />
-        </div>
+        <SearchableSelect
+          label={t("modules.register.fields.state.label")}
+          placeholder={t("modules.register.fields.state.placeholder")}
+          options={stateOptions}
+          value={formData.state}
+          onChange={(value) => handleInputChange("state", value.toString())}
+          error={errors.state}
+          loading={statesLoading}
+          disabled={!formData.country || areFieldsDisabled}
+        />
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
             {t("modules.register.fields.postalCode.label")}
@@ -670,7 +905,7 @@ const RegisterForm: React.FC<{
               handleInputChange("extraAddressDetails", e.target.value)
             }
             placeholder={t(
-              "modules.register.fields.extraAddressDetails.placeholder"
+              "modules.register.fields.extraAddressDetails.placeholder",
             )}
             disabled={areFieldsDisabled}
           />
@@ -736,7 +971,7 @@ const RegisterForm: React.FC<{
                 className={cn(
                   "border-gray-300 px-2 rounded-lg w-full h-full flex items-center gap-2",
                   areFieldsDisabled &&
-                    "cursor-not-allowed bg-[#E5E5E5] text-[#101828] opacity-50"
+                    "cursor-not-allowed bg-[#E5E5E5] text-[#101828] opacity-50",
                 )}
               >
                 <UploadIcon width={90} />
@@ -788,7 +1023,7 @@ const RegisterForm: React.FC<{
                   className="mb-auto ml-auto text-red-500 cursor-pointer"
                   onClick={() => {
                     setIdentityFiles((files) =>
-                      files.filter((_, i) => i !== idx)
+                      files.filter((_, i) => i !== idx),
                     );
                     if (fileRef.current) {
                       fileRef.current.value = "";
@@ -821,7 +1056,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessName", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessName.placeholder"
+                  "modules.register.fields.businessName.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -842,7 +1077,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessStreetName", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessStreetName.placeholder"
+                  "modules.register.fields.businessStreetName.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -863,7 +1098,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessHouseNumber", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessHouseNumber.placeholder"
+                  "modules.register.fields.businessHouseNumber.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -883,7 +1118,7 @@ const RegisterForm: React.FC<{
                   handleInputChange("businessPostalCode", e.target.value)
                 }
                 placeholder={t(
-                  "modules.register.fields.businessPostalCode.placeholder"
+                  "modules.register.fields.businessPostalCode.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -897,11 +1132,11 @@ const RegisterForm: React.FC<{
                 onChange={(e) =>
                   handleInputChange(
                     "businessExtraAddressDetails",
-                    e.target.value
+                    e.target.value,
                   )
                 }
                 placeholder={t(
-                  "modules.register.fields.businessExtraAddressDetails.placeholder"
+                  "modules.register.fields.businessExtraAddressDetails.placeholder",
                 )}
                 disabled={areFieldsDisabled}
               />
@@ -909,7 +1144,7 @@ const RegisterForm: React.FC<{
             <SearchableSelect
               label={t("modules.register.fields.businessCountry.label")}
               placeholder={t(
-                "modules.register.fields.businessCountry.placeholder"
+                "modules.register.fields.businessCountry.placeholder",
               )}
               options={countryOptions}
               value={formData.businessCountry}
@@ -924,7 +1159,7 @@ const RegisterForm: React.FC<{
             <SearchableSelect
               label={t("modules.register.fields.businessCity.label")}
               placeholder={t(
-                "modules.register.fields.businessCity.placeholder"
+                "modules.register.fields.businessCity.placeholder",
               )}
               options={businessCityOptions}
               value={formData.businessCity}

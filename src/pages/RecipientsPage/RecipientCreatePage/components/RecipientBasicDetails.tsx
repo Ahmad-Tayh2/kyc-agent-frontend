@@ -137,7 +137,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
 
           <div className="flex flex-col gap-1">
             <Label className="text-[14px]" htmlFor="date_of_birth">
-              Date of Birth<span className="text-red-500">*</span>
+              Date of Birth
             </Label>
             <DatePicker
               value={formData.date_of_birth || ""}

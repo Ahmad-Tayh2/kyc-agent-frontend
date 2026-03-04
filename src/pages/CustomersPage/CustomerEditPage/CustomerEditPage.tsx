@@ -244,7 +244,7 @@ const CustomerEditPage = () => {
       const payloadToUpdate: any = {
         first_name: formData.first_name,
         last_name: formData.last_name,
-        email: formData.email,
+        email: formData.email ?? "",
         date_of_birth: formData.date_of_birth,
         gender: formData.gender,
         country_id: formData.country_id,

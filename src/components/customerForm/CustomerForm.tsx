@@ -94,7 +94,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   // Fetch address data
   const { data: countries = [] } = useCountries();
   const [selectedCountryId, setSelectedCountryId] = useState<number | null>(
-    null
+    null,
   );
   const { data: cities = [] } = useCitiesByCountry(selectedCountryId);
   const { data: states = [] } = useStatesByCountry(selectedCountryId);
@@ -121,7 +121,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       firstName: "",
       lastName: "",
       email: "",
-      dateOfBirth: "",
+      dateOfBirth: "1950-01-01",
       streetName: "",
       houseNumber: "",
       postalCode: "",
@@ -155,6 +155,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   }, [tokenValidation]);
   const handleSubmit = async (data: CustomerFormData) => {
     // Don't submit if it's preview mode
+    console.log(" submit ");
     if (isPreviewMode) {
       return;
     }
@@ -180,7 +181,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         phone_number: data.phoneNumber,
         status: "active" as const,
       };
-
       await submitMutation.mutateAsync(submissionData);
       setSubmitSuccess(true);
 
@@ -404,7 +404,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.lastName.label")}
@@ -426,7 +425,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.email.label")}
@@ -449,7 +447,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.phone.label")}
@@ -470,10 +467,10 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                           form.setValue("countryPhoneCode", countryCode)
                         }
                         onPhoneChange={field.onChange}
-                        error={
-                          form.formState.errors.countryPhoneCode?.message ||
-                          form.formState.errors.phoneNumber?.message
-                        }
+                        // error={
+                        //   form.formState.errors.countryPhoneCode?.message ||
+                        //   form.formState.errors.phoneNumber?.message
+                        // }
                       />
                     </FormControl>
                     <FormMessage />
@@ -481,7 +478,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.streetName.label")}
@@ -503,7 +499,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.houseNumber.label")}
@@ -525,7 +520,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.postalCode.label")}
@@ -546,7 +540,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.extraAddressDetails.label")}
@@ -559,7 +552,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                     <FormControl>
                       <Input
                         placeholder={t(
-                          "common.fields.extraAddressDetails.placeholder"
+                          "common.fields.extraAddressDetails.placeholder",
                         )}
                         {...field}
                       />
@@ -569,7 +562,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             </div>
-
             <SearchableSelect
               label={`${t("common.fields.country.label")}`}
               placeholder={t("common.fields.country.placeholder")}
@@ -577,28 +569,32 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               value={form.watch("countryId")?.toString() || ""}
               onChange={(value) => {
                 const countryId = parseInt(value.toString());
-                form.setValue("countryId", countryId);
+                form.setValue("countryId", countryId, {
+                  shouldValidate: true,
+                  shouldTouch: true,
+                });
                 handleCountryChange(countryId);
               }}
               error={form.formState.errors.countryId?.message}
               loading={false}
               required
             />
-
             <SearchableSelect
               label={`${t("common.fields.city.label")}`}
               placeholder={t("common.fields.city.placeholder")}
               options={cityOptions}
               value={form.watch("cityId")?.toString() || ""}
-              onChange={(value) =>
-                form.setValue("cityId", parseInt(value.toString()))
-              }
+              onChange={(value) => {
+                form.setValue("cityId", parseInt(value.toString()), {
+                  shouldValidate: true,
+                  shouldTouch: true,
+                });
+              }}
               error={form.formState.errors.cityId?.message}
               loading={false}
               disabled={!selectedCountryId}
               required
             />
-
             <SearchableSelect
               label={t("common.fields.state.label")}
               placeholder={t("common.fields.state.placeholder")}
@@ -611,18 +607,18 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               loading={false}
               disabled={!selectedCountryId}
             />
-
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.dob.label")}
-                <span className="text-red-500">*</span>
+                {/* <span className="text-red-500">*</span> */}
               </Label>
               <DatePicker
-                // value={form.watch("dateOfBirth")?.toString()}
-                value=""
-                onChange={(value: string) =>
-                  // form.setValue("dateOfBirth", value.toString())
-                  console.log("vvvvvvvv=====", value)
+                value={form.watch("dateOfBirth")?.toString()}
+                // value=""
+                onChange={
+                  (value: string) =>
+                    form.setValue("dateOfBirth", value.toString())
+                  // console.log("vvvvvvvv=====", value)
                 }
                 disabledAfter={new Date()}
               />
@@ -645,7 +641,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               /> */}
             </div>
-
             <div className="md:col-span-2 flex flex-col gap-2">
               <Label>
                 {t("common.fields.gender.label")}
@@ -664,7 +659,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                             type="button"
                             className={cn(
                               "w-full flex items-center border gap-1 rounded-lg px-4 py-3 text-[14px] text-left transition",
-                              "border-gray-200 bg-white"
+                              "border-gray-200 bg-white",
                             )}
                             onClick={() => {
                               setSelectedGender(genderOption.value);
@@ -696,8 +691,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             {isPreviewMode
               ? t("modules.pages.customerForm.previewModeSubmitDisabled")
               : isSubmitting || submitMutation.isPending
-              ? t("common.actions.submitting")
-              : t("modules.pages.customerForm.signUp")}
+                ? t("common.actions.submitting")
+                : t("modules.pages.customerForm.signUp")}
           </Button>
         </form>
       </Form>

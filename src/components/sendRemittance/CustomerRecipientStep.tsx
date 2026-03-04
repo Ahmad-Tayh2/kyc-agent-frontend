@@ -51,19 +51,19 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   const setCustomer = useSendRemittanceStore((state) => state.setCustomer);
   const setRecipient = useSendRemittanceStore((state) => state.setRecipient);
   const setSendCountry = useSendRemittanceStore(
-    (state) => state.setSendCountry
+    (state) => state.setSendCountry,
   );
   const setReceiveCountry = useSendRemittanceStore(
-    (state) => state.setReceiveCountry
+    (state) => state.setReceiveCountry,
   );
   const setRemittanceMethod = useSendRemittanceStore(
-    (state) => state.setRemittanceMethod
+    (state) => state.setRemittanceMethod,
   );
   const setPayoutAgent = useSendRemittanceStore(
-    (state) => state.setPayoutAgent
+    (state) => state.setPayoutAgent,
   );
   const setSelectedPaymentMethodType = useSendRemittanceStore(
-    (state) => state.setSelectedPaymentMethodType
+    (state) => state.setSelectedPaymentMethodType,
   );
   const isStepValid = useSendRemittanceStore((state) => state.isStepValid);
   const mode = useSendRemittanceStore((state) => state.mode);
@@ -77,13 +77,13 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
     isLoading: customersLoading,
   } = useInfiniteActiveCustomers(
     activeCustomerSearchTerm,
-    hasCustomerSearched || !customerId // Enable when searched or no default customer
+    hasCustomerSearched || !customerId, // Enable when searched or no default customer
   );
 
   // Only call useGetCustomerRecipients when we have a customer selected
   const { data: recipientsResponse, isLoading: recipientsLoading } =
     useGetCustomerRecipients(
-      stepOne.customer?.id ? stepOne.customer.id.toString() : ""
+      stepOne.customer?.id ? stepOne.customer.id.toString() : "",
     );
 
   const recipientsData = useMemo(() => {
@@ -98,7 +98,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   // Only fetches when BOTH recipient and receive country are selected
   const { data: recipientMethodsData } = useRecipientMethods(
     stepOne.recipient?.id || null,
-    stepOne.receiveCountry?.id || null
+    stepOne.receiveCountry?.id || null,
   );
 
   // Infinite scroll for recipient search - only enabled after search button is clicked
@@ -110,7 +110,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
     isLoading: isSearching,
   } = useInfiniteRecipients(
     activeSearchTerm,
-    hasSearched && isExpandedText && !!stepOne.customer
+    hasSearched && isExpandedText && !!stepOne.customer,
   );
 
   const attachRecipientMutation = useAttachRecipientToCustomer();
@@ -123,7 +123,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   const customersData = useMemo(() => {
     if (!customersInfiniteData?.pages) return { data: [] };
     const allCustomers = customersInfiniteData.pages.flatMap(
-      (page) => page.data || []
+      (page) => page.data || [],
     );
     return { data: allCustomers };
   }, [customersInfiniteData]);
@@ -142,7 +142,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
           fetchNextPage();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     const currentTarget = recipientObserverTarget.current;
@@ -169,7 +169,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
           fetchNextCustomersPage();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     const currentTarget = customerObserverTarget.current;
@@ -277,7 +277,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       recipientMethodsData.remittance_methods?.filter(
         (rm: RemittanceMethodAvailability) =>
           !rm.name.toLowerCase().includes("cash pickup") &&
-          !rm.description.toLowerCase().includes("cash pickup")
+          !rm.description.toLowerCase().includes("cash pickup"),
       ) || [];
 
     // Add Remittance Methods (with RM prefix for clarity)
@@ -302,7 +302,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
             label: `Cash Pickup: ${payout.payout_agent_business_name}`,
             value: `payout_${payout.payout_agent_id}`,
           });
-        }
+        },
       );
     }
     return options;
@@ -312,12 +312,12 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
     if (stepOne?.customer?.id) {
       const customer = customersData?.data?.find(
         (c: CustomerType) =>
-          c.id.toString() === stepOne?.customer?.id.toString()
+          c.id.toString() === stepOne?.customer?.id.toString(),
       );
       if (customer) {
         // Auto-set send country based on customer's country if available in allowed countries
         const customerCountryInAllowed = sendCountriesData?.find(
-          (item: RemittanceCountry) => item.name === customer.country.name
+          (item: RemittanceCountry) => item.name === customer.country.name,
         );
         if (customerCountryInAllowed) {
           setSendCountry({
@@ -336,7 +336,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   // Handler functions
   const handleCustomerSelect = (customerId: string | number) => {
     const customer = customersData?.data?.find(
-      (c: CustomerType) => c.id.toString() === customerId.toString()
+      (c: CustomerType) => c.id.toString() === customerId.toString(),
     );
     if (customer) {
       // reset the recipient if there is not a default one
@@ -371,7 +371,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
   const handleRecipientSelect = (recipientId: string | number) => {
     const recipients = recipientsData as CustomerRecipient[] | undefined;
     const recipient = recipients?.find(
-      (r: CustomerRecipient) => r.id.toString() === recipientId.toString()
+      (r: CustomerRecipient) => r.id.toString() === recipientId.toString(),
     );
     if (recipient) {
       setRecipient({
@@ -401,7 +401,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       if (recipient.address.country?.name) {
         const recipientCountryInAllowed = receiveCountriesData?.find(
           (item: RemittanceCountry) =>
-            item.name === recipient.address.country.name
+            item.name === recipient.address.country.name,
         );
         if (recipientCountryInAllowed) {
           setReceiveCountry({
@@ -439,7 +439,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
           onError: (error) => {
             console.error("Failed to attach recipient:", error);
           },
-        }
+        },
       );
     }
   };
@@ -450,7 +450,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
 
   const handleSendCountrySelect = (countryId: string | number) => {
     const countryItem = sendCountriesData?.find(
-      (item: RemittanceCountry) => item.id === countryId
+      (item: RemittanceCountry) => item.id === countryId,
     );
     if (countryItem) {
       setSendCountry({
@@ -466,7 +466,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
 
   const handleReceiveCountrySelect = (countryId: string | number) => {
     const countryItem = receiveCountriesData?.find(
-      (item: RemittanceCountry) => item.id.toString() === countryId.toString()
+      (item: RemittanceCountry) => item.id.toString() === countryId.toString(),
     );
     if (countryItem) {
       setReceiveCountry({
@@ -489,7 +489,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       // Handle remittance method selection
       const rmMethodId = parseInt(methodValue.replace("rm_", ""));
       const rm = recipientMethodsData.remittance_methods?.find(
-        (r: RemittanceMethodAvailability) => r.id === rmMethodId
+        (r: RemittanceMethodAvailability) => r.id === rmMethodId,
       );
 
       if (rm) {
@@ -506,7 +506,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
       // Handle payout agent selection
       const payoutAgentId = parseInt(methodValue.replace("payout_", ""));
       const payout = recipientMethodsData.payout_agents?.find(
-        (p: RecipientPayoutAgent) => p.payout_agent_id === payoutAgentId
+        (p: RecipientPayoutAgent) => p.payout_agent_id === payoutAgentId,
       );
 
       if (payout) {
@@ -642,7 +642,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
                               </span>
                             </div>
                             {recipientOptions.some(
-                              (r) => r.value === recipient.id
+                              (r) => r.value === recipient.id,
                             ) ? (
                               <span className="text-green-600 text-sm font-medium">
                                 Already Attached
@@ -662,7 +662,7 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
                               </Button>
                             )}
                           </div>
-                        )
+                        ),
                       )}
                       {/* Infinite scroll trigger element */}
                       <div ref={recipientObserverTarget} className="h-4" />
@@ -735,9 +735,9 @@ const CustomerRecipientStep = (props: CustomerRecipientStepProps) => {
             stepOne.remittanceMethod
               ? `rm_${stepOne.remittanceMethod.id}`
               : stepOne.selectedPaymentMethodType === "payout_agent" &&
-                stepOne.payoutAgent
-              ? `payout_${stepOne.payoutAgent.id}`
-              : ""
+                  stepOne.payoutAgent
+                ? `payout_${stepOne.payoutAgent.id}`
+                : ""
           }
           onChange={handlePaymentMethodSelect}
           placeholder="Select recipient payment method"

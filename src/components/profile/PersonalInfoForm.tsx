@@ -4,7 +4,11 @@ import { Label } from "@/components/ui/label";
 import SearchableSelect from "@/components/ui/searchable-select";
 import DatePicker from "@/components/shared/DatePicker";
 import PhoneInput from "@/components/shared/PhoneInput";
-import { useCountries, useCitiesByCountry } from "@/hooks/data/useAddress";
+import {
+  useCountries,
+  useCitiesByCountry,
+  useStatesByCountry,
+} from "@/hooks/data/useAddress";
 import { useTranslation } from "react-i18next";
 import RadioInput from "@/components/shared/RadioInput";
 import ErrorField from "../shared/ErrorField";
@@ -14,7 +18,6 @@ interface PersonalInfoFormProps {
   agentStatus?: string;
   errors: Record<string, string>;
   handleInputChange: (field: string, value: any) => void;
-  handleDateChange: (field: string, value: any) => void;
   editMode: boolean;
 }
 
@@ -23,34 +26,41 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   agentStatus,
   errors,
   handleInputChange,
-  handleDateChange,
   editMode,
 }) => {
   const [t] = useTranslation("global");
   // Address data
   const { data: countries = [], isLoading: countriesLoading } = useCountries();
   const { data: cities = [], isLoading: citiesLoading } = useCitiesByCountry(
-    formData.country || null
+    formData.country || null,
+  );
+  const { data: states = [], isLoading: statesLoading } = useStatesByCountry(
+    formData.country || null,
   );
 
   // Country phone code options
   const countryPhoneOptions = countries?.map((country: any) => ({
-    value: country.phone_code,
-    label: country.name,
-    code: country.phone_code,
-    countryCode: country.iso2,
+    value: country?.phone_code,
+    label: country?.name,
+    code: country?.phone_code,
+    countryCode: country?.iso2,
   }));
 
   const countryOptions =
     countries?.map((country) => ({
-      value: country.id.toString(),
-      label: country.name,
+      value: country?.id?.toString(),
+      label: country?.name,
     })) || [];
 
   const cityOptions =
     cities?.map((city) => ({
-      value: city.id.toString(),
-      label: city.name,
+      value: city?.id.toString(),
+      label: city?.name,
+    })) || [];
+  const stateOptions =
+    states?.map((state) => ({
+      value: state?.id?.toString(),
+      label: state?.name,
     })) || [];
 
   const genderOptions = [
@@ -97,7 +107,10 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <DatePicker
             disabled={!editMode}
             value={formData.date_of_birth || ""}
-            onChange={(date: string) => handleDateChange("date_of_birth", date)}
+            onChange={(date: string) =>
+              handleInputChange("date_of_birth", date)
+            }
+            disabledAfter={new Date()}
           />
           {errors?.date_of_birth && (
             <ErrorField errors={[errors?.date_of_birth]} />
@@ -192,18 +205,16 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           error={errors?.city}
         />
 
-        <div className="flex flex-col gap-1">
-          <Label className="text-[14px]">
-            {t("modules.profile.fields.state.label")}
-          </Label>
-          <Input
-            disabled={!editMode}
-            value={formData.state || ""}
-            onChange={(e) => handleInputChange("state", e.target.value)}
-            placeholder={t("modules.profile.fields.state.placeholder")}
-          />
-          {errors?.state && <ErrorField errors={[errors?.state]} />}
-        </div>
+        <SearchableSelect
+          label={t("modules.profile.fields.state.label")}
+          placeholder={t("modules.profile.fields.state.placeholder")}
+          options={stateOptions}
+          value={formData?.state || ""}
+          onChange={(value) => handleInputChange("state", value?.toString())}
+          loading={statesLoading}
+          disabled={!editMode || !formData?.country}
+          error={errors?.state}
+        />
 
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]">
@@ -229,7 +240,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               handleInputChange("extraAddressDetails", e.target.value)
             }
             placeholder={t(
-              "modules.profile.fields.extraAddressDetails.placeholder"
+              "modules.profile.fields.extraAddressDetails.placeholder",
             )}
           />
           {errors?.extraAddressDetails && (

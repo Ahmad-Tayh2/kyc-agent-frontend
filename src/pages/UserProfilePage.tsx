@@ -11,6 +11,7 @@ import type { agentDocsData, ProfileFormData } from "@/types/agent";
 import { useTranslation } from "react-i18next";
 import EditMultiSectionCard from "@/components/shared/EditMultiSectionCard";
 import AgentDocumentUpload from "@/components/profile/AgentDocumentUpload";
+import { isValidEmail } from "@/helpers/validation";
 
 // Utility function to get agent ID from localStorage
 const getUserIdFromStorage = (): number | null => {
@@ -146,14 +147,6 @@ const UserProfilePage = () => {
       }));
     }
   };
-
-  // Handle date changes
-  const handleDateChange = (field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
   //validate fields
 
   const validateFields = () => {
@@ -165,8 +158,11 @@ const UserProfilePage = () => {
       newErrors.lastName = t("modules.register.fields.lastName.error");
     if (!formData.date_of_birth)
       newErrors.date_of_birth = t("modules.register.fields.dob.error");
-    if (!formData.email)
+    if (!formData.email) {
+      newErrors.email = t("modules.register.fields.email.required");
+    } else if (!isValidEmail(formData.email)) {
       newErrors.email = t("modules.register.fields.email.error");
+    }
     if (!formData.gender)
       newErrors.gender = t("modules.register.fields.email.error");
 
@@ -187,23 +183,23 @@ const UserProfilePage = () => {
     if (formData.agentType === "business_partner") {
       if (!formData.businessName)
         newErrors.businessName = t(
-          "modules.register.fields.businessName.error"
+          "modules.register.fields.businessName.error",
         );
       if (!formData.businessStreetName)
         newErrors.businessStreetName = t(
-          "modules.register.fields.businessStreetName.error"
+          "modules.register.fields.businessStreetName.error",
         );
       if (!formData.businessHouseNumber)
         newErrors.businessHouseNumber = t(
-          "modules.register.fields.businessHouseNumber.error"
+          "modules.register.fields.businessHouseNumber.error",
         );
       if (!formData.businessCity)
         newErrors.businessCity = t(
-          "modules.register.fields.businessCity.error"
+          "modules.register.fields.businessCity.error",
         );
       if (!formData.businessCountry)
         newErrors.businessCountry = t(
-          "modules.register.fields.businessCountry.error"
+          "modules.register.fields.businessCountry.error",
         );
     }
     return newErrors;
@@ -296,7 +292,6 @@ const UserProfilePage = () => {
             agentStatus={profileData?.data?.user?.status}
             errors={errors}
             handleInputChange={handleInputChange}
-            handleDateChange={handleDateChange}
             editMode={editMode}
           />
           {formData.agentType === "business_partner" && (
