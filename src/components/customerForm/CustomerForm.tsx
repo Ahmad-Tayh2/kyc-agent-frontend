@@ -121,7 +121,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       firstName: "",
       lastName: "",
       email: "",
-      dateOfBirth: "1950-01-01",
+      dateOfBirth: "",
       streetName: "",
       houseNumber: "",
       postalCode: "",

@@ -36,7 +36,8 @@ export const editRecipientSchema = z.object({
     .email("Invalid email address format")
     .optional()
     .or(z.literal("")),
-  date_of_birth: z.string().nonempty("Date of birth is required"),
+  date_of_birth: z.string().optional(),
+  //.nonempty("Date of birth is required"),
   // .refine(
   //   (date) => !isNaN(Date.parse(date)),
   //   "Invalid date format (must be YYYY-MM-DD)"
@@ -56,8 +57,10 @@ export const editRecipientSchema = z.object({
     return false;
   }, "City is required"),
 
-  street_name: z.string().nonempty("Street name is required"),
-  house_number: z.string().nonempty("House number is required"),
+  street_name: z.string().optional(),
+  //.nonempty("Street name is required"),
+  house_number: z.string().optional(),
+  //.nonempty("House number is required"),
   // postal_code: z.string().optional(),
   phone_number: z
     .string()
@@ -106,17 +109,27 @@ const RecipientEditPage: React.FC = () => {
 
   useEffect(() => {
     if (data?.data) {
-      setRecipientData(data?.data);
+      setRecipientData({
+        ...data?.data,
+        date_of_birth:
+          format(data?.data?.date_of_birth, "yyyy-MM-dd") === "1950-01-01"
+            ? ""
+            : data?.data?.date_of_birth,
+      });
     }
   }, [data]);
 
   useEffect(() => {
     if (data && data.data) {
+      console.log("-- data === ", data?.data);
       setFormData({
         first_name: data.data.first_name,
         last_name: data.data.last_name,
         email: data.data.email,
-        date_of_birth: data.data.date_of_birth,
+        date_of_birth:
+          format(data?.data?.date_of_birth, "yyyy-MM-dd") === "1950-01-01"
+            ? ""
+            : data?.data?.date_of_birth,
         country_id: data.data?.address?.country?.id,
         city_id: data.data?.address?.city?.id,
         state_id: data.data?.address?.state?.id,
@@ -189,11 +202,11 @@ const RecipientEditPage: React.FC = () => {
         email: formData.email ?? "",
         date_of_birth: formData?.date_of_birth
           ? format(formData?.date_of_birth, "yyyy-MM-dd")
-          : "",
+          : "1950-01-01",
         gender: formData?.gender,
         address: {
-          street_name: formData?.street_name,
-          house_number: formData.house_number,
+          street_name: formData?.street_name ?? "",
+          house_number: formData.house_number ?? "",
           postal_code: formData?.postal_code ?? "",
           extra_address_details: formData?.extra_address_details,
           city_id: formData?.city_id,
