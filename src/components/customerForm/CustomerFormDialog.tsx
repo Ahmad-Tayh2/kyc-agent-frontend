@@ -33,6 +33,7 @@ import { Separator } from "@/components/ui/separator";
 
 import copyIcon from "@/assets/icons/clipboard.svg";
 import infoIcon from "@/assets/icons/info.svg";
+import { copyToClipboard } from "@/helpers/text";
 
 // Form validation schema
 const customerFormSchema = z.object({
@@ -154,7 +155,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
           error.message.includes("network")
         ) {
           setErrorMessage(
-            "Network error. Please check your internet connection and try again."
+            "Network error. Please check your internet connection and try again.",
           );
         }
         // Check if it's a validation error (usually contains field names)
@@ -177,15 +178,6 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
     }
   };
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      // You could add a toast notification here
-    } catch {
-      // Failed to copy link - could add user feedback here
-    }
-  };
-
   const shareLink = async () => {
     if (navigator.share) {
       try {
@@ -199,7 +191,10 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
       }
     } else {
       // Fallback to copying to clipboard
-      copyToClipboard(customerFormLink);
+      copyToClipboard(
+        customerFormLink,
+        "Customer form link copied to clipboard!",
+      );
     }
   };
 
@@ -384,7 +379,12 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
                       type="button"
                       size="sm"
                       variant={"outline"}
-                      onClick={() => copyToClipboard(customerFormLink)}
+                      onClick={() =>
+                        copyToClipboard(
+                          customerFormLink,
+                          "Customer form link copied to clipboard!",
+                        )
+                      }
                       className="px-3"
                     >
                       <img
