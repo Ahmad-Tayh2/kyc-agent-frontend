@@ -244,13 +244,9 @@ const CustomerCreateFormPage: React.FC = () => {
         return false;
     }
   };
+  const [customerId, setCustomerId] = useState(null);
 
-  const handleNext = () => {
-    // Mark current step as completed
-    if (!completedSteps.includes(currentStep)) {
-      setCompletedSteps((prev) => [...prev, currentStep]);
-    }
-
+  const handleNext = async () => {
     if (currentStep === "basic") {
       const payloadToValidate: any = {
         first_name: formData.first_name,
@@ -278,8 +274,24 @@ const CustomerCreateFormPage: React.FC = () => {
         setValidationErrors(errors); // We'll define this state below
         return;
       }
-      setCurrentStep("identity");
+      // Step 1: Create customer with basic data (sync)
+
+      const customerResponse = await createCustomer(
+        formData as CustomerCreateData,
+      );
+      if (customerResponse.data?.id) {
+        setCustomerId(customerResponse.data?.id);
+        // Mark current step as completed
+        if (!completedSteps.includes(currentStep)) {
+          setCompletedSteps((prev) => [...prev, currentStep]);
+        }
+        setCurrentStep("identity");
+      }
     } else if (currentStep === "identity") {
+      // Mark current step as completed
+      if (!completedSteps.includes(currentStep)) {
+        setCompletedSteps((prev) => [...prev, currentStep]);
+      }
       //validate identity docs
       const isIdentityValid = validateIdentityData();
       if (!isIdentityValid) {
@@ -303,15 +315,8 @@ const CustomerCreateFormPage: React.FC = () => {
     }
   };
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
-  const handleSubmit = async () => {
+  const handleSubmitIncome = async () => {
     try {
-      // Step 1: Create customer with basic data (sync)
-
-      const customerResponse = await createCustomer(
-        formData as CustomerCreateData,
-      );
-
-      const customerId = customerResponse.data?.id;
       if (!customerId) {
         throw new Error("Customer ID not received from server");
       }
@@ -786,7 +791,7 @@ const CustomerCreateFormPage: React.FC = () => {
           {currentStep === "income" ? (
             <ActionButton
               title="save & continue"
-              onClick={handleSubmit}
+              onClick={handleSubmitIncome}
               disabled={
                 isSubmitDisabled ||
                 isCreationPending ||
@@ -799,7 +804,7 @@ const CustomerCreateFormPage: React.FC = () => {
               title="save & continue"
               onClick={handleNext}
               className="bg-teal-600 hover:bg-teal-700"
-              // disabled={disableContinue}
+              disabled={isCreationPending}
             />
           )}
         </div>
