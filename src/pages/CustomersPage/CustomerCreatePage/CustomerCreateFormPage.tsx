@@ -45,7 +45,7 @@ const CustomerCreateFormPage: React.FC = () => {
     first_name: "",
     last_name: "",
     email: "",
-    date_of_birth: "1950-01-01",
+    date_of_birth: "",
     street_name: "",
     house_number: "",
     postal_code: "",
@@ -276,9 +276,10 @@ const CustomerCreateFormPage: React.FC = () => {
       }
       // Step 1: Create customer with basic data (sync)
 
-      const customerResponse = await createCustomer(
-        formData as CustomerCreateData,
-      );
+      const customerResponse = await createCustomer({
+        ...formData,
+        date_of_birth: formData?.date_of_birth || "1950-01-01",
+      } as CustomerCreateData);
       if (customerResponse.data?.id) {
         setCustomerId(customerResponse.data?.id);
         // Mark current step as completed

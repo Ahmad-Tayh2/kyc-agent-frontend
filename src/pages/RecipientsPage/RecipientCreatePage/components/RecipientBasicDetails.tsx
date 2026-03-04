@@ -198,7 +198,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
             <Label className="text-[14px]" htmlFor="street_name">
-              Street Name<span className="text-red-500">*</span>
+              Street Name
             </Label>
             <Input
               id="street_name"
@@ -214,7 +214,7 @@ const RecipientBasicDetails: React.FC<RecipientBasicDetailsProps> = ({
 
           <div className="flex flex-col gap-1">
             <Label className="text-[14px]" htmlFor="house_number">
-              House Number<span className="text-red-500">*</span>
+              House Number
             </Label>
             <Input
               id="house_number"

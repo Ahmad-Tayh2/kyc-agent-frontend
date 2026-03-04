@@ -51,7 +51,8 @@ export const createRecipientSchema = z.object({
     .email("Invalid email address format")
     .optional()
     .or(z.literal("")),
-  date_of_birth: z.string().nonempty("Date of birth is required"),
+  date_of_birth: z.string().optional(),
+  //.nonempty("Date of birth is required"),
   // .refine(
   //   (date) => !isNaN(Date.parse(date)),
   //   "Invalid date format (must be YYYY-MM-DD)"
@@ -71,8 +72,10 @@ export const createRecipientSchema = z.object({
     return false;
   }, "City is required"),
 
-  street_name: z.string().nonempty("Street name is required"),
-  house_number: z.string().nonempty("House number is required"),
+  street_name: z.string().optional(),
+  //.nonempty("Street name is required"),
+  house_number: z.string().optional(),
+  //.nonempty("House number is required"),
   // postal_code: z.string().optional(),
   phone_number: z
     .string()
@@ -217,7 +220,7 @@ const RecipientCreateForm: React.FC = () => {
     first_name: "",
     last_name: "",
     email: "",
-    date_of_birth: "1950-01-01",
+    date_of_birth: "",
     street_name: "",
     house_number: "",
     postal_code: "",
@@ -626,13 +629,13 @@ const RecipientCreateForm: React.FC = () => {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
-        date_of_birth: formData.date_of_birth,
+        date_of_birth: formData.date_of_birth || "1950-01-01",
         gender: formData.gender,
         country_phone_code: formData.country_phone_code,
         phone_number: formData.phone_number,
         address: {
-          street_name: formData.street_name,
-          house_number: formData.house_number,
+          street_name: formData?.street_name ?? "",
+          house_number: formData?.house_number ?? "",
           postal_code: formData.postal_code,
           extra_address_details: formData.bank_details.extra_address_details,
           city_id: formData.city_id,
