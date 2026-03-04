@@ -120,7 +120,7 @@ export default function PaymentSuccessPage() {
   };
 
   return (
-    <div className='min-h-screen bg-gray-50 flex items-center justify-center py-8'>
+    <div className='h-screen overflow-y-auto bg-gray-50 flex items-center justify-center py-8'>
       <div className='max-w-2xl w-full mx-4'>
         <div className='bg-white rounded-lg shadow-sm border p-8'>
           <div className='text-center mb-6'>

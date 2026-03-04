@@ -517,7 +517,7 @@ export default function PaymentPage() {
   }, [selectedProvider]);
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='h-screen overflow-y-auto bg-gray-50'>
       <div className='max-w-2xl mx-auto py-8 px-4'>
         {/* Header */}
 
