@@ -111,7 +111,7 @@ const CustomerBasicDetails = (props: any) => {
 
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="date_of_birth">
-            Date of Birth
+            Date of Birth<span className="text-red-500">*</span>
           </Label>
           <DatePicker
             value={formData.date_of_birth || ""}
@@ -123,7 +123,6 @@ const CustomerBasicDetails = (props: any) => {
             <ErrorField errors={validationErrors?.date_of_birth} />
           )}
         </div>
-
         <div className="flex flex-col gap-1">
           <Label className="text-[14px]" htmlFor="street_name">
             Street Name<span className="text-red-500">*</span>

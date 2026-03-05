@@ -111,25 +111,22 @@ const RecipientEditPage: React.FC = () => {
     if (data?.data) {
       setRecipientData({
         ...data?.data,
-        date_of_birth:
-          format(data?.data?.date_of_birth, "yyyy-MM-dd") === "1950-01-01"
-            ? ""
-            : data?.data?.date_of_birth,
+        date_of_birth: data?.data?.date_of_birth
+          ? format(data?.data?.date_of_birth, "yyyy-MM-dd")
+          : "",
       });
     }
   }, [data]);
 
   useEffect(() => {
     if (data && data.data) {
-      console.log("-- data === ", data?.data);
       setFormData({
         first_name: data.data.first_name,
         last_name: data.data.last_name,
         email: data.data.email,
-        date_of_birth:
-          format(data?.data?.date_of_birth, "yyyy-MM-dd") === "1950-01-01"
-            ? ""
-            : data?.data?.date_of_birth,
+        date_of_birth: data?.data?.date_of_birth
+          ? format(data?.data?.date_of_birth, "yyyy-MM-dd")
+          : "",
         country_id: data.data?.address?.country?.id,
         city_id: data.data?.address?.city?.id,
         state_id: data.data?.address?.state?.id,
@@ -202,7 +199,7 @@ const RecipientEditPage: React.FC = () => {
         email: formData.email ?? "",
         date_of_birth: formData?.date_of_birth
           ? format(formData?.date_of_birth, "yyyy-MM-dd")
-          : "1950-01-01",
+          : "",
         gender: formData?.gender,
         address: {
           street_name: formData?.street_name ?? "",

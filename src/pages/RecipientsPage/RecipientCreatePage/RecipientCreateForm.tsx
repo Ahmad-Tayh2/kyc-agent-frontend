@@ -629,7 +629,7 @@ const RecipientCreateForm: React.FC = () => {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
-        date_of_birth: formData.date_of_birth || "1950-01-01",
+        date_of_birth: formData.date_of_birth,
         gender: formData.gender,
         country_phone_code: formData.country_phone_code,
         phone_number: formData.phone_number,
