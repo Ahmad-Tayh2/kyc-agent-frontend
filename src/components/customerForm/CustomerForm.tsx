@@ -33,6 +33,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
 import BrandingSection from "../shared/BrandingSection";
+import ErrorField from "../shared/ErrorField";
 
 // Simple authentication check
 const isAuthenticated = () => {
@@ -43,8 +44,12 @@ const isAuthenticated = () => {
 const customerFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Please enter a valid email address"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  email: z
+    .string()
+    .email("Invalid email address format")
+    .optional()
+    .or(z.literal("")),
+  dateOfBirth: z.string().nonempty("Date of birth is required"),
   streetName: z.string().min(1, "Street name is required"),
   houseNumber: z.string().min(1, "House number is required"),
   postalCode: z.string().optional(),
@@ -165,20 +170,20 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
     try {
       const submissionData = {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        email: data.email,
-        date_of_birth: data.dateOfBirth,
-        street_name: data.streetName,
-        house_number: data.houseNumber,
-        postal_code: data.postalCode || "", // Provide default empty string for optional postal code
-        extra_address_details: data.extraAddressDetails || "",
-        city_id: data.cityId,
-        state_id: data.stateId || undefined, // Provide default undefined for optional state
-        country_id: data.countryId,
-        gender: data.gender,
-        country_phone_code: data.countryPhoneCode,
-        phone_number: data.phoneNumber,
+        first_name: data?.firstName,
+        last_name: data?.lastName,
+        email: data?.email,
+        date_of_birth: data?.dateOfBirth,
+        street_name: data?.streetName,
+        house_number: data?.houseNumber,
+        postal_code: data?.postalCode || "", // Provide default empty string for optional postal code
+        extra_address_details: data?.extraAddressDetails || "",
+        city_id: data?.cityId,
+        state_id: data?.stateId || undefined, // Provide default undefined for optional state
+        country_id: data?.countryId,
+        gender: data?.gender,
+        country_phone_code: data?.countryPhoneCode,
+        phone_number: data?.phoneNumber,
         status: "active" as const,
       };
       await submitMutation.mutateAsync(submissionData);
@@ -428,7 +433,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.email.label")}
-                <span className="text-red-500">*</span>
               </Label>
               <FormField
                 control={form.control}
@@ -610,18 +614,27 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             <div className="flex flex-col gap-1">
               <Label className="text-[14px]">
                 {t("common.fields.dob.label")}
-                {/* <span className="text-red-500">*</span> */}
+                <span className="text-red-500">*</span>
               </Label>
               <DatePicker
                 value={form.watch("dateOfBirth")?.toString()}
                 // value=""
                 onChange={
                   (value: string) =>
-                    form.setValue("dateOfBirth", value.toString())
+                    // form.setValue("dateOfBirth", value.toString())
+                    form.setValue("dateOfBirth", value.toString(), {
+                      shouldValidate: true,
+                      shouldTouch: true,
+                    })
                   // console.log("vvvvvvvv=====", value)
                 }
                 disabledAfter={new Date()}
               />
+              {form.formState.errors.dateOfBirth?.message && (
+                <ErrorField
+                  errors={[form.formState.errors.dateOfBirth?.message]}
+                />
+              )}
               {/* <FormField
                 control={form.control}
                 name="dateOfBirth"
