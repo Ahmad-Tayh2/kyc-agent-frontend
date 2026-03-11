@@ -55,7 +55,7 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
   // Get currencies that are not already in the wallet
   const availableCurrencies = allCurrencies.filter(
     (currency) =>
-      !walletCurrencies.some((wc) => wc?.currency?.id === currency?.id)
+      !walletCurrencies.some((wc) => wc?.currency?.id === currency?.id),
   );
 
   const form = useForm<AddCurrencyFormData>({
@@ -110,7 +110,7 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(
-          error.message || "An error occurred while adding currency"
+          error.message || "An error occurred while adding currency",
         );
       } else {
         setErrorMessage("An unexpected error occurred");
@@ -122,7 +122,7 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md overflow-auto min-w-xs">
+      <DialogContent className="sm:max-w-md  min-w-xs">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Add Currency to Wallet
@@ -158,7 +158,7 @@ const AddCurrencyDialog: React.FC<AddCurrencyDialogProps> = ({
                               id: currency?.id,
                               code: currency?.code,
                               name: currency?.name,
-                            })
+                            }),
                           )}
                           selectedCurrencyId={field.value || undefined}
                           amount={0}
