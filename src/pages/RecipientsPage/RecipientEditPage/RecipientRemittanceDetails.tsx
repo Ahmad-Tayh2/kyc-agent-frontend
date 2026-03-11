@@ -1,57 +1,61 @@
-import DeleteIcon from '@/assets/icons/delete.svg?react';
-import EditIcon from '@/assets/icons/edit.svg?react';
-import PlusIcon from '@/assets/icons/upload-icon.svg?react';
-import ActionButton from '@/components/shared/ActionButton';
-import ConfirmationDialog from '@/components/shared/ConfirmationDialog';
-import PhoneInput from '@/components/shared/PhoneInput';
-import { Button } from '@/components/ui/button';
+import DeleteIcon from "@/assets/icons/delete.svg?react";
+import EditIcon from "@/assets/icons/edit.svg?react";
+import PlusIcon from "@/assets/icons/upload-icon.svg?react";
+import ActionButton from "@/components/shared/ActionButton";
+import ConfirmationDialog from "@/components/shared/ConfirmationDialog";
+import PhoneInput from "@/components/shared/PhoneInput";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import SearchableSelect from '@/components/ui/searchable-select';
-import { useCountries } from '@/hooks/data/useAddress';
-import { usePayoutLocations } from '@/hooks/data/usePayoutLocation';
-import { usePayoutLocationFilters } from '@/hooks/data/usePayoutLocationFilters';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import SearchableSelect from "@/components/ui/searchable-select";
+import { useCountries } from "@/hooks/data/useAddress";
+import {
+  useInfinitePayoutLocations,
+  // usePayoutLocations,
+} from "@/hooks/data/usePayoutLocation";
+import { usePayoutLocationFilters } from "@/hooks/data/usePayoutLocationFilters";
 import {
   useCreateRecipientPayout,
   useDeleteRecipientPayout,
   useRecipientPayouts,
-} from '@/hooks/data/useRecipientPayout';
+} from "@/hooks/data/useRecipientPayout";
 import {
   useCreateRecipientRemittanceMethod,
   useDeleteRecipientRemittanceMethod,
   useRecipientRemittanceMethods,
   useUpdateRecipientRemittanceMethod,
-} from '@/hooks/data/useRecipientRemittanceMethods';
-import { useRemittanceMethods } from '@/hooks/data/useRemittanceMethod';
-import { remittanceMethodService } from '@/services/remittanceMethod';
-import type { RecipientRemittanceMethod } from '@/types/recipientRemittanceMethod/RecipientRemittanceMethod';
-import type { RecipientDataType } from '@/types/recipients';
-import type { Country } from '@/types/shared/location';
-import React, { useState } from 'react';
-import { toast } from 'sonner';
+} from "@/hooks/data/useRecipientRemittanceMethods";
+import { useRemittanceMethods } from "@/hooks/data/useRemittanceMethod";
+import { remittanceMethodService } from "@/services/remittanceMethod";
+import type { PayoutLocation } from "@/types/payoutLocation/PayoutLocation";
+import type { RecipientRemittanceMethod } from "@/types/recipientRemittanceMethod/RecipientRemittanceMethod";
+import type { RecipientDataType } from "@/types/recipients";
+import type { Country } from "@/types/shared/location";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
 interface RecipientRemittanceDetailsProps {
   data: RecipientDataType | null;
   editMode: boolean;
 }
 
-interface PayoutAgent {
-  id: number;
-  business_name: string;
-  code: string;
-  address: {
-    location: string;
-    country: string;
-  };
-  description?: string;
-  enabled?: boolean;
-}
+// interface PayoutAgent {
+//   id: number;
+//   business_name: string;
+//   code: string;
+//   address: {
+//     location: string;
+//     country: string;
+//   };
+//   description?: string;
+//   enabled?: boolean;
+// }
 
 export default function RecipientRemittanceDetails({
   data,
@@ -62,12 +66,12 @@ export default function RecipientRemittanceDetails({
     number | null
   >(null);
   const [newMethodData, setNewMethodData] = useState({
-    account_number: '',
-    phone_number: '',
-    country_phone_code: data?.country_phone_code || '+1',
-    account_name_prefix: '',
-    account_id_prefix: '',
-    verification_status: 'pending' as 'pending' | 'verified' | 'failed',
+    account_number: "",
+    phone_number: "",
+    country_phone_code: data?.country_phone_code || "+1",
+    account_name_prefix: "",
+    account_id_prefix: "",
+    verification_status: "pending" as "pending" | "verified" | "failed",
   });
 
   // Edit modal states
@@ -75,9 +79,9 @@ export default function RecipientRemittanceDetails({
   const [editingMethod, setEditingMethod] =
     useState<RecipientRemittanceMethod | null>(null);
   const [editMethodData, setEditMethodData] = useState({
-    account_number: '',
-    phone_number: '',
-    country_phone_code: '+1',
+    account_number: "",
+    phone_number: "",
+    country_phone_code: "+1",
   });
 
   // Verification states
@@ -97,8 +101,36 @@ export default function RecipientRemittanceDetails({
   // Payout location filtering
   const { filtersString, updateCountryFilter, filters } =
     usePayoutLocationFilters();
-  const { data: payoutLocationsResponse, isLoading: payoutLocationsLoading } =
-    usePayoutLocations(filtersString);
+  // const { data: payoutLocationsResponse, isLoading: payoutLocationsLoading } =
+  //   usePayoutLocations(filtersString);
+  const {
+    data: payoutLocationsInfiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: payoutLocationsLoading,
+  } = useInfinitePayoutLocations(filtersString);
+  // Flatten all pages into a single array
+  const payoutLocationsData = React.useMemo(() => {
+    if (!payoutLocationsInfiniteData) return { data: [] };
+    const allData = payoutLocationsInfiniteData.pages.flatMap(
+      (page) => page.data || [],
+    );
+    return { data: allData };
+  }, [payoutLocationsInfiniteData]);
+  // const payoutAgentOptions = availablePayoutAgents.map(
+  //   (agent: PayoutAgent) => ({
+  //     value: agent.id.toString(),
+  //     label: `${agent.business_name} - ${agent.address.location}, ${agent.address.country}`,
+  //   }),
+  // );
+  const payoutAgentOptions =
+    payoutLocationsData?.data?.map((payout: PayoutLocation) => ({
+      label: `${payout.business_name} - ${payout.address?.location || ""}, ${
+        payout.address?.country || ""
+      }`,
+      value: payout.id.toString(),
+    })) || [];
 
   // Mutations
   const createMutation = useCreateRecipientRemittanceMethod();
@@ -123,10 +155,10 @@ export default function RecipientRemittanceDetails({
     () => recipientPayouts?.data || [],
     [recipientPayouts?.data],
   );
-  const payoutAgents = React.useMemo(
-    () => payoutLocationsResponse?.data || [],
-    [payoutLocationsResponse?.data],
-  );
+  // const payoutAgents = React.useMemo(
+  //   () => payoutLocationsResponse?.data || [],
+  //   [payoutLocationsResponse?.data],
+  // );
 
   // Set default country filter to recipient's country
   React.useEffect(() => {
@@ -170,15 +202,10 @@ export default function RecipientRemittanceDetails({
         }))
         .filter(
           (method: { label: string }) =>
-            !method.label.toLowerCase().includes('cash'),
+            !method.label.toLowerCase().includes("cash"),
         ),
     [remittanceMethods],
   );
-
-  const payoutAgentOptions = payoutAgents.map((agent: PayoutAgent) => ({
-    value: agent.id.toString(),
-    label: `${agent.business_name} - ${agent.address.location}, ${agent.address.country}`,
-  }));
 
   const handleVerifyAccount = async () => {
     if (!selectedMethodId) return;
@@ -193,18 +220,18 @@ export default function RecipientRemittanceDetails({
     );
 
     if (!selectedMethod || !selectedMethod.validator_id) {
-      console.log('Missing required data for verification');
+      console.log("Missing required data for verification");
       return;
     }
 
     setIsVerifying(true);
     try {
       const validationType =
-        selectedMethod.validator?.name || selectedMethod.validation_type || '';
+        selectedMethod.validator?.name || selectedMethod.validation_type || "";
 
       if (!validationType) {
-        console.error('No validation type found for method:', selectedMethod);
-        toast.error('Validation type not configured for this method');
+        console.error("No validation type found for method:", selectedMethod);
+        toast.error("Validation type not configured for this method");
         setIsVerifying(false);
         return;
       }
@@ -212,10 +239,10 @@ export default function RecipientRemittanceDetails({
       const verificationRequest = {
         validation_type: validationType,
         service_data: {
-          serviceCode: '00003',
+          serviceCode: "00003",
           phoneNumber: `+${newMethodData.country_phone_code?.replace(
             /^\+/,
-            '',
+            "",
           )}${newMethodData.phone_number}`,
         },
         verification_data: {
@@ -227,26 +254,26 @@ export default function RecipientRemittanceDetails({
       const response =
         await remittanceMethodService.verifyAccountInfo(verificationRequest);
 
-      if (response.data?.status === 'success') {
+      if (response.data?.status === "success") {
         setNewMethodData((prev) => ({
           ...prev,
-          verification_status: 'verified',
+          verification_status: "verified",
         }));
-        toast.success('Account verified successfully!');
+        toast.success("Account verified successfully!");
       } else {
         setNewMethodData((prev) => ({
           ...prev,
-          verification_status: 'failed',
+          verification_status: "failed",
         }));
-        toast.error('Verification failed. Please check your details.');
+        toast.error("Verification failed. Please check your details.");
       }
     } catch (error) {
-      console.error('Verification failed:', error);
+      console.error("Verification failed:", error);
       setNewMethodData((prev) => ({
         ...prev,
-        verification_status: 'failed',
+        verification_status: "failed",
       }));
-      toast.error('Verification failed. Please try again.');
+      toast.error("Verification failed. Please try again.");
     } finally {
       setIsVerifying(false);
     }
@@ -263,9 +290,9 @@ export default function RecipientRemittanceDetails({
     // If method has validator, check if it's verified
     if (
       selectedMethod?.validator_id &&
-      newMethodData.verification_status !== 'verified'
+      newMethodData.verification_status !== "verified"
     ) {
-      toast.error('Please verify the account before adding');
+      toast.error("Please verify the account before adding");
       return;
     }
 
@@ -279,19 +306,19 @@ export default function RecipientRemittanceDetails({
         country_phone_code: newMethodData.country_phone_code || undefined,
       });
 
-      toast.success('Remittance method added successfully!');
+      toast.success("Remittance method added successfully!");
       setSelectedMethodId(null);
       setNewMethodData({
-        account_number: '',
-        phone_number: '',
-        country_phone_code: data?.country_phone_code || '+1',
-        account_name_prefix: '',
-        account_id_prefix: '',
-        verification_status: 'pending',
+        account_number: "",
+        phone_number: "",
+        country_phone_code: data?.country_phone_code || "+1",
+        account_name_prefix: "",
+        account_id_prefix: "",
+        verification_status: "pending",
       });
       refetchRecipientMethods();
     } catch {
-      toast.error('Failed to add remittance method');
+      toast.error("Failed to add remittance method");
     } finally {
       setIsAddingMethod(false);
     }
@@ -306,40 +333,40 @@ export default function RecipientRemittanceDetails({
         payout_agent_id: selectedPayoutAgentId,
       });
 
-      toast.success('Payout location added successfully!');
+      toast.success("Payout location added successfully!");
       setSelectedPayoutAgentId(null);
       refetchRecipientPayouts();
     } catch {
-      toast.error('Failed to add payout location');
+      toast.error("Failed to add payout location");
     }
   };
 
   const handleDeletePayoutAgent = async (payoutId: number) => {
     try {
       await deletePayoutMutation.mutateAsync(payoutId);
-      toast.success('Payout location deleted successfully!');
+      toast.success("Payout location deleted successfully!");
       refetchRecipientPayouts();
     } catch {
-      toast.error('Failed to delete payout location');
+      toast.error("Failed to delete payout location");
     }
   };
 
   const handleDeleteMethod = async (methodId: number) => {
     try {
       await deleteMutation.mutateAsync(methodId);
-      toast.success('Remittance method deleted successfully!');
+      toast.success("Remittance method deleted successfully!");
       refetchRecipientMethods();
     } catch {
-      toast.error('Failed to delete remittance method');
+      toast.error("Failed to delete remittance method");
     }
   };
 
   const handleEditMethod = (method: RecipientRemittanceMethod) => {
     setEditingMethod(method);
     setEditMethodData({
-      account_number: method.account_number || '',
-      phone_number: method.phone_number || '',
-      country_phone_code: method.country_phone_code || '+1',
+      account_number: method.account_number || "",
+      phone_number: method.phone_number || "",
+      country_phone_code: method.country_phone_code || "+1",
     });
     setEditModalOpen(true);
   };
@@ -356,26 +383,26 @@ export default function RecipientRemittanceDetails({
           country_phone_code: editMethodData.country_phone_code,
         },
       });
-      toast.success('Remittance method updated successfully!');
+      toast.success("Remittance method updated successfully!");
       setEditModalOpen(false);
       setEditingMethod(null);
       refetchRecipientMethods();
     } catch {
-      toast.error('Failed to update remittance method');
+      toast.error("Failed to update remittance method");
     }
   };
 
   const renderExistingMethod = (method: RecipientRemittanceMethod) => {
     return (
-      <div key={method.id} className='bg-gray-50 rounded-lg p-4'>
-        <div className='flex justify-between items-start mb-3'>
-          <div className='flex items-center space-x-3'>
-            <div className='w-4 h-4 border border-gray-300 rounded-full'></div>
+      <div key={method.id} className="bg-gray-50 rounded-lg p-4">
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-4 h-4 border border-gray-300 rounded-full"></div>
             <div>
-              <h4 className='font-medium text-gray-900'>
+              <h4 className="font-medium text-gray-900">
                 {method.remittance_method?.name}
               </h4>
-              <p className='text-sm text-gray-600'>
+              <p className="text-sm text-gray-600">
                 {method.formatted_phone ||
                   `${method.country_phone_code}${method.phone_number}`}
                 {method.account_number && ` • ${method.account_number}`}
@@ -383,26 +410,26 @@ export default function RecipientRemittanceDetails({
             </div>
           </div>
           {editMode && (
-            <div className='flex space-x-2'>
+            <div className="flex space-x-2">
               <button
                 onClick={() => handleEditMethod(method)}
-                className='text-primary p-1 hover:bg-gray-100 rounded'
-                title='Edit remittance method'
+                className="text-primary p-1 hover:bg-gray-100 rounded"
+                title="Edit remittance method"
               >
-                <EditIcon className='w-4 h-4' />
+                <EditIcon className="w-4 h-4" />
               </button>
               <ConfirmationDialog
                 trigger={
                   <button
-                    className='text-red-500 p-1 hover:bg-gray-100 rounded'
-                    title='Delete remittance method'
+                    className="text-red-500 p-1 hover:bg-gray-100 rounded"
+                    title="Delete remittance method"
                     disabled={deleteMutation.isPending}
                   >
-                    <DeleteIcon className='w-4 h-4' />
+                    <DeleteIcon className="w-4 h-4" />
                   </button>
                 }
-                title='Delete Remittance Method'
-                description='Are you sure you want to delete this remittance method? This action cannot be undone.'
+                title="Delete Remittance Method"
+                description="Are you sure you want to delete this remittance method? This action cannot be undone."
                 onConfirm={() => handleDeleteMethod(method.id)}
               />
             </div>
@@ -423,34 +450,34 @@ export default function RecipientRemittanceDetails({
     };
   }) => {
     return (
-      <div key={payout.id} className='bg-gray-50 rounded-lg p-4'>
-        <div className='flex justify-between items-start mb-3'>
-          <div className='flex items-center space-x-3'>
-            <div className='w-4 h-4 border border-gray-300 rounded-full'></div>
+      <div key={payout.id} className="bg-gray-50 rounded-lg p-4">
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-4 h-4 border border-gray-300 rounded-full"></div>
             <div>
-              <h4 className='font-medium text-gray-900'>
+              <h4 className="font-medium text-gray-900">
                 {payout.payout_agent?.business_name}
               </h4>
-              <p className='text-sm text-gray-600'>
-                {payout.payout_agent?.address?.location},{' '}
+              <p className="text-sm text-gray-600">
+                {payout.payout_agent?.address?.location},{" "}
                 {payout.payout_agent?.address?.country}
               </p>
             </div>
           </div>
           {editMode && (
-            <div className='flex space-x-2'>
+            <div className="flex space-x-2">
               <ConfirmationDialog
                 trigger={
                   <button
-                    className='text-red-500 p-1 hover:bg-gray-100 rounded'
-                    title='Delete payout location'
+                    className="text-red-500 p-1 hover:bg-gray-100 rounded"
+                    title="Delete payout location"
                     disabled={deletePayoutMutation.isPending}
                   >
-                    <DeleteIcon className='w-4 h-4' />
+                    <DeleteIcon className="w-4 h-4" />
                   </button>
                 }
-                title='Delete Payout Location'
-                description='Are you sure you want to delete this payout location? This action cannot be undone.'
+                title="Delete Payout Location"
+                description="Are you sure you want to delete this payout location? This action cannot be undone."
                 onConfirm={() => handleDeletePayoutAgent(payout.id)}
               />
             </div>
@@ -461,67 +488,82 @@ export default function RecipientRemittanceDetails({
   };
 
   if (!data) {
-    return <div className='space-y-6 p-5'>Loading...</div>;
+    return <div className="space-y-6 p-5">Loading...</div>;
   }
 
   return (
-    <div className='space-y-6 p-5'>
+    <div className="space-y-6 p-5">
       {/* Cash Pick up addresses section */}
-      <div className='border border-dashed border-primary rounded-lg p-4'>
-        <h3 className='text-lg font-medium mb-4'>Cash Pick up addresses</h3>
+      <div className="border border-dashed border-primary rounded-lg p-4">
+        <h3 className="text-lg font-medium mb-4">Cash Pick up addresses</h3>
 
         {/* Show existing payout agents */}
-        <div className='space-y-4 mb-6'>
+        <div className="space-y-4 mb-6">
           {existingPayouts.length > 0 ? (
             existingPayouts.map(renderExistingPayoutAgent)
           ) : (
-            <p className='text-sm text-gray-500'>
+            <p className="text-sm text-gray-500">
               No cash pickup locations added yet.
             </p>
           )}
         </div>
-
         {editMode && (
-          <div className='space-y-4'>
-            <div className='flex items-center space-x-2 text-primary'>
-              <PlusIcon className='w-5 h-5' />
-              <span className='font-medium'>Add New Pickup Location</span>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 text-primary">
+              <PlusIcon className="w-5 h-5" />
+              <span className="font-medium">Add New Pickup Location</span>
             </div>
 
-            <div className='space-y-4'>
-              <div className='space-y-2'>
+            <div className="space-y-4">
+              <div className="space-y-2">
                 <Label>Filter by Country</Label>
                 <SearchableSelect
-                  value={filters.country_codes?.[0] || ''}
+                  value={filters.country_codes?.[0] || ""}
                   onChange={(value: string | number) => {
                     const countryCode = value.toString();
                     updateCountryFilter(countryCode ? [countryCode] : []);
                   }}
                   options={countryOptions}
-                  placeholder='Select a country to filter'
+                  placeholder="Select a country to filter"
                 />
               </div>
 
-              <div className='space-y-2'>
+              <div className="space-y-2">
                 <Label>Select Payout Location</Label>
                 <SearchableSelect
-                  value={selectedPayoutAgentId?.toString() || ''}
+                  value={selectedPayoutAgentId?.toString() || ""}
                   onChange={(value: string | number) =>
                     setSelectedPayoutAgentId(parseInt(value.toString()))
                   }
                   options={payoutAgentOptions}
                   placeholder={
                     payoutLocationsLoading
-                      ? 'Loading...'
-                      : 'Select a payout location'
+                      ? "Loading..."
+                      : "Select a payout location"
                   }
                   disabled={payoutLocationsLoading}
+                  onLoadMore={fetchNextPage}
+                  hasMore={hasNextPage}
+                  isLoadingMore={isFetchingNextPage}
                 />
+                {/* <SearchableSelect
+                  value={selectedPayoutAgentId?.toString() || ""}
+                  onChange={(value: string | number) =>
+                    setSelectedPayoutAgentId(parseInt(value.toString()))
+                  }
+                  options={payoutAgentOptions}
+                  placeholder={
+                    payoutLocationsLoading
+                      ? "Loading..."
+                      : "Select a payout location"
+                  }
+                  disabled={payoutLocationsLoading}
+                /> */}
               </div>
 
               <ActionButton
                 title={
-                  createPayoutMutation.isPending ? 'Adding...' : 'Add Location'
+                  createPayoutMutation.isPending ? "Adding..." : "Add Location"
                 }
                 onClick={handleAddPayoutAgent}
                 buttonProps={{
@@ -535,15 +577,15 @@ export default function RecipientRemittanceDetails({
       </div>
 
       {/* Wallet Account section */}
-      <div className='border border-dashed border-primary rounded-lg p-4'>
-        <h3 className='text-lg font-medium mb-4'>Remittance Methods</h3>
+      <div className="border border-dashed border-primary rounded-lg p-4">
+        <h3 className="text-lg font-medium mb-4">Remittance Methods</h3>
 
         {/* Existing Methods */}
-        <div className='space-y-4 mb-6'>
+        <div className="space-y-4 mb-6">
           {existingMethods.length > 0 ? (
             existingMethods.map(renderExistingMethod)
           ) : (
-            <p className='text-sm text-gray-500'>
+            <p className="text-sm text-gray-500">
               No remittance methods added yet.
             </p>
           )}
@@ -551,22 +593,22 @@ export default function RecipientRemittanceDetails({
 
         {/* Add New Method */}
         {editMode && (
-          <div className='space-y-4'>
-            <div className='flex items-center space-x-2 text-primary'>
-              <PlusIcon className='w-5 h-5' />
-              <span className='font-medium'>Add New Remittance Method</span>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 text-primary">
+              <PlusIcon className="w-5 h-5" />
+              <span className="font-medium">Add New Remittance Method</span>
             </div>
 
-            <div className='space-y-4'>
-              <div className='space-y-2'>
+            <div className="space-y-4">
+              <div className="space-y-2">
                 <Label>Select Remittance Method *</Label>
                 <SearchableSelect
-                  value={selectedMethodId?.toString() || ''}
+                  value={selectedMethodId?.toString() || ""}
                   onChange={(value: string | number) =>
                     setSelectedMethodId(parseInt(value.toString()))
                   }
                   options={methodOptions}
-                  placeholder='Select a payment method'
+                  placeholder="Select a payment method"
                 />
               </div>
 
@@ -578,15 +620,15 @@ export default function RecipientRemittanceDetails({
                   );
                   const hasValidator = !!selectedMethod?.validator_id;
                   const isVerified =
-                    newMethodData.verification_status === 'verified';
+                    newMethodData.verification_status === "verified";
                   const isFailed =
-                    newMethodData.verification_status === 'failed';
+                    newMethodData.verification_status === "failed";
 
                   return (
                     <>
                       {hasValidator && !isVerified && (
                         <>
-                          <div className='space-y-2'>
+                          <div className="space-y-2">
                             <Label>Phone Number *</Label>
                             <PhoneInput
                               countryOptions={countryPhoneOptions}
@@ -604,12 +646,12 @@ export default function RecipientRemittanceDetails({
                                   phone_number: phoneNumber,
                                 }))
                               }
-                              placeholder='Enter phone number'
+                              placeholder="Enter phone number"
                             />
                           </div>
 
-                          <div className='flex gap-2'>
-                            <div className='flex-1 space-y-2'>
+                          <div className="flex gap-2">
+                            <div className="flex-1 space-y-2">
                               <Label>Account Name Prefix *</Label>
                               <Input
                                 value={newMethodData.account_name_prefix}
@@ -619,11 +661,11 @@ export default function RecipientRemittanceDetails({
                                     account_name_prefix: e.target.value,
                                   }))
                                 }
-                                placeholder='e.g., Joh'
+                                placeholder="e.g., Joh"
                               />
                             </div>
 
-                            <div className='flex-1 space-y-2'>
+                            <div className="flex-1 space-y-2">
                               <Label>Account ID Prefix *</Label>
                               <Input
                                 value={newMethodData.account_id_prefix}
@@ -633,14 +675,14 @@ export default function RecipientRemittanceDetails({
                                     account_id_prefix: e.target.value,
                                   }))
                                 }
-                                placeholder='e.g., 1-1'
+                                placeholder="e.g., 1-1"
                               />
                             </div>
                           </div>
 
                           <ActionButton
                             title={
-                              isVerifying ? 'Verifying...' : 'Verify Account'
+                              isVerifying ? "Verifying..." : "Verify Account"
                             }
                             onClick={handleVerifyAccount}
                             buttonProps={{
@@ -653,8 +695,8 @@ export default function RecipientRemittanceDetails({
                           />
 
                           {isFailed && (
-                            <div className='p-3 bg-red-50 border border-red-200 rounded'>
-                              <p className='text-red-800 text-sm'>
+                            <div className="p-3 bg-red-50 border border-red-200 rounded">
+                              <p className="text-red-800 text-sm">
                                 ❌ <strong>Verification Failed:</strong> Please
                                 check your details and try again.
                               </p>
@@ -664,8 +706,8 @@ export default function RecipientRemittanceDetails({
                       )}
 
                       {hasValidator && isVerified && (
-                        <div className='p-3 bg-green-50 border border-green-200 rounded'>
-                          <p className='text-green-800 text-sm'>
+                        <div className="p-3 bg-green-50 border border-green-200 rounded">
+                          <p className="text-green-800 text-sm">
                             ✅ <strong>Account Verified Successfully!</strong>
                           </p>
                         </div>
@@ -673,7 +715,7 @@ export default function RecipientRemittanceDetails({
 
                       {!hasValidator && (
                         <>
-                          <div className='space-y-2'>
+                          <div className="space-y-2">
                             <Label>Phone Number</Label>
                             <PhoneInput
                               countryOptions={countryPhoneOptions}
@@ -691,11 +733,11 @@ export default function RecipientRemittanceDetails({
                                   phone_number: phoneNumber,
                                 }))
                               }
-                              placeholder='Enter phone number'
+                              placeholder="Enter phone number"
                             />
                           </div>
 
-                          <div className='space-y-2'>
+                          <div className="space-y-2">
                             <Label>Account Number</Label>
                             <Input
                               value={newMethodData.account_number}
@@ -705,7 +747,7 @@ export default function RecipientRemittanceDetails({
                                   account_number: e.target.value,
                                 }))
                               }
-                              placeholder='Enter account number'
+                              placeholder="Enter account number"
                             />
                           </div>
                         </>
@@ -713,7 +755,7 @@ export default function RecipientRemittanceDetails({
 
                       {(isVerified || !hasValidator) && (
                         <ActionButton
-                          title={isAddingMethod ? 'Adding...' : 'Add Method'}
+                          title={isAddingMethod ? "Adding..." : "Add Method"}
                           onClick={handleAddMethod}
                           buttonProps={{
                             disabled: isAddingMethod,
@@ -730,21 +772,21 @@ export default function RecipientRemittanceDetails({
 
       {/* Edit Remittance Method Modal */}
       <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit Remittance Method</DialogTitle>
           </DialogHeader>
-          <div className='space-y-4 py-4'>
-            <div className='space-y-2'>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
               <Label>Method</Label>
               <Input
-                value={editingMethod?.remittance_method?.name || ''}
+                value={editingMethod?.remittance_method?.name || ""}
                 disabled
-                className='bg-gray-50'
+                className="bg-gray-50"
               />
             </div>
 
-            <div className='space-y-2'>
+            <div className="space-y-2">
               <Label>Phone Number</Label>
               <PhoneInput
                 countryOptions={countryPhoneOptions}
@@ -762,11 +804,11 @@ export default function RecipientRemittanceDetails({
                     phone_number: phoneNumber,
                   }))
                 }
-                placeholder='Enter phone number'
+                placeholder="Enter phone number"
               />
             </div>
 
-            <div className='space-y-2'>
+            <div className="space-y-2">
               <Label>Account Number</Label>
               <Input
                 value={editMethodData.account_number}
@@ -776,13 +818,13 @@ export default function RecipientRemittanceDetails({
                     account_number: e.target.value,
                   }))
                 }
-                placeholder='Enter account number'
+                placeholder="Enter account number"
               />
             </div>
 
-            <div className='flex justify-end space-x-2 pt-4'>
+            <div className="flex justify-end space-x-2 pt-4">
               <Button
-                variant='outline'
+                variant="outline"
                 onClick={() => setEditModalOpen(false)}
                 disabled={updateMutation.isPending}
               >
@@ -792,7 +834,7 @@ export default function RecipientRemittanceDetails({
                 onClick={handleSaveEdit}
                 disabled={updateMutation.isPending}
               >
-                {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+                {updateMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </div>
