@@ -5,6 +5,8 @@ export interface TransactionFilterState {
   status: string[];
   currency: string[];
   dateRange: { startDate: string | null; endDate: string | null };
+  page: number;
+  per_page: number;
 }
 
 export function useTransactionFilters() {
@@ -16,43 +18,49 @@ export function useTransactionFilters() {
       startDate: null,
       endDate: null,
     },
+    page: 1,
+    per_page: 15,
   });
 
   const [isFiltersApplied, setIsFiltersApplied] = useState(false);
 
   // Create a querystring from the filters
   const filtersString = useMemo(() => {
-    if (!isFiltersApplied) return "";
-
     const params = new URLSearchParams();
 
-    // Add transaction types with array format
-    if (filters.type.length > 0) {
-      filters.type.forEach((type) => {
-        params.append("type[]", type);
-      });
-    }
+    // Always include pagination
+    params.set("page", String(filters.page));
+    params.set("per_page", String(filters.per_page));
 
-    // Add status filters with array format
-    if (filters.status.length > 0) {
-      filters.status.forEach((status) => {
-        params.append("status[]", status);
-      });
-    }
+    if (isFiltersApplied) {
+      // Add transaction types with array format
+      if (filters.type.length > 0) {
+        filters.type.forEach((type) => {
+          params.append("type[]", type);
+        });
+      }
 
-    // Add currency filters
-    if (filters.currency.length > 0) {
-      filters.currency.forEach((currency) => {
-        params.append("currency", currency);
-      });
-    }
+      // Add status filters with array format
+      if (filters.status.length > 0) {
+        filters.status.forEach((status) => {
+          params.append("status[]", status);
+        });
+      }
 
-    // Add date range filters
-    if (filters.dateRange.startDate) {
-      params.append("date_from", filters.dateRange.startDate);
-    }
-    if (filters.dateRange.endDate) {
-      params.append("date_to", filters.dateRange.endDate);
+      // Add currency filters
+      if (filters.currency.length > 0) {
+        filters.currency.forEach((currency) => {
+          params.append("currency", currency);
+        });
+      }
+
+      // Add date range filters
+      if (filters.dateRange.startDate) {
+        params.append("date_from", filters.dateRange.startDate);
+      }
+      if (filters.dateRange.endDate) {
+        params.append("date_to", filters.dateRange.endDate);
+      }
     }
 
     return params.toString();
@@ -88,6 +96,8 @@ export function useTransactionFilters() {
         startDate: null,
         endDate: null,
       },
+      page: 1,
+      per_page: 15,
     });
     setIsFiltersApplied(false);
   }, []);
@@ -96,6 +106,20 @@ export function useTransactionFilters() {
   const applyFilters = useCallback(() => {
     setIsFiltersApplied(true);
   }, []);
+
+  const updatePagination = useCallback(
+    (pagination: { page?: number; per_page?: number }) => {
+      setFilters((prev) => ({
+        ...prev,
+        ...(pagination.page !== undefined && { page: pagination.page }),
+        ...(pagination.per_page !== undefined && {
+          per_page: pagination.per_page,
+          page: 1,
+        }),
+      }));
+    },
+    []
+  );
 
   return {
     filters,
@@ -106,5 +130,6 @@ export function useTransactionFilters() {
     updateDateRange,
     resetFilters,
     applyFilters,
+    updatePagination,
   };
 }

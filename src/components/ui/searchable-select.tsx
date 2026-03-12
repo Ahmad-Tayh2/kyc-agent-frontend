@@ -60,7 +60,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   const filteredOptions = enableBackendSearch
     ? options // When using backend search, show all options returned from API
     : options?.filter((option) =>
-        option?.label?.toLowerCase()?.includes(searchTerm.toLowerCase())
+        option?.label?.toLowerCase()?.includes(searchTerm.toLowerCase()),
       );
 
   // Trigger backend search when search term changes (with backend search enabled)
@@ -152,7 +152,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
         <ChevronDownIcon
           className={cn(
             'absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-transform',
-            isOpen && 'rotate-180'
+            isOpen && 'rotate-180',
           )}
         />
 
@@ -176,7 +176,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                     key={option.value}
                     className={cn(
                       'px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between',
-                      selectedOption?.value === option.value && 'bg-blue-50'
+                      selectedOption?.value === option.value && 'bg-blue-50',
                     )}
                     onClick={() => handleSelect(option)}
                   >

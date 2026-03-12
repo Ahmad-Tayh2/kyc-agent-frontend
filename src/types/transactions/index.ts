@@ -98,9 +98,24 @@ export interface WalletTransaction {
   source_transaction_ref?: string;
 }
 
+export interface WalletTransactionsMeta {
+  current_page: number;
+  from: number;
+  last_page: number;
+  per_page: number;
+  to: number;
+  total: number;
+}
+
+export interface WalletTransactionsPaginatedResponse {
+  data: WalletTransaction[];
+  meta: WalletTransactionsMeta;
+}
+
 export interface WalletTransactionsResponse {
   status: boolean;
   message: string;
   data: WalletTransaction[];
+  meta: WalletTransactionsMeta;
   errors: null | Record<string, string[]>;
 }

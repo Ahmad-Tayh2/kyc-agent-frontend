@@ -24,6 +24,7 @@ interface CartHeaderProps {
   date: string;
   totalPayableAmount: number | string;
   cartId?: number;
+  currency?: string;
 }
 interface PaymentLinkType {
   id?: number;
@@ -31,7 +32,7 @@ interface PaymentLinkType {
   status: string;
 }
 const CartHeader = (props: CartHeaderProps) => {
-  const { customer, date, totalPayableAmount, cartId } = props;
+  const { customer, date, totalPayableAmount, cartId, currency } = props;
 
   const { mutateAsync: createPaymentLink } = useCreatePaymentLink();
   const { mutateAsync: regeneratePaymentLink } = useRegeneratePaymentLink();
@@ -104,7 +105,7 @@ const CartHeader = (props: CartHeaderProps) => {
         />
         <CartItem
           title='Total Payable Amount'
-          value={`${totalPayableAmount}`}
+          value={`${totalPayableAmount} ${currency || ''}`}
           valueClassName='text-primary'
           className='!border-b-0 !pb-0'
         />

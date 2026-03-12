@@ -23,7 +23,6 @@ export const remittanceCartsService = {
   },
 
   removeTransactionFromCart: async (transactionId: number) => {
-    console.log(' test removeeeee ');
     const response = await apiClient.delete(
       API_URLS.remittanceCart.removeTransaction(transactionId),
     );
