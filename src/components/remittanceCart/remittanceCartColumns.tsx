@@ -64,7 +64,7 @@ export const remittanceCartColumns = (): ColumnDef<any>[] => {
       },
       {
         accessorKey: 'remittance_method',
-        header: 'Remittance Method',
+        header: 'Rem. Method',
         cell: ({ row }) => {
           const method: string = row.getValue('remittance_method');
           return <div className='capitalize'>{method}</div>;
@@ -101,8 +101,16 @@ export const remittanceCartColumns = (): ColumnDef<any>[] => {
         header: 'Comm.',
       },
       {
+        accessorKey: 'extra_fees',
+        header: 'Fees',
+      },
+      {
         accessorKey: 'total_to_pay',
         header: 'Total To Pay',
+        cell: ({ row }) => {
+          const amount: string = row.getValue('total_to_pay');
+          return <div className='text-primary '>{amount}</div>;
+        },
       },
 
       {
@@ -113,7 +121,7 @@ export const remittanceCartColumns = (): ColumnDef<any>[] => {
           const transfer = row.original;
           return (
             <DropdownMenuOptions
-              menu={menu(Number(transfer.id))}
+              menu={menu(transfer.reference_number)}
               trigger={
                 <Button variant='ghost' className='h-8 w-8 p-0'>
                   <MoreHorizontal />

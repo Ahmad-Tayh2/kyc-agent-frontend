@@ -49,6 +49,7 @@ export const ExtraTransactionsTable: React.FC = () => {
     updateDateRange,
     resetFilters,
     applyFilters,
+    updatePagination,
   } = useTransactionFilters();
 
   const {
@@ -56,6 +57,22 @@ export const ExtraTransactionsTable: React.FC = () => {
     isLoading,
     error,
   } = useWalletTransactions(filtersString);
+
+  const pagination = {
+    enable: true,
+    page: walletTransactions?.meta?.current_page ?? 1,
+    per_page: walletTransactions?.meta?.per_page ?? 15,
+    total: walletTransactions?.meta?.total ?? 0,
+    from: walletTransactions?.meta?.from ?? 0,
+    to: walletTransactions?.meta?.to ?? 0,
+    last_page: walletTransactions?.meta?.last_page ?? 1,
+    onChangeRowsPerPage: (value: number) => {
+      updatePagination({ per_page: value });
+    },
+    setPage: (value: number) => {
+      updatePagination({ page: value });
+    },
+  };
 
   const exportOptions = [
     { label: 'Export as CSV', onClick: () => console.log('Export CSV') },
@@ -226,10 +243,11 @@ export const ExtraTransactionsTable: React.FC = () => {
 
       {/* Data Table */}
       <DataTable
-        data={walletTransactions || []}
+        data={walletTransactions?.data || []}
         columns={columns}
         isLoading={isLoading}
         error={error}
+        pagination={pagination}
       />
     </div>
   );

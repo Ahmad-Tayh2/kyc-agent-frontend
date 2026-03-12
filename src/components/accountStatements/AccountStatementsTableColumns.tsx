@@ -8,9 +8,7 @@ import StatusLabel from '@/components/shared/StatusLabel';
 // import EditIcon from "@/assets/icons/edit.svg?react";
 // import { ROUTES } from "@/constants/routes";
 import { TRASACTIONS_STATUSES_COLORS } from '@/constants/appConstants';
-import { ROUTES } from '@/constants/routes';
 import type { WalletTransactionType } from '@/types/transactions';
-import { Link } from 'react-router-dom';
 
 export const AccountStatementsTableColumns = (): ColumnDef<any>[] => {
   // Helper to format transaction type label
@@ -51,16 +49,7 @@ export const AccountStatementsTableColumns = (): ColumnDef<any>[] => {
             'transaction_reference',
           );
 
-          return (
-            <div className='capitalize'>
-              <Link
-                to={ROUTES.SEND_REMITTANCE.EDIT(transaction_reference)}
-                className='font-medium text-xs hover:underline'
-              >
-                {transaction_reference}
-              </Link>
-            </div>
-          );
+          return <div className='capitalize'>{transaction_reference}</div>;
         },
       },
 

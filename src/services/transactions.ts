@@ -3,7 +3,7 @@ import { handleApiResponse } from '@/lib/handleApiResponse';
 import type {
   ExtraTransaction,
   ExtraTransactionsResponse,
-  WalletTransaction,
+  WalletTransactionsPaginatedResponse,
   WalletTransactionsResponse,
 } from '@/types/transactions';
 
@@ -33,7 +33,7 @@ export async function getExtraTransactions(
 
 export async function getWalletTransactions(
   queryParams?: string
-): Promise<WalletTransaction[]> {
+): Promise<WalletTransactionsPaginatedResponse> {
   const token = localStorage.getItem('token');
   const url = queryParams
     ? `${API_URLS.transactions.get()}?${queryParams}`
@@ -51,6 +51,15 @@ export async function getWalletTransactions(
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const data: WalletTransactionsResponse = await response.json();
-  return handleApiResponse(data);
+  const responseData: WalletTransactionsResponse = await response.json();
+
+  if (!responseData.status) {
+    const firstError =
+      responseData.errors && typeof responseData.errors === 'object'
+        ? Object.values(responseData.errors)?.[0]?.[0]
+        : 'Something went wrong.';
+    throw new Error(firstError || 'Something went wrong.');
+  }
+
+  return { data: responseData.data, meta: responseData.meta };
 }
