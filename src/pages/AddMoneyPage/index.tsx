@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import AddMoneyFilters from '@/components/addMoney/AddMoneyFilters';
 import { AddMoneyTableColumns } from '@/components/addMoney/AddMoneyTableColumns';
 import PageTitle from '@/components/shared/PageTitle';
-import SummaryCard from '@/components/shared/SummaryCard';
-import type { ReactElement } from 'react';
+//import SummaryCard from '@/components/shared/SummaryCard';
+//import type { ReactElement } from 'react';
 // import { SingleSelectDropdown } from "@/components/shared/SingleSelectDropdown";
 import CurrencyInput from '@/components/CurrencyInput';
 import ActionButton from '@/components/shared/ActionButton';
@@ -21,14 +21,14 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 // import { ROUTES } from "@/constants/routes";
 
-interface addMoneySummaryData {
-  label: string;
-  value?: string | ReactElement;
-  info?: string;
-  className?: string;
-  labelClassName?: string;
-  valueClassName?: string;
-}
+// interface addMoneySummaryData {
+//   label: string;
+//   value?: string | ReactElement;
+//   info?: string;
+//   className?: string;
+//   labelClassName?: string;
+//   valueClassName?: string;
+// }
 
 // Validation schema for add money form
 const addMoneySchema = z.object({
@@ -147,17 +147,17 @@ const AddMoneyPage: React.FC = () => {
   //     updatePagination({ page: value });
   //   },
   // };
-  const dataList: addMoneySummaryData[] = [
-    { label: 'Entered Amount', value: '100 USD', info: 'test' },
-    { label: 'Exchange Rate', value: '1 USD = 0.95 EUR' },
-    { label: 'Fees and Charges', value: '2.0 USD' },
-    { label: 'Will Get', value: '100 USD' },
-    {
-      label: 'Total Payable Amount',
-      value: '103.00 USD',
-      labelClassName: 'text-base font-semibold text-primary',
-    },
-  ];
+  // const dataList: addMoneySummaryData[] = [
+  //   { label: 'Entered Amount', value: '100 USD', info: 'test' },
+  //   { label: 'Exchange Rate', value: '1 USD = 0.95 EUR' },
+  //   { label: 'Fees and Charges', value: '2.0 USD' },
+  //   { label: 'Will Get', value: '100 USD' },
+  //   {
+  //     label: 'Total Payable Amount',
+  //     value: '103.00 USD',
+  //     labelClassName: 'text-base font-semibold text-primary',
+  //   },
+  // ];
 
   // const paymentGatewayOptions = [
   //   { label: "Paypal", value: "paypal" },
@@ -196,9 +196,9 @@ const AddMoneyPage: React.FC = () => {
                 amountPlaceholder='Enter amount'
               />
             </div>
-            <div className='w-full md:w-1/2'>
+            {/* <div className='w-full md:w-1/2'>
               <SummaryCard title='Summary' data={dataList} />
-            </div>
+            </div> */}
           </div>
           <div className='border-t-1 border-gray-200 mt-5 pt-5 flex justify-end'>
             <ActionButton
