@@ -23,9 +23,9 @@ export function useSessionManager() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   //CONFIG
-  const REFRESH_INTERVAL = 1 * 60 * 1000;
-  const POPUP_TIME = 2 * 60 * 1000;
-  const LOGOUT_TIME = 3 * 60 * 1000;
+  const REFRESH_INTERVAL = 5 * 60 * 1000;
+  const POPUP_TIME = 10 * 60 * 1000;
+  const LOGOUT_TIME = 15 * 60 * 1000;
 
   // --------------------------------------------------
   // ACTIVITY
