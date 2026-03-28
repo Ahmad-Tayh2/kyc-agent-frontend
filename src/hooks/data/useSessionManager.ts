@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogout, useRefreshToken } from "@/hooks/data/useAuth";
 import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/constants/routes";
-
+import { tokenManager } from "@/lib/utils";
 //Shared localStorage keys
 const LS_KEYS = {
   LAST_ACTIVITY: "lastActivityTimestamp",
@@ -23,9 +23,9 @@ export function useSessionManager() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   //CONFIG
-  const REFRESH_INTERVAL = 5 * 60 * 1000;
-  const POPUP_TIME = 10 * 60 * 1000;
-  const LOGOUT_TIME = 15 * 60 * 1000;
+  const REFRESH_INTERVAL = 1 * 60 * 1000;
+  const POPUP_TIME = 2 * 60 * 1000;
+  const LOGOUT_TIME = 3 * 60 * 1000;
 
   // --------------------------------------------------
   // ACTIVITY
@@ -44,9 +44,14 @@ export function useSessionManager() {
     } catch {}
 
     localStorage.setItem(LS_KEYS.LOGOUT, String(Date.now()));
-
+    localStorage.removeItem("user");
+    tokenManager.removeToken();
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     logout();
     navigate(ROUTES.AUTH.LOGIN);
+    setShowPopup(false);
   }, []);
 
   // --------------------------------------------------
@@ -58,19 +63,27 @@ export function useSessionManager() {
 
       if (res?.access_token) {
         login(res.user, res.access_token, res.expires_in);
-
+        tokenManager.setToken(res.access_token);
         localStorage.setItem(LS_KEYS.LAST_REFRESH, String(Date.now()));
       }
+      if (res?.expires_in) {
+        localStorage.setItem("expires_in", String(res.expires_in));
+      }
+      setShowPopup(false);
     } catch (err) {
       handleLogout();
     }
-  }, []);
+  }, [refreshMutation]);
 
   // --------------------------------------------------
   // MAIN LOOP
   // --------------------------------------------------
   const startLoop = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
+
+    //stop the loop if the user is logged out
+    const isLoggedIn = !!localStorage.getItem("user");
+    if (!isLoggedIn) return;
 
     intervalRef.current = setInterval(() => {
       const now = Date.now();
@@ -146,13 +159,14 @@ export function useSessionManager() {
       events.forEach((e) => document.removeEventListener(e, updateActivity));
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [localStorage.getItem("user")]);
 
   return {
     showPopup,
     idleTime,
     handleRefresh,
     handleLogout,
+    LOGOUT_TIME,
     isLoading: refreshMutation.isPending || logoutMutation.isPending,
   };
 }
