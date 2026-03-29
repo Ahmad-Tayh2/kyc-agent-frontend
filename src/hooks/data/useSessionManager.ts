@@ -18,8 +18,11 @@ export function useSessionManager() {
   const { login, logout } = useAuthStore();
 
   const [showPopup, setShowPopup] = useState(false);
+  const showPopupRef = useRef(showPopup);
   const [idleTime, setIdleTime] = useState(0);
-
+  useEffect(() => {
+    showPopupRef.current = showPopup;
+  }, [showPopup]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   //CONFIG
@@ -31,9 +34,12 @@ export function useSessionManager() {
   // ACTIVITY
   // --------------------------------------------------
   const updateActivity = useCallback(() => {
+    if (showPopupRef.current) return;
+    const isLoggedIn = !!localStorage.getItem("user");
+    if (!isLoggedIn) return;
     const now = Date.now();
     localStorage.setItem(LS_KEYS.LAST_ACTIVITY, String(now));
-  }, []);
+  }, [showPopupRef, localStorage.getItem("user")]);
 
   // --------------------------------------------------
   // LOGOUT
@@ -107,7 +113,6 @@ export function useSessionManager() {
           localStorage.setItem(LS_KEYS.LAST_REFRESH, String(now));
         }
       }
-
       //POPUP
       if (idle >= POPUP_TIME && idle < LOGOUT_TIME) {
         setShowPopup(true);
