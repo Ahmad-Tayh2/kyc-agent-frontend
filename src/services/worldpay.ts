@@ -1,7 +1,7 @@
-import { baseUrl } from '@/constants/api';
-import axiosInstance from '@/lib/axiosInstance';
-import { handleApiResponse } from '@/lib/handleApiResponse';
-import type { AxiosResponse } from 'axios';
+import { baseUrl } from "@/constants/api";
+import axiosInstance from "@/lib/axiosInstance";
+import { handleApiResponse } from "@/lib/handleApiResponse";
+import type { AxiosResponse } from "axios";
 
 export interface WorldpaySessionRequest {
   transactionReference?: string;
@@ -62,7 +62,7 @@ export const markPaymentProcessing = async (data: {
  */
 export const verifyPaymentStatus = async (orderCode: string) => {
   return axiosInstance
-    .get(`/api/payments/status/${orderCode}`)
+    .get(`/api/v1/payments/status/${orderCode}`)
     .then((response: AxiosResponse) =>
       handleApiResponse<{
         status: string;
