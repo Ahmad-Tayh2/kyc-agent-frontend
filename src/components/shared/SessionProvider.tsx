@@ -1,5 +1,4 @@
-import { createContext, useContext, useMemo } from "react";
-// import type { ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useSessionManager } from "@/hooks/data/useSessionManager";
 import {
   Dialog,
@@ -12,12 +11,25 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { /*Clock,*/ AlertTriangle } from "lucide-react";
+interface SessionContextType {
+  showPopup: boolean;
+  idleTime: number;
+  handleRefresh: () => void;
+  handleLogout: () => void;
+  LOGOUT_TIME: number;
+  isLoading: boolean;
+}
+interface SessionProviderProps {
+  children: ReactNode;
+}
 
-const SessionContext = createContext<any>(null);
+const SessionContext = createContext<SessionContextType | null | undefined>(
+  null,
+);
 
 export const useSession = () => useContext(SessionContext);
 
-export function SessionProvider({ children }: any) {
+export function SessionProvider({ children }: SessionProviderProps) {
   const {
     showPopup,
     idleTime,
@@ -26,9 +38,19 @@ export function SessionProvider({ children }: any) {
     LOGOUT_TIME,
     isLoading,
   } = useSessionManager();
-
+  const value = useMemo(
+    () => ({
+      showPopup,
+      idleTime,
+      handleRefresh,
+      handleLogout,
+      LOGOUT_TIME,
+      isLoading,
+    }),
+    [showPopup, idleTime, handleRefresh, handleLogout, LOGOUT_TIME, isLoading],
+  );
   return (
-    <SessionContext.Provider value={{}}>
+    <SessionContext.Provider value={value}>
       {children}
       <SessionDialog
         open={showPopup}
@@ -42,6 +64,15 @@ export function SessionProvider({ children }: any) {
   );
 }
 
+interface SessionRefreshDialogProps {
+  open: boolean;
+  idleTime: number; // ms
+  onRefresh: () => void;
+  onLogout: () => void;
+  LOGOUT_TIME: number; //ms
+  isLoading: boolean;
+}
+
 function SessionDialog({
   open,
   idleTime,
@@ -49,7 +80,7 @@ function SessionDialog({
   onLogout,
   LOGOUT_TIME,
   isLoading,
-}: any) {
+}: SessionRefreshDialogProps) {
   if (!open) return null;
 
   // ⏳ remaining = 15min - idle
