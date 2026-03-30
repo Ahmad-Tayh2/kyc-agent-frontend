@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { /*Clock,*/ AlertTriangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 interface SessionContextType {
   showPopup: boolean;
   idleTime: number;
@@ -81,6 +82,8 @@ function SessionDialog({
   LOGOUT_TIME,
   isLoading,
 }: SessionRefreshDialogProps) {
+  const [t] = useTranslation("global");
+
   if (!open) return null;
 
   // ⏳ remaining = 15min - idle
@@ -113,10 +116,10 @@ function SessionDialog({
             <AlertTriangle className="h-6 w-6 text-red-500" />
           </div>
           <DialogTitle className="text-lg font-semibold">
-            Session Expiring Soon
+            {t("common.messages.sessionExpiredTitle")}
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            You will be logged out in{" "}
+            {t("common.messages.sessionExpiredBody")}{" "}
             <b>
               {minutes}:{seconds.toString().padStart(2, "0")}
             </b>
@@ -129,7 +132,7 @@ function SessionDialog({
             disabled={isLoading}
             className="w-full sm:w-auto"
           >
-            {isLoading ? "Processing..." : "Logout"}
+            {t("common.messages.sessionLogout")}
           </Button>
 
           <Button
@@ -137,7 +140,7 @@ function SessionDialog({
             disabled={isLoading}
             className="w-full sm:w-auto"
           >
-            Extend Session
+            {t("common.messages.sessionExtendAction")}
           </Button>
         </DialogFooter>
       </DialogContent>
