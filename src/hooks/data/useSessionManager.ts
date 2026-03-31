@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/constants/routes";
 import { tokenManager } from "@/lib/utils";
 //Shared localStorage keys
-const LS_KEYS = {
+export const LS_KEYS = {
   LAST_ACTIVITY: "lastActivityTimestamp",
   LAST_REFRESH: "lastRefreshTimestamp",
   LOGOUT: "forceLogout",
@@ -63,23 +63,29 @@ export function useSessionManager() {
   // --------------------------------------------------
   // REFRESH TOKEN
   // --------------------------------------------------
-  const handleRefresh = useCallback(async () => {
-    try {
-      const res = await refreshMutation.mutateAsync();
+  const handleRefresh = useCallback(
+    async (extendSession?: boolean) => {
+      try {
+        const res = await refreshMutation.mutateAsync();
 
-      if (res?.access_token) {
-        login(res.user, res.access_token, res.expires_in);
-        tokenManager.setToken(res.access_token);
-        localStorage.setItem(LS_KEYS.LAST_REFRESH, String(Date.now()));
+        if (res?.access_token) {
+          login(res.user, res.access_token, res.expires_in);
+          tokenManager.setToken(res.access_token);
+          localStorage.setItem(LS_KEYS.LAST_REFRESH, String(Date.now()));
+          if (extendSession) {
+            localStorage.setItem(LS_KEYS.LAST_ACTIVITY, String(Date.now()));
+          }
+        }
+        if (res?.expires_in) {
+          localStorage.setItem("expires_in", String(res.expires_in));
+        }
+        setShowPopup(false);
+      } catch (err) {
+        handleLogout();
       }
-      if (res?.expires_in) {
-        localStorage.setItem("expires_in", String(res.expires_in));
-      }
-      setShowPopup(false);
-    } catch (err) {
-      handleLogout();
-    }
-  }, [refreshMutation]);
+    },
+    [refreshMutation],
+  );
 
   // --------------------------------------------------
   // MAIN LOOP
@@ -114,7 +120,7 @@ export function useSessionManager() {
         }
       }
       //POPUP
-      if (idle >= POPUP_TIME && idle < LOGOUT_TIME) {
+      if (idle >= POPUP_TIME && idle < LOGOUT_TIME && !showPopupRef.current) {
         setShowPopup(true);
       }
 

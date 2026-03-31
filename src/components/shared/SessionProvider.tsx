@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 interface SessionContextType {
   showPopup: boolean;
   idleTime: number;
-  handleRefresh: () => void;
+  handleRefresh: (extendSession?: boolean) => void;
   handleLogout: () => void;
   LOGOUT_TIME: number;
   isLoading: boolean;
@@ -68,7 +68,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 interface SessionRefreshDialogProps {
   open: boolean;
   idleTime: number; // ms
-  onRefresh: () => void;
+  onRefresh: (extendSession?: boolean) => void;
   onLogout: () => void;
   LOGOUT_TIME: number; //ms
   isLoading: boolean;
@@ -86,23 +86,19 @@ function SessionDialog({
 
   if (!open) return null;
 
-  // ⏳ remaining = 15min - idle
-  const remaining = useMemo(() => {
-    if (LOGOUT_TIME !== undefined && idleTime !== undefined) {
-      return Math.max(0, LOGOUT_TIME - idleTime);
-    }
-    return 0;
-  }, [LOGOUT_TIME, idleTime]);
-  const totalSeconds = useMemo(() => {
-    return Math.floor(remaining / 1000);
-  }, [remaining]);
-  const minutes = useMemo(() => {
-    return Math.floor(totalSeconds / 60);
-  }, [totalSeconds]);
-  const seconds = useMemo(() => {
-    return totalSeconds % 60;
-  }, [totalSeconds]);
+  // remaining = 15min - idle
+  const remainingMs =
+    LOGOUT_TIME !== undefined && idleTime !== undefined
+      ? Math.max(0, LOGOUT_TIME - idleTime)
+      : 0;
 
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const handleRefresh = () => {
+    onRefresh(true);
+  };
   return (
     <Dialog open={open}>
       <DialogContent
@@ -136,7 +132,7 @@ function SessionDialog({
           </Button>
 
           <Button
-            onClick={onRefresh}
+            onClick={handleRefresh}
             disabled={isLoading}
             className="w-full sm:w-auto"
           >
