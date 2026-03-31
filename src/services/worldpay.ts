@@ -62,7 +62,7 @@ export const markPaymentProcessing = async (data: {
  */
 export const verifyPaymentStatus = async (orderCode: string) => {
   return axiosInstance
-    .get(`/api/v1/payments/status/${orderCode}`)
+    .get(`/api/payments/status/${orderCode}`)
     .then((response: AxiosResponse) =>
       handleApiResponse<{
         status: string;

@@ -1,4 +1,4 @@
-export const baseUrl = "https://nomadrem.amazing-agileteam.com/api/v1";
+export const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
 export const serverUrl = "https://nomadrem.amazing-agileteam.com";
 //export const baseUrl = 'http://localhost:8000/api';
 
