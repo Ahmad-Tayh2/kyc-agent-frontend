@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { validate } from "@/lib/validate";
 import ErrorField from "@/components/shared/ErrorField";
 import { useAuthStore } from "@/store/authStore";
+import { LS_KEYS } from "@/hooks/data/useSessionManager";
 
 interface LoginErrorsTypes {
   email?: string[];
@@ -103,20 +104,25 @@ const LoginForm: React.FC<{
       });
       if (response.data && response.data.access_token) {
         localStorage.setItem("token", response.data.access_token);
+        const now = Date.now();
+
+        localStorage.setItem(LS_KEYS.LAST_ACTIVITY, String(now));
+
+        localStorage.setItem(LS_KEYS.LAST_REFRESH, String(now));
         if (response.data.user) {
           localStorage.setItem("user", JSON.stringify(response.data.user));
           loginInStore(
             response.data.user,
             response.data.access_token,
-            // response.data.expires_in
-            "900",
+            response.data.expires_in,
+            // "900",
           ); //save the auth data in zustand store
         }
         if (response?.data?.expires_in) {
           localStorage.setItem(
             "expires_in",
-            JSON.stringify(900),
-            // JSON.stringify(response.data.expires_in)
+            // JSON.stringify(900),
+            JSON.stringify(response.data.expires_in),
           );
         }
         navigate(ROUTES.DASHBOARD);

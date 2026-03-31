@@ -183,7 +183,12 @@
       "success": "Success",
       "warning": "Warning",
       "info": "Information",
-      "noOptionsFound": "No options found"
+      "noOptionsFound": "No options found",
+      "sessionExpiredTitle": "Session Expiring Soon",
+      "sessionExpiredBody": "You will be logged out in",
+      "sessionExtendAction": "Extend Session",
+      "sessionProcessing": "Processing...",
+      "sessionLogout": "Logout"
     }
   },
   "modules": {
