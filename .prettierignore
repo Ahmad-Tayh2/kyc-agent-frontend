@@ -1,0 +1,8 @@
+.github
+.storybook
+.vscode
+dist
+node_modules
+dist
+public
+src/stories/
