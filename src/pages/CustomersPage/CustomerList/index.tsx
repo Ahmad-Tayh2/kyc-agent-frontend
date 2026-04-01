@@ -11,6 +11,7 @@ import CustomerFilters from "@/components/customers/CustomerFilters";
 import { customerColumns } from "@/components/customers/CustomerTableColumns";
 import { useCustomerFilters } from "@/hooks/data/useCustomerFilters";
 import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/store/authStore";
 
 const CustomersPage: React.FC = () => {
   const [t] = useTranslation("global");
@@ -31,6 +32,7 @@ const CustomersPage: React.FC = () => {
   } = useCustomerFilters();
 
   const { data: response, isLoading, error } = useGetCustomers(filtersString);
+  const { user } = useAuthStore();
 
   // Memoize customers data to prevent unnecessary re-renders
   const customersData = useMemo(() => {
@@ -70,11 +72,13 @@ const CustomersPage: React.FC = () => {
             </div>
           )}
         </div>
-        <ActionButton
-          title="add new customer"
-          icon={<AddCustomerIcon />}
-          onClick={handleAddCustomer}
-        />
+        {user?.agent?.agent_type !== "strategic_partner" && (
+          <ActionButton
+            title={t("modules.pages.customers.addButton")}
+            icon={<AddCustomerIcon />}
+            onClick={handleAddCustomer}
+          />
+        )}
       </div>
       <CustomerFilters
         filters={filters}

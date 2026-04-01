@@ -564,7 +564,8 @@
         "content": "Dashboard content goes here."
       },
       "customers": {
-        "title": "Customers"
+        "title": "Customers",
+        "addButton": "add new customer"
       },
       "customerForms": {
         "title": "Customer Forms"
@@ -694,7 +695,8 @@
         "title": "Money Withdrawals"
       },
       "recipients": {
-        "title": "Recipients"
+        "title": "Recipients",
+        "addButton": "add new recipient"
       },
       "remittanceCart": {
         "title": "Remittance Cart"

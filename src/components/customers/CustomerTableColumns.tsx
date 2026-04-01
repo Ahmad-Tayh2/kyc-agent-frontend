@@ -11,23 +11,33 @@ import { ROUTES } from "@/constants/routes";
 import { CUSTOMER_STATUS_COLORS } from "@/constants/appConstants";
 import type { CustomerType } from "@/types/customers";
 import ActionButton from "../shared/ActionButton";
+import { useAuthStore } from "@/store/authStore";
 
-const menu = (customerId: string | number) => {
-  return [
-    {
-      label: "Send Money",
-      icon: <SendMoneyIcon />,
-      link: ROUTES.SEND_REMITTANCE.CREATE(`?customer=${customerId}`),
-    },
-    {
-      label: "View Details",
-      icon: <ViewDetailsIcon />,
-      link: ROUTES.CUSTOMERS.DETAILS(customerId),
-    },
-  ];
+const menu = (customerId: string | number, agent_type?: string) => {
+  return agent_type !== "strategic_partner"
+    ? [
+        {
+          label: "Send Money",
+          icon: <SendMoneyIcon />,
+          link: ROUTES.SEND_REMITTANCE.CREATE(`?customer=${customerId}`),
+        },
+        {
+          label: "View Details",
+          icon: <ViewDetailsIcon />,
+          link: ROUTES.CUSTOMERS.DETAILS(customerId),
+        },
+      ]
+    : [
+        {
+          label: "View Details",
+          icon: <ViewDetailsIcon />,
+          link: ROUTES.CUSTOMERS.DETAILS(customerId),
+        },
+      ];
 };
 
 export const customerColumns = (): ColumnDef<CustomerType>[] => {
+  const { user } = useAuthStore();
   return useMemo(
     () => [
       {
@@ -88,9 +98,7 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
         cell: ({ row }) => {
           const value: string = row.getValue("status");
           const color =
-            CUSTOMER_STATUS_COLORS[
-              value as keyof typeof CUSTOMER_STATUS_COLORS
-            ] || "#000000";
+            CUSTOMER_STATUS_COLORS[value as keyof typeof CUSTOMER_STATUS_COLORS] || "#000000";
           return <StatusLabel value={value} color={color} />;
         },
       },
@@ -102,7 +110,7 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
           const customer = row.original;
           return (
             <DropdownMenuOptions
-              menu={menu(customer.id)}
+              menu={menu(customer.id, user?.agent?.agent_type)}
               trigger={
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <MoreHorizontal />
@@ -113,12 +121,12 @@ export const customerColumns = (): ColumnDef<CustomerType>[] => {
         },
       },
     ],
-    []
+    [],
   );
 };
 
 export const searchCustomerColumns = (
-  attachCustomerToAgent: (customerId: string | number) => void
+  attachCustomerToAgent: (customerId: string | number) => void,
 ): ColumnDef<CustomerType>[] => {
   return useMemo(
     () => [
@@ -160,9 +168,7 @@ export const searchCustomerColumns = (
         cell: ({ row }) => {
           const customer = row.original;
           if (customer?.belongs_to_current_agent) {
-            return (
-              <div className="text-primary font-bold p-2">Already Attached</div>
-            );
+            return <div className="text-primary font-bold p-2">Already Attached</div>;
           }
           return (
             <ActionButton
@@ -174,6 +180,6 @@ export const searchCustomerColumns = (
         },
       },
     ],
-    []
+    [],
   );
 };

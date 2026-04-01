@@ -1,14 +1,8 @@
 import BackArrowIcon from "@/assets/icons/back-arrow.svg?react";
 import EditSectionCard from "@/components/shared/EditSectionCard";
 import PageTitle from "@/components/shared/PageTitle";
-import {
-  useGetRecipient,
-  useUpdateRecipient,
-} from "@/hooks/data/useRecipients";
-import type {
-  RecipientDataType,
-  RecipientUpdatedDataType,
-} from "@/types/recipients";
+import { useGetRecipient, useUpdateRecipient } from "@/hooks/data/useRecipients";
+import type { RecipientDataType, RecipientUpdatedDataType } from "@/types/recipients";
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,6 +10,7 @@ import RecipientBasicDetails from "./RecipientBasicDetails";
 import RecipientRemittanceDetails from "./RecipientRemittanceDetails";
 // import RecipientBankDetails from "./RecipientBankDetails";
 import { z } from "zod";
+import { useAuthStore } from "@/store/authStore";
 
 export const editRecipientSchema = z.object({
   // customer_id: z.union([z.string(), z.number()]).refine((val) => {
@@ -31,11 +26,7 @@ export const editRecipientSchema = z.object({
     .string()
     .min(2, "Last name must contain at least 2 characters")
     .max(50, "Last name is too long"),
-  email: z
-    .string()
-    .email("Invalid email address format")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().email("Invalid email address format").optional().or(z.literal("")),
   date_of_birth: z.string().optional(),
   //.nonempty("Date of birth is required"),
   // .refine(
@@ -73,29 +64,21 @@ const RecipientEditPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, error, isLoading } = useGetRecipient(id!);
-  const [formData, setFormData] = useState<any>({});
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string[]>
-  >({});
+  const { user } = useAuthStore();
 
-  const [recipientData, setRecipientData] = useState<RecipientDataType | null>(
-    null,
-  );
+  const [formData, setFormData] = useState<any>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+
+  const [recipientData, setRecipientData] = useState<RecipientDataType | null>(null);
   const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
-  const [remittanceMethodsEditMode, setRemittanceMethodsEditMode] =
-    React.useState(false);
+  const [remittanceMethodsEditMode, setRemittanceMethodsEditMode] = React.useState(false);
   const [bankDetailsEditMode, setBankDetailsEditMode] = React.useState(false);
 
   // check in one of the other sections in already in the edit mode
-  const checkOtherSectionEditMode = (
-    current: "bank" | "basic" | "remittance",
-  ) => {
-    if (current === "bank")
-      return basicInfoEditMode || remittanceMethodsEditMode;
-    else if (current === "basic")
-      return bankDetailsEditMode || remittanceMethodsEditMode;
-    else if (current === "remittance")
-      return basicInfoEditMode || bankDetailsEditMode;
+  const checkOtherSectionEditMode = (current: "bank" | "basic" | "remittance") => {
+    if (current === "bank") return basicInfoEditMode || remittanceMethodsEditMode;
+    else if (current === "basic") return bankDetailsEditMode || remittanceMethodsEditMode;
+    else if (current === "remittance") return basicInfoEditMode || bankDetailsEditMode;
     else return true;
   };
   const { mutateAsync: updateRecipient } = useUpdateRecipient(
@@ -197,9 +180,7 @@ const RecipientEditPage: React.FC = () => {
         first_name: formData?.first_name,
         last_name: formData?.last_name,
         email: formData.email ?? "",
-        date_of_birth: formData?.date_of_birth
-          ? format(formData?.date_of_birth, "yyyy-MM-dd")
-          : "",
+        date_of_birth: formData?.date_of_birth ? format(formData?.date_of_birth, "yyyy-MM-dd") : "",
         gender: formData?.gender,
         address: {
           street_name: formData?.street_name ?? "",
@@ -239,8 +220,7 @@ const RecipientEditPage: React.FC = () => {
   };
 
   if (isLoading) return <div className="p-8">Loading...</div>;
-  if (error)
-    return <div className="p-8 text-red-500">Error loading recipient.</div>;
+  if (error) return <div className="p-8 text-red-500">Error loading recipient.</div>;
 
   return (
     <div className="space-y-4">
@@ -248,25 +228,19 @@ const RecipientEditPage: React.FC = () => {
       <div className="flex justify-start items-center gap-3">
         <div className="flex flex-col gap-2">
           <div className="flex justify-start items-start gap-2 flex-wrap">
-            <button
-              onClick={handleBack}
-              className="text-primary top-1 cursor-pointer"
-            >
+            <button onClick={handleBack} className="text-primary top-1 cursor-pointer">
               <BackArrowIcon width={30} height={30} />
             </button>
             <div className="flex items-center gap-2">
               <span className="font-medium">Recipient: </span>
               <PageTitle
-                title={`${recipientData?.first_name || ""} ${
-                  recipientData?.last_name || ""
-                }`}
+                title={`${recipientData?.first_name || ""} ${recipientData?.last_name || ""}`}
               />
             </div>
           </div>
           {recipientData?.created_at && (
             <div className="ml-10">
-              Registered on:{" "}
-              {new Date(recipientData?.created_at).toLocaleDateString()}
+              Registered on: {new Date(recipientData?.created_at).toLocaleDateString()}
             </div>
           )}
         </div>
@@ -277,7 +251,9 @@ const RecipientEditPage: React.FC = () => {
         onSave={handleSave}
         loading={false}
         editMode={basicInfoEditMode}
-        setEditMode={setBasicInfoEditMode}
+        setEditMode={
+          user?.agent?.agent_type !== "strategic_partner" ? setBasicInfoEditMode : undefined
+        }
         checkOtherSectionEditMode={checkOtherSectionEditMode("basic")}
       >
         <RecipientBasicDetails
@@ -298,13 +274,12 @@ const RecipientEditPage: React.FC = () => {
         }}
         loading={false}
         editMode={remittanceMethodsEditMode}
-        setEditMode={setRemittanceMethodsEditMode}
+        setEditMode={
+          user?.agent?.agent_type !== "strategic_partner" ? setRemittanceMethodsEditMode : undefined
+        }
         checkOtherSectionEditMode={checkOtherSectionEditMode("remittance")}
       >
-        <RecipientRemittanceDetails
-          data={recipientData}
-          editMode={remittanceMethodsEditMode}
-        />
+        <RecipientRemittanceDetails data={recipientData} editMode={remittanceMethodsEditMode} />
       </EditSectionCard>
 
       {/* <EditSectionCard

@@ -22,10 +22,7 @@ const MyWalletPage: React.FC = () => {
   const deleteCurrencyMutation = useDeleteCurrency();
 
   const handleDeleteCurrency = (currencyId: number) => {
-    if (
-      wallet &&
-      window.confirm(t("modules.pages.wallet.messages.deleteConfirm"))
-    ) {
+    if (wallet && window.confirm(t("modules.pages.wallet.messages.deleteConfirm"))) {
       deleteCurrencyMutation.mutate({
         walletId: wallet.id,
         currencyId: currencyId,
@@ -37,23 +34,23 @@ const MyWalletPage: React.FC = () => {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
-            {t("modules.pages.wallet.title")}
-          </h1>
-          <div className="flex space-x-3">
-            <button
-              className="px-4 py-2 border border-cyan-500 text-cyan-500 rounded-lg hover:bg-cyan-50 transition-colors opacity-50 cursor-not-allowed"
-              disabled
-            >
-              {t("modules.pages.wallet.buttons.exchangeCurrencies")}
-            </button>
-            <button
-              onClick={() => setIsAddCurrencyDialogOpen(true)}
-              className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
-            >
-              {t("modules.pages.wallet.buttons.addCurrency")}
-            </button>
-          </div>
+          <h1 className="text-2xl font-bold">{t("modules.pages.wallet.title")}</h1>
+          {user?.agent?.agent_type !== "strategic_partner" && (
+            <div className="flex space-x-3">
+              <button
+                className="px-4 py-2 border border-cyan-500 text-cyan-500 rounded-lg hover:bg-cyan-50 transition-colors opacity-50 cursor-not-allowed"
+                disabled
+              >
+                {t("modules.pages.wallet.buttons.exchangeCurrencies")}
+              </button>
+              <button
+                onClick={() => setIsAddCurrencyDialogOpen(true)}
+                className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
+              >
+                {t("modules.pages.wallet.buttons.addCurrency")}
+              </button>
+            </div>
+          )}
         </div>
         <div className="flex justify-center py-8">
           <Loader />
@@ -65,9 +62,7 @@ const MyWalletPage: React.FC = () => {
   if (error) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">
-          {t("modules.pages.wallet.title")}
-        </h1>
+        <h1 className="text-2xl font-bold">{t("modules.pages.wallet.title")}</h1>
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
           {t("modules.pages.wallet.messages.errorLoading")} {error.message}
         </div>
@@ -79,24 +74,23 @@ const MyWalletPage: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-5">
         <PageTitle title={t("modules.pages.wallet.title")} />
-        <div className="flex space-x-3 flex-wrap gap-2 justify-end">
-          <button
-            onClick={() => setIsExchangeDialogOpen(true)}
-            className="px-4 py-2 border border-cyan-500 text-cyan-500 rounded-lg hover:bg-cyan-50 transition-colors"
-            disabled={
-              !wallet?.wallet_currencies ||
-              wallet?.wallet_currencies?.length === 0
-            }
-          >
-            {t("modules.pages.wallet.buttons.exchangeCurrencies")}
-          </button>{" "}
-          <button
-            onClick={() => setIsAddCurrencyDialogOpen(true)}
-            className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
-          >
-            {t("modules.pages.wallet.buttons.addCurrency")}
-          </button>
-        </div>
+        {user?.agent?.agent_type !== "strategic_partner" && (
+          <div className="flex space-x-3 flex-wrap gap-2 justify-end">
+            <button
+              onClick={() => setIsExchangeDialogOpen(true)}
+              className="px-4 py-2 border border-cyan-500 text-cyan-500 rounded-lg hover:bg-cyan-50 transition-colors"
+              disabled={!wallet?.wallet_currencies || wallet?.wallet_currencies?.length === 0}
+            >
+              {t("modules.pages.wallet.buttons.exchangeCurrencies")}
+            </button>{" "}
+            <button
+              onClick={() => setIsAddCurrencyDialogOpen(true)}
+              className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
+            >
+              {t("modules.pages.wallet.buttons.addCurrency")}
+            </button>
+          </div>
+        )}
       </div>
       {/* Currency Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-6 gap-0">
@@ -109,13 +103,10 @@ const MyWalletPage: React.FC = () => {
         ))}
       </div>
       {/* Empty State */}
-      {(!wallet?.wallet_currencies ||
-        wallet.wallet_currencies.length === 0) && (
+      {(!wallet?.wallet_currencies || wallet.wallet_currencies.length === 0) && (
         <div className="text-center py-12 text-gray-500">
           <p>{t("modules.pages.wallet.messages.noCurrencies")}</p>
-          <p className="text-sm">
-            {t("modules.pages.wallet.messages.noCurrenciesSubtext")}
-          </p>
+          <p className="text-sm">{t("modules.pages.wallet.messages.noCurrenciesSubtext")}</p>
         </div>
       )}
       {/* Extra Transactions Table */}

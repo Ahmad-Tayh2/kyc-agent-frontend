@@ -9,6 +9,7 @@ import { ROUTES } from "@/constants/routes";
 import { Link } from "react-router-dom";
 import ActionButton from "../shared/ActionButton";
 import LinkList from "../shared/LinkList";
+import { useAuthStore } from "@/store/authStore";
 
 export type Recipient = {
   id: string;
@@ -30,23 +31,33 @@ export type Recipient = {
   status: string;
 };
 
-const menu = (recipientId: string | number) => {
-  return [
-    {
-      label: "Send Remittance",
-      icon: <SendMoneyIcon />,
-      onClick: () => {},
-      link: ROUTES.SEND_REMITTANCE.CREATE(`?recipient=${recipientId}`),
-    },
-    {
-      label: "View Details",
-      icon: <ViewDetailsIcon />,
-      link: ROUTES.RECIPIENTS.DETAILS(recipientId),
-    },
-  ];
+const menu = (recipientId: string | number, agent_type?: string) => {
+  return agent_type !== "strategic_partner"
+    ? [
+        {
+          label: "Send Remittance",
+          icon: <SendMoneyIcon />,
+          onClick: () => {},
+          link: ROUTES.SEND_REMITTANCE.CREATE(`?recipient=${recipientId}`),
+        },
+        {
+          label: "View Details",
+          icon: <ViewDetailsIcon />,
+          link: ROUTES.RECIPIENTS.DETAILS(recipientId),
+        },
+      ]
+    : [
+        {
+          label: "View Details",
+          icon: <ViewDetailsIcon />,
+          link: ROUTES.RECIPIENTS.DETAILS(recipientId),
+        },
+      ];
 };
 
 export const recipientsColumns = (): ColumnDef<Recipient>[] => {
+  const { user } = useAuthStore();
+
   return useMemo(
     () => [
       {
@@ -77,11 +88,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         header: "Country",
         cell: ({ row }) => {
           const recipient: any = row.original;
-          return (
-            <div className="capitalize">
-              {recipient?.address?.country?.name}
-            </div>
-          );
+          return <div className="capitalize">{recipient?.address?.country?.name}</div>;
         },
       },
       {
@@ -89,35 +96,24 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
         header: "City",
         cell: ({ row }) => {
           const recipient: any = row.original;
-          return (
-            <div className="capitalize">{recipient?.address?.city?.name}</div>
-          );
+          return <div className="capitalize">{recipient?.address?.city?.name}</div>;
         },
       },
       {
         accessorKey: "customers",
         header: "Customers",
         cell: ({ row }) => {
-          const customers: { full_name: string; id: number }[] =
-            row.getValue("customers");
+          const customers: { full_name: string; id: number }[] = row.getValue("customers");
           return (
             <div className="flex flex-wrap">
-              {customers?.map(
-                (
-                  customer: { full_name: string; id: number },
-                  index: number,
-                ) => (
-                  <div key={customer.id}>
-                    {index !== 0 && ", "}
-                    <Link
-                      to={ROUTES.CUSTOMERS.DETAILS(customer.id)}
-                      className="hover:underline"
-                    >
-                      {customer.full_name}
-                    </Link>
-                  </div>
-                ),
-              )}
+              {customers?.map((customer: { full_name: string; id: number }, index: number) => (
+                <div key={customer.id}>
+                  {index !== 0 && ", "}
+                  <Link to={ROUTES.CUSTOMERS.DETAILS(customer.id)} className="hover:underline">
+                    {customer.full_name}
+                  </Link>
+                </div>
+              ))}
             </div>
           );
         },
@@ -152,7 +148,7 @@ export const recipientsColumns = (): ColumnDef<Recipient>[] => {
           const recipient = row.original;
           return (
             <DropdownMenuOptions
-              menu={menu(recipient.id)}
+              menu={menu(recipient.id, user?.agent?.agent_type)}
               trigger={
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <MoreHorizontal />
@@ -190,11 +186,7 @@ export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
         header: "Country",
         cell: ({ row }) => {
           const recipient: any = row.original;
-          return (
-            <div className="capitalize">
-              {recipient?.address?.country?.name}
-            </div>
-          );
+          return <div className="capitalize">{recipient?.address?.country?.name}</div>;
         },
       },
       {
@@ -202,9 +194,7 @@ export const customerRecipientsColumns = (): ColumnDef<Recipient>[] => {
         header: "City",
         cell: ({ row }) => {
           const recipient: any = row.original;
-          return (
-            <div className="capitalize">{recipient?.address?.city?.name}</div>
-          );
+          return <div className="capitalize">{recipient?.address?.city?.name}</div>;
         },
       },
       {
@@ -273,11 +263,7 @@ export const recipientsSearchColumns = ({
         header: "Country",
         cell: ({ row }) => {
           const recipient: any = row.original;
-          return (
-            <div className="capitalize">
-              {recipient?.address?.country?.name}
-            </div>
-          );
+          return <div className="capitalize">{recipient?.address?.country?.name}</div>;
         },
       },
       {
@@ -285,9 +271,7 @@ export const recipientsSearchColumns = ({
         header: "City",
         cell: ({ row }) => {
           const recipient: any = row.original;
-          return (
-            <div className="capitalize">{recipient?.address?.city?.name}</div>
-          );
+          return <div className="capitalize">{recipient?.address?.city?.name}</div>;
         },
       },
       {
@@ -315,9 +299,7 @@ export const recipientsSearchColumns = ({
         cell: ({ row }) => {
           const recipient: any = row.original;
           if (recipient?.attachment_info?.is_attached) {
-            return (
-              <div className="text-primary font-bold p-2">Already Attached</div>
-            );
+            return <div className="text-primary font-bold p-2">Already Attached</div>;
           }
           return (
             <ActionButton
