@@ -24,15 +24,9 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
 }) => {
   const [selectedSection, setSelectedSection] = useState(0);
   const handleEdit = () =>
-    !checkOtherSectionEditMode &&
-    sections?.[selectedSection]?.setEditMode?.(true);
+    !checkOtherSectionEditMode && sections?.[selectedSection]?.setEditMode?.(true);
   return (
-    <div
-      className={cn(
-        className,
-        "bg-white rounded-lg border border-[#E7EFEF]  min-w-[350px]",
-      )}
-    >
+    <div className={cn(className, "bg-white rounded-lg border border-[#E7EFEF]  min-w-[350px]")}>
       {/* <div className="flex items-center justify-between mb-4 border-b border-b-[#E7EFEF] px-5"> */}
       <div
         className="
@@ -81,8 +75,8 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
           ))}
         </div>
 
-        {sections?.[selectedSection]?.setEditMode && (
-          <div className="p-3">
+        {sections?.[selectedSection]?.setEditMode ? (
+          <div className="p-3 h-13">
             {/* <div className="p-3 flex justify-end sm:justify-start"> */}
             {sections?.[selectedSection]?.editMode ? (
               <button
@@ -103,6 +97,8 @@ const EditMultiSectionCard: React.FC<EditMultiSectionCardProps> = ({
               </button>
             )}
           </div>
+        ) : (
+          <div className="p-3 h-13"></div>
         )}
       </div>
       {sections?.[selectedSection]?.content}

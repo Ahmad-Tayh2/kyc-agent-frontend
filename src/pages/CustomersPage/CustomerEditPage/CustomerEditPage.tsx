@@ -25,12 +25,10 @@ import { transferColumns } from "@/components/transfers/TransferTableColumns";
 import { customerRecipientsColumns } from "@/components/recipients/RecipientsTableColumns";
 import { customerPaymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
 import EditMultiSectionCard from "@/components/shared/EditMultiSectionCard";
-import type {
-  CustomerIdentityFileData,
-  CustomerIncomeFileData,
-} from "@/types/customers";
+import type { CustomerIdentityFileData, CustomerIncomeFileData } from "@/types/customers";
 import { z } from "zod";
 import { format } from "date-fns";
+import { useAuthStore } from "@/store/authStore";
 export const identitySchema = z.object({
   document_type: z.string().nonempty("Document type is required"),
   document_number: z.string().nonempty("Document number is required"),
@@ -42,9 +40,7 @@ export const identitySchema = z.object({
     .string()
     .nonempty("Document expiry date is required")
     .refine((date) => !isNaN(Date.parse(date)), "Invalid date format"),
-  front_image: z
-    .any()
-    .refine((file) => file != null, "Front document file is required"),
+  front_image: z.any().refine((file) => file != null, "Front document file is required"),
   // back_image: z
   //   .any()
   //   .refine((file) => file != null, "Back document file is required"),
@@ -59,11 +55,7 @@ export const customerSchema = z.object({
     .string()
     .min(2, "Last name must contain at least 2 characters")
     .max(50, "Last name is too long"),
-  email: z
-    .string()
-    .email("Invalid email address format")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().email("Invalid email address format").optional().or(z.literal("")),
   date_of_birth: z.string().nonempty("Date of birth is required"),
   // .refine(
   //   (date) => !isNaN(Date.parse(date)),
@@ -99,6 +91,8 @@ const CustomerEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useGetCustomer(id!);
+  const { user } = useAuthStore();
+
   const [formData, setFormData] = useState<any>({});
   const [basicInfoEditMode, setBasicInfoEditMode] = React.useState(false);
 
@@ -106,29 +100,26 @@ const CustomerEditPage = () => {
   const recipientsCols = customerRecipientsColumns();
   const paymentsCols = customerPaymentLinksColumns();
 
-  const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } =
-    useUpdateCustomer(
-      id!,
-      () => {
-        setBasicInfoEditMode(false);
-        setValidationErrors({});
-      },
-      (errorsData: any) => setValidationErrors(errorsData),
-    );
+  const { mutateAsync: updateCustomer, isPending: isUpdateCustomerPending } = useUpdateCustomer(
+    id!,
+    () => {
+      setBasicInfoEditMode(false);
+      setValidationErrors({});
+    },
+    (errorsData: any) => setValidationErrors(errorsData),
+  );
 
   const { data: identityDataResponse } = useGetIdentityDocuments(id!);
   const { data: incomeDataResponse } = useGetIncomeDocuments(id!);
 
-  const {
-    mutateAsync: uploadIdentityDocuments,
-    isPending: isPendingIndentity,
-  } = useUploadIdentityDocuments({
-    onSuccess: () => {
-      setBasicInfoEditMode(false);
-      setIdentityErrors({});
-    },
-    onError: (errorsData: any) => setIdentityErrors(errorsData),
-  });
+  const { mutateAsync: uploadIdentityDocuments, isPending: isPendingIndentity } =
+    useUploadIdentityDocuments({
+      onSuccess: () => {
+        setBasicInfoEditMode(false);
+        setIdentityErrors({});
+      },
+      onError: (errorsData: any) => setIdentityErrors(errorsData),
+    });
   const { mutateAsync: uploadIncomeDocuments, isPending: isPendingIncomes } =
     useUploadIncomeDocuments();
 
@@ -224,12 +215,8 @@ const CustomerEditPage = () => {
       }));
     }
   };
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string[]>
-  >({});
-  const [identityErrors, setIdentityErrors] = useState<Record<string, string>>(
-    {},
-  );
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  const [identityErrors, setIdentityErrors] = useState<Record<string, string>>({});
   const validateIdentityData = () => {
     const result = identitySchema.safeParse(identityData);
 
@@ -279,8 +266,6 @@ const CustomerEditPage = () => {
     }
   };
   const handleSaveDocuments = async () => {
-    console.log(" save documents ", identityData);
-    console.log(" save incomeData ", incomeData);
     const isIdentityValid = validateIdentityData();
     if (!isIdentityValid) {
       // optional: toast.error("Please fix errors before saving");
@@ -299,9 +284,7 @@ const CustomerEditPage = () => {
   };
 
   const statusColor =
-    CUSTOMER_STATUS_COLORS[
-      formData.status as keyof typeof CUSTOMER_STATUS_COLORS
-    ] || "#000000";
+    CUSTOMER_STATUS_COLORS[formData.status as keyof typeof CUSTOMER_STATUS_COLORS] || "#000000";
   React.useEffect(() => {});
   const [identityData, setIdentityData] = useState<CustomerIdentityFileData>({
     document_type: "",
@@ -317,15 +300,7 @@ const CustomerEditPage = () => {
     }
   }, [identityDataResponse]);
   const [incomeData, setIncomeData] = useState<CustomerIncomeFileData[]>([]);
-  useEffect(() => {
-    // if (identityDataResponse.front_image) {
-    //   console.log(
-    //     "identityDataResponse front_image*** = ",
-    //     identityDataResponse
-    //   );
-    // }
-    console.log(" identityDataResponse ******** ", identityDataResponse);
-  }, [identityDataResponse]);
+
   useEffect(() => {
     console.log("incomeDataResponse = ", incomeDataResponse);
   }, [incomeDataResponse]);
@@ -336,7 +311,8 @@ const CustomerEditPage = () => {
       onSave: handleSave,
       loading: isUpdateCustomerPending,
       editMode: basicInfoEditMode,
-      setEditMode: setBasicInfoEditMode,
+      setEditMode:
+        user?.agent?.agent_type !== "strategic_partner" ? setBasicInfoEditMode : undefined,
       content: (
         <CustomerBasicDetails
           formData={formData}
@@ -367,24 +343,18 @@ const CustomerEditPage = () => {
   ];
 
   if (isLoading) return <div className="p-8">Loading...</div>;
-  if (error)
-    return <div className="p-8 text-red-500">Error loading customer.</div>;
+  if (error) return <div className="p-8 text-red-500">Error loading customer.</div>;
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col gap-2">
         <div className="flex justify-start items-start gap-2 flex-wrap">
-          <button
-            onClick={handleBack}
-            className="text-primary top-1 cursor-pointer"
-          >
+          <button onClick={handleBack} className="text-primary top-1 cursor-pointer">
             <BackArrowIcon width={30} height={30} />
           </button>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium pt-1">Customer: </span>
-            <PageTitle
-              title={`${formData.first_name || ""} ${formData.last_name || ""}`}
-            />
+            <PageTitle title={`${formData.first_name || ""} ${formData.last_name || ""}`} />
           </div>
           <StatusLabel
             value={formData.status || "active"}
@@ -430,8 +400,7 @@ const CustomerEditPage = () => {
             className="m-auto"
             onClick={() =>
               navigate(
-                ROUTES.RECIPIENTS.LIST +
-                  `?customer_ids=${id}&search=${formData?.first_name}`,
+                ROUTES.RECIPIENTS.LIST + `?customer_ids=${id}&search=${formData?.first_name}`,
               )
             }
           />

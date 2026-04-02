@@ -111,7 +111,7 @@ const UserMenu = () => {
 
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { t } = useTranslation("global");
-
+  const { user } = useAuthStore();
   return (
     <header className="sticky top-0 z-5 flex items-center justify-between h-16 sm:h-20 px-3 sm:px-6 bg-secondary border-b shadow-sm">
       {/* Left */}
@@ -129,11 +129,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
             strokeWidth="2"
             viewBox="0 0 24 24"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
@@ -144,10 +140,12 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
       {/* Right */}
       <div className="flex items-center gap-3 sm:gap-5">
         {/* Simulate transfer */}
-        <div className="hidden sm:flex items-center gap-2 rounded-full border px-4 py-2 text-background text-sm">
-          <CalcIcon className="w-5 h-5" />
-          <span>{t("modules.topbar.simulateTransfer")}</span>
-        </div>
+        {user?.agent?.agent_type !== "strategic_partner" && (
+          <div className="hidden sm:flex items-center gap-2 rounded-full border px-4 py-2 text-background text-sm">
+            <CalcIcon className="w-5 h-5" />
+            <span>{t("modules.topbar.simulateTransfer")}</span>
+          </div>
+        )}
 
         {/* Icon-only version for mobile */}
         <button className="sm:hidden p-2 rounded-full hover:bg-gray-100">

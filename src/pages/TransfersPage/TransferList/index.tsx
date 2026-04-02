@@ -13,6 +13,7 @@ import { useGetCustomers } from "@/hooks/data/useCustomers";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useRecipients } from "@/hooks/data/useRecipients";
+import { useAuthStore } from "@/store/authStore";
 
 const TransferList: React.FC = () => {
   const [t] = useTranslation("global");
@@ -34,7 +35,7 @@ const TransferList: React.FC = () => {
   } = useTransferFilters();
 
   const { data: response, isLoading, error } = useGetTransfers(filtersString);
-
+  const { user } = useAuthStore();
   // Memoize transfers data to prevent unnecessary re-renders
   const transfersData = useMemo(() => {
     return response?.data || [];
@@ -78,11 +79,13 @@ const TransferList: React.FC = () => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <PageTitle title={t("modules.pages.transfers.title")} />
-        <ActionButton
-          title="Create new transfer"
-          icon={<SendRemittanceIcon />}
-          onClick={handleCreateTransfer}
-        />
+        {user?.agent?.agent_type !== "strategic_partner" && (
+          <ActionButton
+            title="Create new transfer"
+            icon={<SendRemittanceIcon />}
+            onClick={handleCreateTransfer}
+          />
+        )}
       </div>
       <TransferFilters
         filters={filters}

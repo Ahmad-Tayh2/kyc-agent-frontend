@@ -11,6 +11,7 @@ import RecipientsFilters from "@/components/recipients/RecipientsFilters";
 import { recipientsColumns } from "@/components/recipients/RecipientsTableColumns";
 import { useRecipientsFilters } from "@/hooks/data/useRecipientsFilters";
 import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/store/authStore";
 
 const RecipientsPage: React.FC = () => {
   const [t] = useTranslation("global");
@@ -29,6 +30,7 @@ const RecipientsPage: React.FC = () => {
     updatePagination,
   } = useRecipientsFilters();
   const { data: response, isLoading, error } = useRecipients(filtersString);
+  const { user } = useAuthStore();
 
   const recipientsData = useMemo(() => {
     return response?.data || [];
@@ -71,11 +73,13 @@ const RecipientsPage: React.FC = () => {
             <></>
           )}
         </div>
-        <ActionButton
-          title="add new recipient"
-          icon={<AddRecipientIcon />}
-          onClick={handleAddRecipient}
-        />
+        {user?.agent?.agent_type !== "strategic_partner" && (
+          <ActionButton
+            title={t("modules.pages.recipients.addButton")}
+            icon={<AddRecipientIcon />}
+            onClick={handleAddRecipient}
+          />
+        )}
       </div>
       <RecipientsFilters
         filters={filters}

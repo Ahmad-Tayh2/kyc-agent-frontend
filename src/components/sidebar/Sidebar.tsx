@@ -20,13 +20,13 @@ import HelpIcon from "../../assets/icons/help.svg?react";
 import SupportIcon from "../../assets/icons/support.svg?react";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useAuthStore } from "@/store/authStore";
 
 export const Sidebar: React.FC<{
   mobileOpen?: boolean;
   onClose?: () => void;
 }> = ({ mobileOpen = false, onClose }) => {
   const { t } = useTranslation("global");
-
   const navLinks = [
     {
       label: t("modules.navigation.dashboard"),
@@ -37,6 +37,7 @@ export const Sidebar: React.FC<{
       label: t("modules.navigation.sendRemittance"),
       to: ROUTES.SEND_REMITTANCE.CREATE(),
       icon: <SendRemittanceIcon color="inherit" />,
+      disallowedAgentType: ["strategic_partner"],
     },
     {
       label: t("modules.navigation.customers"),
@@ -67,11 +68,13 @@ export const Sidebar: React.FC<{
       label: t("modules.navigation.moneyWithdrawals"),
       to: ROUTES.MONEY_WITHDRAWALS.LIST,
       icon: <MoneyWithdrawalsIcon color="inherit" />,
+      disallowedAgentType: ["strategic_partner"],
     },
     {
       label: t("modules.navigation.addMoney"),
       to: ROUTES.ADD_MONEY,
       icon: <AddMoneyIcon color="inherit" />,
+      disallowedAgentType: ["strategic_partner"],
     },
     {
       label: t("modules.navigation.accountStatements"),
@@ -87,11 +90,13 @@ export const Sidebar: React.FC<{
       label: t("modules.navigation.remittanceCart"),
       to: ROUTES.REMITTANCE_CART,
       icon: <RemittanceCartIcon color="inherit" />,
+      disallowedAgentType: ["strategic_partner"],
     },
     {
       label: t("modules.navigation.customerForms"),
       to: ROUTES.CUSTOMER_FORMS,
       icon: <CustomerFormsIcon color="inherit" />,
+      disallowedAgentType: ["strategic_partner"],
     },
     {
       label: t("modules.navigation.paymentLinks"),
@@ -102,6 +107,7 @@ export const Sidebar: React.FC<{
       label: t("modules.navigation.help"),
       to: ROUTES.HELP,
       icon: <HelpIcon color="inherit" />,
+      disallowedAgentType: ["strategic_partner"],
     },
     {
       label: t("modules.navigation.support"),
@@ -110,28 +116,34 @@ export const Sidebar: React.FC<{
     },
   ];
 
+  const { user } = useAuthStore();
+
   return (
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-60 h-full bg-white border-r shadow-sm z-20">
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 p-5 flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  className={({ isActive }) =>
-                    `flex items-center justify-start gap-2 px-3 py-2 rounded-md transition-colors duration-150 font-medium ${
-                      isActive ? "bg-primary text-white" : "hover:bg-muted"
-                    }`
-                  }
-                  end
-                >
-                  {link?.icon}
-                  {link.label}
-                </NavLink>
-              </li>
-            ))}
+            {navLinks
+              .filter(
+                (item) => user && !item?.disallowedAgentType?.includes(user?.agent?.agent_type),
+              )
+              .map((link) => (
+                <li key={link.to}>
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `flex items-center justify-start gap-2 px-3 py-2 rounded-md transition-colors duration-150 font-medium ${
+                        isActive ? "bg-primary text-white" : "hover:bg-muted"
+                      }`
+                    }
+                    end
+                  >
+                    {link?.icon}
+                    {link.label}
+                  </NavLink>
+                </li>
+              ))}
           </ul>
         </nav>
       </aside>
