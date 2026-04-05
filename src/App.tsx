@@ -14,6 +14,14 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
+  // queryCache: new QueryCache({
+  //   onError: (error, query) => {
+  //   },
+  // }),
+  // mutationCache: new MutationCache({
+  //   onError: (error, variables, context, mutation) => {
+  //   },
+  // }),
 });
 
 const ToasterPropss: ToasterProps = {

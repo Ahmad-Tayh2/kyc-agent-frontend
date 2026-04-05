@@ -4,25 +4,15 @@ import NextStepArrow from "@/assets/icons/next-step-arrow.svg?react";
 import ActionButton from "@/components/shared/ActionButton";
 import PageTitle from "@/components/shared/PageTitle";
 import { ROUTES } from "@/constants/routes";
-import {
-  useCitiesByCountry,
-  useCountries,
-  useStatesByCountry,
-} from "@/hooks/data/useAddress";
+import { useCitiesByCountry, useCountries, useStatesByCountry } from "@/hooks/data/useAddress";
 import { useCreateBankAccount } from "@/hooks/data/useBankAccounts";
 import { useCurrencies } from "@/hooks/data/useCurrency";
 import { useGetCustomers } from "@/hooks/data/useCustomers";
 import { usePayoutLocations } from "@/hooks/data/usePayoutLocation";
 import { useCreateRecipientPayout } from "@/hooks/data/useRecipientPayout";
 import { useCreateRecipientRemittanceMethod } from "@/hooks/data/useRecipientRemittanceMethods";
-import {
-  useCreateRecipient,
-  useCreateRecipientIntermediate,
-} from "@/hooks/data/useRecipients";
-import {
-  useRemittanceMethods,
-  useVerifyAccountInfo,
-} from "@/hooks/data/useRemittanceMethod";
+import { useCreateRecipient, useCreateRecipientIntermediate } from "@/hooks/data/useRecipients";
+import { useRemittanceMethods, useVerifyAccountInfo } from "@/hooks/data/useRemittanceMethod";
 import { useAuthStore } from "@/store/authStore";
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -46,11 +36,7 @@ export const createRecipientSchema = z.object({
     .string()
     .min(2, "Last name must contain at least 2 characters")
     .max(50, "Last name is too long"),
-  email: z
-    .string()
-    .email("Invalid email address format")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().email("Invalid email address format").optional().or(z.literal("")),
   date_of_birth: z.string().optional(),
   //.nonempty("Date of birth is required"),
   // .refine(
@@ -91,9 +77,7 @@ export const bankAccountSchema = z.object({
     return false;
   }, "Recipient ID is required"),
 
-  first_name: z
-    .string()
-    .min(2, "First name must contain at least 2 characters"),
+  first_name: z.string().min(2, "First name must contain at least 2 characters"),
   last_name: z.string().min(2, "Last name must contain at least 2 characters"),
 
   street_name: z.string().nonempty("Street name is required"),
@@ -110,27 +94,18 @@ export const bankAccountSchema = z.object({
   account_number: z
     .string()
     .nonempty("Account number is required")
-    .regex(
-      /^[0-9A-Za-z]+$/,
-      "Account number must contain only letters or digits",
-    ),
+    .regex(/^[0-9A-Za-z]+$/, "Account number must contain only letters or digits"),
 
   swift_code: z
     .string()
     .nonempty("SWIFT code is required")
-    .regex(
-      /^[A-Z0-9]{8,11}$/,
-      "SWIFT code must be 8–11 uppercase letters or digits",
-    ),
+    .regex(/^[A-Z0-9]{8,11}$/, "SWIFT code must be 8–11 uppercase letters or digits"),
   bic_code: z.string().nonempty("BIC code is required"),
   currency_id: z.number({ invalid_type_error: "Currency is required" }),
   iban_code: z
     .string()
     .nonempty("IBAN is required")
-    .regex(
-      /^[A-Z0-9]+$/,
-      "IBAN must contain only uppercase letters and digits",
-    ),
+    .regex(/^[A-Z0-9]+$/, "IBAN must contain only uppercase letters and digits"),
 
   bank_address: z.string().nonempty("Bank address is required"),
 });
@@ -209,12 +184,8 @@ const RecipientCreateForm: React.FC = () => {
 
   const [searchParams] = useSearchParams();
   const customerIdQuery = searchParams.get("customer");
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string[]>
-  >({});
-  const [bankValidationErrors, setBankValidationErrors] = useState<
-    Record<string, string[]>
-  >({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  const [bankValidationErrors, setBankValidationErrors] = useState<Record<string, string[]>>({});
 
   const [formData, setFormData] = useState<RecipientFormData>({
     first_name: "",
@@ -260,24 +231,19 @@ const RecipientCreateForm: React.FC = () => {
     isPending: isCreatingRecipientIntermediate,
     status: createRecipientStatus,
   } = useCreateRecipientIntermediate({
-    keyToInvalidate:
-      formData.customer_id === "agent_id"
-        ? "agent-recipients"
-        : "get-recipients",
+    keyToInvalidate: formData.customer_id === "agent_id" ? "agent-recipients" : "get-recipients",
+    onError: (errors: any) => setValidationErrors(errors),
   });
-  const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } =
-    useCreateBankAccount({
+  const { mutateAsync: createBankAccount, isPending: isCreatingBankAccount } = useCreateBankAccount(
+    {
       onSuccess: () => navigate(ROUTES.RECIPIENTS.LIST),
       keyToInvalidate: "get-recipients",
-    });
-  const {
-    mutateAsync: createRecipientPayout,
-    isPending: isCreatingRecipientPayout,
-  } = useCreateRecipientPayout();
-  const {
-    mutateAsync: createRecipientRemittanceMethod,
-    isPending: isAddingRemittanceMethod,
-  } = useCreateRecipientRemittanceMethod();
+    },
+  );
+  const { mutateAsync: createRecipientPayout, isPending: isCreatingRecipientPayout } =
+    useCreateRecipientPayout();
+  const { mutateAsync: createRecipientRemittanceMethod, isPending: isAddingRemittanceMethod } =
+    useCreateRecipientRemittanceMethod();
 
   const { data: countries = [] } = useCountries();
   const { data: cities = [] } = useCitiesByCountry(formData.country_id || "");
@@ -285,8 +251,7 @@ const RecipientCreateForm: React.FC = () => {
   const { data: currencies = [] } = useCurrencies();
   const { data: customersResponse } = useGetCustomers("");
   const { data: remittanceMethods = [] } = useRemittanceMethods();
-  const { mutateAsync: verifyAccountInfo, isPending: isVerifying } =
-    useVerifyAccountInfo();
+  const { mutateAsync: verifyAccountInfo, isPending: isVerifying } = useVerifyAccountInfo();
   const { data: payoutLocations = [] } = usePayoutLocations();
 
   // Memoize customers data to prevent unnecessary re-renders
@@ -414,11 +379,7 @@ const RecipientCreateForm: React.FC = () => {
     }));
   };
 
-  const handleUpdateRemittanceMethod = (
-    id: string,
-    field: string,
-    value: any,
-  ) => {
+  const handleUpdateRemittanceMethod = (id: string, field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
       remittance_methods: prev.remittance_methods.map((method) => {
@@ -450,9 +411,7 @@ const RecipientCreateForm: React.FC = () => {
   const handleRemoveRemittanceMethod = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      remittance_methods: prev.remittance_methods.filter(
-        (method) => method.id !== id,
-      ),
+      remittance_methods: prev.remittance_methods.filter((method) => method.id !== id),
     }));
   };
 
@@ -462,9 +421,7 @@ const RecipientCreateForm: React.FC = () => {
       return;
     }
 
-    const methodData = formData.remittance_methods.find(
-      (method) => method.id === id,
-    );
+    const methodData = formData.remittance_methods.find((method) => method.id === id);
 
     if (!methodData) {
       console.error("Method data not found");
@@ -476,8 +433,7 @@ const RecipientCreateForm: React.FC = () => {
         recipient_id: recipientId,
         remittance_method_id: methodData.remittance_method_id,
         account_number: methodData.account_number || undefined,
-        country_phone_code:
-          methodData.service_data?.country_phone_code || undefined,
+        country_phone_code: methodData.service_data?.country_phone_code || undefined,
         phone_number: methodData.service_data?.phone_number || undefined,
       };
 
@@ -519,9 +475,7 @@ const RecipientCreateForm: React.FC = () => {
   };
 
   const handleVerifyAccount = async (id: string) => {
-    const methodData = formData.remittance_methods.find(
-      (method) => method.id === id,
-    );
+    const methodData = formData.remittance_methods.find((method) => method.id === id);
     const selectedMethod = remittanceMethods?.data?.find(
       (method: any) => method.id === methodData?.remittance_method_id,
     );
@@ -533,8 +487,7 @@ const RecipientCreateForm: React.FC = () => {
 
     try {
       // Check for validator name, fallback to validation_type if available
-      const validationType =
-        selectedMethod.validator?.name || selectedMethod.validation_type || "";
+      const validationType = selectedMethod.validator?.name || selectedMethod.validation_type || "";
 
       if (!validationType) {
         console.error("No validation type found for method:", selectedMethod);
@@ -552,10 +505,8 @@ const RecipientCreateForm: React.FC = () => {
           )}${methodData.service_data?.phone_number}`,
         },
         verification_data: {
-          expected_account_name_prefix:
-            methodData.verification_data?.account_name_prefix || "",
-          expected_account_id_prefix:
-            methodData.verification_data?.account_id_prefix || "",
+          expected_account_name_prefix: methodData.verification_data?.account_name_prefix || "",
+          expected_account_id_prefix: methodData.verification_data?.account_id_prefix || "",
         },
       };
 
@@ -640,8 +591,7 @@ const RecipientCreateForm: React.FC = () => {
           extra_address_details: formData.bank_details.extra_address_details,
           city_id: formData.city_id,
           state_id:
-            formData.bank_details.state_id &&
-            formData.bank_details.state_id !== ""
+            formData.bank_details.state_id && formData.bank_details.state_id !== ""
               ? formData.bank_details.state_id
               : undefined,
           country_id: formData.country_id,
@@ -653,12 +603,9 @@ const RecipientCreateForm: React.FC = () => {
               ? [parseInt(formData.customer_id)]
               : [],
         customer_id:
-          formData.customer_id === "agent_id"
-            ? undefined
-            : parseInt(formData.customer_id ?? ""),
+          formData.customer_id === "agent_id" ? undefined : parseInt(formData.customer_id ?? ""),
 
-        agent_id:
-          formData.customer_id === "agent_id" ? user?.agent?.id : undefined,
+        agent_id: formData.customer_id === "agent_id" ? user?.agent?.id : undefined,
 
         rm_service_providers: [],
       };
@@ -679,8 +626,7 @@ const RecipientCreateForm: React.FC = () => {
       }
       if (!recipientId) {
         try {
-          const recipientResponse =
-            await createRecipientIntermediate(recipientPayload);
+          const recipientResponse = await createRecipientIntermediate(recipientPayload);
 
           const newRecipientId = recipientResponse.data?.id;
           if (newRecipientId) {
@@ -724,8 +670,7 @@ const RecipientCreateForm: React.FC = () => {
         extra_address_details: formData.bank_details.extra_address_details,
         city_id: parseInt(formData.city_id),
         state_id:
-          formData.bank_details.state_id &&
-          formData.bank_details.state_id !== ""
+          formData.bank_details.state_id && formData.bank_details.state_id !== ""
             ? parseInt(formData.bank_details.state_id)
             : undefined,
         country_id: parseInt(formData.country_id),
@@ -749,10 +694,7 @@ const RecipientCreateForm: React.FC = () => {
         return;
       }
       // Step 1: Create bank account - only if bank details are provided
-      if (
-        formData.bank_details.bank_name &&
-        formData.bank_details.account_number
-      ) {
+      if (formData.bank_details.bank_name && formData.bank_details.account_number) {
         await createBankAccount(bankAccountData);
       }
 
@@ -780,8 +722,7 @@ const RecipientCreateForm: React.FC = () => {
     navigate(ROUTES.RECIPIENTS.LIST);
   };
   const handleBack = () => {
-    const currentStepNumber =
-      steps?.find((step) => step.name === currentStep)?.number ?? -1;
+    const currentStepNumber = steps?.find((step) => step.name === currentStep)?.number ?? -1;
     if (currentStepNumber > 1) {
       setCurrentStep(steps?.[currentStepNumber - 1 - 1].name);
     }
@@ -811,21 +752,16 @@ const RecipientCreateForm: React.FC = () => {
             <div
               key={step.name}
               className={`flex items-center p-1 sm:p-2 rounded-full whitespace-nowrap text-xs sm:text-sm md:text-base ${
-                currentStep === step.name
-                  ? "text-white bg-primary"
-                  : "text-gray-400"
+                currentStep === step.name ? "text-white bg-primary" : "text-gray-400"
               }`}
               onClick={() => handleStepClick(step.name)}
             >
               <div
                 className={`w-5 sm:w-8 h-5 sm:h-8 rounded-full flex items-center justify-center  ${
-                  currentStep === step.name
-                    ? "text-primary bg-white"
-                    : "border-gray-300"
+                  currentStep === step.name ? "text-primary bg-white" : "border-gray-300"
                 }`}
               >
-                {completedSteps.includes(step.name) &&
-                currentStep !== step.name ? (
+                {completedSteps.includes(step.name) && currentStep !== step.name ? (
                   <CheckedIcon />
                 ) : (
                   <span>{step.number}</span>
@@ -858,10 +794,7 @@ const RecipientCreateForm: React.FC = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-start items-center gap-3">
-        <button
-          onClick={handleCancel}
-          className="text-primary top-1 cursor-pointer"
-        >
+        <button onClick={handleCancel} className="text-primary top-1 cursor-pointer">
           <BackArrowIcon width={30} height={30} />
         </button>
         <PageTitle title="Add New Recipients" />
@@ -890,8 +823,7 @@ const RecipientCreateForm: React.FC = () => {
           <RemittanceMethodStep
             remittanceMethods={
               remittanceMethods?.data.filter(
-                (rm: RemittanceMethod) =>
-                  !rm.name.toLowerCase().includes("cash"),
+                (rm: RemittanceMethod) => !rm.name.toLowerCase().includes("cash"),
               ) || []
             }
             payoutAgents={payoutLocations?.data || []}
@@ -930,11 +862,7 @@ const RecipientCreateForm: React.FC = () => {
           />
           <div className="flex justify-end items-end gap-4">
             {currentStep !== "basic" && (
-              <ActionButton
-                title="skip step"
-                onClick={handleSkip}
-                type="link"
-              />
+              <ActionButton title="skip step" onClick={handleSkip} type="link" />
             )}
             <ActionButton title="cancel" onClick={handleCancel} type="cancel" />
             {currentStep === "bank" ? (
@@ -944,9 +872,7 @@ const RecipientCreateForm: React.FC = () => {
                   onClick={handleSubmit}
                   buttonProps={{
                     disabled:
-                      isCreatingRecipient ||
-                      isCreatingBankAccount ||
-                      isCreatingRecipientPayout,
+                      isCreatingRecipient || isCreatingBankAccount || isCreatingRecipientPayout,
                   }}
                 />
               </>
