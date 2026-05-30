@@ -67,3 +67,38 @@ export const ADD_MONEY_TRANSACTIONS_STATUS_COLORS = {
   failed: "#B42318",
   cancelled: "#000000",
 };
+
+// ── KYC Risk Levels ─────────────────────────────────────────────
+export const KYC_RISK_LEVEL_COLORS: Record<string, string> = {
+  low: "#027A48",
+  medium: "#DF6B1D",
+  high: "#B42318",
+  critical: "#7A0000",
+};
+
+// ── KYC Verification Statuses ───────────────────────────────────
+export const KYC_VERIFICATION_STATUS_COLORS: Record<string, string> = {
+  pending: "#667085",
+  in_progress: "#398EF0",
+  verified: "#027A48",
+  rejected: "#B42318",
+  manual_review: "#DF6B1D",
+};
+
+// ── KYC Document Statuses ───────────────────────────────────────
+export const KYC_DOCUMENT_STATUS_COLORS: Record<string, string> = {
+  pending: "#667085",
+  approved: "#027A48",
+  rejected: "#B42318",
+  expired: "#9D7C5F",
+};
+
+// ── KYC Document Type Labels ────────────────────────────────────
+export const KYC_DOCUMENT_TYPE_LABELS: Record<string, string> = {
+  passport: "Passport",
+  national_id: "National ID",
+  driving_license: "Driving License",
+  proof_of_address: "Proof of Address",
+  selfie: "Selfie",
+  source_of_funds: "Source of Funds",
+};

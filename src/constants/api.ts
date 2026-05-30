@@ -1,6 +1,6 @@
-export const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
+//export const baseUrl = "https://nomadrem.amazing-agileteam.com/api";
 export const serverUrl = "https://nomadrem.amazing-agileteam.com";
-//export const baseUrl = 'http://localhost:8000/api';
+export const baseUrl = "http://localhost:8000/api";
 
 export const API_URLS = {
   auth: {
@@ -20,28 +20,23 @@ export const API_URLS = {
   },
   address: {
     countries: `${baseUrl}/countries`,
-    citiesByCountry: (countryId: string | number) =>
-      `${baseUrl}/countries/${countryId}/cities`,
-    states: (countryId: string | number) =>
-      `${baseUrl}/countries/${countryId}/states`,
+    citiesByCountry: (countryId: string | number) => `${baseUrl}/countries/${countryId}/cities`,
+    states: (countryId: string | number) => `${baseUrl}/countries/${countryId}/states`,
   },
   agents: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
     update: (agentId: string | number) => `${baseUrl}/agents/${agentId}`,
     uploadAuthDocuments: (agentId: string | number) =>
       `${baseUrl}/auth/agents/${agentId}/id-documents`,
-    uploadDocuments: (agentId: string | number) =>
-      `${baseUrl}/agents/${agentId}/id-documents`,
+    uploadDocuments: (agentId: string | number) => `${baseUrl}/agents/${agentId}/id-documents`,
     attachCustomer: (agentId: string | number, customerId: string | number) =>
       `${baseUrl}/agents/${agentId}/customers/${customerId}`,
     attachRecipient: (agentId: string | number, recipientId: string | number) =>
       `${baseUrl}/agents/${agentId}/recipients/${recipientId}`,
     detachRecipient: (agentId: string | number, recipientId: string | number) =>
       `${baseUrl}/agents/${agentId}/recipients/${recipientId}`,
-    getAgentRecipients: (agentId: string | number) =>
-      `${baseUrl}/agents/${agentId}/recipients`,
-    getExtraFees: (agentId: string | number) =>
-      `${baseUrl}/agents/${agentId}/extra-fees`,
+    getAgentRecipients: (agentId: string | number) => `${baseUrl}/agents/${agentId}/recipients`,
+    getExtraFees: (agentId: string | number) => `${baseUrl}/agents/${agentId}/extra-fees`,
   },
   customers: {
     get: (filters: string) => `${baseUrl}/customers${filters}`,
@@ -51,31 +46,23 @@ export const API_URLS = {
     getById: (id: string | number) => `${baseUrl}/customers/${id}`,
     update: (id: string | number) => `${baseUrl}/customers/${id}`,
 
-    identityDocuments: (id: string | number) =>
-      `${baseUrl}/customers/${id}/identity-documents`,
-    incomeDocuments: (id: string | number) =>
-      `${baseUrl}/customers/${id}/income-documents`,
+    identityDocuments: (id: string | number) => `${baseUrl}/customers/${id}/identity-documents`,
+    incomeDocuments: (id: string | number) => `${baseUrl}/customers/${id}/income-documents`,
 
     // Customer Recipients endpoints
-    getRecipients: (customerId: string | number) =>
-      `${baseUrl}/customers/${customerId}/recipients`,
-    attachRecipient: (
-      customerId: string | number,
-      recipientId: string | number,
-    ) => `${baseUrl}/customers/${customerId}/recipients/${recipientId}`,
+    getRecipients: (customerId: string | number) => `${baseUrl}/customers/${customerId}/recipients`,
+    attachRecipient: (customerId: string | number, recipientId: string | number) =>
+      `${baseUrl}/customers/${customerId}/recipients/${recipientId}`,
   },
   paymentLinks: {
     get: (filters: string) => `${baseUrl}/payment-links${filters}`,
     create: `${baseUrl}/payment-links`,
-    regenerate: (id: number) =>
-      `${baseUrl}/payment-links/${id}/regenerate-token`,
+    regenerate: (id: number) => `${baseUrl}/payment-links/${id}/regenerate-token`,
     validate: (token: string) => `${baseUrl}/payment-links/token/${token}`,
     getByTransaction: (transactionId: string) =>
       `${baseUrl}/payment-links/transaction/${transactionId}`,
-    getByCart: (cartId: string) =>
-      `${baseUrl}/payment-links/remittance-cart/${cartId}`,
-    expire: (paymentLinkId: string | number) =>
-      `${baseUrl}/payment-links/${paymentLinkId}/expire`,
+    getByCart: (cartId: string) => `${baseUrl}/payment-links/remittance-cart/${cartId}`,
+    expire: (paymentLinkId: string | number) => `${baseUrl}/payment-links/${paymentLinkId}/expire`,
     markSuccessful: (paymentLinkId: string | number) =>
       `${baseUrl}/payment-links/${paymentLinkId}/mark-successful`,
     regenerateToken: (paymentLinkId: string | number) =>
@@ -101,12 +88,9 @@ export const API_URLS = {
   remittanceCart: {
     get: (filters: string) => `${baseUrl}/remittance-carts${filters}`,
     create: `${baseUrl}/remittance-carts`,
-    update: (cartId: string | number) =>
-      `${baseUrl}/remittance-carts/${cartId}`,
-    getById: (cartId: string | number) =>
-      `${baseUrl}/remittance-carts/${cartId}`,
-    delete: (cartId: string | number) =>
-      `${baseUrl}/remittance-carts/${cartId}`,
+    update: (cartId: string | number) => `${baseUrl}/remittance-carts/${cartId}`,
+    getById: (cartId: string | number) => `${baseUrl}/remittance-carts/${cartId}`,
+    delete: (cartId: string | number) => `${baseUrl}/remittance-carts/${cartId}`,
     addTransaction: `${baseUrl}/remittance-carts/add-transaction`,
     removeTransaction: (transactionId: string | number) =>
       `${baseUrl}/remittance-carts/transactions/${transactionId}/remove`,
@@ -123,18 +107,14 @@ export const API_URLS = {
   },
   remittanceMethods: {
     get: () => `${baseUrl}/remittance-methods`,
-    verifyAccountInfo: () =>
-      `${baseUrl}/remittance-methods/verify-account-info`,
+    verifyAccountInfo: () => `${baseUrl}/remittance-methods/verify-account-info`,
   },
   recipientRemittanceMethods: {
     get: () => `${baseUrl}/recipient-remittance-methods`,
     create: () => `${baseUrl}/recipient-remittance-methods`,
-    getById: (id: string | number) =>
-      `${baseUrl}/recipient-remittance-methods/${id}`,
-    update: (id: string | number) =>
-      `${baseUrl}/recipient-remittance-methods/${id}`,
-    delete: (id: string | number) =>
-      `${baseUrl}/recipient-remittance-methods/${id}`,
+    getById: (id: string | number) => `${baseUrl}/recipient-remittance-methods/${id}`,
+    update: (id: string | number) => `${baseUrl}/recipient-remittance-methods/${id}`,
+    delete: (id: string | number) => `${baseUrl}/recipient-remittance-methods/${id}`,
   },
   payoutLocations: {
     get: () => `${baseUrl}/payout-agents`,
@@ -142,8 +122,7 @@ export const API_URLS = {
   recipientPayouts: {
     get: () => `${baseUrl}/recipient-payout-agents`,
     create: () => `${baseUrl}/recipient-payout-agents`,
-    getById: (id: string | number) =>
-      `${baseUrl}/recipient-payout-agents/${id}`,
+    getById: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
     update: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
     delete: (id: string | number) => `${baseUrl}/recipient-payout-agents/${id}`,
   },
@@ -151,19 +130,15 @@ export const API_URLS = {
     get: (filters?: string) => `${baseUrl}/customer-forms${filters}`,
     getById: (id: string | number) => `${baseUrl}/customer-forms/${id}`,
     create: () => `${baseUrl}/customer-forms`,
-    validateToken: (token: string) =>
-      `${baseUrl}/customer-forms/validate-token/${token}`,
+    validateToken: (token: string) => `${baseUrl}/customer-forms/validate-token/${token}`,
     submit: (token: string) => `${baseUrl}/customer-forms/${token}/submit`,
-    regenerateToken: (id: string | number) =>
-      `${baseUrl}/customer-forms/${id}/regenerate-token`,
+    regenerateToken: (id: string | number) => `${baseUrl}/customer-forms/${id}/regenerate-token`,
   },
   wallet: {
     get: (agentId: string | number) => `${baseUrl}/agents/${agentId}/wallet`,
     deleteCurrency: () => "", // URL not ready yet
-    addCurrency: (walletId: string | number) =>
-      `${baseUrl}/wallets/${walletId}/currencies`,
-    getAddMoneyTransactions: (filters: string) =>
-      `${baseUrl}/add-money-transactions${filters}`,
+    addCurrency: (walletId: string | number) => `${baseUrl}/wallets/${walletId}/currencies`,
+    getAddMoneyTransactions: (filters: string) => `${baseUrl}/add-money-transactions${filters}`,
     payTransaction: `${baseUrl}/wallet/pay-transaction`,
     canPayTransaction: (transactionReference: string) =>
       `${baseUrl}/wallet/can-pay/${transactionReference}`,
@@ -176,8 +151,7 @@ export const API_URLS = {
     get: () => `${baseUrl}/currencies`,
     exchange: () => `${baseUrl}/exchange-money-transactions`,
     preview: () => `${baseUrl}/exchange-money-transactions/preview`,
-    previewAnyExchange: () =>
-      `${baseUrl}/exchange-money-transactions/preview-any`,
+    previewAnyExchange: () => `${baseUrl}/exchange-money-transactions/preview-any`,
   },
   remittancePurposes: {
     get: (filters: string) => `${baseUrl}/remittance-purposes${filters}`,
@@ -191,6 +165,11 @@ export const API_URLS = {
     create: `${baseUrl}/payments`,
     validate: `${baseUrl}/payments/validate`,
   },
+  kyc: {
+    status: (customerId: string | number) => `${baseUrl}/kyc/status/${customerId}`,
+    documents: (customerId: string | number) => `${baseUrl}/kyc/documents/${customerId}`,
+    uploadDocument: `${baseUrl}/kyc/documents`,
+  },
   apisAndGateways: {
     getList: `${baseUrl}/apis/list`,
   },
@@ -199,9 +178,7 @@ export const API_URLS = {
     sendCountries: `${baseUrl}/remittance-availability/send-countries`,
     methods: (receiveCountryId?: number) => {
       const url = `${baseUrl}/remittance-availability/methods`;
-      return receiveCountryId
-        ? `${url}?receive_country=${receiveCountryId}`
-        : url;
+      return receiveCountryId ? `${url}?receive_country=${receiveCountryId}` : url;
     },
     recipientMethods: (recipientId: number, receiveCountryId: number) =>
       `${baseUrl}/remittance-availability/recipients/${recipientId}/methods?receive_country=${receiveCountryId}`,

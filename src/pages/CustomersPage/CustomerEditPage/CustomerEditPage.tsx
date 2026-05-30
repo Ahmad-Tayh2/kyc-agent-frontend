@@ -25,6 +25,7 @@ import { transferColumns } from "@/components/transfers/TransferTableColumns";
 import { customerRecipientsColumns } from "@/components/recipients/RecipientsTableColumns";
 import { customerPaymentLinksColumns } from "@/components/paymentLinks/paymentLinksTableColumns";
 import EditMultiSectionCard from "@/components/shared/EditMultiSectionCard";
+import CustomerKycSection from "@/components/kyc/CustomerKycSection";
 import type { CustomerIdentityFileData, CustomerIncomeFileData } from "@/types/customers";
 import { z } from "zod";
 import { format } from "date-fns";
@@ -370,6 +371,9 @@ const CustomerEditPage = () => {
       </div>
 
       <EditMultiSectionCard sections={customerSections} />
+      <EditSectionCard sectionTitle="KYC Verification">
+        <CustomerKycSection customerId={id!} editMode={basicInfoEditMode} />
+      </EditSectionCard>
       <EditSectionCard sectionTitle="Recent transactions">
         <div className="p-5 flex flex-col gap-5">
           <DataTable
